@@ -55,7 +55,7 @@ try {
     ".env.example",
     "check-windows.bat",
     "start-windows.bat",
-    "一键启动-KF助手.bat",
+    "RUN-KF-ASSISTANT.bat",
     "PORTABLE-README.txt",
     "php-admin-windows.bat",
     "README.md",
