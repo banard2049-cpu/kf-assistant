@@ -1,0 +1,1702 @@
+{
+  "version": 1,
+  "source": "(Don)KF 1.8.json",
+  "exportedAt": "2026-07-28T15:29:27.601Z",
+  "labels": {
+    "SK_Tile_EL:1": {
+      "time": 1,
+      "updatedAt": "2026-07-27T16:45:58.401Z",
+      "threat": 3,
+      "region": "淹没区",
+      "clues": 3,
+      "fogIntensity": 3,
+      "completed": true
+    },
+    "SK_Tile_EL:2": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T16:46:14.432Z",
+      "time": 1,
+      "threat": 3,
+      "fogIntensity": 3,
+      "clues": 3,
+      "completed": true
+    },
+    "SK_Tile_EL:3": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T16:46:22.061Z",
+      "time": 1,
+      "threat": 3,
+      "clues": 3,
+      "fogIntensity": 3,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:1": {
+      "time": 3,
+      "updatedAt": "2026-07-27T16:57:43.385Z",
+      "threat": 0,
+      "fogIntensity": 0,
+      "clues": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:2": {
+      "time": 1,
+      "updatedAt": "2026-07-27T16:57:44.451Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:3": {
+      "time": 1,
+      "updatedAt": "2026-07-27T16:57:45.137Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK:FOG:23102": {
+      "updatedAt": "2026-07-28T15:26:31.562Z",
+      "fogValue": -1,
+      "hazard": true,
+      "commonBackVerified": true,
+      "completed": true
+    },
+    "SK:FOG:23103": {
+      "updatedAt": "2026-07-28T15:28:05.123Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": false,
+      "completed": true
+    },
+    "SK:FOG:23104": {
+      "updatedAt": "2026-07-28T15:28:10.160Z",
+      "commonBackVerified": true,
+      "fogValue": 2,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23105": {
+      "updatedAt": "2026-07-28T15:28:13.285Z",
+      "commonBackVerified": true,
+      "hazard": true,
+      "fogValue": 2,
+      "completed": true
+    },
+    "SK:FOG:23106": {
+      "updatedAt": "2026-07-28T15:27:59.094Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23107": {
+      "updatedAt": "2026-07-28T15:28:19.440Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "completed": true
+    },
+    "SK:FOG:23108": {
+      "updatedAt": "2026-07-28T15:28:23.236Z",
+      "commonBackVerified": true,
+      "fogValue": 0,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23109": {
+      "updatedAt": "2026-07-28T15:28:25.997Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23110": {
+      "updatedAt": "2026-07-28T15:28:28.368Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23111": {
+      "updatedAt": "2026-07-28T15:28:31.931Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23112": {
+      "updatedAt": "2026-07-28T15:28:34.914Z",
+      "commonBackVerified": true,
+      "fogValue": 0,
+      "hazard": true,
+      "completed": true
+    },
+    "SK:FOG:23113": {
+      "updatedAt": "2026-07-28T15:28:40.082Z",
+      "commonBackVerified": true,
+      "fogValue": 0,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23101": {
+      "updatedAt": "2026-07-28T15:28:43.705Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "completed": true
+    },
+    "POS:FOG:23100": {
+      "updatedAt": "2026-07-28T15:28:46.717Z",
+      "commonBackVerified": true,
+      "fogValue": 2,
+      "completed": true
+    },
+    "POS:FOG:23104": {
+      "updatedAt": "2026-07-28T15:28:49.205Z",
+      "commonBackVerified": true,
+      "fogValue": 2,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23105": {
+      "updatedAt": "2026-07-28T15:28:51.739Z",
+      "commonBackVerified": true,
+      "fogValue": 2,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23106": {
+      "updatedAt": "2026-07-28T15:28:54.490Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23107": {
+      "updatedAt": "2026-07-28T15:28:57.581Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "completed": true
+    },
+    "POS:FOG:23108": {
+      "updatedAt": "2026-07-28T15:29:06.630Z",
+      "commonBackVerified": true,
+      "fogValue": 0,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23109": {
+      "updatedAt": "2026-07-28T15:29:09.951Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23110": {
+      "updatedAt": "2026-07-28T15:29:13.038Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23111": {
+      "updatedAt": "2026-07-28T15:29:17.435Z",
+      "commonBackVerified": true,
+      "fogValue": 1,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23112": {
+      "updatedAt": "2026-07-28T15:29:20.489Z",
+      "commonBackVerified": true,
+      "fogValue": 0,
+      "hazard": true,
+      "completed": true
+    },
+    "POS:FOG:23113": {
+      "updatedAt": "2026-07-28T15:29:23.702Z",
+      "commonBackVerified": true,
+      "fogValue": 0,
+      "hazard": true,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:4": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:00:41.768Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:5": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:00:46.586Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:6": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:00:49.197Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:7": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:00:54.643Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:8": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:00:57.340Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:9": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:01:19.255Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:10": {
+      "time": 1,
+      "updatedAt": "2026-07-27T17:01:22.792Z",
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true
+    },
+    "SK_Tile_EXTRA:11": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:14.819Z"
+    },
+    "SK_Tile_EXTRA:12": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:19.991Z"
+    },
+    "SK_Tile_EXTRA:13": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:24.202Z"
+    },
+    "SK_Tile_EXTRA:14": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:25.227Z"
+    },
+    "SK_Tile_EXTRA:15": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:26.084Z"
+    },
+    "SK_Tile_EXTRA:16": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:27.434Z"
+    },
+    "SK_Tile_EXTRA:17": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:28.062Z"
+    },
+    "SK_Tile_EXTRA:18": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:28.655Z"
+    },
+    "SK_Tile_EXTRA:19": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:29.097Z"
+    },
+    "SK_Tile_EXTRA:20": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:29.655Z"
+    },
+    "SK_Tile_EXTRA:21": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:30.323Z"
+    },
+    "SK_Tile_EXTRA:22": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:30.908Z"
+    },
+    "SK_Tile_EXTRA:23": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:11:31.694Z"
+    },
+    "SK_Tile_L:1": {
+      "threat": 2,
+      "updatedAt": "2026-07-27T17:11:52.764Z",
+      "clues": 2,
+      "fogIntensity": 4,
+      "region": "泥泞区",
+      "time": 1,
+      "completed": true
+    },
+    "SK_Tile_L:2": {
+      "threat": 2,
+      "updatedAt": "2026-07-27T17:12:07.474Z",
+      "clues": 2,
+      "fogIntensity": 4,
+      "region": "沼泽区",
+      "time": 1,
+      "completed": true
+    },
+    "SK_Tile_L:3": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:12:27.278Z",
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "time": 1,
+      "completed": true
+    },
+    "SK_Tile_L:4": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:12:41.822Z",
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "time": 1,
+      "completed": true
+    },
+    "SK_Tile_L:5": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:20:36.793Z",
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "time": 1,
+      "completed": true
+    },
+    "SK_Tile_LS:1": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:20:49.567Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:2": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:20:58.770Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:3": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:21:02.975Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:4": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:21:07.015Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:5": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:21:10.066Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:6": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:21:13.988Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:7": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:21:17.119Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_LS:8": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:21:20.410Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:1": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:21:23.812Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:2": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:21:27.192Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:3": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:21:30.106Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:4": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:21:32.461Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:5": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:21:34.759Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:6": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:21:36.936Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:7": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:21:39.201Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:8": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:21:41.616Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:9": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:21:44.225Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:10": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:21:46.574Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:11": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:11.643Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:12": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:22:15.784Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:13": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:22:19.102Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_M:14": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:29.530Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "SK_Tile_S:1": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:32.514Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:2": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:22:38.384Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:3": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:44.546Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:4": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:46.105Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:5": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:22:47.598Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:6": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:48.991Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:7": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:22:50.433Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:8": {
+      "region": "淹没区",
+      "updatedAt": "2026-07-27T17:22:52.160Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:9": {
+      "region": "沼泽区",
+      "updatedAt": "2026-07-27T17:22:54.227Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK_Tile_S:10": {
+      "region": "泥泞区",
+      "updatedAt": "2026-07-27T17:22:56.124Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_EL:1": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:01.804Z",
+      "time": 1,
+      "threat": 3,
+      "clues": 3,
+      "fogIntensity": 3,
+      "completed": true
+    },
+    "POS_Tile_EL:2": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:04.933Z",
+      "time": 1,
+      "threat": 3,
+      "clues": 3,
+      "fogIntensity": 3,
+      "completed": true
+    },
+    "POS_Tile_EL:3": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:23:06.904Z",
+      "time": 1,
+      "threat": 3,
+      "clues": 3,
+      "fogIntensity": 3,
+      "completed": true
+    },
+    "POS_Tile_EXTRA:1": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:09.011Z"
+    },
+    "POS_Tile_EXTRA:2": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:09.671Z"
+    },
+    "POS_Tile_EXTRA:3": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:10.019Z"
+    },
+    "POS_Tile_EXTRA:4": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:10.429Z"
+    },
+    "POS_Tile_EXTRA:5": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:10.748Z"
+    },
+    "POS_Tile_EXTRA:6": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:11.049Z"
+    },
+    "POS_Tile_EXTRA:7": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:11.368Z"
+    },
+    "POS_Tile_EXTRA:8": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:11.780Z"
+    },
+    "POS_Tile_EXTRA:9": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:12.158Z"
+    },
+    "POS_Tile_EXTRA:10": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:12.470Z"
+    },
+    "POS_Tile_EXTRA:11": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:12.789Z"
+    },
+    "POS_Tile_EXTRA:12": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:13.113Z"
+    },
+    "POS_Tile_EXTRA:13": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:13.387Z"
+    },
+    "POS_Tile_EXTRA:14": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:13.719Z"
+    },
+    "POS_Tile_EXTRA:15": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:14.017Z"
+    },
+    "POS_Tile_EXTRA:16": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:14.346Z"
+    },
+    "POS_Tile_EXTRA:17": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:14.966Z"
+    },
+    "POS_Tile_EXTRA:18": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:15.280Z"
+    },
+    "POS_Tile_EXTRA:19": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:15.686Z"
+    },
+    "POS_Tile_EXTRA:20": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:16.066Z"
+    },
+    "POS_Tile_EXTRA:21": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:16.480Z"
+    },
+    "POS_Tile_EXTRA:22": {
+      "time": 1,
+      "threat": 0,
+      "clues": 0,
+      "fogIntensity": 0,
+      "completed": true,
+      "updatedAt": "2026-07-27T17:23:16.845Z"
+    },
+    "POS_Tile_L:1": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:20.323Z",
+      "time": 1,
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "completed": true
+    },
+    "POS_Tile_L:2": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:23.003Z",
+      "time": 1,
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "completed": true
+    },
+    "POS_Tile_L:3": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:23:24.745Z",
+      "time": 1,
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "completed": true
+    },
+    "POS_Tile_L:4": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:23:26.616Z",
+      "time": 1,
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "completed": true
+    },
+    "POS_Tile_L:5": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:23:28.824Z",
+      "time": 1,
+      "threat": 2,
+      "clues": 2,
+      "fogIntensity": 4,
+      "completed": true
+    },
+    "POS_Tile_M:1": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:30.676Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:2": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:33.328Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:3": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:35.325Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:4": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:37.190Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:5": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:38.741Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:6": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:40.179Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:7": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:23:41.459Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:8": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:42.921Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:9": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:23:44.455Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:10": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:23:46.853Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:11": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:23:49.266Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:12": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:23:51.351Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_M:13": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:23:52.678Z",
+      "time": 1,
+      "threat": 1,
+      "clues": 1,
+      "fogIntensity": 5,
+      "completed": true
+    },
+    "POS_Tile_S:1": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:23:54.254Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:2": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:56.824Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:3": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:58.150Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:4": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:23:59.401Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:5": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:24:00.758Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:6": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:24:02.302Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:7": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:24:03.759Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:8": {
+      "region": "贵族区",
+      "updatedAt": "2026-07-27T17:24:04.942Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:9": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:24:06.414Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:10": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:24:07.945Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:11": {
+      "region": "工匠区",
+      "updatedAt": "2026-07-27T17:24:09.188Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:12": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:24:10.815Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:13": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:24:11.861Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:14": {
+      "region": "商人区",
+      "updatedAt": "2026-07-27T17:24:13.586Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:15": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:24:18.810Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:16": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:24:21.965Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:17": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:24:23.554Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:18": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:24:25.155Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "POS_Tile_S:19": {
+      "region": "港口区",
+      "updatedAt": "2026-07-27T17:24:26.301Z",
+      "time": 1,
+      "threat": -1,
+      "clues": 0,
+      "fogIntensity": 6,
+      "completed": true
+    },
+    "SK:EXP:23909": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:15.865Z",
+      "east": "errant",
+      "south": "historic",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23905": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:17.162Z",
+      "east": "historic",
+      "south": "martial",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23903": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:17.412Z",
+      "east": "errant",
+      "south": "historic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "activation",
+      "faceRegion": ""
+    },
+    "SK:EXP:23921": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:17.864Z",
+      "east": "martial",
+      "west": "mystic",
+      "south": "historic",
+      "completed": true,
+      "faceEffectType": "activation",
+      "faceRegion": ""
+    },
+    "SK:EXP:23908": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:18.116Z",
+      "east": "mystic",
+      "west": "errant",
+      "south": "historic",
+      "completed": true,
+      "faceEffectType": "activation",
+      "faceRegion": ""
+    },
+    "SK:EXP:23915": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:18.360Z",
+      "east": "errant",
+      "west": "martial",
+      "south": "mystic",
+      "completed": true,
+      "faceEffectType": "activation",
+      "faceRegion": ""
+    },
+    "SK:EXP:23913": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:18.570Z",
+      "east": "mystic",
+      "south": "martial",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23914": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:18.852Z",
+      "east": "martial",
+      "west": "errant",
+      "south": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23919": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:19.089Z",
+      "east": "mystic",
+      "south": "martial",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23907": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:19.355Z",
+      "east": "mystic",
+      "south": "errant",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23916": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:19.583Z",
+      "east": "errant",
+      "west": "mystic",
+      "south": "martial",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23922": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:20.027Z",
+      "east": "historic",
+      "south": "mystic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "region",
+      "faceRegion": ""
+    },
+    "SK:EXP:23906": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:20.379Z",
+      "east": "historic",
+      "south": "errant",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "region",
+      "faceRegion": ""
+    },
+    "SK:EXP:23902": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:20.793Z",
+      "east": "martial",
+      "south": "errant",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "SK:EXP:23900": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:22.772Z",
+      "east": "historic",
+      "south": "errant",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23910": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:27.253Z",
+      "east": "errant",
+      "west": "historic",
+      "south": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23920": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:30.997Z",
+      "east": "mystic",
+      "south": "historic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "region"
+    },
+    "SK:EXP:23912": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:33.346Z",
+      "east": "mystic",
+      "south": "errant",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23923": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:35.380Z",
+      "east": "historic",
+      "south": "martial",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23918": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:37.094Z",
+      "east": "martial",
+      "south": "mystic",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23904": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:39.015Z",
+      "east": "errant",
+      "south": "martial",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "region"
+    },
+    "SK:EXP:23917": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:41.118Z",
+      "east": "martial",
+      "south": "errant",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23901": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:42.697Z",
+      "east": "martial",
+      "south": "historic",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "SK:EXP:23911": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:44.024Z",
+      "east": "historic",
+      "south": "errant",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31116": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:45.196Z",
+      "east": "errant",
+      "south": "mystic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31106": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:46.431Z",
+      "east": "historic",
+      "south": "mystic",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31102": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:47.549Z",
+      "east": "historic",
+      "south": "errant",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31112": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:03:48.942Z",
+      "east": "mystic",
+      "south": "errant",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31105": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:50.172Z",
+      "east": "errant",
+      "south": "historic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31101": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:51.301Z",
+      "east": "martial",
+      "south": "historic",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31109": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:54.081Z",
+      "east": "historic",
+      "south": "errant",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31110": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:03:55.387Z",
+      "east": "errant",
+      "south": "mystic",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31103": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:56.420Z",
+      "east": "historic",
+      "south": "martial",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31120": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:03:58.463Z",
+      "east": "martial",
+      "south": "mystic",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "activation"
+    },
+    "POS:EXP:31104": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:03:59.684Z",
+      "east": "errant",
+      "south": "martial",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "activation"
+    },
+    "POS:EXP:31122": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:04:02.051Z",
+      "east": "historic",
+      "south": "mystic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31114": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:04:03.974Z",
+      "east": "martial",
+      "south": "mystic",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31115": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:04:05.159Z",
+      "east": "martial",
+      "south": "errant",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31118": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:04:07.411Z",
+      "east": "mystic",
+      "south": "historic",
+      "west": "martial",
+      "completed": true,
+      "faceEffectType": "region"
+    },
+    "POS:EXP:31108": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:04:08.969Z",
+      "east": "mystic",
+      "south": "historic",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31117": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:04:11.650Z",
+      "east": "errant",
+      "south": "martial",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "region"
+    },
+    "POS:EXP:31107": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:04:13.206Z",
+      "east": "mystic",
+      "south": "errant",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31113": {
+      "north": "historic",
+      "updatedAt": "2026-07-27T19:04:14.505Z",
+      "east": "mystic",
+      "south": "martial",
+      "west": "errant",
+      "completed": true,
+      "faceEffectType": "immediate"
+    },
+    "POS:EXP:31119": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:04:16.185Z",
+      "east": "mystic",
+      "south": "martial",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "POS:EXP:31100": {
+      "north": "mystic",
+      "updatedAt": "2026-07-27T19:04:17.286Z",
+      "east": "martial",
+      "south": "errant",
+      "west": "historic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "POS:EXP:31111": {
+      "north": "martial",
+      "updatedAt": "2026-07-27T19:04:21.233Z",
+      "east": "errant",
+      "south": "historic",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "immediate",
+      "faceRegion": ""
+    },
+    "POS:EXP:31123": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:04:21.730Z",
+      "east": "historic",
+      "south": "martial",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "activation",
+      "faceRegion": ""
+    },
+    "POS:EXP:31121": {
+      "north": "errant",
+      "updatedAt": "2026-07-27T19:04:22.319Z",
+      "east": "martial",
+      "south": "historic",
+      "west": "mystic",
+      "completed": true,
+      "faceEffectType": "activation",
+      "faceRegion": ""
+    }
+  }
+}

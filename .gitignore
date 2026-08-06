@@ -4,9 +4,12 @@
 !.env.example
 
 # Runtime data
-data/
-backups/
-logs/
+/data/
+/backups/
+/logs/
+KF_Unified_Assistant/data/
+KF_Unified_Assistant/backups/
+KF_Unified_Assistant/logs/
 *.db
 *.db-*
 *.sqlite
@@ -47,6 +50,8 @@ KF_Unified_Assistant_Android/app/src/main/res/drawable-nodpi/
 
 # Bundled portable runtime
 KF_Unified_Assistant/runtime/
+/KF_Unified_Assistant_Portable_*/
+/portable-verify-*/
 
 # Android / Gradle output and local toolchains
 .gradle/

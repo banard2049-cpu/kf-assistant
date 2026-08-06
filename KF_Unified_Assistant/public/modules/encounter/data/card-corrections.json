@@ -1,0 +1,1780 @@
+{
+  "format": "KF_ENCOUNTER_CARD_CORRECTIONS",
+  "version": 1,
+  "exportedAt": "2026-07-27T14:57:41.147Z",
+  "cards": {
+    "M_DevilAncientDusk:1": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:49:05.310Z"
+    },
+    "M_DevilAncientDusk:2": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:49:12.328Z"
+    },
+    "M_DevilAncientDusk:3": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:49:16.685Z"
+    },
+    "M_DevilAncientDusk:4": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -2,
+          -1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:49:21.787Z"
+    },
+    "M_DevilSmeltedFears:1": {
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:52:45.926Z",
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "attackPatternVerified": true
+    },
+    "M_DevilSmeltedFears:2": {
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:52:50.998Z"
+    },
+    "M_DevilSmeltedFears:3": {
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:52:53.516Z"
+    },
+    "M_DevilSmeltedFears:4": {
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          5
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:52:55.019Z"
+    },
+    "M_Eggknight:1": {
+      "attackPattern": [
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:53:03.271Z"
+    },
+    "M_Eggknight:2": {
+      "attackPattern": [
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:53:10.006Z"
+    },
+    "M_Eggknight:3": {
+      "attackPattern": [
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:53:12.154Z"
+    },
+    "M_Eggknight:4": {
+      "attackPattern": [
+        [
+          -2,
+          1
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          4,
+          1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:53:13.561Z"
+    },
+    "M_Knighteater:1": {
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:54:33.337Z",
+      "attackPattern": [
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "attackPatternVerified": true
+    },
+    "M_Knighteater:2": {
+      "attackPattern": [
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:54:35.732Z"
+    },
+    "M_Knighteater:3": {
+      "attackPattern": [
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:54:37.418Z"
+    },
+    "M_Knighteater:4": {
+      "attackPattern": [
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          3
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:54:38.884Z"
+    },
+    "M_Panzerdragon:1": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -5,
+          0
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -6,
+          2
+        ],
+        [
+          -6,
+          1
+        ],
+        [
+          -6,
+          0
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -7,
+          1
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -8,
+          2
+        ],
+        [
+          -8,
+          1
+        ],
+        [
+          -8,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:54:56.631Z"
+    },
+    "M_Panzerdragon:2": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -5,
+          0
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -6,
+          2
+        ],
+        [
+          -6,
+          1
+        ],
+        [
+          -6,
+          0
+        ],
+        [
+          -7,
+          0
+        ],
+        [
+          -7,
+          1
+        ],
+        [
+          -7,
+          2
+        ],
+        [
+          -8,
+          2
+        ],
+        [
+          -8,
+          1
+        ],
+        [
+          -8,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:54:59.537Z"
+    },
+    "M_PuppetKing:1": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:55:14.926Z"
+    },
+    "M_PuppetKing:2": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:16.926Z"
+    },
+    "M_PuppetKing:4": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:23.915Z"
+    },
+    "M_PuppetKing:3": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:22.555Z"
+    },
+    "M_Stonemason:1": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:55:33.296Z"
+    },
+    "M_Stonemason:2": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:35.974Z"
+    },
+    "M_Stonemason:3": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:38.763Z"
+    },
+    "M_Stonemason:4": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:40.300Z"
+    },
+    "M_KingLaidLow:1": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:55:44.910Z"
+    },
+    "M_KingLaidLow:2": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:46.642Z"
+    },
+    "M_KingLaidLow:3": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:48.261Z"
+    },
+    "M_KingLaidLow:4": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -1
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:55:49.845Z"
+    },
+    "M_KnightFen:1": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:56:17.219Z"
+    },
+    "M_KnightFen:2": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:56:19.882Z"
+    },
+    "M_KnightFen:3": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:56:21.870Z"
+    },
+    "M_KnightFen:4": {
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:56:23.904Z"
+    },
+    "M_Toadragon:1": {
+      "attackPattern": [
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -4,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:56:39.088Z"
+    },
+    "M_Toadragon:2": {
+      "attackPattern": [
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -4,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:56:43.315Z"
+    },
+    "M_Toadragon:3": {
+      "attackPattern": [
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -4,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:56:45.037Z"
+    },
+    "M_Toadragon:4": {
+      "attackPattern": [
+        [
+          -1,
+          -3
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          -1,
+          4
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -2,
+          -1
+        ],
+        [
+          -2,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -2,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          2
+        ],
+        [
+          -3,
+          1
+        ],
+        [
+          -3,
+          0
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -4,
+          1
+        ],
+        [
+          -4,
+          2
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:56:46.518Z"
+    },
+    "M_WhiteApe:1": {
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:56:54.544Z",
+      "attackPattern": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "attackPatternVerified": true
+    },
+    "M_WhiteApe:2": {
+      "attackPattern": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:56:56.978Z"
+    },
+    "M_WhiteApe:3": {
+      "attackPattern": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:56:58.551Z"
+    },
+    "M_WhiteApe:4": {
+      "attackPattern": [
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 90,
+      "updatedAt": "2026-07-27T14:56:59.888Z"
+    },
+    "M_YoungDevour:1": {
+      "attackPattern": [
+        [
+          0,
+          -2
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -2,
+          -3
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          0
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -2,
+          5
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "attackPatternVerified": true,
+      "updatedAt": "2026-07-27T14:57:32.255Z"
+    },
+    "M_YoungDevour:2": {
+      "attackPattern": [
+        [
+          0,
+          -2
+        ],
+        [
+          1,
+          -3
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -2,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          -3
+        ],
+        [
+          -2,
+          -3
+        ],
+        [
+          -2,
+          -2
+        ],
+        [
+          -3,
+          -2
+        ],
+        [
+          -3,
+          -1
+        ],
+        [
+          -4,
+          -1
+        ],
+        [
+          -4,
+          0
+        ],
+        [
+          -5,
+          1
+        ],
+        [
+          -5,
+          0
+        ],
+        [
+          -5,
+          2
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          -4,
+          3
+        ],
+        [
+          -3,
+          3
+        ],
+        [
+          -3,
+          4
+        ],
+        [
+          -2,
+          4
+        ],
+        [
+          -2,
+          5
+        ],
+        [
+          -1,
+          5
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          2,
+          4
+        ]
+      ],
+      "attackPatternVerified": true,
+      "attackFacing": 0,
+      "updatedAt": "2026-07-27T14:57:39.048Z"
+    }
+  }
+}

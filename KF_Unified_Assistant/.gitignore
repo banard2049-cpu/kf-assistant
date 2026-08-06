@@ -1,6 +1,6 @@
-data/
-backups/
-logs/
+/data/
+/backups/
+/logs/
 runtime/
 *.log
 .env
