@@ -9,6 +9,10 @@ if exist "%~dp0runtime\php\php.exe" (
     set "PHP_EXE=%%p"
     goto :php_found
   )
+  for /f "usebackq delims=" %%p in (`powershell.exe -NoProfile -Command "$command = Get-Command php -ErrorAction SilentlyContinue; if ($command) { $command.Source }"`) do (
+    set "PHP_EXE=%%p"
+    goto :php_found
+  )
 )
 if not defined PHP_EXE (
   echo PHP 8.2 or newer was not found.

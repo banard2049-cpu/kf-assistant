@@ -14,6 +14,10 @@ if exist "%~dp0runtime\php\php.exe" (
     set "PHP_EXE=%%p"
     goto :php_found
   )
+  for /f "usebackq delims=" %%p in (`powershell.exe -NoProfile -Command "$command = Get-Command php -ErrorAction SilentlyContinue; if ($command) { $command.Source }"`) do (
+    set "PHP_EXE=%%p"
+    goto :php_found
+  )
 )
 :php_found
 for %%p in ("%PHP_EXE%") do set "PHP_DIR=%%~dpp"

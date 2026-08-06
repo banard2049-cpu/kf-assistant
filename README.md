@@ -55,6 +55,17 @@ start-windows.bat
 
 启动后访问 [http://127.0.0.1:8789](http://127.0.0.1:8789)。首次运行会根据 `.env.example` 创建本地 `.env`；数据库、备份和日志均不会提交到 Git。
 
+### Windows 免安装包
+
+已有可用的 PHP 8.2+ 环境时，可以生成自带 PHP 运行时的便携 ZIP：
+
+```powershell
+cd KF_Unified_Assistant
+powershell -ExecutionPolicy Bypass -File .\tools\build-portable-windows.ps1
+```
+
+也可以通过 `-PhpSource` 指定包含 `php.exe` 的目录，通过 `-OutputPath` 指定输出文件。生成的 ZIP、SHA-256 校验文件和本地 `runtime/` 均不会提交到 Git。
+
 ### Docker / NAS
 
 ```bash

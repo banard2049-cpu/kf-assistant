@@ -42,6 +42,11 @@ KF_Unified_Assistant_Android/app/src/main/res/drawable-nodpi/
 *.aab
 *.apks
 *.idsig
+*.sha256
+*.sha256.txt
+
+# Bundled portable runtime
+KF_Unified_Assistant/runtime/
 
 # Android / Gradle output and local toolchains
 .gradle/
