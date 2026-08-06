@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#761923">
+  <title>KF 一体化战役管理</title>
+  <link rel="stylesheet" href="/styles.css?v=16">
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <main id="authView" class="auth-shell">
+    <section class="auth-card">
+      <div class="crest" aria-hidden="true">♜</div>
+      <p class="eyebrow">KINGDOMS FORLORN</p>
+      <h1>KF 一体化战役管理</h1>
+      <p class="subtle">骑士、地图和战斗，共用一份战役档案。</p>
+      <form id="authForm">
+        <label>用户名<input id="authUsername" required minlength="3" maxlength="32" autocomplete="username"></label>
+        <label>密码<input id="authPassword" type="password" required minlength="8" maxlength="128" autocomplete="current-password"></label>
+        <button class="primary" id="authSubmit" type="submit">登录</button>
+      </form>
+      <button class="text-button" id="authMode" type="button">没有账号？注册</button>
+      <p id="authHint" class="form-hint"></p>
+    </section>
+  </main>
+
+  <div id="appView" class="app hidden">
+    <header class="topbar">
+      <button id="menuButton" class="icon-button" aria-label="打开档案列表">☰</button>
+      <div><span class="brand">KINGDOMS FORLORN</span><strong>KF 一体化战役管理</strong></div>
+      <div class="top-actions">
+        <span id="saveState" class="save-state">已保存</span>
+        <button id="overviewButton" class="button">多表总览</button>
+        <button id="printButton" class="button">打印</button>
+        <button id="logoutButton" class="button">退出</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-head"><h2>战役中心</h2><button id="closeSidebar" class="icon-button" aria-label="关闭">×</button></div>
+      <label class="campaign-picker">当前战役<select id="campaignSelect"></select></label>
+      <div class="campaign-actions"><button id="newCampaign" class="button">＋ 战役</button><button id="renameCampaign" class="button">重命名</button><button id="copyCampaign" class="button">复制</button><button id="trashCampaign" class="danger">回收</button><button id="restoreCampaign" class="button">恢复战役</button></div>
+      <nav class="module-nav">
+        <button class="button wide" data-module="overview">骑士团与怪物池</button>
+        <a class="button wide" href="/modules/map/">地图深入</a>
+        <a class="button wide" href="/modules/encounter/">遭遇战</a>
+        <a class="button wide" href="/modules/aibp/">AI / BP</a>
+      </nav>
+      <details id="permanentStoryMarkers" class="permanent-story-markers">
+        <summary><span><strong>永久故事标记</strong><small>跨战役共享</small></span><span id="permanentStoryMarkerCount" class="story-marker-count">0 / 38</span></summary>
+        <p>对应规则书故事表中的方框；勾选状态随账号和导出存档保存。</p>
+        <div id="permanentStoryMarkerGroups" class="permanent-story-marker-groups"></div>
+      </details>
+      <details id="accountPasswords" class="permanent-story-markers account-passwords">
+        <summary><span><strong>密码记录</strong><small>跨战役共享</small></span><span id="passwordRecordCount" class="story-marker-count">0</span></summary>
+        <p>密码属于当前账号，不与任何骑士绑定。点击格子切换符号。</p>
+        <div id="passwordRecords" class="password-records"></div>
+        <button id="addPasswordRecord" type="button" class="button wide">＋ 添加密码</button>
+      </details>
+      <button id="newSheet" class="primary wide">＋ 新建骑士</button>
+      <input id="searchSheets" type="search" placeholder="搜索档案…" aria-label="搜索档案">
+      <div id="sheetList" class="sheet-list"></div>
+      <details class="trash-panel"><summary>回收站</summary><div id="trashList" class="sheet-list"></div></details>
+      <div class="sidebar-tools">
+        <button id="exportAll" class="button">导出存档</button>
+        <label class="button file-button">导入存档<input id="importFile" type="file" accept=".json,application/json"></label>
+      </div>
+      <p class="sidebar-user">当前用户：<span id="currentUser"></span></p>
+    </aside>
+    <div id="scrim" class="scrim"></div>
+
+    <main class="workspace">
+      <section id="overview" class="overview hidden">
+        <header class="overview-head"><div><p class="eyebrow">KNIGHT COMPANY</p><h1>骑士团总览</h1></div><button id="overviewNew" class="primary">＋ 新建骑士</button></header>
+        <div id="overviewGrid" class="overview-grid"></div>
+        <section id="encounterBuilder" class="encounter-builder">
+          <div class="encounter-heading">
+            <div><p class="eyebrow">ENCOUNTER POOL</p><h2>主游戏与怪物池</h2></div>
+            <p id="talePosition" class="tale-position">请选择主游戏骑士</p>
+          </div>
+          <div class="encounter-controls">
+            <label>主游戏骑士<select id="leaderSelect"></select></label>
+            <label>当前王国<select id="kingdomSelect"><option value="sunken">沉没王国</option><option value="stone">石之公国</option></select></label>
+            <label>王国区域数<output id="districtCount">沉没王国：3</output></label>
+          </div>
+          <section class="party-builder">
+            <div class="party-heading">
+              <div><strong>本次出征队伍</strong><small>规则默认 4 席；主游戏骑士固定出战，其余骑士由你选择。</small></div>
+              <span id="partySummary" class="party-summary"></span>
+            </div>
+            <div id="partyKnights" class="party-knights"></div>
+            <div id="squireSlots" class="squire-slots"></div>
+          </section>
+          <p class="rule-note">自动读取主骑士“你的故事”中最低标记行，并按 TTS 比对卡同一横行生成怪物与等级。</p>
+          <details class="optional-rule-card">
+            <summary><label><input id="devourDragonRule" type="checkbox"> 启用“贪食巨龙来了！”可选规则</label></summary>
+            <p>随机抽取时将特殊卡洗入遭遇战怪物卡组。若抽到，立刻补抽一张怪物；抽足区域怪物后，随机绑定其中一只非国王、非巨龙怪物。与该怪物冲突时改在“巨兽之腹”中进行。</p>
+          </details>
+          <div id="autoPoolPreview" class="auto-pool-preview"></div>
+          <div class="pool-actions"><button id="saveGameSettings" class="button" type="button">保存主游戏设置</button><button id="generatePool" class="primary" type="button">随机抽取怪物池</button><button id="choosePool" class="button" type="button">自选怪物池</button><button id="undoPool" class="button" type="button">撤销上次重抽</button></div>
+          <div id="monsterPool" class="monster-pool hidden"></div>
+        </section>
+      </section>
+      <section id="mapModule" class="game-module hidden">
+        <header class="module-head"><div><p class="eyebrow">DELVE MAP</p><h1>地图深入</h1></div><button id="advanceMapRound" class="primary">下一深入轮</button></header>
+        <div class="module-grid">
+          <section class="game-panel span-two"><h2>区域怪物轮</h2><div id="districtWheel" class="district-wheel"></div></section>
+          <section class="game-panel"><h2>当前位置</h2><label>板块编号<input id="partyTile" placeholder="例如 SK_Tile_S:13"></label><div class="stat-controls"><label>地图轮次<input id="mapRound" type="number" min="0"></label></div></section>
+          <section class="game-panel"><h2>地图标记</h2><div id="mapMarkers" class="tag-list"></div><button id="addMarker" class="button">＋ 添加标记</button></section>
+          <section class="game-panel span-two"><h2>TTS 王国板块</h2><div class="tile-picker"><select id="mapTileSelect"></select><button id="revealMapTile" class="primary">加入地图</button></div><div id="mapTiles" class="map-tiles"></div></section>
+        </div>
+      </section>
+      <section id="encounterModule" class="game-module hidden">
+        <header class="module-head"><div><p class="eyebrow">ENCOUNTER</p><h1>遭遇战</h1></div><span id="encounterStatus" class="module-badge"></span></header>
+        <div class="module-grid"><section class="game-panel"><h2>遭遇设置</h2><label>怪物<select id="encounterMonster"></select></label><label>等级<select id="encounterLevel"><option>1</option><option>2</option><option>3</option><option>4</option></select></label><label>类型<select id="encounterType"><option value="normal">普通遭遇</option><option value="ambush">伏击</option><option value="special">特殊遭遇</option></select></label><button id="startEncounter" class="primary wide">开始遭遇</button></section><section class="game-panel"><h2>当前遭遇</h2><div id="activeEncounter"></div><label>伤亡<input id="encounterCasualties" maxlength="200" placeholder="无 / 骑士名"></label><label>奖励<input id="encounterRewards" maxlength="500" placeholder="战利品、旁证等"></label><div class="encounter-results"><button data-result="victory" class="primary">胜利</button><button data-result="defeat" class="danger">失败</button><button data-result="retreat" class="button">撤退</button></div></section><section class="game-panel span-two"><h2>遭遇版图与结算</h2><textarea id="encounterBoardNotes" rows="8" placeholder="记录放置、攻击池、擦伤、机会和特殊结算"></textarea></section></div>
+      </section>
+      <section id="aibpModule" class="game-module hidden">
+        <header class="module-head"><div><p class="eyebrow">MONSTER AUTOMATION</p><h1>AI / BP 辅助</h1></div><span id="aibpMonster" class="module-badge"></span></header>
+        <div class="module-grid"><section class="game-panel"><h2>AI 牌库</h2><div id="aiDeck" class="card-stack"></div><button id="drawAI" class="primary">抽取 AI</button><button id="discardAI" class="button">弃置当前牌</button></section><section class="game-panel"><h2>BP 与损伤</h2><div id="bpDeck" class="card-stack"></div><button id="drawBP" class="primary">揭示 BP</button><button id="addWound" class="button">记录损伤</button><label>晋升等级<input id="promotionLevel" type="number" min="0" max="4"></label><button id="undoAIBP" class="button">撤销上一步</button></section><section class="game-panel span-two"><h2>操作记录</h2><div id="aibpHistory" class="event-log"></div></section></div>
+      </section>
+      <section id="emptyState" class="empty-state">
+        <div class="crest">♜</div><h2>选择或新建一张骑士记录表</h2>
+      </section>
+      <form id="sheetForm" class="sheet hidden" autocomplete="off">
+        <div class="sheet-toolbar no-print">
+          <input id="sheetTitle" class="title-input" maxlength="80" aria-label="档案名称">
+          <div class="toolbar-actions">
+            <span class="shared-sheet-badge">跨战役共享</span>
+            <button id="deleteSheet" type="button" class="danger">删除</button>
+          </div>
+        </div>
+        <div class="paper">
+          <div class="record-grid">
+            <div class="logo record-logo">
+              <img src="assets/branding/kingdoms-forlorn-logo.png" alt="Kingdoms Forlorn">
+            </div>
+
+            <section class="identity record-identity">
+              <h1>骑士记录表</h1>
+              <label>骑士 <input id="sheetKnightIdentity" readonly aria-readonly="true"></label>
+              <label>玩家 <input data-path="player" maxlength="80"></label>
+            </section>
+
+            <section class="graal record-graal">
+              <img class="graal-icon" src="assets/sheet-icons/graal.png" alt="" aria-hidden="true">
+              <div><strong>圣杯的叹息</strong><small>SIGH OF THE GRAAL</small><input data-path="sigh" type="number" min="0" max="99999"></div>
+            </section>
+
+            <div class="resource-row record-resources">
+              <label class="resource-item"><span class="resource-name">灾祸 <small>BANE</small></span><img class="resource-icon" src="assets/sheet-icons/bane.png" alt="" aria-hidden="true"><input data-path="bane" type="number" min="0" max="99999"></label>
+              <label class="resource-item"><span class="resource-name">金钱 <small>GOLD</small></span><img class="resource-icon" src="assets/sheet-icons/gold.png" alt="" aria-hidden="true"><input data-path="gold" type="number" min="0" max="99999"></label>
+              <label class="resource-item"><span class="resource-name">旁证 <small>LEADS</small></span><img class="resource-icon" src="assets/sheet-icons/leads.png" alt="" aria-hidden="true"><input data-path="leads" type="number" min="0" max="99999"></label>
+            </div>
+
+            <section class="panel virtues-panel">
+              <h2>美德 <small>VIRTUES</small></h2>
+              <div id="virtues"></div>
+            </section>
+
+            <section class="panel notes-panel">
+              <h2>恩惠、计数标记和笔记</h2>
+              <textarea data-path="notes" rows="12" maxlength="5000" placeholder="记录恩惠、计数标记、苦痛与其他必要事项…"></textarea>
+            </section>
+
+            <section class="panel rapport-panel">
+              <h2>亲和力 <small>RAPPORT</small></h2>
+              <div class="rapport-body">
+                <div id="rapport"></div>
+                <button id="addRapport" class="button no-print" type="button">＋ 增加亲和力</button>
+              </div>
+            </section>
+
+            <div class="collection-grid record-collections">
+              <section class="panel armory-panel"><h2>武库</h2><div id="armory"></div><button type="button" class="button no-print add-list" data-list="armory">＋ 添加</button></section>
+              <section class="panel saints-panel"><h2>圣徒</h2><div id="saints"></div><button type="button" class="button no-print add-list" data-list="saints">＋ 添加</button></section>
+              <section class="panel mercenaries-panel"><h2>佣兵</h2><div id="mercenaries"></div><button type="button" class="button no-print add-list" data-list="mercenaries">＋ 添加</button></section>
+            </div>
+
+            <aside class="story-column">
+              <section class="panel story-panel">
+                <h2>你的故事 <small>YOUR TALE</small></h2>
+                <div class="story-prologue">
+                  <strong>序章 <small>PROLOGUE</small></strong>
+                  <label class="box-check" title="序章">
+                    <input data-path="prologue" type="checkbox">
+                    <span></span>
+                  </label>
+                </div>
+                <div id="story"></div>
+              </section>
+              <div class="story-tracking">
+                <section class="panel choices-panel">
+                  <div class="panel-title"><h2>骑士抉择矩阵</h2><button id="matrixLock" class="button no-print" type="button">解锁矩阵</button></div>
+                  <div id="choices" class="matrix locked"></div>
+                </section>
+                <section class="panel successes-panel">
+                  <h2>成功的调查</h2><div id="successes" class="matrix successes"></div>
+                </section>
+              </div>
+              <label class="first-death"><input data-path="firstDeath" type="checkbox"><span>首次死亡</span></label>
+            </aside>
+          </div>
+        </div>
+      </form>
+    </main>
+  </div>
+  <dialog id="newKnightDialog" class="knight-dialog">
+    <form id="newKnightForm" method="dialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">CHOOSE YOUR KNIGHT</p><h2>选择骑士</h2></div>
+        <button id="closeKnightDialog" class="icon-button" type="button" aria-label="关闭">×</button>
+      </div>
+      <p class="rule-note">每名骑士只有一份用户级共享档案，可在所有战役中使用。</p>
+      <fieldset class="knight-choice-field">
+        <legend>选择骑士</legend>
+        <input id="newKnightIdentity" type="hidden">
+        <div id="newKnightGallery" class="knight-gallery" role="radiogroup" aria-label="骑士"></div>
+      </fieldset>
+      <label>档案名称<input id="newKnightTitle" maxlength="80" placeholder="默认使用骑士名"></label>
+      <label>玩家<input id="newKnightPlayer" maxlength="80" placeholder="可稍后填写"></label>
+      <div class="dialog-actions">
+        <button id="cancelKnightDialog" class="button" type="button">取消</button>
+        <button class="primary" type="submit">建立骑士档案</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog id="squireDialog" class="knight-dialog squire-dialog">
+    <div class="squire-dialog-body">
+      <div class="dialog-head">
+        <div><p class="eyebrow">CHOOSE YOUR SQUIRE</p><h2>选择侍从</h2></div>
+        <button id="closeSquireDialog" class="icon-button" type="button" aria-label="关闭">×</button>
+      </div>
+      <p class="rule-note">侍从是独立的补位角色；已在其他席位出战的侍从不可重复选择。</p>
+      <div id="squireGallery" class="knight-gallery squire-gallery" role="radiogroup" aria-label="侍从"></div>
+    </div>
+  </dialog>
+  <dialog id="monsterPoolDialog" class="knight-dialog monster-pool-dialog">
+    <form id="monsterPoolForm">
+      <div class="dialog-head">
+        <div><p class="eyebrow">CHOOSE MONSTERS</p><h2>自选怪物池</h2></div>
+        <button id="closeMonsterPoolDialog" class="icon-button" type="button" aria-label="关闭">×</button>
+      </div>
+      <p class="rule-note">为每个区域选择一只不同的怪物；可选怪物及等级由当前故事行决定。</p>
+      <div id="monsterPoolChoices" class="monster-pool-choices"></div>
+      <div class="dialog-actions">
+        <button id="cancelMonsterPoolDialog" class="button" type="button">取消</button>
+        <button class="primary" type="submit">保存自选怪物池</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="/data/monster-data.js?v=1"></script>
+  <script src="/data/level-config.js?v=1"></script>
+  <script src="/data/encounter-data.js?v=1"></script>
+  <script src="/modules/map/data/map-data.js?v=2"></script>
+  <script type="module" src="/app.js?v=25"></script>
+</body>
+</html>

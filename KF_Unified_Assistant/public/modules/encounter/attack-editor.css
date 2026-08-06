@@ -1,0 +1,48 @@
+.audit-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 1rem; padding: 1rem; }
+.audit-sidebar { max-height: calc(100vh - 105px); overflow: auto; }
+.audit-monster { width: 100%; display: flex; justify-content: space-between; margin-bottom: .3rem; text-align: left; }
+.audit-monster.active { border-color: var(--gold); background: #3a311d; }
+.audit-main { display: grid; grid-template-columns: minmax(250px, 390px) minmax(420px, 1fr); gap: 1rem; align-items: start; }
+.audit-card { position: sticky; top: 1rem; }
+.audit-card .crop-card { width: min(100%, 360px); margin: auto; }
+.audit-controls { display: grid; gap: .8rem; }
+.audit-levels { display: flex; gap: .4rem; flex-wrap: wrap; }
+.audit-levels button.active { border-color: var(--gold); background: #3a311d; }
+.attack-grid { --audit-size: 13; display: grid; grid-template-columns: repeat(var(--audit-size), 32px); grid-template-rows: repeat(var(--audit-size), 32px); gap: 2px; justify-content: center; padding: 1rem; overflow: auto; background: #0b0c0b; border-radius: 10px; }
+.attack-cell { padding: 0; min-width: 0; border: 1px solid #ffffff20; background: #91876d55; color: #fff; font-size: .62rem; }
+.attack-cell.footprint { background: #191919; border-color: #e48a7c; }
+.attack-cell.attack { background: #b82f4dcc; border-color: #ff879b; box-shadow: inset 0 0 10px #ff4566; }
+.attack-cell.origin { outline: 2px solid #fff; }
+.audit-summary { display: flex; gap: .6rem; flex-wrap: wrap; }
+.audit-summary span { padding: .35rem .55rem; border-radius: 999px; background: #292b27; border: 1px solid var(--line); }
+.button-link { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+@media (max-width: 900px) {
+  .audit-layout, .audit-main { grid-template-columns: 1fr; }
+  .audit-sidebar { max-height: 260px; }
+  .audit-card { position: static; }
+  .attack-grid { grid-template-columns: repeat(var(--audit-size), 26px); grid-template-rows: repeat(var(--audit-size), 26px); }
+}
+
+/* Unified assistant visual pass for the card-audit page. */
+.audit-layout {
+  background:
+    radial-gradient(circle at 50% 0%, #58101638, transparent 34rem),
+    linear-gradient(145deg, #211d1b, #393330);
+}
+.audit-monster.active,
+.audit-levels button.active {
+  background: #581016;
+  border-color: #581016;
+  color: #fff;
+}
+.attack-grid {
+  border: 1px solid #5c5148;
+  border-radius: 0;
+  background: #17140f;
+}
+.audit-summary span {
+  border-color: #4b423c;
+  border-radius: 0;
+  background: #24201e;
+  color: #f4eadb;
+}

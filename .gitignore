@@ -1,0 +1,70 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Runtime data
+data/
+backups/
+logs/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log
+
+# Image resources are intentionally not published
+KF_Unified_Assistant/public/assets/
+KF_Unified_Assistant/public/modules/*/assets/
+KF_Unified_Assistant_Android/app/src/main/res/drawable-nodpi/
+*.png
+*.jpg
+*.jpeg
+*.jfif
+*.gif
+*.webp
+*.avif
+*.bmp
+*.ico
+*.svg
+*.tif
+*.tiff
+*.heic
+*.heif
+*.psd
+*.xcf
+
+# Archives and generated packages
+*.zip
+*.7z
+*.rar
+*.apk
+*.aab
+*.apks
+*.idsig
+
+# Android / Gradle output and local toolchains
+.gradle/
+.build-tools/
+**/build/
+dist/
+local.properties
+*.jks
+*.keystore
+
+# Generated Android web bundle
+KF_Unified_Assistant_Android/app/src/main/assets/web/
+
+# Local caches and browser preview profiles
+.cache/
+.preview-*/
+__pycache__/
+*.py[cod]
+
+# Editor and OS metadata
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+Desktop.ini

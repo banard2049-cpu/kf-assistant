@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KF 地图深入主持器</title>
+  <link rel="stylesheet" href="styles.css?v=59">
+  <link rel="stylesheet" href="../module-bridge.css">
+</head>
+<body data-kf-module="map" data-storage-key="kf-map-host-v8" data-original-app="app.js?v=99">
+  <header class="app-header">
+    <div class="app-identity">
+      <div class="eyebrow">KINGDOM FORLORN</div>
+      <h1>地图深入主持器</h1>
+    </div>
+    <div class="toolbar app-commands">
+      <select id="kingdomSelect" aria-label="王国">
+        <option value="SK">Sunken Kingdom</option>
+        <option value="POS">Principality of Stone</option>
+      </select>
+      <button id="undoButton" class="secondary">撤销一步</button>
+      <button id="exportButton" class="secondary">导出存档</button>
+      <label class="button secondary">导入存档<input id="importInput" type="file" accept=".json" hidden></label>
+      <button id="resetButton" class="danger">重置地图</button>
+    </div>
+  </header>
+
+  <nav id="stepNav" class="step-nav"></nav>
+  <main id="app"></main>
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="data/map-data.js?v=6"></script>
+  <script src="fog-rules.js?v=6"></script>
+  <script src="mercenary-rules.js?v=2"></script>
+  <script src="../module-bridge.js?v=12" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=99';document.body.append(app)"></script>
+</body>
+</html>

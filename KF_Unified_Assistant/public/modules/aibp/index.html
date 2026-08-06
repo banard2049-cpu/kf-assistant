@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KF AI/BP 辅助器</title>
+  <link rel="stylesheet" href="styles.css?v=55">
+  <link rel="stylesheet" href="../module-bridge.css">
+</head>
+<body data-kf-module="aibp" data-storage-key="kf-aibp-assistant-v1" data-original-app="app.js?v=99">
+  <header class="topbar">
+    <div class="topbar-title-group">
+      <button class="directory-header-toggle" id="monsterDirectoryToggle" type="button"
+        aria-label="展开怪物目录" aria-expanded="false" title="展开怪物目录">☰</button>
+      <div><span class="eyebrow">KINGDOMS FORLORN</span><h1>KF AI/BP 辅助器</h1></div>
+    </div>
+    <div class="top-actions">
+      <span id="saveStatus" class="status">已保存</span>
+      <button class="button ghost" id="newBattle">新建冲突</button>
+      <button class="button ghost" id="exportSave">导出</button>
+      <button class="button ghost" id="importSave">导入</button>
+      <button class="button danger ghost" id="resetBattle">重置</button>
+      <input id="importFile" type="file" accept=".json,application/json" hidden>
+    </div>
+  </header>
+  <main id="app"></main>
+  <div id="toast" class="toast" hidden></div>
+  <div id="modal" class="modal" hidden></div>
+  <script src="data/monster-data.js?v=2"></script>
+  <script src="data/localized-traits.js?v=3"></script>
+  <script src="data/localized-sheets.js"></script>
+  <script src="data/level-config.js?v=2"></script>
+  <script src="data/mob-activation-config.js"></script>
+  <script src="data/boss-rule-config.js?v=4"></script>
+  <script src="data/conflict-setup-data.js?v=5"></script>
+  <script src="../module-bridge.js?v=12" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=99';document.body.append(app)"></script>
+</body>
+</html>

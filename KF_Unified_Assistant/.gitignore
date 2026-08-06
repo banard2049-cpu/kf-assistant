@@ -1,0 +1,6 @@
+data/
+backups/
+logs/
+runtime/
+*.log
+.env

@@ -1,0 +1,48 @@
+.unified-module-bar{
+  position:sticky;top:0;z-index:10000;display:flex;align-items:center;gap:8px;
+  min-height:46px;padding:7px 12px;background:#171311;color:#f4eadb;
+  border-bottom:2px solid #913421;box-shadow:0 3px 12px #0006;
+  font:14px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif
+}
+.unified-module-bar strong{margin-right:auto;white-space:nowrap}
+.unified-module-bar a{
+  color:#e7d9bf;text-decoration:none;padding:7px 9px;border:1px solid #6f604e;
+  border-radius:4px;background:#28211d
+}
+.unified-module-bar a:hover,.unified-module-bar a.active{color:#fff;background:#913421;border-color:#b85a40}
+.unified-module-bar .bridge-status{font-size:12px;color:#c7b89d;white-space:nowrap}
+body[data-kf-module="map"] #exportButton,
+body[data-kf-module="map"] label.button.secondary,
+body[data-kf-module="encounter"] #exportSave,
+body[data-kf-module="encounter"] #importSave,
+body[data-kf-module="aibp"] #exportSave,
+body[data-kf-module="aibp"] #importSave{display:none!important}
+@media(max-width:780px){
+  .unified-module-bar{position:relative;flex-wrap:wrap}
+  .unified-module-bar strong{width:100%}
+  .unified-module-bar a{font-size:12px;padding:6px}
+}
+
+/* Match the unified assistant shell. */
+.unified-module-bar{
+  min-height:46px;
+  background:#211d1b;
+  color:#f8f0df;
+  border-bottom:1px solid #6f604e;
+  box-shadow:0 8px 22px #180f0c55;
+  font-family:"Noto Serif SC","Songti SC","Microsoft YaHei",serif;
+}
+.unified-module-bar strong{font-family:Georgia,serif;letter-spacing:.08em}
+.unified-module-bar a{
+  border-color:#5c5148;
+  border-radius:0;
+  background:#24201e;
+  color:#f8f0df;
+}
+.unified-module-bar a:hover,
+.unified-module-bar a.active{
+  background:#581016;
+  border-color:#581016;
+  color:#fff;
+}
+.unified-module-bar .bridge-status{color:#c7b7a0}

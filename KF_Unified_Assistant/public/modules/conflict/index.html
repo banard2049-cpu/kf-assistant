@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url=/modules/aibp/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151512">
+  <title>KF 冲突设置</title>
+  <link rel="stylesheet" href="styles.css?v=1">
+  <link rel="stylesheet" href="../module-bridge.css?v=1">
+</head>
+<body data-kf-module="conflict" data-storage-key="kf-conflict-setup-v1" data-original-app="app.js?v=1">
+  <script>window.location.replace("/modules/aibp/");</script>
+  <header class="topbar">
+    <div>
+      <span class="eyebrow">KINGDOMS FORLORN · CLASH SETUP</span>
+      <h1>冲突设置</h1>
+    </div>
+    <div class="top-actions">
+      <label class="field compact">王国
+        <select id="kingdomFilter">
+          <option value="all">全部</option>
+          <option value="sunken">沉没王国</option>
+          <option value="stone">石之公国</option>
+        </select>
+      </label>
+      <label class="field compact">怪物等级
+        <select id="monsterLevel">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <button id="resetChecks" class="button" type="button">重置勾选</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="monster-rail" aria-label="怪物列表">
+      <div class="rail-head">
+        <div><span class="eyebrow">MONSTERS</span><h2>选择怪物</h2></div>
+        <span id="resultCount" class="count"></span>
+      </div>
+      <label class="search-wrap">
+        <span class="sr-only">搜索怪物</span>
+        <input id="monsterSearch" type="search" placeholder="搜索中文或英文名">
+      </label>
+      <div id="monsterList" class="monster-list"></div>
+    </aside>
+
+    <section id="setupView" class="setup-view" aria-live="polite"></section>
+  </main>
+
+  <dialog id="referenceDialog" class="reference-dialog">
+    <div class="dialog-bar">
+      <div><strong id="dialogTitle"></strong><span id="dialogPage"></span></div>
+      <div class="dialog-actions">
+        <button id="previousPage" class="icon-button" type="button" title="上一页" aria-label="上一页">‹</button>
+        <button id="nextPage" class="icon-button" type="button" title="下一页" aria-label="下一页">›</button>
+        <button id="closeDialog" class="icon-button" type="button" title="关闭" aria-label="关闭">×</button>
+      </div>
+    </div>
+    <div class="dialog-image-wrap"><img id="dialogImage" alt=""></div>
+  </dialog>
+
+  <script src="data.js?v=1"></script>
+  <script src="../module-bridge.js?v=9"></script>
+</body>
+</html>
