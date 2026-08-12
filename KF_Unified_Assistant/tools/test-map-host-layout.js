@@ -32,7 +32,7 @@ assert.match(stylesSource, /@media \(max-width: 1179px\) \{[\s\S]*?\.history-pan
   "the pinned controls must clear the sticky navigation in single-column layouts");
 assert.match(stylesSource, /@media \(max-width: 759px\) \{[\s\S]*?\.history-panel \{ top: 52px; \}/,
   "the pinned controls must clear the compact mobile navigation");
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(indexSource, /app\.js\?v=100/);
 assert.match(indexSource, /styles\.css\?v=59/);
 
 console.log("map host layout: priority, recent history, flow control and host tools order verified");
