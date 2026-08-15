@@ -44,6 +44,6 @@ assert.match(appSource, /杂兵版图的 1、15 格不能放置棋子/,
 assert.match(stylesSource, /\.space\.unavailable \{/,
   "blocked mob spaces have a stable visual treatment");
 assert.match(indexSource, /styles\.css\?v=14/);
-assert.match(indexSource, /app\.js\?v=24/);
+assert.match(indexSource, /app\.js\?v=26/);
 
 console.log("encounter mob board: spaces 1 and 15 reject all pieces");

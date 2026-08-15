@@ -89,7 +89,7 @@ assert.match(styleSource, /\.track-note-editor button \{[\s\S]*?white-space: now
 assert.match(styleSource, /button\.delve-track-cell \.track-cell-note \{/);
 assert.match(styleSource, /grid-template-rows: 20px 20px 11px;/, "track cell height must remain stable with notes");
 assert.match(styleSource, /grid-template-columns: minmax\(340px, 10fr\) minmax\(240px, 6fr\) minmax\(620px, 17fr\);/, "curse must be wider than before while time still receives the most track space");
-assert.match(indexSource, /styles\.css\?v=59/);
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(indexSource, /styles\.css\?v=63/);
+assert.match(indexSource, /app\.js\?v=110/);
 
 console.log("map track notes: normalization, persistence, controls and styling verified");

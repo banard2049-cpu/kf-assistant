@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KF 地图深入主持器</title>
-  <link rel="stylesheet" href="styles.css?v=59">
+  <link rel="stylesheet" href="styles.css?v=63">
   <link rel="stylesheet" href="../module-bridge.css">
 </head>
-<body data-kf-module="map" data-storage-key="kf-map-host-v8" data-original-app="app.js?v=100">
+<body data-kf-module="map" data-storage-key="kf-map-host-v8" data-original-app="app.js?v=110">
   <header class="app-header">
     <div class="app-identity">
       <div class="eyebrow">KINGDOM FORLORN</div>
@@ -18,9 +18,13 @@
         <option value="SK">Sunken Kingdom</option>
         <option value="POS">Principality of Stone</option>
       </select>
+      <button id="managePartyButton" class="secondary">骑士 / 侍从管理</button>
+      <button id="openOutpostButton" class="secondary">前哨阶段</button>
       <button id="undoButton" class="secondary">撤销一步</button>
       <button id="exportButton" class="secondary">导出存档</button>
       <label class="button secondary">导入存档<input id="importInput" type="file" accept=".json" hidden></label>
+      <button id="recordMapScavenge" class="secondary">记录搜刮</button>
+      <button id="failExpedition" class="danger">远征失败 → 收获</button>
       <button id="resetButton" class="danger">重置地图</button>
     </div>
   </header>
@@ -28,10 +32,25 @@
   <nav id="stepNav" class="step-nav"></nav>
   <main id="app"></main>
   <div id="toast" class="toast" hidden></div>
+  <dialog id="mapScavengeDialog" class="map-scavenge-dialog">
+    <form id="mapScavengeForm" method="dialog">
+      <header><div class="eyebrow">LOOT DECK</div><h2>记录深入阶段搜刮</h2></header>
+      <p>这里只把规则或故事刚刚给予的搜刮加入本次远征；遭遇与冲突会在各自结算页自动记录。</p>
+      <label>搜刮类型<select id="mapScavengeKind">
+        <option value="choice">普通搜刮（王国装备 / 消耗品 / 改装中选择）</option>
+        <option value="kingdom-gear">指定王国装备战利品</option>
+        <option value="consumable-gear">指定消耗品战利品</option>
+        <option value="upgrade">指定改装战利品</option>
+      </select></label>
+      <label>数量<input id="mapScavengeCount" type="number" min="1" max="16" value="1" required></label>
+      <div class="map-scavenge-actions"><button type="button" class="secondary" data-map-scavenge-cancel>取消</button><button type="submit" class="primary">加入战利品卡组</button></div>
+    </form>
+  </dialog>
 
   <script src="data/map-data.js?v=6"></script>
   <script src="fog-rules.js?v=6"></script>
-  <script src="mercenary-rules.js?v=2"></script>
-  <script src="../module-bridge.js?v=12" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=100';document.body.append(app)"></script>
+  <script src="../../data/character-runtime-data.js?v=9"></script>
+  <script src="mercenary-rules.js?v=4"></script>
+  <script src="../module-bridge.js?v=17" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=110';document.body.append(app)"></script>
 </body>
 </html>

@@ -28,7 +28,7 @@ const expected = [
   ["martial", "武艺", "assets/tokens/红-token.png?v=1"],
   ["errant", "游侠", "assets/tokens/绿-token.png?v=1"],
   ["historic", "历史", "assets/tokens/黄-token.png?v=1"],
-  ["mystic", "神秘", "assets/tokens/6-token.png?v=1"]
+  ["mystic", "神秘", "assets/tokens/蓝-token.png?v=1"]
 ];
 
 for (const [id, name, icon] of expected) {

@@ -33,6 +33,7 @@ KF_Unified_Assistant_Android/app/src/main/res/drawable-nodpi/
 *.tif
 *.tiff
 *.heic
+
 *.heif
 *.psd
 *.xcf
@@ -68,6 +69,7 @@ KF_Unified_Assistant_Android/app/src/main/assets/web/
 # Local caches and browser preview profiles
 .cache/
 .preview-*/
+KF_Unified_Assistant/.tmp-*/
 __pycache__/
 *.py[cod]
 

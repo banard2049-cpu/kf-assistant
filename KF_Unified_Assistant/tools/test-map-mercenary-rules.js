@@ -15,6 +15,10 @@ assert.deepEqual(rules.MAGES.map(card => [card.id, card.level, card.value]), [
   ["mage-2", 2, 5],
   ["mage-3", 3, 9]
 ]);
+assert.deepEqual(rules.ROGUES.map(card => card.catalogId), ["mercenary:26609", "mercenary:26610", "mercenary:26611"],
+  "map Rogue rules must join the canonical Outpost catalog IDs");
+assert.deepEqual(rules.MAGES.map(card => card.catalogId), ["mercenary:26606", "mercenary:26607", "mercenary:26608"],
+  "map Mage rules must join the canonical Outpost catalog IDs");
 assert.equal(rules.CARDS.length, 6);
 assert.ok(rules.ROGUES.every(card => card.role === "rogue"));
 assert.ok(rules.MAGES.every(card => card.role === "mage"));
@@ -31,24 +35,10 @@ assert.ok(
   "mercenary rules must load before the bridge starts app.js"
 );
 
-const migrated = rules.normalizeState(null);
-assert.deepEqual(migrated, { active: [], discard: [], pendingAction: null });
-
-const lifecycle = rules.createState();
-assert.equal(rules.hire(lifecycle, "rogue-2"), true);
-assert.equal(rules.hire(lifecycle, "rogue-2"), false, "the same physical card cannot be hired twice");
-assert.deepEqual(rules.advance(lifecycle, "rogue-2"), { cardId: "rogue-2", from: "A", to: "B" });
-assert.deepEqual(rules.advance(lifecycle, "rogue-2"), { cardId: "rogue-2", from: "B", to: "discard" });
-assert.deepEqual(lifecycle.active, []);
-assert.deepEqual(lifecycle.discard, ["rogue-2"]);
-assert.equal(rules.hire(lifecycle, "rogue-2"), false, "discarded cards remain unavailable");
-assert.equal(rules.advance(lifecycle, "rogue-2"), null, "a discarded card cannot resolve again");
-
-const mageLifecycle = rules.createState();
-assert.equal(rules.hire(mageLifecycle, "mage-3"), true);
-assert.deepEqual(rules.advance(mageLifecycle, "mage-3"), { cardId: "mage-3", from: "A", to: "B" });
-assert.deepEqual(rules.advance(mageLifecycle, "mage-3"), { cardId: "mage-3", from: "B", to: "discard" });
-assert.deepEqual(mageLifecycle, { active: [], discard: ["mage-3"], pendingAction: null });
+const migrated = rules.normalizeState(null, []);
+assert.deepEqual(migrated, { usage: {}, pendingAction: null, updatedAt: 0 });
+assert.equal(Object.hasOwn(rules, "hire"), false, "map rules must not own Outpost hiring");
+assert.equal(Object.hasOwn(rules, "availableCards"), false, "map rules must not expose a competing market catalog");
 
 const mageContext = {
   currentTileId: "current",
@@ -67,6 +57,8 @@ const mageContext = {
 assert.deepEqual(rules.mageTargetIds("mage-1", mageContext), ["adjacent", "adjacent-poi"]);
 assert.deepEqual(rules.mageTargetIds("mage-2", mageContext), ["adjacent", "adjacent-poi", "poi"]);
 assert.deepEqual(rules.mageTargetIds("mage-3", mageContext), ["adjacent-poi", "poi"]);
+assert.deepEqual(rules.mageTargetIds("mercenary:26606", mageContext), ["adjacent", "adjacent-poi"],
+  "map actions must accept the canonical Outpost mercenary ID");
 assert.deepEqual(rules.mageTargetIds("rogue-1", mageContext), []);
 
 const levelOne = rules.redrawExploration("ignored", ["replacement", "next"]);
@@ -124,28 +116,22 @@ assert.deepEqual(rules.encounterSkip("rogue-3", "destination", []), {
 });
 
 const normalized = rules.normalizeState({
-  active: [
-    { cardId: "rogue-1", face: "B" },
-    { cardId: "rogue-1", face: "A" },
-    { cardId: "unknown", face: "A" }
-  ],
-  discard: ["rogue-1", "rogue-2", "rogue-2", "unknown"],
-  pendingAction: { kind: "exploration-choice", cardId: "rogue-3", drawn: ["a", "b", "c"] }
-});
+  usage: {
+    "mercenary:26609": { face: "B", status: "active" },
+    "mercenary:26610": { face: "A", status: "discarded" },
+    "mercenary:not-hired": { face: "B", status: "active" },
+  },
+  pendingAction: null,
+}, ["mercenary:26609", "mercenary:26610"]);
 assert.deepEqual(normalized, {
-  active: [{ cardId: "rogue-1", face: "B" }],
-  discard: ["rogue-2"],
-  pendingAction: null
+  usage: {
+    "mercenary:26609": { face: "B", status: "active" },
+    "mercenary:26610": { face: "A", status: "discarded" },
+  },
+  pendingAction: null,
+  updatedAt: 0,
 });
-
-assert.deepEqual(rules.normalizeState({
-  active: [{ cardId: "rogue-3", face: "A" }],
-  discard: [],
-  pendingAction: { kind: "exploration-choice", cardId: "rogue-3", drawn: ["a", "b", "c"] }
-}).pendingAction, {
-  kind: "exploration-choice",
-  cardId: "rogue-3",
-  drawn: ["a", "b", "c"]
-}, "a valid pending choice survives reload");
+assert.equal(rules.drawCount("mercenary:26611"), 3,
+  "Rogue exploration helpers must accept canonical Outpost IDs");
 
 console.log("map mercenary rules: all assertions passed");

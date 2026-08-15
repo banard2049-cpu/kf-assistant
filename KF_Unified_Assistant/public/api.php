@@ -151,6 +151,7 @@ function default_state(string $knightId='', string $player=''): array {
 function default_campaign_state(): array {
     return [
         'schemaVersion'=>2,'kingdom'=>'sunken','leaderSheetId'=>'','party'=>[],'squires'=>[],
+        'partyManager'=>['schemaVersion'=>4,'activeMemberKey'=>'','members'=>(object)[],'squireLeads'=>0,'mettle'=>null,'knightPool'=>(object)[],'outpost'=>['mercenaries'=>[],'merchantGear'=>[]]],
         'monsterPool'=>['row'=>0,'cards'=>[],'districts'=>[],'history'=>[]],
         'map'=>['activeKingdom'=>'sunken','kingdoms'=>[
             'sunken'=>['tiles'=>[],'partyTile'=>'','markers'=>[],'round'=>0],
@@ -158,6 +159,8 @@ function default_campaign_state(): array {
         ]],
         'encounter'=>['active'=>false,'monster'=>'','level'=>1,'type'=>'normal','phase'=>'setup','board'=>(object)[],'result'=>''],
         'aibp'=>['monster'=>'','level'=>1,'ai'=>[],'bp'=>[],'discard'=>[],'wounds'=>[],'promotion'=>0,'history'=>[]],
+        'harvest'=>['schemaVersion'=>1,'status'=>'collecting','receipts'=>[],'loot'=>[],'activities'=>(object)[],'history'=>[],'completedAt'=>null],
+        'harvestInbox'=>(object)[],
         'modules'=>['map'=>null,'encounter'=>null,'aibp'=>null]
     ];
 }
@@ -261,11 +264,27 @@ function set_path(array &$root, string $path, mixed $value): void {
     $parent =& path_ref($root, $parts);
     $parent[$last] = $value;
 }
+function validate_harvest_state(mixed $value): void {
+    if(!is_array($value)||($value['schemaVersion']??1)!==1||!in_array($value['status']??'', ['collecting','drafting','allocating','complete'], true))respond(400,['error'=>'收获阶段状态版本或阶段无效']);
+    foreach(['receipts','loot'] as $key)if(!is_array($value[$key]??null)||count($value[$key])>300)respond(400,['error'=>'收获阶段记录结构无效']);
+    $receiptIds=[];
+    foreach($value['receipts'] as $receipt){
+        if(!is_array($receipt)||!is_string($receipt['id']??null)||$receipt['id']===''||isset($receiptIds[$receipt['id']])||!is_array($receipt['requests']??null)||count($receipt['requests'])>16)respond(400,['error'=>'收获搜刮收据无效']);
+        $receiptIds[$receipt['id']]=true;
+    }
+    foreach($value['loot'] as $item)if(!is_array($item)||!is_string($item['id']??null)||!is_string($item['catalogId']??null)||!isset($receiptIds[(string)($item['sourceReceiptId']??'')]))respond(400,['error'=>'收获战利品牌记录无效']);
+}
+function validate_harvest_receipt(mixed $value): void {
+    if($value===null)return;
+    if(!is_array($value)||!is_string($value['id']??null)||$value['id']===''||!is_array($value['requests']??null)||count($value['requests'])<1||count($value['requests'])>16)respond(400,['error'=>'跨阶段收获收据无效']);
+}
 function validate_value(string $path, mixed $value): void {
     if (in_array($path,['knight','knightId'],true)) respond(400,['error'=>'骑士身份在创建后不可更改']);
     $encoded = json_encode($value, JSON_UNESCAPED_UNICODE);
-    $limit = str_starts_with($path, 'modules.') ? 1_500_000 : 20_000;
+    $limit = str_starts_with($path, 'modules.') ? 1_500_000 : (in_array($path,['partyManager','harvest'],true) ? 500_000 : 20_000);
     if ($encoded === false || strlen($encoded)>$limit) respond(400,['error'=>'字段内容无效或过长']);
+    if($path==='harvest')validate_harvest_state($value);
+    if(str_starts_with($path,'harvestInbox.'))validate_harvest_receipt($value);
     if (in_array($path,['bane','gold','leads','sigh'],true) && (!is_int($value) || $value<0 || $value>99999)) respond(400,['error'=>'数值超出范围']);
     if (preg_match('/^story\.\d+\.investigations\.\d+\.success$/',$path) && $value!=='' && (!is_int($value) || $value<0 || $value>99)) respond(400,['error'=>'调查数字超出范围']);
 }
@@ -276,10 +295,34 @@ function map_state_round(mixed $value): int {
 }
 function resolve_campaign_sync_conflict(string $path,mixed $previous,mixed $incoming): array {
     $result=['value'=>$incoming,'resolution'=>'incoming'];
+    if($path==='harvest'&&is_array($previous)&&is_array($incoming)){
+        $previousReceipts=is_array($previous['receipts']??null)?$previous['receipts']:[];$incomingReceipts=is_array($incoming['receipts']??null)?$incoming['receipts']:[];
+        $previousIds=[];foreach($previousReceipts as $receipt)if(is_array($receipt)&&is_string($receipt['id']??null))$previousIds[$receipt['id']]=true;
+        $incomingHasNew=false;foreach($incomingReceipts as $receipt)if(is_array($receipt)&&is_string($receipt['id']??null)&&!isset($previousIds[$receipt['id']])){$incomingHasNew=true;break;}
+        if(($previous['status']??'')==='complete'&&($incoming['status']??'')==='collecting'&&(count($incomingReceipts)===0||$incomingHasNew))return ['value'=>$incoming,'resolution'=>'incoming-new-expedition'];
+        $merged=$previous;$receiptMap=$previousIds;
+        foreach($incomingReceipts as $receipt)if(is_array($receipt)&&is_string($receipt['id']??null)&&!isset($receiptMap[$receipt['id']])){$merged['receipts'][]=$receipt;$receiptMap[$receipt['id']]=true;}
+        $mergedLoot=is_array($merged['loot']??null)?$merged['loot']:[];$lootIds=[];$catalogIds=[];
+        foreach($mergedLoot as $item)if(is_array($item)){$lootIds[(string)($item['id']??'')]=true;$catalogIds[(string)($item['catalogId']??'')]=true;}
+        $addedLoot=false;
+        foreach((is_array($incoming['loot']??null)?$incoming['loot']:[]) as $item)if(is_array($item)&&!isset($lootIds[(string)($item['id']??'')])&&!isset($catalogIds[(string)($item['catalogId']??'')])){$mergedLoot[]=$item;$lootIds[(string)($item['id']??'')]=true;$catalogIds[(string)($item['catalogId']??'')]=true;$addedLoot=true;}
+        $merged['loot']=$mergedLoot;
+        if($incomingHasNew||$addedLoot){
+            $merged['status']='collecting';$merged['completedAt']=null;
+            foreach($merged['loot'] as &$item)if(is_array($item)&&($item['allocation']??'')!=='discarded'){$item['allocation']='unassigned';$item['assignedMemberKey']='';$item['resolution']=null;}unset($item);
+            return ['value'=>$merged,'resolution'=>'merged-additive'];
+        }
+        return ['value'=>$previous,'resolution'=>'existing'];
+    }
     if($path!=='modules.map')return $result;
     $previousRound=map_state_round($previous);$incomingRound=map_state_round($incoming);
     $result['previousRound']=$previousRound;$result['incomingRound']=$incomingRound;
     if($previousRound>$incomingRound){$result['value']=$previous;$result['resolution']='existing';}
+    elseif(is_array($previous)&&is_array($incoming)&&is_array($previous['mercenaries']??null)){
+        $previousMercenaries=$previous['mercenaries'];$incomingMercenaries=is_array($incoming['mercenaries']??null)?$incoming['mercenaries']:[];
+        $previousMercenaryUpdate=max(0,(int)($previousMercenaries['updatedAt']??0));$incomingMercenaryUpdate=max(0,(int)($incomingMercenaries['updatedAt']??0));
+        if($previousMercenaryUpdate>$incomingMercenaryUpdate){$result['value']=$incoming;$result['value']['mercenaries']=$previousMercenaries;$result['resolution']='merged-existing-mercenaries';}
+    }
     return $result;
 }
 function create_backup(PDO $db, string $backupDir, string $label='manual'): string {
@@ -304,12 +347,31 @@ function migrate_global_knights(PDO $db, string $backupDir): void {
             $campaigns=$db->query('SELECT id,state_json FROM campaigns')->fetchAll();$updateCampaign=$db->prepare('UPDATE campaigns SET state_json=?,revision=revision+1,updated_at=? WHERE id=?');
             foreach($campaigns as $campaign){$state=json_decode($campaign['state_json'],true);if(!is_array($state))continue;$changed=false;$leader=(string)($state['leaderSheetId']??'');if(isset($replace[$leader])){$state['leaderSheetId']=$replace[$leader];$changed=true;}
                 $party=is_array($state['party']??null)?$state['party']:[];$mapped=array_values(array_unique(array_map(fn($id)=>$replace[(string)$id]??$id,$party)));if($mapped!==$party){$state['party']=$mapped;$changed=true;}
+                if(array_key_exists('harvest',$state)){$mappedHarvest=remap_harvest_member_keys($state['harvest'],$replace);if($mappedHarvest!==$state['harvest']){$state['harvest']=$mappedHarvest;$changed=true;}}
                 if($changed)$updateCampaign->execute([json_encode($state,JSON_UNESCAPED_UNICODE),stamp(),$campaign['id']]);
             }
             $archive=$db->prepare('UPDATE knight_sheets SET title=title||"（跨战役合并备份）",deleted_at=?,updated_at=?,campaign_id=NULL WHERE id=?');$time=stamp();foreach($duplicates as $id)$archive->execute([$time,$time,$id]);
         }
         $db->exec('UPDATE knight_sheets SET campaign_id=NULL');$q=$db->prepare('INSERT INTO app_meta(meta_key,meta_value,updated_at) VALUES(?,?,?)');$q->execute([$key,'complete',stamp()]);$db->commit();
     }catch(Throwable $e){$db->rollBack();throw $e;}
+}
+function remap_campaign_member_key(mixed $value,array $sheetMap): string {
+    $key=(string)$value;
+    if(!str_starts_with($key,'knight:'))return $key;
+    $sheetId=substr($key,7);
+    return isset($sheetMap[$sheetId])?'knight:'.$sheetMap[$sheetId]:$key;
+}
+function remap_harvest_member_keys(mixed $value,array $sheetMap): mixed {
+    if(!is_array($value))return $value;
+    $harvest=$value;
+    if(is_array($harvest['activities']??null)){
+        $activities=[];
+        foreach($harvest['activities'] as $memberKey=>$activity)$activities[remap_campaign_member_key($memberKey,$sheetMap)]=$activity;
+        $harvest['activities']=$activities;
+    }
+    if(is_array($harvest['loot']??null))foreach($harvest['loot'] as &$item)if(is_array($item)&&isset($item['assignedMemberKey']))$item['assignedMemberKey']=remap_campaign_member_key($item['assignedMemberKey'],$sheetMap);
+    unset($item);
+    return $harvest;
 }
 function maintenance(PDO $db, string $backupDir): void {
     $cutoff = gmdate('Y-m-d\TH:i:s.v\Z', time()-30*86400);
@@ -408,7 +470,10 @@ try {
     }
     if ($route === 'campaign-import' && $method === 'POST') {
         $data=request_data();if(($data['format']??'')!=='kf-unified-campaign'||($data['schemaVersion']??0)!==2||!is_array($data['campaign']??null))respond(400,['error'=>'只支持新版 KF 一体化战役存档（版本 2）']);
-        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$seenKnights=[];$catalog=knight_catalog();
+        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;
+        if(!isset($state['harvest']))$state['harvest']=default_campaign_state()['harvest'];validate_harvest_state($state['harvest']);
+        foreach((is_array($state['harvestInbox']??null)?$state['harvestInbox']:[]) as $receipt)validate_harvest_receipt($receipt);
+        $sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$seenKnights=[];$catalog=knight_catalog();
         $existingByKnight=[];$q=$db->prepare('SELECT id,state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll() as $existing){$existingState=json_decode($existing['state_json'],true);$existingKnight=(string)($existingState['knightId']??'');if($existingKnight!=='')$existingByKnight[$existingKnight]=$existing['id'];}
         foreach($sourceSheets as $sheet)if(is_array($sheet)){
             $sheetState=$sheet['state']??null;$knightId=is_array($sheetState)?(string)($sheetState['knightId']??''):'';
@@ -416,7 +481,9 @@ try {
             $seenKnights[$knightId]=true;$sheetMap[(string)($sheet['id']??uuid4())]=$existingByKnight[$knightId]??uuid4();
         }
         if(isset($sheetMap[$state['leaderSheetId']??'']))$state['leaderSheetId']=$sheetMap[$state['leaderSheetId']];
-        $state['party']=array_values(array_map(fn($sheetId)=>$sheetMap[$sheetId]??$sheetId,is_array($state['party']??null)?$state['party']:[]));$db->beginTransaction();
+        $state['party']=array_values(array_map(fn($sheetId)=>$sheetMap[$sheetId]??$sheetId,is_array($state['party']??null)?$state['party']:[]));
+        if(array_key_exists('harvest',$state))$state['harvest']=remap_harvest_member_keys($state['harvest'],$sheetMap);
+        $db->beginTransaction();
         try{$q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');$q->execute([$id,$user['id'],title_value($payload['name']??'导入战役').'（导入）',json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
             $insert=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');
             foreach($sourceSheets as $sheet)if(is_array($sheet)&&is_array($sheet['state']??null)){$oldId=(string)($sheet['id']??'');$sheetState=$sheet['state'];$knightId=(string)$sheetState['knightId'];if(isset($existingByKnight[$knightId]))continue;$sheetState['knight']=$catalog[$knightId];$insert->execute([$sheetMap[$oldId]??uuid4(),$user['id'],null,title_value($sheet['title']??''),json_encode($sheetState,JSON_UNESCAPED_UNICODE),$time,$time]);}

@@ -32,7 +32,16 @@ assert.match(stylesSource, /@media \(max-width: 1179px\) \{[\s\S]*?\.history-pan
   "the pinned controls must clear the sticky navigation in single-column layouts");
 assert.match(stylesSource, /@media \(max-width: 759px\) \{[\s\S]*?\.history-panel \{ top: 52px; \}/,
   "the pinned controls must clear the compact mobile navigation");
-assert.match(indexSource, /app\.js\?v=100/);
-assert.match(indexSource, /styles\.css\?v=59/);
+assert.match(indexSource, /id="managePartyButton"[^>]*>骑士 \/ 侍从管理<\/button>/,
+  "the delve host must expose direct knight and squire management");
+const managePartyHandler = appSource.slice(appSource.indexOf('$("#managePartyButton")'), appSource.indexOf('$("#recordMapScavenge")'));
+assert.match(managePartyHandler, /KF_MODULE_BRIDGE\?\.flush\?\./,
+  "party navigation must flush the current map state first");
+assert.match(managePartyHandler, /location\.href="\/\?module=party"/,
+  "party navigation must open the integrated party manager");
+assert.ok(managePartyHandler.indexOf("flush") < managePartyHandler.indexOf("location.href"),
+  "map state must flush before leaving for party management");
+assert.match(indexSource, /app\.js\?v=110/);
+assert.match(indexSource, /styles\.css\?v=63/);
 
 console.log("map host layout: priority, recent history, flow control and host tools order verified");

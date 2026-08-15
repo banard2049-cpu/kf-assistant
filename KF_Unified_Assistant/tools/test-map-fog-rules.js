@@ -102,6 +102,6 @@ const indexSource = fs.readFileSync("public/modules/map/index.html", "utf8");
 assert.match(appSource, /id="fogReshuffleDeck"/, "fog panel exposes the reshuffle action");
 assert.match(appSource, /FOG_RULES\.reshuffleDeck\(fog, shuffle\)/, "fog reshuffle action uses the tested rule");
 assert.match(indexSource, /fog-rules\.js\?v=6/, "fog rules cache version is updated");
-assert.match(indexSource, /app\.js\?v=99/, "map app cache version is updated");
+assert.match(indexSource, /app\.js\?v=110/, "map app cache version is updated");
 
 console.log("map fog rules: all assertions passed");

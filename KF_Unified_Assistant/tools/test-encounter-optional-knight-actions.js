@@ -14,7 +14,7 @@ assert.match(appSource, /也可保留尚未行动的骑士并直接进入结算/
   "knight round instructions must explain that unfinished actions are optional");
 assert.match(appSource, /state\.phase = "resolution", "进入遭遇战结算"/,
   "manual resolution entry must use a neutral log message");
-assert.match(indexSource, /app\.js\?v=24/,
+assert.match(indexSource, /app\.js\?v=26/,
   "encounter app cache version must be refreshed");
 
 console.log("encounter knight round: resolution remains available with unfinished actions");

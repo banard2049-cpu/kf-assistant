@@ -62,7 +62,7 @@ assert.match(indexSource, /id="accountPasswords"/);
 assert.doesNotMatch(indexSource, /class="panel password-panel"/);
 assert.ok(indexSource.indexOf('id="overviewGrid"') < indexSource.indexOf('id="encounterBuilder"'), "knight overview cards must appear before the encounter pool");
 assert.match(indexSource, /0 \/ 38/);
-assert.match(indexSource, /app\.js\?v=19/);
-assert.match(indexSource, /styles\.css\?v=14/);
+assert.match(indexSource, /app\.js\?v=57/);
+assert.match(indexSource, /styles\.css\?v=58/);
 
 console.log("account-shared records: 38 story markers and password matrices, export and import merge verified");

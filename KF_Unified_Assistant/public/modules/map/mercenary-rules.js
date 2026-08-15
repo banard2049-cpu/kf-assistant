@@ -9,6 +9,7 @@
   const ROGUES = Object.freeze([
     {
       id: "rogue-1",
+      catalogId: "mercenary:26609",
       role: "rogue",
       name: "盗贼",
       en: "ROGUE",
@@ -31,6 +32,7 @@
     },
     {
       id: "rogue-2",
+      catalogId: "mercenary:26610",
       role: "rogue",
       name: "盗贼",
       en: "ROGUE",
@@ -53,6 +55,7 @@
     },
     {
       id: "rogue-3",
+      catalogId: "mercenary:26611",
       role: "rogue",
       name: "盗贼",
       en: "ROGUE",
@@ -78,6 +81,7 @@
   const MAGES = Object.freeze([
     {
       id: "mage-1",
+      catalogId: "mercenary:26606",
       role: "mage",
       name: "法师",
       en: "MAGE",
@@ -100,6 +104,7 @@
     },
     {
       id: "mage-2",
+      catalogId: "mercenary:26607",
       role: "mage",
       name: "法师",
       en: "MAGE",
@@ -122,6 +127,7 @@
     },
     {
       id: "mage-3",
+      catalogId: "mercenary:26608",
       role: "mage",
       name: "法师",
       en: "MAGE",
@@ -146,83 +152,154 @@
 
   const CARDS = Object.freeze([...ROGUES, ...MAGES]);
   const CATALOG = Object.freeze(Object.fromEntries(CARDS.map(card => [card.id, card])));
+  const CATALOG_BY_CANONICAL_ID = Object.freeze(Object.fromEntries(CARDS.map(card => [card.catalogId, card])));
 
   function createState() {
-    return { active: [], discard: [], pendingAction: null };
+    return { usage: {}, pendingAction: null, updatedAt: 0 };
   }
 
-  function normalizeState(value) {
+  function touchState(state) {
+    if (!state || typeof state !== "object") return 0;
+    const previous = Math.max(0, Math.trunc(Number(state.updatedAt) || 0));
+    state.updatedAt = Math.max(Date.now(), previous + 1);
+    return state.updatedAt;
+  }
+
+  function definitionFor(cardId) {
+    return CATALOG[String(cardId || "")] || CATALOG_BY_CANONICAL_ID[String(cardId || "")] || null;
+  }
+
+  function canonicalCatalogId(cardId) {
+    return definitionFor(cardId)?.catalogId || String(cardId || "");
+  }
+
+  function normalizeState(value, hiredIds = []) {
     const source = value && typeof value === "object" ? value : {};
-    const active = [];
-    const seen = new Set();
+    const allowed = new Set((Array.isArray(hiredIds) ? hiredIds : []).map(item => String(item || "")).filter(Boolean));
+    const usage = {};
+    const sourceUsage = source.usage && typeof source.usage === "object" && !Array.isArray(source.usage) ? source.usage : {};
+    for (const [rawCatalogId, rawState] of Object.entries(sourceUsage)) {
+      const catalogId = canonicalCatalogId(rawCatalogId);
+      if (!allowed.has(catalogId)) continue;
+      usage[catalogId] = {
+        face: rawState?.face === "B" ? "B" : "A",
+        status: rawState?.status === "discarded" ? "discarded" : "active"
+      };
+    }
+
+    // Migrate the old map-owned roster only when the same physical card is
+    // already hired at the Outpost. Orphaned local entries are deliberately ignored.
     for (const item of Array.isArray(source.active) ? source.active : []) {
-      const cardId = String(item && item.cardId || "");
-      if (!CATALOG[cardId] || seen.has(cardId)) continue;
-      seen.add(cardId);
-      active.push({ cardId, face: item.face === "B" ? "B" : "A" });
+      const catalogId = canonicalCatalogId(item?.cardId);
+      if (!allowed.has(catalogId) || usage[catalogId]) continue;
+      usage[catalogId] = { face: item?.face === "B" ? "B" : "A", status: "active" };
     }
-    const discard = [];
-    for (const valueId of Array.isArray(source.discard) ? source.discard : []) {
-      const cardId = String(valueId || "");
-      if (!CATALOG[cardId] || seen.has(cardId) || discard.includes(cardId)) continue;
-      discard.push(cardId);
+    for (const item of Array.isArray(source.discard) ? source.discard : []) {
+      const catalogId = canonicalCatalogId(item);
+      if (!allowed.has(catalogId)) continue;
+      usage[catalogId] = { face: usage[catalogId]?.face || "B", status: "discarded" };
     }
+
     const pending = source.pendingAction;
-    const activeCard = pending && active.find(item => item.cardId === pending.cardId && item.face === "A");
-    const expected = activeCard ? drawCount(activeCard.cardId) : 0;
+    const pendingDefinition = definitionFor(pending?.cardId);
+    const pendingUsage = pendingDefinition ? usage[pendingDefinition.catalogId] : null;
+    const expected = pendingDefinition
+      && allowed.has(pendingDefinition.catalogId)
+      && (pendingUsage?.status || "active") === "active"
+      && (pendingUsage?.face || "A") === "A"
+      ? drawCount(pendingDefinition.id) : 0;
     const pendingAction = pending
       && pending.kind === "exploration-choice"
       && expected > 1
       && Array.isArray(pending.drawn)
       && pending.drawn.length === expected
       && pending.drawn.every(Boolean)
-      ? { kind: "exploration-choice", cardId: activeCard.cardId, drawn: [...pending.drawn] }
+      ? { kind: "exploration-choice", cardId: pendingDefinition.id, drawn: [...pending.drawn] }
       : null;
-    return { active, discard, pendingAction };
+    return {
+      usage,
+      pendingAction,
+      updatedAt: Math.max(0, Math.trunc(Number(source.updatedAt) || 0))
+    };
   }
 
-  function availableCards(state) {
-    const normalized = normalizeState(state);
-    const unavailable = new Set([
-      ...normalized.active.map(item => item.cardId),
-      ...normalized.discard
-    ]);
-    return CARDS.filter(card => !unavailable.has(card.id));
+  function projectHired(assignments, state) {
+    const source = Array.isArray(assignments) ? assignments : [];
+    const normalized = normalizeState(state, source.map(item => item?.catalogId));
+    return source.filter(item => item?.catalogId).map(item => {
+      const lifecycle = normalized.usage[item.catalogId] || {};
+      return {
+        ...item,
+        face: lifecycle.face === "B" ? "B" : "A",
+        status: lifecycle.status === "discarded" ? "discarded" : "active"
+      };
+    });
   }
 
-  function hire(state, cardId) {
-    if (!CATALOG[cardId] || !availableCards(state).some(card => card.id === cardId)) return false;
-    state.active.push({ cardId, face: "A" });
+  function canUseCatalogId(catalogId, hiredIds) {
+    return Array.isArray(hiredIds) && hiredIds.map(String).includes(catalogId);
+  }
+
+  function flipMercenary(state, cardId, hiredIds) {
+    const catalogId = canonicalCatalogId(cardId);
+    if (!state || typeof state !== "object" || !canUseCatalogId(catalogId, hiredIds)) return false;
+    if (!state.usage || typeof state.usage !== "object" || Array.isArray(state.usage)) state.usage = {};
+    const current = state.usage[catalogId] || { face: "A", status: "active" };
+    state.usage[catalogId] = {
+      face: current.face === "B" ? "A" : "B",
+      status: current.status === "discarded" ? "discarded" : "active"
+    };
+    touchState(state);
+    return true;
+  }
+
+  function discardMercenary(state, cardId, hiredIds) {
+    const catalogId = canonicalCatalogId(cardId);
+    if (!state || typeof state !== "object" || !canUseCatalogId(catalogId, hiredIds)) return false;
+    if (!state.usage || typeof state.usage !== "object" || Array.isArray(state.usage)) state.usage = {};
+    const current = state.usage[catalogId] || { face: "A", status: "active" };
+    state.usage[catalogId] = {
+      face: current.face === "B" ? "B" : "A",
+      status: current.status === "discarded" ? "active" : "discarded"
+    };
+    state.pendingAction = null;
+    touchState(state);
     return true;
   }
 
   function advance(state, cardId) {
-    const index = state.active.findIndex(item => item.cardId === cardId);
-    if (index < 0) return null;
-    const item = state.active[index];
+    const definition = definitionFor(cardId);
+    if (!state || !definition) return null;
+    if (!state.usage || typeof state.usage !== "object" || Array.isArray(state.usage)) state.usage = {};
+    const item = state.usage[definition.catalogId] || { face: "A", status: "active" };
+    if (item.status === "discarded") return null;
     if (item.face === "A") {
-      item.face = "B";
+      state.usage[definition.catalogId] = { face: "B", status: "active" };
       state.pendingAction = null;
-      return { cardId, from: "A", to: "B" };
+      touchState(state);
+      return { cardId: definition.id, catalogId: definition.catalogId, from: "A", to: "B" };
     }
-    state.active.splice(index, 1);
-    if (!state.discard.includes(cardId)) state.discard.push(cardId);
+    state.usage[definition.catalogId] = { face: "B", status: "discarded" };
     state.pendingAction = null;
-    return { cardId, from: "B", to: "discard" };
+    touchState(state);
+    return { cardId: definition.id, catalogId: definition.catalogId, from: "B", to: "discard" };
   }
 
   function drawCount(cardId) {
-    if (cardId === "rogue-2") return 2;
-    if (cardId === "rogue-3") return 3;
+    const id = definitionFor(cardId)?.id || String(cardId || "");
+    if (id === "rogue-2") return 2;
+    if (id === "rogue-3") return 3;
     return 1;
   }
 
   function beginExplorationChoice(cardId, deck) {
+    const definition = definitionFor(cardId);
+    if (!definition) return null;
     const count = drawCount(cardId);
     if (count < 2 || !Array.isArray(deck) || deck.length < count) return null;
     return {
       kind: "exploration-choice",
-      cardId,
+      cardId: definition.id,
       drawn: deck.slice(0, count)
     };
   }
@@ -264,7 +341,7 @@
   }
 
   function mageTargetIds(cardId, context = {}) {
-    const definition = CATALOG[cardId];
+    const definition = definitionFor(cardId);
     if (definition?.role !== "mage") return [];
     const currentTileId = String(context.currentTileId || "");
     const adjacent = new Set(Array.isArray(context.adjacentTileIds) ? context.adjacentTileIds : []);
@@ -282,7 +359,7 @@
   }
 
   function encounterSkip(cardId, currentTileId, travelRoute) {
-    const action = CATALOG[cardId]?.faces.B.action;
+    const action = definitionFor(cardId)?.faces.B.action;
     if (action === "skip") {
       return {
         action,
@@ -306,10 +383,15 @@
     MAGES,
     CARDS,
     CATALOG,
+    CATALOG_BY_CANONICAL_ID,
     createState,
+    touchState,
     normalizeState,
-    availableCards,
-    hire,
+    definitionFor,
+    canonicalCatalogId,
+    projectHired,
+    flipMercenary,
+    discardMercenary,
     advance,
     drawCount,
     beginExplorationChoice,

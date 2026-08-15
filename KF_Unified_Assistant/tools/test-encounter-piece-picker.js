@@ -43,6 +43,6 @@ assert.match(appSource, /state\.selectedPiece = pieceChoices\[0\]\?\.key \|\| ""
 assert.match(stylesSource, /\.placement-piece-picker\s*\{/, "piece picker has a stable responsive layout");
 assert.match(stylesSource, /\.placement-piece-option\.selected\s*\{/, "selected piece has a visible state");
 assert.match(indexSource, /styles\.css\?v=14/, "encounter stylesheet cache version is updated");
-assert.match(indexSource, /app\.js\?v=24/, "encounter app cache version is updated");
+assert.match(indexSource, /app\.js\?v=26/, "encounter app cache version is updated");
 
 console.log("encounter placement piece picker assertions passed");

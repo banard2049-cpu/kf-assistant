@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#761923">
   <title>KF 一体化战役管理</title>
-  <link rel="stylesheet" href="/styles.css?v=16">
+  <link rel="stylesheet" href="/styles.css?v=58">
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -43,9 +43,12 @@
       <div class="campaign-actions"><button id="newCampaign" class="button">＋ 战役</button><button id="renameCampaign" class="button">重命名</button><button id="copyCampaign" class="button">复制</button><button id="trashCampaign" class="danger">回收</button><button id="restoreCampaign" class="button">恢复战役</button></div>
       <nav class="module-nav">
         <button class="button wide" data-module="overview">骑士团与怪物池</button>
+        <button class="button wide" data-module="outpost">前哨阶段</button>
+        <button class="button wide" data-module="party">骑士 / 侍从管理</button>
         <a class="button wide" href="/modules/map/">地图深入</a>
         <a class="button wide" href="/modules/encounter/">遭遇战</a>
         <a class="button wide" href="/modules/aibp/">AI / BP</a>
+        <button class="button wide" data-module="harvest">收获阶段</button>
       </nav>
       <details id="permanentStoryMarkers" class="permanent-story-markers">
         <summary><span><strong>永久故事标记</strong><small>跨战役共享</small></span><span id="permanentStoryMarkerCount" class="story-marker-count">0 / 38</span></summary>
@@ -102,6 +105,77 @@
           <div id="monsterPool" class="monster-pool hidden"></div>
         </section>
       </section>
+      <section id="outpostModule" class="game-module outpost-module hidden">
+        <header class="module-head">
+          <div><p class="eyebrow">OUTPOST PHASE</p><h1>前哨阶段</h1><p>选择本次远征可雇佣的佣兵与商人装备，并分配给出征骑士或侍从。</p></div>
+          <div class="outpost-head-actions">
+            <label class="outpost-kingdom-picker"><span>当前战役王国</span><select id="outpostKingdomSelect" aria-label="选择当前战役王国"><option value="sunken">沉没王国</option><option value="stone">巨石公国</option></select></label>
+            <span id="outpostSummary" class="module-badge"></span>
+          </div>
+        </header>
+        <ol class="outpost-phase-guide" aria-label="前哨阶段步骤">
+          <li class="active"><span>1</span><div><small>OUTPOST ACTIVITIES</small><strong>前哨活动</strong></div></li>
+          <li><span>2</span><div><small>PREPARING LOADOUTS</small><strong>准备骑士配置</strong></div></li>
+          <li><span>3</span><div><small>ONWARD</small><strong>进入深入阶段</strong></div></li>
+        </ol>
+        <p id="outpostKingdomWarning" class="outpost-kingdom-warning hidden"></p>
+        <section class="outpost-district-catalog" aria-labelledby="outpostDistrictHeading">
+          <header>
+            <div><p class="eyebrow">OUTPOST DISTRICTS</p><h2 id="outpostDistrictHeading">前哨全部分区</h2></div>
+            <p>六个分区全部展示。佣兵与商人工坊可直接配置，其余分区请按当前王国的完整规则图结算。</p>
+          </header>
+          <div class="outpost-district-layout">
+            <div id="outpostKingdomOverview" class="outpost-kingdom-overview"></div>
+            <div id="outpostDistricts" class="outpost-district-grid"></div>
+          </div>
+          <details id="outpostRulebookReference" class="outpost-rulebook-reference">
+            <summary><span id="outpostRulebookTitle">当前王国中文规则对照</span><small>展开后可点击图片查看原尺寸</small></summary>
+            <div id="outpostRulebookPages" class="outpost-rulebook-pages"></div>
+          </details>
+        </section>
+        <div class="outpost-detail-sections">
+          <section id="outpostScoutingSection" class="outpost-reference-section outpost-scouting-section" aria-labelledby="outpostScoutingTitle">
+            <header><div><p class="eyebrow">SCOUTING</p><h2 id="outpostScoutingTitle">侦察表</h2></div><p>展示当前王国的完整侦察表。保留王国书原始背景、路线与费用，点击图片可查看高清原页。</p></header>
+            <div id="outpostScoutingPages" class="outpost-detail-pages outpost-scouting-pages"></div>
+          </section>
+          <section id="outpostContractsSection" class="outpost-reference-section outpost-contracts-section" aria-labelledby="outpostContractTitle">
+            <header><div><p class="eyebrow">CONTRACTS</p><h2 id="outpostContractTitle">公告板委托</h2></div><p>展示当前王国公告板的全部委托。按队长层次选择，每次远征全队最多签订一份；点击图片可查看高清原页。</p></header>
+            <div id="outpostContractPages" class="outpost-detail-pages outpost-contract-pages"></div>
+          </section>
+        </div>
+        <div id="outpostEmpty" class="overview-empty hidden"></div>
+        <div id="outpostContent" class="outpost-content">
+          <section id="outpostMercenarySection" class="outpost-market-section outpost-mercenary-section">
+            <header><div><p class="eyebrow">MERCENARY GUILD</p><h2>佣兵工会</h2></div><p>全队最多雇佣 4 名且同名不可重复。分配仅记录负责人，佣兵能力仍由全队共享；费用按卡面自行扣除。</p></header>
+            <div class="outpost-hired-roster" aria-labelledby="outpostHiredMercenaryHeading">
+              <strong id="outpostHiredMercenaryHeading">本次已雇佣</strong>
+              <div id="outpostHiredMercenaries" class="outpost-hired-mercenaries" aria-live="polite"></div>
+            </div>
+            <div id="outpostMercenaries" class="outpost-card-grid outpost-mercenary-grid"></div>
+          </section>
+          <section id="outpostGearSection" class="outpost-market-section outpost-gear-section">
+            <header><div><p class="eyebrow">MERCHANT WORKSHOP</p><h2>商人工坊</h2></div><p>按接收成员层次选择。侍从只能借用一张商人武器；金币、槽位与卡面侍从属性请按实体规则确认，系统不自动扣除金币。</p></header>
+            <div class="outpost-market-filters" aria-label="商人装备筛选">
+              <label>层次<select id="outpostGearTier"><option value="all">全部层次</option><option value="mob">杂兵</option><option value="vassal">封臣</option><option value="king">国王</option><option value="devil">恶魔</option><option value="dragon">巨龙</option></select></label>
+              <label>类型<select id="outpostGearType"><option value="all">全部类型</option><option value="weapon">武器</option><option value="armor">防具</option></select></label>
+              <label class="outpost-search">搜索<input id="outpostGearSearch" type="search" placeholder="装备名称"></label>
+              <button id="clearOutpostSelections" type="button" class="danger">清空本次选择</button>
+            </div>
+            <div id="outpostMerchantGear" class="outpost-card-grid outpost-gear-grid"></div>
+          </section>
+        </div>
+      </section>
+      <section id="partyModule" class="game-module character-manager hidden">
+        <header class="module-head">
+          <div><p class="eyebrow">EXPEDITION PARTY</p><h1>骑士 / 侍从管理</h1><p>管理本次出征的属性、曲线、装备、招数手牌与共享胆识牌库。</p></div>
+          <span id="partyManagerSummary" class="module-badge"></span>
+        </header>
+        <nav id="partyMemberTabs" class="party-member-tabs" aria-label="出征成员"></nav>
+        <div class="character-manager-grid">
+          <section id="partyMemberPanel" class="character-member-panel"></section>
+          <aside id="mettleManagerPanel" class="mettle-manager-panel"></aside>
+        </div>
+      </section>
       <section id="mapModule" class="game-module hidden">
         <header class="module-head"><div><p class="eyebrow">DELVE MAP</p><h1>地图深入</h1></div><button id="advanceMapRound" class="primary">下一深入轮</button></header>
         <div class="module-grid">
@@ -118,6 +192,39 @@
       <section id="aibpModule" class="game-module hidden">
         <header class="module-head"><div><p class="eyebrow">MONSTER AUTOMATION</p><h1>AI / BP 辅助</h1></div><span id="aibpMonster" class="module-badge"></span></header>
         <div class="module-grid"><section class="game-panel"><h2>AI 牌库</h2><div id="aiDeck" class="card-stack"></div><button id="drawAI" class="primary">抽取 AI</button><button id="discardAI" class="button">弃置当前牌</button></section><section class="game-panel"><h2>BP 与损伤</h2><div id="bpDeck" class="card-stack"></div><button id="drawBP" class="primary">揭示 BP</button><button id="addWound" class="button">记录损伤</button><label>晋升等级<input id="promotionLevel" type="number" min="0" max="4"></label><button id="undoAIBP" class="button">撤销上一步</button></section><section class="game-panel span-two"><h2>操作记录</h2><div id="aibpHistory" class="event-log"></div></section></div>
+      </section>
+      <section id="harvestModule" class="game-module harvest-module hidden">
+        <header class="module-head">
+          <div><p class="eyebrow">SPOILS PHASE</p><h1>收获阶段</h1><p>汇总远征中的搜刮，依次分配公共战果与回收材料，再记录装备、金钱或赌博结果。</p></div>
+          <span id="harvestSummary" class="module-badge"></span>
+        </header>
+        <ol id="harvestPhaseGuide" class="harvest-phase-guide" aria-label="收获阶段步骤">
+          <li data-harvest-step="collecting"><span>1</span><div><small>LOOT DECK</small><strong>汇总战利品</strong></div></li>
+          <li data-harvest-step="allocating"><span>2</span><div><small>COMMON GOODS</small><strong>公共战果与回收材料</strong></div></li>
+          <li data-harvest-step="complete"><span>3</span><div><small>REDEEM &amp; SAVE</small><strong>兑换并结束远征</strong></div></li>
+        </ol>
+        <div id="harvestEmpty" class="overview-empty hidden"></div>
+        <div id="harvestContent" class="harvest-content">
+          <section class="harvest-panel harvest-receipt-panel">
+            <header><div><p class="eyebrow">SCAVENGE RECEIPTS</p><h2>搜刮收据</h2></div><p>遭遇与冲突只记录应取得的战利品；请按实体卡结果选择对应卡牌。</p></header>
+            <div class="harvest-manual-receipt">
+              <label>搜刮类型<select id="harvestScavengeKind"><option value="choice">普通搜刮</option><option value="kingdom-gear">王国装备搜刮</option><option value="consumable-gear">消耗品搜刮</option><option value="upgrade">改装搜刮</option><option value="exhibition-clash">初步冲突搜刮</option><option value="full-clash">完全冲突搜刮</option></select></label>
+              <label>数量<input id="harvestScavengeCount" type="number" min="1" max="16" value="1"></label>
+              <button id="addHarvestReceipt" type="button" class="button">＋ 记录搜刮</button>
+            </div>
+            <div id="harvestReceipts" class="harvest-receipts"></div>
+          </section>
+          <section class="harvest-panel harvest-allocation-panel">
+            <header><div><p class="eyebrow">LOOT DISTRIBUTION</p><h2>战利品分配</h2></div><p id="harvestQuotaHint"></p></header>
+            <div id="harvestActivities" class="harvest-activities"></div>
+            <div id="harvestLoot" class="harvest-loot-grid"></div>
+          </section>
+          <section class="harvest-panel harvest-summary-panel">
+            <header><div><p class="eyebrow">EXPEDITION CLOSE</p><h2>结算摘要</h2></div><p>系统记录兑换结果；装备与金钱请按摘要核对骑士记录表。</p></header>
+            <div id="harvestSettlement" class="harvest-settlement"></div>
+            <div class="harvest-actions"><button id="lockHarvestGoods" type="button" class="primary">确认公共战果并分发回收材料</button><button id="completeHarvest" type="button" class="primary">确认已同步记录并结束远征</button><button id="reopenHarvest" type="button" class="button">重新编辑兑换</button><button id="resetHarvest" type="button" class="danger">开始新的收获记录</button></div>
+          </section>
+        </div>
       </section>
       <section id="emptyState" class="empty-state">
         <div class="crest">♜</div><h2>选择或新建一张骑士记录表</h2>
@@ -249,10 +356,16 @@
       </div>
     </form>
   </dialog>
+  <div id="runtimeCardPreview" class="runtime-card-preview" aria-hidden="true" hidden></div>
   <script src="/data/monster-data.js?v=1"></script>
   <script src="/data/level-config.js?v=1"></script>
   <script src="/data/encounter-data.js?v=1"></script>
   <script src="/modules/map/data/map-data.js?v=2"></script>
-  <script type="module" src="/app.js?v=25"></script>
+  <script src="/data/character-runtime-data.js?v=9"></script>
+  <script src="/data/character-runtime.js?v=5"></script>
+  <script src="/modules/map/mercenary-rules.js?v=4"></script>
+  <script src="/data/harvest-data.js?v=1"></script>
+  <script src="/data/harvest-runtime.js?v=1"></script>
+  <script type="module" src="/app.js?v=57"></script>
 </body>
 </html>

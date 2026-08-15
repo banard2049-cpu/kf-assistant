@@ -65,7 +65,7 @@ assert.equal(syncContext.result.secondSync, false, "an unchanged upstream assign
 assert.equal(syncContext.result.assignment, "monster-1", "the pool must update its own kingdom wheel");
 assert.equal(syncContext.result.kingdom, "POS", "upstream sync must preserve the selected kingdom");
 
-assert.match(mainIndex, /\/app\.js\?v=24/);
-assert.match(mapIndex, /app\.js\?v=98/);
+assert.match(mainIndex, /\/app\.js\?v=57/);
+assert.match(mapIndex, /app\.js\?v=110/);
 
 console.log("monster pool kingdom: random assignment and map sync preserve the selected kingdom");
