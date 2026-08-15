@@ -12,11 +12,15 @@ assert.match(apiSource, /function resolve_campaign_sync_conflict\(/);
 assert.match(apiSource, /\$path!==['"]modules\.map['"]/);
 assert.match(apiSource, /\$previousRound>\$incomingRound/);
 assert.match(apiSource, /\$result\[['"]resolution['"]\]=['"]existing['"]/);
+assert.match(apiSource, /mercenaries[\s\S]{0,500}updatedAt[\s\S]{0,700}merged-existing-mercenaries/,
+  "same-round map conflicts must keep the newer shared mercenary lifecycle");
 assert.match(apiSource, /\$result=\[['"]value['"]=>\$incoming,['"]resolution['"]=>['"]incoming['"]\]/);
 assert.match(apiSource, /BEGIN IMMEDIATE[\s\S]*owned_campaign\(\$db,\$row\[['"]id['"]\],\$user\[['"]id['"]\]\)/);
 assert.match(apiSource, /['"]resolution['"]=>\$choice\[['"]resolution['"]\]/);
 
 assert.match(bridgeSource, /conflict\.resolution === "existing"/);
+assert.match(bridgeSource, /merged-existing-mercenaries/,
+  "the map bridge must apply a server-merged lifecycle back to the live map page");
 assert.match(bridgeSource, /result\.state\?\.modules\?\.\[moduleName\]/);
 assert.match(bridgeSource, /localStorage\.setItem\(storageKey, serialized\)/);
 assert.match(bridgeSource, /new CustomEvent\("kf:module-state", \{ detail: selected \}\)/);
@@ -24,7 +28,7 @@ assert.match(bridgeSource, /new CustomEvent\("kf:module-state", \{ detail: selec
 assert.match(mapSource, /addEventListener\("kf:module-state"/);
 assert.match(mapSource, /state = replacement/);
 assert.match(mapSource, /checkLimits\(\);\s*render\(\);/);
-assert.match(indexSource, /app\.js\?v=99/);
-assert.match(indexSource, /module-bridge\.js\?v=12/);
+assert.match(indexSource, /app\.js\?v=110/);
+assert.match(indexSource, /module-bridge\.js\?v=17/);
 
 console.log("map sync conflict regression checks passed");

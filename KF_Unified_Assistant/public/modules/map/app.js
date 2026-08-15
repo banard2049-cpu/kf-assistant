@@ -4,6 +4,7 @@
   const DATA = window.KF_MOD_DATA;
   const FOG_RULES = window.KF_FOG_RULES;
   const MERCENARY_RULES = window.KF_MERCENARY_RULES;
+  const CHARACTER_DATA = window.KF_CHARACTER_DATA || {};
   const SAVE_VERSION = 8;
   const SAVE_KEY = "kf-map-host-v8";
   const LEGACY_SAVE_KEYS = ["kf-map-host-v7", "kf-map-host-v6", "kf-map-host-v5"];
@@ -57,7 +58,7 @@
     ["martial", "武艺", "assets/tokens/红-token.png?v=1"],
     ["errant", "游侠", "assets/tokens/绿-token.png?v=1"],
     ["historic", "历史", "assets/tokens/黄-token.png?v=1"],
-    ["mystic", "神秘", "assets/tokens/6-token.png?v=1"]
+    ["mystic", "神秘", "assets/tokens/蓝-token.png?v=1"]
   ];
   const DIRECTIONS = [
     ["north", "北"],
@@ -92,6 +93,24 @@
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[ch]);
   const campaignParty = () => Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY : [];
+  function campaignMercenaryAssignments() {
+    const items = window.KF_MAP_UPSTREAM?.mercenaries;
+    return Array.isArray(items) ? items.filter(item => item?.catalogId && item?.assignedMemberKey) : [];
+  }
+  function hiredMercenaryIds() {
+    return campaignMercenaryAssignments().map(item => item.catalogId);
+  }
+  function projectedHiredMercenaries() {
+    return MERCENARY_RULES.projectHired(campaignMercenaryAssignments(), state.mercenaries);
+  }
+  function characterMercenary(catalogId) {
+    return (CHARACTER_DATA.mercenaries || []).find(card => card.catalogId === catalogId) || null;
+  }
+  function assignedMercenaryMember(assignment) {
+    const memberKey = String(assignment?.assignedMemberKey || "");
+    const sourceId = memberKey.replace(/^knight:/, "");
+    return campaignParty().find(item => item.id === memberKey || item.id === sourceId || `squire:${item.squireId}` === memberKey) || null;
+  }
   const memberOptions = member => {
     const groups = [
       ["骑士", Array.isArray(window.KF_CAMPAIGN_KNIGHTS) ? window.KF_CAMPAIGN_KNIGHTS : []],
@@ -562,14 +581,22 @@
       if (!Array.isArray(exp.scouting.lastPeek)) exp.scouting.lastPeek = [];
       exp.scouting.reordering = exp.scouting.reordering === true;
     });
-    saved.mercenaries = MERCENARY_RULES.normalizeState(saved.mercenaries);
+    saved.mercenaries = MERCENARY_RULES.normalizeState(saved.mercenaries, hiredMercenaryIds());
     return saved;
   }
 
   function readState() {
+    let partialMercenaries = null;
     for (const key of [SAVE_KEY, ...LEGACY_SAVE_KEYS]) {
       try {
         const saved = JSON.parse(localStorage.getItem(key));
+        // Character pages can change a hired mercenary before this campaign has
+        // ever opened the map. Keep that partial slice while still looking for
+        // a complete legacy map that can be migrated underneath it.
+        if (saved?.version == null && saved?.mercenaries) {
+          partialMercenaries = saved.mercenaries;
+          continue;
+        }
         if ([5, 6, 7, SAVE_VERSION].includes(saved?.version)) {
           saved.version = SAVE_VERSION;
           applySavedTileRegionCorrections(saved);
@@ -578,13 +605,16 @@
           if (!saved.knights.some(knight => knight.id === saved.mainKnightId && knight.memberType !== "squire")) {
             saved.mainKnightId = "";
           }
+          if (partialMercenaries) saved.mercenaries = MERCENARY_RULES.normalizeState(partialMercenaries, hiredMercenaryIds());
           return saved;
         }
       } catch {
         // Try the next storage key before falling back to a new state.
       }
     }
-    return defaultState();
+    const fresh = defaultState();
+    if (partialMercenaries) fresh.mercenaries = MERCENARY_RULES.normalizeState(partialMercenaries, hiredMercenaryIds());
+    return fresh;
   }
 
   let state = readState();
@@ -594,14 +624,24 @@
   let pendingEncounterAutoStart = false;
   let kingdomPanelExpanded = true;
   let mapFocusFrame = 0;
+  let hoveredMercenaryPreview = null;
+  let focusedMercenaryPreview = null;
+  let mercenaryPreviewFrame = 0;
   const mapState = () => state.maps[state.kingdom];
   const mainlineKnight = () => state.knights.find(knight =>
     knight.id === state.mainKnightId && knight.memberType !== "squire"
   ) || null;
-  const activeMercenary = cardId => state.mercenaries.active.find(item => item.cardId === cardId) || null;
-  const activeRogues = face => state.mercenaries.active.filter(item =>
-    item.face === face && MERCENARY_RULES.CATALOG[item.cardId]?.role === "rogue"
-  );
+  const activeMercenary = cardId => {
+    const definition = MERCENARY_RULES.definitionFor(cardId);
+    if (!definition) return null;
+    const item = projectedHiredMercenaries().find(entry => entry.catalogId === definition.catalogId && entry.status === "active");
+    return item ? { ...item, cardId: definition.id } : null;
+  };
+  const activeRogues = face => projectedHiredMercenaries().flatMap(item => {
+    const definition = MERCENARY_RULES.definitionFor(item.catalogId);
+    return definition?.role === "rogue" && item.status === "active" && item.face === face
+      ? [{ ...item, cardId: definition.id }] : [];
+  });
 
   function setCurrentTile(current, tileId) {
     if (current.current !== tileId) current.encounterSuppressions = [];
@@ -811,6 +851,11 @@
     encounterNavigationTimer = setTimeout(openPendingEncounter, 180);
   }
 
+  function clashPhaseFromTime(value) {
+    const time = Number(value);
+    return time >= 8 && time < 16 ? "preliminary" : "full";
+  }
+
   async function openKingdomWheelMonster(monsterId, level, districtId, destination, conflictLocation = "") {
     const monster = DATA.monsters.find(item => item.id === monsterId);
     if (!monster) return toast("无法识别该怪物，不能建立遭遇或冲突");
@@ -826,6 +871,7 @@
       monster: monster.name,
       level: resolvedLevel,
       type: "normal",
+      clashPhase: destination === "conflict" ? clashPhaseFromTime(state.trackers.time) : "",
       returnUrl: "/modules/map/",
       mapWheel: {
         kingdom: state.kingdom,
@@ -1080,7 +1126,7 @@
     state.maps[state.kingdom] = { ...item.map, history: remaining };
     state.trackers = normalizeTrackers(item.trackers);
     state.trackNotes = normalizeTrackNotes(item.trackNotes || state.trackNotes);
-    state.mercenaries = MERCENARY_RULES.normalizeState(item.mercenaries || state.mercenaries);
+    state.mercenaries = MERCENARY_RULES.normalizeState(item.mercenaries || state.mercenaries, hiredMercenaryIds());
     enterStep(item.step);
     state.round = item.round;
     addLog(`撤销：${item.label}`);
@@ -1716,8 +1762,9 @@
   }
 
   function knightMatchesClue(knight, clueType) {
-    if (knight.id === state.mainKnightId) return false;
-    if (state.taskMode && knight.task) return knight.task === clueType;
+    if (knight.id === state.mainKnightId) {
+      return Boolean(state.taskMode && knight.task && knight.task === clueType);
+    }
     return knight.primary === clueType || knight.secondary === clueType;
   }
 
@@ -2162,8 +2209,98 @@
   }
 
   function mercenaryCardImage(definition, face, extra = "") {
-    const source = definition.faces[face]?.image;
-    return `<img class="mercenary-card-image ${extra}" src="${esc(source)}" alt="${esc(definition.name)} ${definition.level} 级 ${face} 面">`;
+    const label = `${definition.nameZhCn || definition.name} ${definition.level || ""} 级 ${face} 面`.replace(/\s+/g, " ").trim();
+    if (definition.faces) {
+      const source = definition.faces[face]?.image;
+      return `<img class="mercenary-card-image ${extra}" src="${esc(source)}" alt="${esc(label)}" tabindex="0" data-mercenary-card-preview data-preview-key="${esc(definition.catalogId || definition.id)}:${face}">`;
+    }
+    const art = face === "B" ? definition.backArt || definition.art : definition.art;
+    if (!art?.asset) return `<div class="mercenary-card-image mercenary-card-missing ${extra}" role="img" aria-label="${esc(label)}" tabindex="0" data-mercenary-card-preview>${esc(label)}</div>`;
+    const crop = art.crop || {}, columns = Math.max(1, Number(crop.columns) || 1), rows = Math.max(1, Number(crop.rows) || 1);
+    const column = Math.max(0, Number(crop.column) || 0), row = Math.max(0, Number(crop.row) || 0);
+    const positionX = columns === 1 ? 0 : column / (columns - 1) * 100;
+    const positionY = rows === 1 ? 0 : row / (rows - 1) * 100;
+    const aspect = Math.max(.1, Number(art.aspect) || .635135);
+    return `<div class="mercenary-card-image mercenary-atlas-art ${extra}" role="img" aria-label="${esc(label)}" tabindex="0" data-mercenary-card-preview data-card-aspect="${aspect}" data-preview-key="${esc(definition.catalogId || definition.id)}:${face}" style="--mercenary-atlas:url('${esc(art.asset)}');--mercenary-atlas-size-x:${columns * 100}%;--mercenary-atlas-size-y:${rows * 100}%;--mercenary-atlas-pos-x:${positionX}%;--mercenary-atlas-pos-y:${positionY}%;--mercenary-card-aspect:${aspect}"></div>`;
+  }
+
+  function mercenaryCardPreviewLayer() {
+    let layer = document.querySelector(".mercenary-card-preview");
+    if (layer) return layer;
+    layer = document.createElement("div");
+    layer.className = "mercenary-card-preview";
+    layer.hidden = true;
+    layer.setAttribute("aria-hidden", "true");
+    document.body.append(layer);
+    return layer;
+  }
+
+  function activeMercenaryPreviewSource() {
+    if (focusedMercenaryPreview?.isConnected) return focusedMercenaryPreview;
+    if (hoveredMercenaryPreview?.isConnected) return hoveredMercenaryPreview;
+    return null;
+  }
+
+  function hideMercenaryCardPreview() {
+    const layer = document.querySelector(".mercenary-card-preview");
+    if (!layer) return;
+    layer.hidden = true;
+    layer.replaceChildren();
+    delete layer.dataset.previewKey;
+  }
+
+  function syncMercenaryCardPreview() {
+    mercenaryPreviewFrame = 0;
+    const source = activeMercenaryPreviewSource();
+    if (!source) return hideMercenaryCardPreview();
+    const rect = source.getBoundingClientRect();
+    if (!rect.width || !rect.height) return hideMercenaryCardPreview();
+
+    const layer = mercenaryCardPreviewLayer();
+    const ratio = Number(source.dataset.cardAspect) || (source.naturalWidth && source.naturalHeight
+      ? source.naturalWidth / source.naturalHeight
+      : rect.width / rect.height);
+    const margin = 16;
+    const gap = 12;
+    const availableWidth = Math.max(80, window.innerWidth - margin * 2);
+    const availableHeight = Math.max(80, window.innerHeight - margin * 2);
+    const maximumWidth = Math.min(420, availableWidth, availableHeight * ratio);
+    const width = Math.min(maximumWidth, Math.max(240, rect.width * 2.15));
+    const height = width / ratio;
+    let left = rect.left - gap - width;
+    if (left < margin) left = rect.right + gap;
+    if (left + width > window.innerWidth - margin) left = (window.innerWidth - width) / 2;
+    const top = Math.min(
+      Math.max(margin, rect.top + (rect.height - height) / 2),
+      Math.max(margin, window.innerHeight - height - margin),
+    );
+    const previewKey = source.dataset.previewKey || `${source.currentSrc || source.src || source.style.cssText}|${source.alt || source.getAttribute("aria-label") || ""}`;
+    if (layer.dataset.previewKey !== previewKey) {
+      const image = source.cloneNode(false);
+      image.removeAttribute("tabindex");
+      image.removeAttribute("data-mercenary-card-preview");
+      image.setAttribute("aria-hidden", "true");
+      if ("alt" in image) image.alt = "";
+      layer.replaceChildren(image);
+      layer.dataset.previewKey = previewKey;
+    }
+    layer.style.left = `${Math.round(left)}px`;
+    layer.style.top = `${Math.round(top)}px`;
+    layer.style.width = `${Math.round(width)}px`;
+    layer.hidden = false;
+  }
+
+  function scheduleMercenaryCardPreview() {
+    if (mercenaryPreviewFrame) return;
+    mercenaryPreviewFrame = requestAnimationFrame(syncMercenaryCardPreview);
+  }
+
+  function resetMercenaryCardPreview() {
+    hoveredMercenaryPreview = null;
+    focusedMercenaryPreview = null;
+    if (mercenaryPreviewFrame) cancelAnimationFrame(mercenaryPreviewFrame);
+    mercenaryPreviewFrame = 0;
+    hideMercenaryCardPreview();
   }
 
   function mercenaryExplorationChoice() {
@@ -2196,19 +2333,26 @@
     const mercenaries = state.mercenaries;
     const current = mapState();
     const exp = current.exploration;
-    const available = MERCENARY_RULES.availableCards(mercenaries);
+    const assignments = Array.isArray(window.KF_MAP_UPSTREAM?.mercenaries) ? window.KF_MAP_UPSTREAM.mercenaries : [];
+    const hiredCards = MERCENARY_RULES.projectHired(assignments, mercenaries);
     const previousTileId = encounterBacktrackTarget(current);
     const pendingMarker = current.monsters.find(item => item.id === current.pendingEncounter);
     const pendingMonsterName = DATA.monsters.find(item => item.id === pendingMarker?.monsterId)?.name || "当前怪物";
 
-    const activeCards = mercenaries.active.map(item => {
-      const definition = MERCENARY_RULES.CATALOG[item.cardId];
-      const face = definition.faces[item.face];
+    const cards = hiredCards.map(item => {
+      const card = characterMercenary(item.catalogId);
+      if (!card) return "";
+      const definition = MERCENARY_RULES.definitionFor(item.catalogId);
+      const face = definition?.faces[item.face] || null;
+      const assignedMember = assignedMercenaryMember(item);
+      const ruleCardId = definition?.id || "";
       let delveAction = "";
       let actionNote = "";
 
-      if (definition.role === "rogue") {
-        const count = MERCENARY_RULES.drawCount(item.cardId);
+      if (item.status === "discarded") {
+        actionNote = "该佣兵已进入弃牌区；可用“取回”纠正误操作。";
+      } else if (definition?.role === "rogue") {
+        const count = MERCENARY_RULES.drawCount(ruleCardId);
         const canUseA = item.face === "A"
           && state.step === 2
           && exp.resolvedRound !== state.round
@@ -2220,55 +2364,42 @@
         const encounterDisabled = encounterAction === "skip-and-backtrack" && !previousTileId;
         delveAction = item.face === "A"
           ? definition.level === 1
-            ? `<button class="small" data-mercenary-redraw="${esc(item.cardId)}" ${canUseA ? "" : "disabled"}>忽略当前探索牌并重抽</button>`
-            : `<button class="small" data-mercenary-choice="${esc(item.cardId)}" ${canUseA ? "" : "disabled"}>抽 ${count} 张并选择</button>`
+            ? `<button class="small" data-mercenary-redraw="${esc(ruleCardId)}" ${canUseA ? "" : "disabled"}>忽略当前探索牌并重抽</button>`
+            : `<button class="small" data-mercenary-choice="${esc(ruleCardId)}" ${canUseA ? "" : "disabled"}>抽 ${count} 张并选择</button>`
           : encounterAction
-            ? `<button class="small" data-mercenary-skip="${esc(item.cardId)}" ${encounterDisabled ? "disabled" : ""}>忽略 ${esc(pendingMonsterName)}${encounterAction === "skip-and-backtrack" ? "并退回" : ""}</button>`
+            ? `<button class="small" data-mercenary-skip="${esc(ruleCardId)}" ${encounterDisabled ? "disabled" : ""}>忽略 ${esc(pendingMonsterName)}${encounterAction === "skip-and-backtrack" ? "并退回" : ""}</button>`
             : '<span class="tiny">深入效果将在遭遇或伏击触发时可用。</span>';
         if (encounterDisabled) actionNote = "没有以当前板块结尾的最近旅行路线，不能执行退回效果。";
-      } else {
-        const targets = mageTargets(item.cardId, current);
-        const blockReason = mageMoveBlockReason(item.cardId, current);
+      } else if (definition?.role === "mage") {
+        const targets = mageTargets(ruleCardId, current);
+        const blockReason = mageMoveBlockReason(ruleCardId, current);
         delveAction = `<div class="mercenary-move-controls">
-          <label>目的地<select data-mercenary-target="${esc(item.cardId)}" ${blockReason ? "disabled" : ""}>${targets.map(tileId => `<option value="${esc(tileId)}">${esc(tileLabel(tile(tileId)))}</option>`).join("")}</select></label>
-          <button class="small" data-mercenary-move="${esc(item.cardId)}" ${blockReason ? "disabled" : ""}>放置队伍并结算</button>
+          <label>目的地<select data-mercenary-target="${esc(ruleCardId)}" ${blockReason ? "disabled" : ""}>${targets.map(tileId => `<option value="${esc(tileId)}">${esc(tileLabel(tile(tileId)))}</option>`).join("")}</select></label>
+          <button class="small" data-mercenary-move="${esc(ruleCardId)}" ${blockReason ? "disabled" : ""}>放置队伍并结算</button>
         </div>`;
         actionNote = blockReason;
+      } else if (item.status === "active") {
+        actionNote = "该佣兵的深入与冲突效果请按实体卡结算。";
       }
 
-      return `<article class="mercenary-card active role-${esc(definition.role)}">
-        <div class="mercenary-card-visual">${mercenaryCardImage(definition, item.face)}<span class="mercenary-face-badge">${item.face} 面</span></div>
+      const role = definition?.role || String(card.name || "mercenary").toLowerCase().replace(/[^a-z]+/g, "-");
+      return `<article class="mercenary-card active role-${esc(role)} ${item.status === "discarded" ? "discarded" : ""}" data-hired-mercenary="${esc(item.catalogId)}">
+        <div class="mercenary-card-visual">${mercenaryCardImage(definition || card, item.face)}<span class="mercenary-face-badge">${item.face} 面${item.status === "discarded" ? " · 已弃置" : ""}</span></div>
         <div class="mercenary-card-copy">
-          <div class="panel-header"><div><div class="eyebrow">${esc(definition.en)} · LEVEL ${definition.level}</div><h3>${esc(definition.name)} ${definition.level} 级</h3></div><span class="badge gold">数值 ${definition.value}</span></div>
-          <div class="mercenary-rule"><strong>深入</strong><p>${esc(face.delve)}</p></div>
-          <div class="mercenary-rule"><strong>冲突</strong><p>${esc(face.conflict)}</p></div>
-          <div class="mercenary-card-actions">${delveAction}<button class="small secondary" data-mercenary-conflict="${esc(item.cardId)}">冲突效果已人工结算</button></div>
+          <div class="panel-header"><div><div class="eyebrow">${esc(card.name || definition?.en || "MERCENARY")} · LEVEL ${card.level || definition?.level || 1}</div><h3>${esc(card.nameZhCn || definition?.name || card.name)} ${card.level || definition?.level || 1} 级</h3></div><span class="badge ${item.status === "discarded" ? "" : "gold"}">${item.status === "discarded" ? "已弃置" : `负责人 ${esc(assignedMember?.name || item.assignedMemberKey)}`}</span></div>
+          ${face ? `<div class="mercenary-rule"><strong>深入</strong><p>${esc(face.delve)}</p></div><div class="mercenary-rule"><strong>冲突</strong><p>${esc(face.conflict)}</p></div>` : ""}
+          <div class="mercenary-card-actions">${delveAction}${definition && item.status === "active" ? `<button class="small secondary" data-mercenary-conflict="${esc(ruleCardId)}">冲突效果已人工结算</button>` : ""}<div class="mercenary-lifecycle-actions"><button class="small secondary" data-mercenary-flip="${esc(item.catalogId)}">翻至 ${item.face === "A" ? "B" : "A"} 面</button><button class="small ${item.status === "discarded" ? "secondary" : "danger"}" data-mercenary-discard="${esc(item.catalogId)}">${item.status === "discarded" ? "取回" : "弃置"}</button></div></div>
           ${actionNote ? `<p class="tiny">${esc(actionNote)}</p>` : ""}
         </div>
       </article>`;
     }).join("");
-
-    const availableCards = available.map(definition => `<article class="mercenary-card compact role-${esc(definition.role)}">
-      ${mercenaryCardImage(definition, "A")}
-      <div class="mercenary-card-copy">
-        <div><div class="eyebrow">${esc(definition.en)} · LEVEL ${definition.level}</div><h3>${esc(definition.name)} ${definition.level} 级</h3></div>
-        <p class="tiny">${esc(definition.faces.A.delve)}</p>
-        <button class="small" data-hire-mercenary="${esc(definition.id)}">雇佣 · 数值 ${definition.value}</button>
-      </div>
-    </article>`).join("");
-
-    const discardedCards = mercenaries.discard.map(cardId => {
-      const definition = MERCENARY_RULES.CATALOG[cardId];
-      return definition ? `<div class="mercenary-discard-card role-${esc(definition.role)}">${mercenaryCardImage(definition, "B")}<span>${esc(definition.name)} ${definition.level} · 已弃置</span></div>` : "";
-    }).join("");
+    const discardedCount = hiredCards.filter(item => item.status === "discarded").length;
 
     return `<section class="panel mercenary-panel">
-      <div class="panel-header"><div><div class="eyebrow">MERCENARIES</div><h3>佣兵</h3></div><span class="badge">${mercenaries.active.length} 雇佣 · ${mercenaries.discard.length} 弃置</span></div>
+      <div class="panel-header"><div><div class="eyebrow">HIRED MERCENARIES</div><h3>当前已雇佣佣兵</h3></div><span class="badge">${hiredCards.length} / 4 · ${discardedCount} 弃置</span></div>
       ${current.pendingEncounter ? `<div class="alert"><strong>遭遇待处理：</strong>${esc(pendingMonsterName)}。可使用符合条件的 B 面盗贼，或从遭遇面板继续进入。</div>` : ""}
       ${mercenaryExplorationChoice()}
-      <div class="mercenary-section"><h3>已雇佣</h3><div class="mercenary-active-list">${activeCards || '<p class="muted">尚未雇佣佣兵。</p>'}</div></div>
-      <div class="mercenary-section"><h3>可雇佣</h3><div class="mercenary-market">${availableCards || '<p class="muted">没有可雇佣的佣兵。</p>'}</div></div>
-      <div class="mercenary-section"><h3>弃牌</h3><div class="mercenary-discard">${discardedCards || '<p class="muted">弃牌区为空。</p>'}</div></div>
+      <div class="mercenary-section"><div class="mercenary-active-list">${cards || '<p class="muted">尚未雇佣佣兵。请从“前哨阶段”选择佣兵并分配负责人。</p>'}</div></div>
     </section>`;
   }
 
@@ -2399,11 +2530,13 @@
     const current = mapState();
     const lastClue = current.exploration.lastClueResolution;
     const selectableMainKnights = state.knights.filter(knight => knight.memberType !== "squire");
+    const mainKnight = mainlineKnight();
     const clueKnights = state.knights.filter(knight => knight.id !== state.mainKnightId);
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">CLUES & STORY</div><h3>队伍线索与故事队列</h3></div><span class="badge">自选未分配 ${state.trackers.unassignedClues}</span></div>
-      <div class="fields">
+      <div class="fields three">
         <label>主线骑士<select id="mainKnightSelect"><option value="">未指定</option>${selectableMainKnights.map(knight => `<option value="${esc(knight.id)}" ${knight.id === state.mainKnightId ? "selected" : ""}>${esc(knight.name)}</option>`).join("")}</select></label>
+        <label>任务线索<select id="mainKnightTaskSelect" ${mainKnight ? "" : "disabled"}><option value="">未设置</option>${CLUES.map(([id, name]) => `<option value="${id}" ${mainKnight?.task === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
         <button id="autoAssignClueRequirements" type="button" class="secondary">自动分配主次线索</button>
       </div>
       <label class="check"><input id="taskMode" type="checkbox" ${state.taskMode ? "checked" : ""}>任务模式（冲突与休息按骑士手册／故事段落人工确认）</label>
@@ -2412,10 +2545,9 @@
       ${clueKnights.map(knight => `<div class="clue-row">
         <div><span class="badge ${knight.memberType === "squire" ? "gold" : ""}">${knight.memberType === "squire" ? "侍从" : "骑士"}</span><select data-knight-name="${knight.id}">${memberOptions(knight)}</select></div>
         <div class="legend clue-records">${CLUES.map(([id, name, icon]) => `<span class="badge clue-record" title="${esc(name)}线索"><img class="clue-token-icon" src="${esc(icon)}" alt="${esc(name)}线索"><strong>${knight.clues[id]}</strong><button class="inline-step" data-clue="${knight.id}|${id}|-1">−</button><button class="inline-step" data-clue="${knight.id}|${id}|1">＋</button></span>`).join("")}</div>
-        <div class="fields three">
+        <div class="fields">
           <label>主要需求<select data-requirement="${knight.id}|primary"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.primary === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
           <label>次要需求<select data-requirement="${knight.id}|secondary"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.secondary === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
-          <label>任务需求<select data-requirement="${knight.id}|task"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.task === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
         </div>
       </div>`).join("")}
       <div class="fields">
@@ -2597,19 +2729,23 @@
 
   function partyOverviewPanel() {
     const party = campaignParty();
-    const clueKnights = state.knights.filter(knight => knight.id !== state.mainKnightId);
+    const partyKnights = state.knights;
     const memberFor = knight => party.find(member =>
       member.id === knight.sheetId
       || member.sheetId === knight.sheetId
       || (!knight.sheetId && member.name === knight.name)
     );
     const resourceView = knight => {
-      const selected = state.taskMode && knight.task
-        ? [[knight.task, "任务"]]
-        : [[knight.primary, "主要"], [knight.secondary, "次要"]].filter(([id]) => id);
-      const resources = selected.length
-        ? selected.filter(([id], index, items) => items.findIndex(([other]) => other === id) === index)
-        : CLUES.map(([id]) => [id, ""]);
+      const isMainKnight = knight.id === state.mainKnightId;
+      const selected = isMainKnight
+        ? (state.taskMode ? [[knight.task, "任务"]] : [])
+        : [[knight.primary, "主要"], [knight.secondary, "次要"]];
+      const resources = selected
+        .filter(([id]) => id)
+        .filter(([id], index, items) => items.findIndex(([other]) => other === id) === index);
+      if (!resources.length) {
+        return `<span class="party-resource-empty">${isMainKnight ? (state.taskMode ? "未设置任务线索" : "主线骑士") : "未设置主／次线索"}</span>`;
+      }
       return resources.map(([id, role]) => {
         const clue = CLUES.find(([clueId]) => clueId === id);
         const label = clue?.[1] || id;
@@ -2632,18 +2768,20 @@
     return `<section class="party-overview" aria-label="当前出征队伍">
       <div class="party-overview-heading">
         <div><div class="eyebrow">EXPEDITION PARTY</div><h3>当前出征队伍</h3></div>
-        <div class="legend"><span class="badge">${clueKnights.length} 条线索记录</span><span class="badge gold">自选线索 ${state.trackers.unassignedClues}</span></div>
+        <div class="legend"><span class="badge">${partyKnights.length} 名成员</span><span class="badge gold">自选线索 ${state.trackers.unassignedClues}</span></div>
       </div>
-      <div class="party-roster" style="--party-records:${Math.max(1, clueKnights.length)}">
-        ${clueKnights.map(knight => {
+      <div class="party-roster" style="--party-records:${Math.max(1, partyKnights.length)}">
+        ${partyKnights.map(knight => {
           const member = memberFor(knight);
           const portraitId = member?.type === "squire" ? member.squireId : member?.knightId;
-          return `<article class="party-member">
+          const isMainKnight = knight.id === state.mainKnightId;
+          return `<article class="party-member ${isMainKnight ? "main-story" : ""}" data-party-member="${esc(knight.id)}">
             <div class="party-portrait">
               ${portraitId ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg" alt="${esc(knight.name)}立绘" loading="lazy">` : `<span aria-hidden="true">${esc(knight.name.slice(0, 1) || "?")}</span>`}
             </div>
             <div class="party-member-info">
               <strong title="${esc(knight.name)}">${esc(knight.name)}</strong>
+              ${isMainKnight ? '<span class="party-member-role-badge">主线</span>' : ""}
             </div>
             <div class="party-resources">${resourceView(knight)}</div>
           </article>`;
@@ -2720,6 +2858,7 @@
   }
 
   function render() {
+    resetMercenaryCardPreview();
     const current = mapState();
     const selected = tile(current.selected);
     const exploredCount = Object.values(current.tileState).filter(value => value === "explored").length;
@@ -2809,6 +2948,7 @@
   }
 
   function renderLegacy() {
+    resetMercenaryCardPreview();
     const current = mapState();
     const selected = tile(current.selected);
     $("#kingdomSelect").value = state.kingdom;
@@ -3122,8 +3262,7 @@
         || Number(state.trackers.time) !== 0
         || current.tileResolution
         || current.monsters.length
-        || state.mercenaries.active.length
-        || state.mercenaries.discard.length
+        || Object.keys(state.mercenaries.usage || {}).length
         || Object.values(current.tileState).filter(value => value === "explored").length > 1
         || state.knights.some(knight => Object.values(knight.clues).some(value => Number(value) > 0));
       if (hasProgress && !confirm("更换起始板块会清空当前地图进度、深入轨、佣兵和已获得线索。继续吗？")) return;
@@ -3139,6 +3278,7 @@
       state.maps[state.kingdom].districtWheelSource = districtWheelSource;
       state.trackers = { threat: 0, curse: 0, time: 0, unassignedClues: 0 };
       state.mercenaries = MERCENARY_RULES.createState();
+      MERCENARY_RULES.touchState(state.mercenaries);
       state.knights.forEach(knight => {
         knight.clues = { martial: 0, errant: 0, historic: 0, mystic: 0 };
       });
@@ -3511,16 +3651,26 @@
       save(true);
     }));
     $("#openPendingEncounter")?.addEventListener("click", openPendingEncounter);
-    $$("[data-hire-mercenary]").forEach(button => button.addEventListener("click", () => {
-      const cardId = button.dataset.hireMercenary;
-      const definition = MERCENARY_RULES.CATALOG[cardId];
-      if (!definition) return;
-      snapshot(`雇佣${definition.name} ${definition.level}`);
-      if (!MERCENARY_RULES.hire(state.mercenaries, cardId)) {
-        mapState().history.pop();
-        return toast(`该${definition.name}已经雇佣或进入弃牌区`);
-      }
-      addLog(`雇佣${definition.name} ${definition.level} 级（左上角数值 ${definition.value}，未自动扣除资源）`);
+    $$("[data-mercenary-flip]").forEach(button => button.addEventListener("click", () => {
+      if (state.mercenaries.pendingAction) return toast("请先完成盗贼探索牌选择");
+      const catalogId = button.dataset.mercenaryFlip;
+      const card = characterMercenary(catalogId);
+      if (!hiredMercenaryIds().includes(catalogId)) return;
+      snapshot(`${card?.nameZhCn || card?.name || "佣兵"}手动翻面`);
+      if (!MERCENARY_RULES.flipMercenary(state.mercenaries, catalogId, hiredMercenaryIds())) return;
+      const currentFace = MERCENARY_RULES.projectHired(campaignMercenaryAssignments(), state.mercenaries).find(item => item.catalogId === catalogId)?.face || "A";
+      addLog(`${card?.nameZhCn || card?.name || "佣兵"}手动翻至 ${currentFace} 面`);
+      save(true);
+    }));
+    $$("[data-mercenary-discard]").forEach(button => button.addEventListener("click", () => {
+      if (state.mercenaries.pendingAction && !confirm("当前有尚未完成的盗贼选牌。仍要弃置佣兵并取消该选择吗？")) return;
+      const catalogId = button.dataset.mercenaryDiscard;
+      const card = characterMercenary(catalogId);
+      if (!hiredMercenaryIds().includes(catalogId)) return;
+      snapshot(`${card?.nameZhCn || card?.name || "佣兵"}切换弃置状态`);
+      if (!MERCENARY_RULES.discardMercenary(state.mercenaries, catalogId, hiredMercenaryIds())) return;
+      const status = MERCENARY_RULES.projectHired(campaignMercenaryAssignments(), state.mercenaries).find(item => item.catalogId === catalogId)?.status || "active";
+      addLog(`${card?.nameZhCn || card?.name || "佣兵"}${status === "discarded" ? "进入弃牌区" : "从弃牌区取回"}`);
       save(true);
     }));
     $$("[data-mercenary-conflict]").forEach(button => button.addEventListener("click", () => {
@@ -3575,6 +3725,7 @@
       const pending = MERCENARY_RULES.beginExplorationChoice(cardId, exp.deck);
       if (!pending) return toast(`探索牌组不足 ${MERCENARY_RULES.drawCount(cardId)} 张`);
       state.mercenaries.pendingAction = pending;
+      MERCENARY_RULES.touchState(state.mercenaries);
       activeTool = "mercenary";
       addLog(`盗贼 ${definition.level} 级 A 面：查看探索牌组顶部 ${pending.drawn.length} 张，等待选择`);
       save(true);
@@ -3583,6 +3734,7 @@
       if (!state.mercenaries.pendingAction) return;
       const definition = MERCENARY_RULES.CATALOG[state.mercenaries.pendingAction.cardId];
       state.mercenaries.pendingAction = null;
+      MERCENARY_RULES.touchState(state.mercenaries);
       addLog(`取消盗贼 ${definition?.level || ""} 级探索牌选择；牌序未改变`);
       save(true);
     });
@@ -4025,6 +4177,12 @@
       state.mainKnightId = selected?.id || "";
       save(true);
     });
+    $("#mainKnightTaskSelect")?.addEventListener("change", event => {
+      const mainKnight = mainlineKnight();
+      if (!mainKnight) return;
+      mainKnight.task = event.target.value;
+      save(true);
+    });
     $("#autoAssignClueRequirements")?.addEventListener("click", () => {
       const mainKnight = mainlineKnight();
       if (!mainKnight) return toast("请先选择主线骑士");
@@ -4183,6 +4341,7 @@
     state.trackers = { threat: 0, curse: 0, time: 0, unassignedClues: 0 };
     state.trackNotes = normalizeTrackNotes();
     state.mercenaries = MERCENARY_RULES.createState();
+    MERCENARY_RULES.touchState(state.mercenaries);
     enterStep(0);
     state.round = 1;
     addLog(`重置 ${kingdomData().label}`);
@@ -4218,7 +4377,41 @@
 
   addEventListener("kf:map-upstream", event => {
     if (event.detail && typeof event.detail === "object") window.KF_MAP_UPSTREAM = event.detail;
+    state.mercenaries = MERCENARY_RULES.normalizeState(state.mercenaries, hiredMercenaryIds());
     if (syncDistrictWheelFromUpstream()) save(true);
+    else render();
+  });
+  $("#managePartyButton")?.addEventListener("click", async () => {
+    await window.KF_MODULE_BRIDGE?.flush?.();
+    location.href="/?module=party";
+  });
+  $("#openOutpostButton")?.addEventListener("click", async () => {
+    await window.KF_MODULE_BRIDGE?.flush?.();
+    location.href="/?module=outpost";
+  });
+  $("#recordMapScavenge")?.addEventListener("click", () => $("#mapScavengeDialog")?.showModal());
+  $("[data-map-scavenge-cancel]")?.addEventListener("click", () => $("#mapScavengeDialog")?.close());
+  $("#mapScavengeForm")?.addEventListener("submit", event => {
+    event.preventDefault();
+    const category = $("#mapScavengeKind")?.value || "choice";
+    const count = Math.max(1, Math.min(16, Number($("#mapScavengeCount")?.value) || 1));
+    const request = category === "choice" ? { kind: "choice", count } : { kind: "category", category, count };
+    const categoryNames = { choice: "普通搜刮", "kingdom-gear": "王国装备搜刮", "consumable-gear": "消耗品搜刮", upgrade: "改装搜刮" };
+    const recorded = window.KF_MODULE_BRIDGE?.recordHarvestReceipt?.({
+      id: `map-${uid()}`,
+      source: "map",
+      sourceRef: `delve:${state.kingdom}:${state.trackers?.time ?? ""}:${state.trackers?.threat ?? ""}`,
+      label: `深入阶段 · ${categoryNames[category] || category} ${count}`,
+      requests: [request],
+    });
+    if (!recorded) { toast("收获模块尚未连接，搜刮未记录"); return; }
+    $("#mapScavengeDialog")?.close();
+    toast(`已记录 ${count} 张战利品选择，远征结束时在收获阶段分配`);
+  });
+  $("#failExpedition")?.addEventListener("click", async () => {
+    if (!confirm("确认本次远征失败？请先按故事或规则结算失败效果，随后进入收获阶段分配已累积的战利品。")) return;
+    await window.KF_MODULE_BRIDGE?.flush?.();
+    window.KF_MODULE_BRIDGE?.openHarvest?.();
   });
 
   addEventListener("kf:module-state", event => {
@@ -4246,6 +4439,35 @@
     render();
     toast(`检测到并发修改，已保留服务器上轮次更多的第 ${state.round} 轮存档`);
   });
+
+  const mapAppRoot = $("#app");
+  mapAppRoot.addEventListener("pointerover", event => {
+    if (window.matchMedia?.("(hover:hover)").matches === false) return;
+    const source = event.target.closest?.("[data-mercenary-card-preview]");
+    if (!source || !mapAppRoot.contains(source)) return;
+    hoveredMercenaryPreview = source;
+    scheduleMercenaryCardPreview();
+  });
+  mapAppRoot.addEventListener("pointerout", event => {
+    const source = event.target.closest?.("[data-mercenary-card-preview]");
+    if (!source || source.contains(event.relatedTarget)) return;
+    if (hoveredMercenaryPreview === source) hoveredMercenaryPreview = null;
+    scheduleMercenaryCardPreview();
+  });
+  mapAppRoot.addEventListener("focusin", event => {
+    const source = event.target.closest?.("[data-mercenary-card-preview]");
+    if (!source || !mapAppRoot.contains(source)) return;
+    focusedMercenaryPreview = source;
+    scheduleMercenaryCardPreview();
+  });
+  mapAppRoot.addEventListener("focusout", event => {
+    const source = event.target.closest?.("[data-mercenary-card-preview]");
+    if (!source || source.contains(event.relatedTarget)) return;
+    if (focusedMercenaryPreview === source) focusedMercenaryPreview = null;
+    scheduleMercenaryCardPreview();
+  });
+  document.addEventListener("scroll", scheduleMercenaryCardPreview, true);
+  addEventListener("resize", scheduleMercenaryCardPreview);
 
   const completedEncounterConsumed = consumeCompletedEncounter();
   const initialWheelSynced = syncDistrictWheelFromUpstream();

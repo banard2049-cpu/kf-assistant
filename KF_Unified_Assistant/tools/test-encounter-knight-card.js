@@ -14,6 +14,6 @@ assert.match(knightPanelSource, /\$\{crop\(currentLevel\(\), currentLevel\(\)\.s
   "knight round must render the current monster card and side");
 assert.match(knightPanelSource, /badge gold[^`]*\$\{currentMonster\(\)\.name\}/,
   "knight round identifies the monster shown on the card");
-assert.match(indexSource, /app\.js\?v=24/, "encounter app cache version is updated");
+assert.match(indexSource, /app\.js\?v=26/, "encounter app cache version is updated");
 
 console.log("encounter knight round: current monster card is visible");

@@ -48,7 +48,7 @@ assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*touch-action: non
 assert.match(styleSource, /button\.effect-card-marker\.dragging \{/);
 assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*border-radius: 0;/,
   "effect marker assets must not be forced into circles");
-assert.match(indexSource, /styles\.css\?v=59/);
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(indexSource, /styles\.css\?v=63/);
+assert.match(indexSource, /app\.js\?v=110/);
 
 console.log("map effect markers: defaults, migration, dragging, persistence and styling verified");

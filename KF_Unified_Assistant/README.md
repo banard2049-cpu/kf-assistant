@@ -25,6 +25,7 @@
 - 原版双王国地图、板块、探索牌、线索、标记、深入轮和撤销
 - 原版遭遇版图、英雄与怪物放置、攻击图案、阶段和结算
 - 原版 AI/BP 牌库、杂兵轨、损伤、自动晋升、特质、历史和撤销；全部 22 个怪物均内嵌汉化冲突设置、战后处理与独立战场地图，并按战役王国切换对应版本
+- 规则书收获阶段：深入与遭遇累计搜刮、冲突自动生成战后战利品；跨设备幂等保存收据，按个人额度选择公共战果，再从队长起轮流挑选回收材料并核对装备、金钱和赌博结算
 - 新版完整存档 JSON 导入导出；导入时按骑士身份复用已有共享档案
 - 字段级跨设备同步、IndexedDB 离线队列和 SQLite 自动备份
 
@@ -52,6 +53,22 @@ docker compose up -d --build
 访问 `http://NAS地址:8789`。数据库与备份分别保存在 `./data`、`./backups`。
 
 群晖 Web Station 可将文档根目录直接指向 `public`，PHP 必须启用 `pdo_sqlite`。
+
+## 从 TTS Mods 缓存恢复图片
+
+如果当前工作区同时包含 `refs/Mods/Images`，可在本目录运行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\sync-tts-cache-assets.ps1
+```
+
+脚本会扫描 Web 源码中的实际图片路径，只把文件名能精确匹配的 TTS 图片复制到
+`public/assets/` 和 `public/modules/*/assets/`。它不会复制 PDF、模型或 Unity
+AssetBundle，也不会猜测经过裁切、重命名或生成的专用素材。若 Mods 位于其他位置，
+可通过 `-ModsPath "D:\path\to\Mods"` 指定；再次运行会跳过已有文件，使用
+`-Force` 可覆盖同步。
+
+完成后运行 `start-windows.bat`，访问 `http://127.0.0.1:8789`。
 
 ## 配置
 

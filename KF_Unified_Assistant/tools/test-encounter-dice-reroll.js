@@ -35,6 +35,6 @@ assert.match(appSource, /data-reroll-die=/, "die face has a reroll action");
 assert.match(appSource, /\$\$\("\[data-reroll-die\]"\)/, "reroll action has a click handler");
 assert.match(appSource, /setPlacementRoll\(item, type, index, roll\(type\)\)/, "click rerolls only the selected die with the correct die type");
 assert.match(stylesSource, /\.die-result\s*\{/, "clickable die has stable button styling");
-assert.match(indexSource, /app\.js\?v=24/, "encounter app cache version is updated");
+assert.match(indexSource, /app\.js\?v=26/, "encounter app cache version is updated");
 
 console.log("encounter die reroll assertions passed");

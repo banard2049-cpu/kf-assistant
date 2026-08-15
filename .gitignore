@@ -33,6 +33,27 @@ KF_Unified_Assistant_Android/app/src/main/res/drawable-nodpi/
 *.tif
 *.tiff
 *.heic
+
+# Small runtime UI assets required by the character manager
+!KF_Unified_Assistant/public/assets/
+KF_Unified_Assistant/public/assets/*
+!KF_Unified_Assistant/public/assets/icons/
+KF_Unified_Assistant/public/assets/icons/*
+!KF_Unified_Assistant/public/assets/icons/equipment-*.png
+!KF_Unified_Assistant/public/assets/icons/hand-*.png
+!KF_Unified_Assistant/public/assets/characters/
+KF_Unified_Assistant/public/assets/characters/*
+!KF_Unified_Assistant/public/assets/characters/knight-tokens/
+!KF_Unified_Assistant/public/assets/characters/knight-tokens/*
+!KF_Unified_Assistant/public/assets/characters/knight-cards/
+KF_Unified_Assistant/public/assets/characters/knight-cards/*
+!KF_Unified_Assistant/public/assets/characters/knight-cards/ca569066ae85be04.jpg
+!KF_Unified_Assistant/public/assets/characters/knight-cards/81d0c6a856a44910.jpg
+!KF_Unified_Assistant/public/assets/harvest/
+!KF_Unified_Assistant/public/assets/harvest/loot-front.jpg
+!KF_Unified_Assistant/public/assets/harvest/loot-back.jpg
+!KF_Unified_Assistant/public/assets/outpost/
+!KF_Unified_Assistant/public/assets/outpost/*.png
 *.heif
 *.psd
 *.xcf
@@ -68,6 +89,7 @@ KF_Unified_Assistant_Android/app/src/main/assets/web/
 # Local caches and browser preview profiles
 .cache/
 .preview-*/
+KF_Unified_Assistant/.tmp-*/
 __pycache__/
 *.py[cod]
 

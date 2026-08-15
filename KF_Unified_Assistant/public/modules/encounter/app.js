@@ -57,6 +57,7 @@
     const monster = DATA.monsters[0];
     return {
       version: 1, monsterId: monster.id, level: monster.encounterLevels[0].level,
+      encounterInstanceId: uid(),
       phase: "setup", encounterType: "normal", specialToken: false,
       knights: rosterKnights(),
       monsters: [], customPieces: [], pool: { opportunity: 0, break: 0 }, scrapes: 0,
@@ -84,6 +85,7 @@
     const base = blankState();
     if (!raw || raw.version !== 1 || !monsterById(raw.monsterId)) return base;
     const merged = { ...base, ...raw };
+    merged.encounterInstanceId = String(raw.encounterInstanceId || base.encounterInstanceId);
     const savedMonster = monsterById(merged.monsterId);
     if (!savedMonster.encounterLevels.some(level => level.level === merged.level)) {
       merged.level = savedMonster.encounterLevels[0].level;
@@ -552,6 +554,7 @@
       <div class="card-view">${crop(currentLevel(), currentLevel().side)}<div>
         <div class="resolution"><h2>按卡面结算</h2><p>根据当前 ${state.scrapes} 个擦伤，直接执行遭遇战怪物卡上对应的结果。</p></div>
         <div class="stats-note"><strong>清理</strong><br>清理所有遭遇战配件，返回被遭遇战中断的阶段。</div>
+        <label class="stats-note"><strong>遭遇搜刮（按卡面填写）</strong><br><input id="encounterScavengeCount" type="number" min="0" max="16" value="0" aria-label="本次遭遇普通搜刮数量"> 张普通战利品；先加入本次 Loot Deck，远征结束后再分配。</label>
       </div></div>
       <div class="nav-actions"><button data-goto="knight">← 返回骑士轮</button><button class="primary" id="completeEncounter">${returnLabel}</button></div>
     </section>`;
@@ -600,6 +603,10 @@
     return state.knights.every(knight => !knight.space || knight.done);
   }
 
+  function encounterReceiptSourceRef(handoff, encounterState = state) {
+    return String(handoff?.id || encounterState?.encounterInstanceId || "");
+  }
+
   function finishMemberActionIfReady() {
     if (!activeMembersDone()) return;
     state.phase = "resolution";
@@ -611,6 +618,15 @@
 
   async function completeEncounter() {
     const handoff = readEncounterHandoff();
+    const scavengeCount = Math.max(0, Math.min(16, Number($("#encounterScavengeCount")?.value) || 0));
+    const sourceRef = encounterReceiptSourceRef(handoff);
+    if (scavengeCount) window.KF_MODULE_BRIDGE?.recordHarvestReceipt?.({
+      id: `encounter-${sourceRef}-${state.level}-${state.scrapes}`,
+      source: "encounter",
+      sourceRef,
+      label: `${currentMonster().name} 遭遇搜刮 ${scavengeCount}`,
+      requests: [{ kind: "choice", count: scavengeCount }],
+    });
     if (handoff?.source === "map") {
       handoff.completedEncounter = {
         at: new Date().toISOString(),

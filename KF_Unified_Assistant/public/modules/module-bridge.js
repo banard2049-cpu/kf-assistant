@@ -9,14 +9,26 @@
   const rosterKey = `kfCampaignRoster:${activeCampaign}`;
   const mapUpstreamKey = `kfMapUpstream:${activeCampaign}`;
   const kingdomKey = `kfCampaignKingdom:${activeCampaign}`;
+  const legacyHarvestHandoffKey = "kfHarvestHandoff";
+  const harvestHandoffKey = activeCampaign ? `kfHarvestHandoff:${activeCampaign}` : legacyHarvestHandoffKey;
   window.KF_CAMPAIGN_KINGDOM = localStorage.getItem(kingdomKey) || "";
-  const phaseFromMapTime = value => Number(value) === 8 ? "preliminary" : "full";
+  function phaseFromMapTime(value) {
+    const time = Number(value);
+    return time >= 8 && time < 16 ? "preliminary" : "full";
+  }
   try {
-    const cachedMap = [storageKey, "kf-map-host-v6", "kf-map-host-v5"]
-      .filter(Boolean)
-      .map(key => JSON.parse(localStorage.getItem(key) || "null"))
-      .find(Boolean);
-    window.KF_CLASH_PHASE = phaseFromMapTime(cachedMap?.trackers?.time);
+    const handoff = JSON.parse(localStorage.getItem("kfEncounterHandoff") || "null");
+    const handoffPhase = (!handoff?.campaignId || handoff.campaignId === activeCampaign)
+      && (handoff?.clashPhase === "preliminary" || handoff?.clashPhase === "full")
+      ? handoff.clashPhase : "";
+    if (handoffPhase) window.KF_CLASH_PHASE = handoffPhase;
+    else {
+      const cachedMap = [moduleName === "map" ? storageKey : "", "kf-map-host-v8", "kf-map-host-v6", "kf-map-host-v5"]
+        .filter(Boolean)
+        .map(key => JSON.parse(localStorage.getItem(key) || "null"))
+        .find(Boolean);
+      window.KF_CLASH_PHASE = phaseFromMapTime(cachedMap?.trackers?.time);
+    }
   } catch {
     window.KF_CLASH_PHASE = "full";
   }
@@ -52,6 +64,7 @@
     ["/modules/map/", "地图"],
     ["/modules/encounter/", "遭遇"],
     ["/modules/aibp/", "AI / BP"],
+    ["/?module=harvest", "收获"],
   ];
   bar.innerHTML = `<strong>KF 一体化战役</strong>${links.map(([href, label]) =>
     `<a href="${href}" class="${href.includes(`/modules/${moduleName}/`) ? "active" : ""}">${label}</a>`
@@ -87,10 +100,18 @@
   function exposeMapUpstream(campaignState) {
     if (moduleName !== "map") return;
     const monsterPool = campaignState?.monsterPool || null;
+    const mercenaries = (Array.isArray(campaignState?.partyManager?.outpost?.mercenaries)
+      ? campaignState.partyManager.outpost.mercenaries : [])
+      .map(item => ({
+        catalogId: String(item?.catalogId || ""),
+        assignedMemberKey: String(item?.assignedMemberKey || ""),
+      }))
+      .filter(item => item.catalogId && item.assignedMemberKey);
     const value = {
       campaignId: activeCampaign,
       kingdom: monsterPool?.kingdom || campaignState?.kingdom || campaignState?.map?.activeKingdom || "",
       monsterPool,
+      mercenaries,
     };
     window.KF_MAP_UPSTREAM = value;
     localStorage.setItem(mapUpstreamKey, JSON.stringify(value));
@@ -107,6 +128,68 @@
     const hex = [...bytes].map(value => value.toString(16).padStart(2, "0")).join("");
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
   }
+  function harvestInboxId(value) {
+    const source = String(value || "receipt");
+    let hash = 2166136261;
+    for (let index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    const stem = source.replace(/[^A-Za-z0-9_-]+/g, "_").slice(0, 56) || "receipt";
+    return `${stem}_${(hash >>> 0).toString(16).padStart(8, "0")}`;
+  }
+  async function syncHarvestReceipt(receipt) {
+    if (!activeCampaign || globalThis.navigator?.onLine === false) return false;
+    const result = await api("campaign-sync", {
+      method: "POST",
+      keepalive: true,
+      body: JSON.stringify({
+        campaignId: activeCampaign,
+        operations: [{
+          id: operationId(), clientId, path: `harvestInbox.${harvestInboxId(receipt.id)}`,
+          value: receipt, baseRevision: campaignRevision,
+        }],
+      }),
+    });
+    campaignRevision = result.revision;
+    return true;
+  }
+  function readHarvestHandoff() {
+    try {
+      const current = localStorage.getItem(harvestHandoffKey);
+      const legacy = harvestHandoffKey !== legacyHarvestHandoffKey ? localStorage.getItem(legacyHarvestHandoffKey) : null;
+      const value = JSON.parse(current || legacy || "null");
+      if (!current && legacy && value?.campaignId === activeCampaign) {
+        localStorage.setItem(harvestHandoffKey, legacy);
+        localStorage.removeItem(legacyHarvestHandoffKey);
+      }
+      return value?.campaignId === activeCampaign && Array.isArray(value.receipts) ? value : { campaignId: activeCampaign, receipts: [] };
+    } catch { return { campaignId: activeCampaign, receipts: [] }; }
+  }
+  function recordHarvestReceipt(receipt, { open = false } = {}) {
+    const value = readHarvestHandoff();
+    const normalized = {
+      ...receipt,
+      id: String(receipt?.id || `harvest-${compatibleUuid().replace(/-/g, "")}`),
+      source: String(receipt?.source || moduleName || "manual"),
+      createdAt: String(receipt?.createdAt || new Date().toISOString()),
+      requests: Array.isArray(receipt?.requests) ? receipt.requests : [],
+    };
+    if (!normalized.requests.length) return null;
+    if (!value.receipts.some(item => item.id === normalized.id)) value.receipts.push(normalized);
+    localStorage.setItem(harvestHandoffKey, JSON.stringify(value));
+    void syncHarvestReceipt(normalized).catch(() => {});
+    if (open) location.href = "/?module=harvest";
+    return normalized;
+  }
+  async function flushHarvestReceipts() {
+    const value = readHarvestHandoff();
+    for (const receipt of value.receipts) await syncHarvestReceipt(receipt);
+  }
+  function openHarvest(receipt = null) {
+    if (receipt) recordHarvestReceipt(receipt);
+    location.href = "/?module=harvest";
+  }
   const operationId = () => compatibleUuid().replace(/-/g, "");
   const clientId = localStorage.kfClientId || (localStorage.kfClientId = operationId());
   let campaignRevision = 0;
@@ -116,9 +199,9 @@
 
   function applyAuthoritativeConflict(result) {
     const path = `modules.${moduleName}`;
-    const serverWon = result.conflicts?.some(conflict =>
-      conflict.path === path && conflict.resolution === "existing"
-    );
+    const serverWon = result.conflicts?.some(conflict => conflict.path === path && (
+      conflict.resolution === "existing" || conflict.resolution === "merged-existing-mercenaries"
+    ));
     if (!serverWon) return false;
     const selected = result.state?.modules?.[moduleName];
     if (!selected || typeof selected !== "object") return false;
@@ -157,6 +240,9 @@
   function applyAibpHandoff() {
     const handoff = readHandoff();
     if (!handoff || handoff.appliedAibp) return;
+    if (handoff.clashPhase === "preliminary" || handoff.clashPhase === "full") {
+      window.KF_CLASH_PHASE = handoff.clashPhase;
+    }
     const monster = window.KF_MONSTER_DATA?.monsters?.find(item => item.name === handoff.monster);
     const button = monster && document.querySelector(`[data-monster="${monster.id}"]`);
     if (!button) return;
@@ -211,7 +297,7 @@
     await pushValue(current);
   }
 
-  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue };
+  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue, flushHarvestReceipts, recordHarvestReceipt, openHarvest };
 
   async function boot() {
     if (!activeCampaign) {
@@ -252,6 +338,7 @@
       localStorage.setItem(kingdomKey, window.KF_CAMPAIGN_KINGDOM);
       exposeMapUpstream(campaignState);
       campaignRevision = detail.campaign.revision;
+      await flushHarvestReceipts();
       const value = detail.campaign.state?.modules?.[moduleName] || null;
       prepareStorage(value);
       const handoff = readHandoff();
@@ -292,6 +379,7 @@
   addEventListener("online", () => {
     const current = localStorage.getItem(storageKey);
     if (current) pushValue(current);
+    void flushHarvestReceipts().catch(() => {});
   });
   boot();
 })();

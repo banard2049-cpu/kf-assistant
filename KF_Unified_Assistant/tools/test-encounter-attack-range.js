@@ -37,6 +37,6 @@ assert.match(appSource, /state\.monsters\.filter\(monster => monster\.space\)/,
   "range calculation only includes monsters already on the board");
 assert.match(appSource, /kind === "monster"\) state\.targets = calculatedAttackTargets\(\)/,
   "placing or rotating a monster recalculates range immediately");
-assert.match(indexSource, /app\.js\?v=24/, "encounter app cache version is updated");
+assert.match(indexSource, /app\.js\?v=26/, "encounter app cache version is updated");
 
 console.log("encounter attack range: first placed monster is visible immediately");

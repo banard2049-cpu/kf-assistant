@@ -91,6 +91,6 @@ assert.equal(context.singleAwards.length, 1, "one clue still uses only the trave
 assert.equal(context.incompleteResult.blocked, true);
 assert.equal(context.incompleteAwards.length, 0, "invalid directional data must not partially award clues");
 assert.doesNotMatch(appSource, /data-resolve-extra-clue/);
-assert.match(indexSource, /data-original-app="app\.js\?v=99"/);
+assert.match(indexSource, /data-original-app="app\.js\?v=110"/);
 
 console.log("map clue directions: equal-probability extra clues resolve automatically");

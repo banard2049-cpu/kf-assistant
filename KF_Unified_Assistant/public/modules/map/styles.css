@@ -193,6 +193,23 @@ main { padding: 12px 18px 28px; }
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 9px;
 }
+.map-scavenge-dialog {
+  width: min(92vw, 460px);
+  padding: 18px;
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  color: var(--text);
+  background: #151b17;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .76);
+}
+.map-scavenge-dialog::backdrop { background: rgba(0, 0, 0, .72); }
+.map-scavenge-dialog form { display: grid; gap: 12px; }
+.map-scavenge-dialog h2 { margin: 2px 0 0; }
+.map-scavenge-dialog p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.map-scavenge-dialog label { display: grid; gap: 5px; font-size: 12px; font-weight: 700; }
+.map-scavenge-dialog select,
+.map-scavenge-dialog input { width: 100%; min-width: 0; }
+.map-scavenge-actions { display: flex; justify-content: flex-end; gap: 8px; }
 .kingdom-panel-section {
   min-width: 0;
   overflow: hidden;
@@ -1560,17 +1577,16 @@ main { padding: 12px 18px 24px; }
 .party-overview-heading h3 { font-size: 16px; }
 .party-roster {
   display: grid;
-  grid-template-columns: repeat(var(--party-records, 4), minmax(360px, 1fr));
+  grid-template-columns: repeat(var(--party-records, 4), minmax(0, 1fr));
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 4px;
+  min-width: 0;
 }
 .party-member {
   display: grid;
-  grid-template-columns: 110px minmax(0, 1fr);
-  grid-template-rows: 44px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-rows: 34px minmax(0, 1fr);
   min-width: 0;
-  min-height: 140px;
+  min-height: 96px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 6px;
@@ -1581,8 +1597,11 @@ main { padding: 12px 18px 24px; }
   position: relative;
   display: grid;
   grid-row: 1 / -1;
+  align-self: center;
   place-items: center;
-  min-height: 140px;
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1;
   overflow: hidden;
   background: #111714;
   color: var(--gold-soft);
@@ -1596,11 +1615,11 @@ main { padding: 12px 18px 24px; }
   object-fit: cover;
 }
 .party-member-info {
-  display: grid;
-  align-content: center;
-  gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   min-width: 0;
-  padding: 7px;
+  padding: 5px 6px 3px;
 }
 .party-member-info > strong {
   overflow: hidden;
@@ -1608,21 +1627,31 @@ main { padding: 12px 18px 24px; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.party-member-role-badge {
+  flex: 0 0 auto;
+  padding: 1px 4px;
+  border: 1px solid rgba(204, 178, 117, .5);
+  border-radius: 999px;
+  color: var(--gold-soft);
+  font-size: 9px;
+  line-height: 1.35;
+}
 .party-resources {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: center;
+  gap: 3px;
 }
 .party-member > .party-resources {
   grid-column: 2;
-  padding: 0 9px 9px;
+  padding: 0 6px 6px;
 }
 .party-resource {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: center;
   min-width: 0;
-  padding: 5px 0;
+  padding: 2px 0;
   border-left: 3px solid var(--line);
   background: #131915;
 }
@@ -1652,48 +1681,48 @@ main { padding: 12px 18px 24px; }
 }
 .party-resource strong {
   color: var(--gold-soft);
-  font-size: 22px;
+  font-size: 16px;
   line-height: 1;
 }
 .party-resource-adjust {
   display: grid;
-  grid-template-columns: 24px minmax(18px, auto) 24px;
+  grid-template-columns: minmax(34px, 1fr) 20px 18px 20px;
   align-items: center;
-  gap: 0;
+  gap: 1px;
 }
 .party-resource-label {
   display: flex;
-  grid-column: 1 / -1;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 28px;
+  justify-content: flex-start;
+  gap: 2px;
+  height: 22px;
+  padding-left: 2px;
 }
 .party-resource-role {
-  height: 28px;
+  height: 22px;
   color: var(--text);
-  font-size: 22px;
+  font-size: 14px;
   font-weight: 800;
-  line-height: 28px;
+  line-height: 22px;
   text-align: center;
 }
 .party-resource-adjust .clue-token-icon {
-  width: 28px;
-  height: 28px;
+  width: 18px;
+  height: 18px;
 }
 .party-resource-adjust strong { text-align: center; }
 .party-resource-step {
   display: grid;
   place-items: center;
-  width: 24px;
-  min-width: 24px;
-  height: 30px;
-  min-height: 30px;
+  width: 20px;
+  min-width: 20px;
+  height: 24px;
+  min-height: 24px;
   padding: 0;
   border-color: rgba(204, 178, 117, .38);
   background: rgba(255, 255, 255, .06);
   color: var(--text);
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1;
 }
 .party-resource-step:hover:not(:disabled) { background: rgba(204, 178, 117, .18); }
@@ -1707,6 +1736,16 @@ main { padding: 12px 18px 24px; }
   white-space: nowrap;
 }
 .party-resource > .party-resource-adjust { overflow: visible; }
+.party-resource-empty {
+  display: grid;
+  place-items: center;
+  min-height: 50px;
+  padding: 5px;
+  border: 1px dashed rgba(204, 178, 117, .28);
+  color: var(--muted);
+  font-size: 10px;
+  text-align: center;
+}
 .party-resource.resource-martial { border-left-color: var(--red); }
 .party-resource.resource-errant { border-left-color: var(--green); }
 .party-resource.resource-historic { border-left-color: var(--gold); }
@@ -1719,7 +1758,7 @@ main { padding: 12px 18px 24px; }
   .history-panel { top: 104px; }
   .tool-panel > .panel { max-width: none; }
   .delve-tracks { grid-template-columns: minmax(330px, 10fr) minmax(240px, 6fr) minmax(620px, 17fr); }
-  .party-roster { grid-template-columns: repeat(var(--party-records, 4), minmax(360px, 1fr)); }
+  .party-roster { grid-template-columns: repeat(var(--party-records, 4), minmax(0, 1fr)); }
 }
 
 @media (max-width: 759px) {
@@ -1749,8 +1788,8 @@ main { padding: 12px 18px 24px; }
   }
   .party-overview-heading { align-items: flex-start; }
   .party-overview-heading .legend { justify-content: flex-end; }
-  .party-roster { display: flex; overflow-x: auto; padding-bottom: 4px; }
-  .party-member { flex: 0 0 360px; }
+  .party-roster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .party-member { grid-template-columns: 58px minmax(0, 1fr); min-height: 96px; }
   .tool-tabs { overflow-x: auto; grid-template-columns: repeat(6, minmax(64px, 1fr)); }
   .fields,
   .fields.three { grid-template-columns: 1fr; }
@@ -1963,6 +2002,63 @@ label,
   border: 1px solid #766550;
   background: #d8caa4;
 }
+.mercenary-atlas-art {
+  aspect-ratio: var(--mercenary-card-aspect);
+  background-image: var(--mercenary-atlas);
+  background-repeat: no-repeat;
+  background-position: var(--mercenary-atlas-pos-x) var(--mercenary-atlas-pos-y);
+  background-size: var(--mercenary-atlas-size-x) var(--mercenary-atlas-size-y);
+}
+.mercenary-card-missing {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  color: #241d17;
+  font-size: 11px;
+  text-align: center;
+}
+.mercenary-card-image[data-mercenary-card-preview] {
+  cursor: zoom-in;
+  outline-offset: 3px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.mercenary-card-image[data-mercenary-card-preview]:hover {
+  border-color: #d3b77d;
+  box-shadow: 0 0 0 2px #d3b77d66;
+}
+.mercenary-card-image[data-mercenary-card-preview]:focus-visible {
+  border-color: #f2d79a;
+  outline: 2px solid #f2d79a;
+  box-shadow: 0 0 0 4px #15110dcc;
+}
+.mercenary-card-preview {
+  position: fixed;
+  z-index: 10000;
+  pointer-events: none;
+  padding: 6px;
+  border: 1px solid #d3b77d;
+  background: #17130f;
+  box-shadow: 0 18px 46px #000c, 0 0 0 3px #17130f;
+}
+.mercenary-card-preview[hidden] {
+  display: none;
+}
+.mercenary-card-preview .mercenary-card-image {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  margin: 0;
+  border-color: #9f8558;
+  box-shadow: none;
+}
+.mercenary-card.discarded {
+  opacity: .68;
+  filter: grayscale(.72);
+}
+.mercenary-card.discarded:focus-within,
+.mercenary-card.discarded:hover {
+  opacity: .88;
+}
 .mercenary-card-visual {
   position: relative;
   align-self: start;
@@ -2002,6 +2098,11 @@ label,
 .mercenary-card-actions {
   display: grid;
   grid-template-columns: 1fr;
+  gap: 6px;
+}
+.mercenary-lifecycle-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
 .mercenary-move-controls {

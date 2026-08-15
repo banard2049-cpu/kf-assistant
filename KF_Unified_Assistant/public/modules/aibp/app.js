@@ -327,8 +327,54 @@
           <h4>${esc(section.title)}</h4>
           ${section.items.map(([label, text]) => `<p><strong>${esc(label)}：</strong>${esc(text)}</p>`).join("")}
         </section>`).join("")}</div>
+        <div class="aftermath-actions">
+          <p>${state?.battle?.clashPhase === "preliminary" ? "初步冲突胜利后返回深入 / 休息；失败视为远征失败并进入收获阶段。战利品会保留到远征末统一分配。" : "完全冲突结算后进入收获阶段。若任务故事另有指示，请先按故事段落结算。"}</p>
+          <button type="button" class="button primary" data-conflict-outcome="victory">冲突胜利 · 记录搜刮</button>
+          <button type="button" class="button danger" data-conflict-outcome="defeat">冲突失败 · 记录搜刮</button>
+        </div>
       </details>
     </details>`;
+  }
+
+  function currentConflictHandoff() {
+    try {
+      const value = JSON.parse(localStorage.getItem("kfEncounterHandoff") || "null");
+      const campaignId = localStorage.getItem("kfActiveCampaign") || "";
+      return !value?.campaignId || value.campaignId === campaignId ? value : null;
+    } catch { return null; }
+  }
+
+  function conflictHarvestRequests(outcome, clashPhase) {
+    return outcome === "defeat"
+      ? [{ kind: "choice", count: 3 }]
+      : [{ kind: "clash", clashPhase: clashPhase === "preliminary" ? "preliminary" : "full", count: 1 }, { kind: "choice", count: 3 }];
+  }
+
+  function conflictHarvestDestination(outcome, clashPhase) {
+    return clashPhase === "preliminary" && outcome !== "defeat" ? "map" : "harvest";
+  }
+
+  function completeConflict(outcome) {
+    const result = outcome === "defeat" ? "defeat" : "victory";
+    const monster = monsterById(state.battle.monsterId), phase = state.battle.clashPhase === "preliminary" ? "preliminary" : "full";
+    const handoff = currentConflictHandoff(), sourceRef = handoff?.id || `standalone-${monster?.id || "monster"}-${state.updatedAt}`;
+    const destination = conflictHarvestDestination(result, phase);
+    const destinationLabel = destination === "harvest" ? "收获阶段" : "深入阶段";
+    if (!confirm(`确认${result === "victory" ? "冲突胜利" : "冲突失败"}并记录战后搜刮？随后将前往${destinationLabel}。`)) return;
+    const requests = conflictHarvestRequests(outcome, state.battle.clashPhase);
+    window.KF_MODULE_BRIDGE?.recordHarvestReceipt?.({
+      id: `conflict-${sourceRef}-${phase}-${result}`,
+      source: "conflict",
+      sourceRef,
+      outcome: result,
+      clashPhase: phase,
+      label: `${monster?.name || "怪物"} · ${phase === "preliminary" ? "初步冲突" : "完全冲突"}${result === "victory" ? "胜利" : "失败"}`,
+      requests,
+    });
+    return Promise.resolve(window.KF_MODULE_BRIDGE?.flush?.()).then(() => {
+      if (destination === "harvest") { window.KF_MODULE_BRIDGE?.openHarvest?.(); return; }
+      location.href = handoff?.returnUrl || "/modules/map/";
+    });
   }
 
   function defaultRuleState(monster, level = 1, clashPhase = "full") {
@@ -4379,6 +4425,7 @@
       setSheetTokenCount(button.dataset.tokenDelta, count + Number(button.dataset.delta));
     }));
     $("[data-clear-sheet-tokens]")?.addEventListener("click", clearSheetTokens);
+    $$('[data-conflict-outcome]').forEach(button => button.addEventListener("click", () => completeConflict(button.dataset.conflictOutcome)));
     $$('[data-sheet-token]').forEach(token => token.addEventListener("pointerdown", startSheetTokenDrag));
     $$('[data-bog-position]').forEach(button => button.addEventListener("click", () => {
       const selected = Number(button.dataset.bogPosition);
@@ -4692,6 +4739,14 @@
 
   window.addEventListener?.("kf:aibp-handoff", event => {
     const location = String(event.detail?.mapWheel?.conflictLocation || "");
+    const requestedPhase = event.detail?.clashPhase === "preliminary" ? "preliminary"
+      : event.detail?.clashPhase === "full" ? "full" : "";
+    if (requestedPhase && state.battle.clashPhase !== requestedPhase) {
+      state.battle.clashPhase = requestedPhase;
+      state.history = [];
+      initializeBattle(monsterById(state.battle.monsterId));
+      log(`地图时间轨：建立${requestedPhase === "preliminary" ? "初步" : "完全"}冲突`);
+    }
     state.battle.conflictLocation = location;
     if (location) log(`特殊冲突地点：${location}（贪食巨龙来了！）`);
     save();

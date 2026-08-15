@@ -2308,6 +2308,7 @@ label,
   padding-top: 10px;
 }
 .aftermath-section p { margin: 7px 0; line-height: 1.55; }
+.aftermath-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:8px;margin-top:10px;padding:9px;border:1px solid var(--line);background:var(--paper-2)}.aftermath-actions p{margin:0;font-size:12px;line-height:1.45}.aftermath-actions button{white-space:nowrap}
 
 .original-preview-modal {
   width: min(1600px, 96vw);
@@ -2331,4 +2332,5 @@ label,
   .conflict-setup-summary > .badge { grid-column: 2; justify-self: start; }
   .conflict-original-panel > summary { align-items: flex-start; flex-direction: column; }
   .aftermath-grid { grid-template-columns: 1fr; }
+  .aftermath-actions{grid-template-columns:1fr}.aftermath-actions button{width:100%}
 }
