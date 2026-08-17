@@ -357,12 +357,8 @@
     return String(space);
   }
   function crop(card, side = "face") {
-    const image = card.image;
-    const col = image.index % image.width;
-    const row = Math.floor(image.index / image.width);
-    return `<div class="crop-card" data-preview-card="1" data-side="${side}">
-      <img alt="${esc(card.name)}" src="${esc(image[side])}" style="width:${image.width * 100}%;height:${image.height * 100}%;left:${-col * 100}%;top:${-row * 100}%">
-    </div>`;
+    return window.KFEncounterView.renderCard(card, side)
+      .replace('class="crop-card read-only"', `class="crop-card" data-preview-card="1" data-side="${side}"`);
   }
   function avatarCrop(image, alt) {
     if (!image?.face) return "";
@@ -417,32 +413,15 @@
     </section>`;
   }
   function boardHtml() {
-    const board = boardData();
-    const total = board.cols * board.rows;
-    const activeCols = ({ vassal: 4, king: 5, devil: 6 })[tier()] || board.cols;
-    const inset = board.inset || [6, 7, 6, 7];
-    const pieces = allBoardPieces(false);
-      return `<div class="board-wrap">
-      ${board.src ? `<img src="${esc(board.src)}" alt="TTS 遭遇战版图">` : ""}
-        <button type="button" id="boardRemoveZone" class="board-remove-zone" title="将当前选中的棋子移出版图">移出区</button>
-        <button type="button" id="peekBoardIcons" class="board-icon-peek" aria-pressed="false" title="按住查看地图图标">查看图标</button>
-        <div class="board-grid" style="--cols:${board.cols};--rows:${board.rows};left:${inset[0]}%;top:${inset[1]}%;right:${inset[2]}%;bottom:${inset[3]}%">${Array.from({ length: total }, (_, i) => {
-          const n = i + 1, label = spaceLabel(n, board), col = i % board.cols, piece = pieces.find(p => Number(p.space) === n);
-          const symbols = board.spaces?.[i] || {};
-          const matchedDice = state.phase === "position"
-            ? selectedRolls().map((face, index) => faceMatchesSpace(face, symbols) ? index + 1 : 0).filter(Boolean)
-            : [];
-          const matchClass = matchedDice.length > 1 ? "match match-both" : matchedDice.length ? `match match-${matchedDice[0]}` : "";
-          const unavailable = isUnavailableBoardSpace(n, board);
-          const inactive = col >= activeCols || unavailable;
-          const symbolText = [symbols.sword ? `剑×${symbols.sword}` : "", symbols.cup ? `杯×${symbols.cup}` : ""].filter(Boolean).join("、") || "空白";
-          const targetClass = attackTargetsVisible() && state.targets.includes(String(n)) ? "target" : "";
-          const footprint = piece ? pieceFootprint(piece) : 1;
-          const selectedClass = piece && state.selectedPiece === `${piece.kind}:${piece.id}` ? "selected" : "";
-          const title = unavailable ? `格 ${label} · 不可站立` : `${piece ? `${esc(piece.name)} · ${footprint}×${footprint} · ` : ""}格 ${label} · ${symbolText}`;
-          return `<button class="space ${inactive ? "inactive" : ""} ${unavailable ? "unavailable" : ""} ${matchClass} ${targetClass} ${piece ? "piece-anchor" : ""}" data-space="${n}" ${inactive ? "disabled" : ""} title="${title}"><span class="space-number">${label}</span>${piece ? `<span class="piece ${piece.kind} ${selectedClass} footprint-${footprint} facing-${piece.facing || 0}">${pieceVisual(piece)}</span>` : ""}</button>`;
-      }).join("")}</div>
-    </div>${customPieceControls()}`;
+    return `${window.KFEncounterView.renderBoard({
+      state,
+      data: DATA,
+      monster: currentMonster(),
+      level: currentLevel(),
+      board: boardData(),
+      allDieFaces: ALL_DIE_FACES,
+      interactive: true
+    })}${customPieceControls()}`;
   }
   function customPieceControls() {
     const selected = String(state.selectedPiece || "").startsWith("custom:") ? pieceByKey(state.selectedPiece) : null;

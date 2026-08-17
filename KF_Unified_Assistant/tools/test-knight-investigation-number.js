@@ -52,7 +52,7 @@ assert.match(styleSource, /\.investigation\{grid-template-columns:minmax\(0,1fr\
 assert.match(apiSource, /\['attempted'=>false,'success'=>''\]/);
 assert.ok(apiSource.includes("preg_match('/^story\\.\\d+\\.investigations\\.\\d+\\.success$/',$path)"));
 assert.ok(apiSource.includes("$value!=='' && (!is_int($value) || $value<0 || $value>99)"));
-assert.match(indexSource, /\/styles\.css\?v=16/);
-assert.match(indexSource, /\/app\.js\?v=24/);
+assert.match(indexSource, /\/styles\.css\?v=17/);
+assert.match(indexSource, /\/app\.js\?v=27/);
 
 console.log("knight sheet investigations: first cell stores a bounded number");

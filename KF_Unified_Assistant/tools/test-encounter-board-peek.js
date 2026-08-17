@@ -4,10 +4,11 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 
 const appSource = fs.readFileSync("public/modules/encounter/app.js", "utf8").replace(/\r\n/g, "\n");
+const viewSource = fs.readFileSync("public/modules/encounter/encounter-view.js", "utf8").replace(/\r\n/g, "\n");
 const stylesSource = fs.readFileSync("public/modules/encounter/styles.css", "utf8").replace(/\r\n/g, "\n");
 const indexSource = fs.readFileSync("public/modules/encounter/index.html", "utf8");
 
-assert.match(appSource, /id="peekBoardIcons"[^>]*aria-pressed="false"[^>]*title="按住查看地图图标"/,
+assert.match(viewSource, /id=\\?"peekBoardIcons\\?"[^>]*aria-pressed=\\?"false\\?"[^>]*title=\\?"按住查看地图图标\\?"/,
   "the board exposes a press-and-hold icon peek control");
 assert.match(appSource, /peekBoardIcons\.addEventListener\("pointerdown"/,
   "pressing the control starts the temporary peek");

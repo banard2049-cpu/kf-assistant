@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const appSource = fs.readFileSync("public/modules/encounter/app.js", "utf8").replace(/\r\n/g, "\n");
+const viewSource = fs.readFileSync("public/modules/encounter/encounter-view.js", "utf8").replace(/\r\n/g, "\n");
 const stylesSource = fs.readFileSync("public/modules/encounter/styles.css", "utf8").replace(/\r\n/g, "\n");
 const indexSource = fs.readFileSync("public/modules/encounter/index.html", "utf8");
 const start = appSource.indexOf("  function moveSelectedPieceOffBoard() {");
@@ -37,7 +38,7 @@ assert.deepEqual(JSON.parse(context.firstTargets), ["8"], "removing a monster re
 assert.equal(context.firstMessage, "Monster 1 移出遭遇版图");
 assert.equal(context.secondResult, false, "an already removed piece is not mutated again");
 assert.equal(context.secondToast, "请先选择版图上的棋子");
-assert.match(appSource, /id="boardRemoveZone" class="board-remove-zone"/,
+assert.match(viewSource, /id="boardRemoveZone" class="board-remove-zone"/,
   "the remove zone is rendered on every encounter board");
 assert.match(appSource, /\$\("#boardRemoveZone"\)\?\.addEventListener\("click", moveSelectedPieceOffBoard\)/,
   "the remove zone uses the shared removal behavior");

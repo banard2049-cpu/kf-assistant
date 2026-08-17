@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#761923">
   <title>KF 一体化战役管理</title>
-  <link rel="stylesheet" href="/styles.css?v=16">
+  <link rel="stylesheet" href="/styles.css?v=17">
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -46,6 +46,7 @@
         <a class="button wide" href="/modules/map/">地图深入</a>
         <a class="button wide" href="/modules/encounter/">遭遇战</a>
         <a class="button wide" href="/modules/aibp/">AI / BP</a>
+        <a class="button wide" href="/modules/display/" target="_blank" rel="noopener">第二屏</a>
       </nav>
       <details id="permanentStoryMarkers" class="permanent-story-markers">
         <summary><span><strong>永久故事标记</strong><small>跨战役共享</small></span><span id="permanentStoryMarkerCount" class="story-marker-count">0 / 38</span></summary>
@@ -61,6 +62,13 @@
       <button id="newSheet" class="primary wide">＋ 新建骑士</button>
       <input id="searchSheets" type="search" placeholder="搜索档案…" aria-label="搜索档案">
       <div id="sheetList" class="sheet-list"></div>
+      <details class="presentation-controls" open>
+        <summary><strong>第二屏控制</strong><span>DISPLAY</span></summary>
+        <div class="presentation-actions"><button id="openDisplay" type="button" class="primary">打开第二屏</button><button id="copyDisplayUrl" type="button" class="button">复制网址</button></div>
+        <label>地图缩放 <output id="mapScaleValue">100%</output><input id="mapScale" type="range" min="50" max="200" step="5" value="100"></label>
+        <label>冲突版图缩放 <output id="conflictScaleValue">100%</output><input id="conflictScale" type="range" min="50" max="200" step="5" value="100"></label>
+        <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 180 度" aria-label="旋转第二屏 AI/BP 区域 180 度">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button></div>
+      </details>
       <details class="trash-panel"><summary>回收站</summary><div id="trashList" class="sheet-list"></div></details>
       <div class="sidebar-tools">
         <button id="exportAll" class="button">导出存档</button>
@@ -253,6 +261,6 @@
   <script src="/data/level-config.js?v=1"></script>
   <script src="/data/encounter-data.js?v=1"></script>
   <script src="/modules/map/data/map-data.js?v=2"></script>
-  <script type="module" src="/app.js?v=25"></script>
+  <script type="module" src="/app.js?v=28"></script>
 </body>
 </html>

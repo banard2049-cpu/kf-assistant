@@ -271,7 +271,21 @@ async function syncCampaign(){
   catch(e){campaignPending.unshift(...batch);setSave("等待网络",true)}
   finally{persistCampaignPending();campaignSyncing=false;if(campaignPending.length)setTimeout(syncCampaign,600)}
 }
-function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon)}}
+function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon)};renderPresentationControls()}
+function presentationSettings(){return {mapScale:100,conflictScale:100,conflictRotation:90,conflictSwapped:false,conflictBoardVisible:true,...(campaignState?.presentation?.settings||{})}}
+function portraitConflictRotation(value){return Number(value)===270?270:90}
+function renderPresentationControls(){
+  const settings=presentationSettings();if(!$("#mapScale"))return;
+  $("#mapScale").value=String(settings.mapScale);$("#mapScaleValue").textContent=`${settings.mapScale}%`;
+  $("#conflictScale").value=String(settings.conflictScale);$("#conflictScaleValue").textContent=`${settings.conflictScale}%`;
+  const conflictRotation=portraitConflictRotation(settings.conflictRotation);
+  $("#rotateConflict").dataset.rotation=String(conflictRotation);
+  $("#rotateConflict").title=`AI/BP 区域当前 ${conflictRotation}°，点击旋转 180°`;
+  $("#rotateConflict").setAttribute("aria-label",`旋转第二屏 AI/BP 区域 180 度，当前 ${conflictRotation} 度`);
+  $("#swapConflict").classList.toggle("active",Boolean(settings.conflictSwapped));
+  $("#toggleConflictBoard").classList.toggle("active",settings.conflictBoardVisible!==false);
+  $("#toggleConflictBoard").textContent=settings.conflictBoardVisible===false?"○":"◉";
+}
 async function loadCampaigns(preferred){
   const data=await api("/api/campaigns");campaigns=data.campaigns;
   activeCampaign=preferred||localStorage.kfActiveCampaign||activeCampaign||data.defaultCampaignId||campaigns[0]?.id;
@@ -502,6 +516,15 @@ $("#restoreCampaign").onclick=async()=>{
 $("#overview").onclick=e=>{const leader=e.target.closest("[data-leader-sheet]");if(leader){e.stopPropagation();gameSettings.leaderSheetId=leader.dataset.leaderSheet;$("#leaderSelect").value=gameSettings.leaderSheetId;saveGameSettings();return}const target=e.target.closest("[data-edit-sheet],[data-open-sheet]");if(target)openSheet(target.dataset.editSheet||target.dataset.openSheet)};
 $("#overview").onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open-sheet]")){e.preventDefault();openSheet(e.target.dataset.openSheet)}};
 $("#overviewNew").onclick=()=>$("#newSheet").click();
+$("#openDisplay").onclick=()=>window.open("/modules/display/","kf-second-screen","noopener");
+$("#copyDisplayUrl").onclick=async()=>{try{await navigator.clipboard.writeText(`${location.origin}/modules/display/`);toast("第二屏网址已复制")}catch{toast("无法访问剪贴板")}};
+$("#mapScale").oninput=e=>{$("#mapScaleValue").textContent=`${e.target.value}%`};
+$("#mapScale").onchange=e=>campaignOp("presentation.settings.mapScale",Math.max(50,Math.min(200,Number(e.target.value)||100)));
+$("#conflictScale").oninput=e=>{$("#conflictScaleValue").textContent=`${e.target.value}%`};
+$("#conflictScale").onchange=e=>campaignOp("presentation.settings.conflictScale",Math.max(50,Math.min(200,Number(e.target.value)||100)));
+$("#rotateConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictRotation",(portraitConflictRotation(settings.conflictRotation)+180)%360);renderPresentationControls()};
+$("#swapConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictSwapped",!settings.conflictSwapped);renderPresentationControls()};
+$("#toggleConflictBoard").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictBoardVisible",settings.conflictBoardVisible===false);renderPresentationControls()};
 $("#leaderSelect").onchange=e=>{gameSettings.leaderSheetId=e.target.value;campaignOp("leaderSheetId",gameSettings.leaderSheetId);commitParty(campaignState.party||[]);renderEncounterBuilder()};
 $("#kingdomSelect").onchange=e=>{gameSettings.kingdom=e.target.value;renderEncounterBuilder()};
 $("#devourDragonRule").onchange=e=>{gameSettings.devourDragon=e.target.checked};

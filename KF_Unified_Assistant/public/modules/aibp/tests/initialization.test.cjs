@@ -61,6 +61,7 @@ for (const relative of [
   "data/mob-activation-config.js",
   "data/boss-rule-config.js",
   "data/conflict-setup-data.js",
+  "../display/data/conflict-board-data.js",
   "app.js",
 ]) {
   vm.runInContext(fs.readFileSync(path.join(root, relative), "utf8"), context, { filename: relative });
@@ -1859,5 +1860,27 @@ api.selectMonster("M_Ratwolves");
 rebuild("full", 1);
 assert.match(api.renderPileView("ai", "current"), /data-preview=/,
   "杂兵的当前 AI 牌组不应套用 Boss 隐藏规则");
+
+const horizontalTerrain = { id: "rotation-test", asset: "Swamp", rowStart: 4, rowEnd: 4, columnStart: 6, columnEnd: 7, rotation: 180, flipped: false, layer: 10 };
+const rightTurnTerrain = api.rotateConflictTerrain(horizontalTerrain, 90);
+assert.equal(rightTurnTerrain.rotation, 270, "右转必须顺时针增加 90 度");
+assert.equal(rightTurnTerrain.rowEnd - rightTurnTerrain.rowStart + 1, 2, "横向 1x2 地形右转后必须占用 2 行");
+assert.equal(rightTurnTerrain.columnEnd - rightTurnTerrain.columnStart + 1, 1, "横向 1x2 地形右转后必须占用 1 列");
+const leftTurnTerrain = api.rotateConflictTerrain(horizontalTerrain, -90);
+assert.equal(leftTurnTerrain.rotation, 90, "左转必须逆时针减少 90 度");
+assert.equal(leftTurnTerrain.rowEnd - leftTurnTerrain.rowStart + 1, 2, "横向 1x2 地形左转后必须占用 2 行");
+assert.equal(leftTurnTerrain.columnEnd - leftTurnTerrain.columnStart + 1, 1, "横向 1x2 地形左转后必须占用 1 列");
+const edgeTurnTerrain = api.rotateConflictTerrain({ ...horizontalTerrain, columnStart: 13, columnEnd: 14 }, 90);
+assert.ok(edgeTurnTerrain.rowStart >= 1 && edgeTurnTerrain.rowEnd <= 10 && edgeTurnTerrain.columnStart >= 1 && edgeTurnTerrain.columnEnd <= 14,
+  "地形旋转后必须按 ATO 规则重新吸附在版图边界内");
+
+api.selectMonster("M_Toadragon");
+rebuild("full", 1);
+api.renderApp();
+const conflictBoardHtml = nodes.get("#app").innerHTML;
+assert.match(conflictBoardHtml, /terrain-control-start monster[\s\S]*terrain-start-arrow facing-(0|90|180|270)/,
+  "冲突版图中的 Boss 必须显示明确的上下左右朝向");
+assert.doesNotMatch(conflictBoardHtml, /terrain-start-arrow[^>]*rotate\((45|135|225|315)deg\)/,
+  "冲突版图中的 Boss 不得显示斜向箭头");
 
 console.log("AIBP initialization tests passed");

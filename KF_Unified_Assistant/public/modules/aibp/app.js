@@ -78,6 +78,11 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const uid = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
   const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value) || 0));
+  const cardinalFacing = value => {
+    const normalized = ((Number(value) || 0) % 360 + 360) % 360;
+    return Math.round(normalized / 90) % 4 * 90;
+  };
+  const facingClass = value => `facing-${cardinalFacing(value)}`;
 
   function monsterById(id) {
     return DATA.monsters.find(monster => monster.id === id);
@@ -623,6 +628,159 @@
     return counts;
   }
 
+  function conflictKingdom() {
+    return String(window.KF_CAMPAIGN_KINGDOM || "").toLowerCase().includes("stone") ? "stone" : "sunken";
+  }
+
+  function conflictLayout(monster, level, kingdom = conflictKingdom()) {
+    const layouts = window.KF_CONFLICT_BOARD_DATA?.layouts || [];
+    const candidates = layouts.filter(layout => layout.monsterId === monster?.id);
+    const local = candidates.filter(layout => layout.kingdom === kingdom);
+    const pool = local.length ? local : candidates;
+    const wanted = Number(level) <= 1 ? "1" : "2+";
+    return pool.find(layout => layout.levelVariant === wanted)
+      || pool.find(layout => layout.levelVariant === "all")
+      || pool[0]
+      || null;
+  }
+
+  function conflictKnightAssignments(layout) {
+    const starts = (layout?.placements || []).filter(placement => placement.kind === "knight");
+    const party = Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY : [];
+    return starts.slice(0, party.length).flatMap((placement, index) => {
+      const member = party[index] || {};
+      const heroId = member.type === "squire" ? member.squireId : member.knightId;
+      if (!heroId) return [];
+      return [{
+        placementId: placement.id,
+        heroId: String(heroId),
+        name: String(member.name || member.title || heroId),
+        memberType: member.type === "squire" ? "squire" : "knight",
+      }];
+    });
+  }
+
+  function defaultConflictTerrain(layout, resolvedOrientations = {}) {
+    return (layout?.placements || []).filter(placement => placement.kind === "terrain").map(placement => ({
+      id: placement.id,
+      asset: placement.asset,
+      rowStart: placement.rowStart,
+      rowEnd: placement.rowEnd,
+      columnStart: placement.columnStart,
+      columnEnd: placement.columnEnd,
+      rotation: resolvedOrientations[placement.id] ?? placement.rotation ?? 0,
+      flipped: false,
+      layer: placement.layer ?? 10,
+    }));
+  }
+
+  function normalizeConflictTerrain(raw, layout, resolvedOrientations) {
+    if (!Array.isArray(raw)) return defaultConflictTerrain(layout, resolvedOrientations);
+    const assets = window.KF_CONFLICT_BOARD_DATA?.assets || {};
+    const usedIds = new Set();
+    return raw.flatMap((placement, index) => {
+      const asset = String(placement?.asset || "");
+      let id = String(placement?.id || `terrain-${index}`);
+      if (!assets[asset] || usedIds.has(id)) return [];
+      usedIds.add(id);
+      let rowStart = clamp(placement.rowStart, 1, 10);
+      let rowEnd = clamp(placement.rowEnd, rowStart, 10);
+      let columnStart = clamp(placement.columnStart, 1, 14);
+      let columnEnd = clamp(placement.columnEnd, columnStart, 14);
+      const rotation = ((Number(placement.rotation) || 0) % 360 + 360) % 360;
+      return [{
+        id, asset, rowStart, rowEnd, columnStart, columnEnd, rotation,
+        flipped: Boolean(placement.flipped),
+        layer: clamp(placement.layer ?? 10, 1, 39),
+      }];
+    });
+  }
+
+  function buildConflictBoard(monster, level, battle = null) {
+    const requestedKingdom = conflictKingdom();
+    const layout = conflictLayout(monster, level, requestedKingdom);
+    if (!layout) return null;
+    const randomOrientations = window.KF_CONFLICT_BOARD_DATA?.randomOrientations || {};
+    const resolvedOrientations = {};
+    for (const placement of layout.placements) {
+      const choices = randomOrientations[placement.orientation];
+      if (Array.isArray(choices) && choices.length) resolvedOrientations[placement.id] = choices[Math.floor(Math.random() * choices.length)];
+    }
+    const numberable = shuffle(layout.placements.filter(placement =>
+      placement.kind === "monster" || ["RedSapling", "LictorDecoy"].includes(placement.asset)
+    ));
+    const occupiedTrackNumbers = Array.isArray(battle?.bpTrack)
+      ? battle.bpTrack.map((slot, index) => slot?.id ? index + 1 : 0).filter(Boolean)
+      : [];
+    const numbers = occupiedTrackNumbers.length ? occupiedTrackNumbers : Array.from({ length: numberable.length }, (_, index) => index + 1);
+    return {
+      layoutId: layout.id,
+      monsterId: monster?.id || "",
+      kingdom: layout.kingdom,
+      requestedKingdom,
+      level: Number(level) || 1,
+      resolvedOrientations,
+      knightAssignments: conflictKnightAssignments(layout),
+      mobAssignments: numberable.slice(0, numbers.length).map((placement, index) => ({ placementId: placement.id, number: numbers[index] })),
+      terrain: defaultConflictTerrain(layout, resolvedOrientations),
+      showStarts: true,
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  function normalizeConflictBoard(raw, monster, level, battle) {
+    const layouts = window.KF_CONFLICT_BOARD_DATA?.layouts || [];
+    const layout = layouts.find(item => item.id === raw?.layoutId && item.monsterId === monster?.id);
+    if (!layout) return buildConflictBoard(monster, level, battle);
+    const randomIds = new Set(layout.placements.filter(item => ["R", "K"].includes(item.orientation)).map(item => item.id));
+    const resolvedOrientations = {};
+    for (const [id, rotation] of Object.entries(raw?.resolvedOrientations || {})) {
+      if (randomIds.has(id) && [0, 90, 180, 270].includes(Number(rotation))) resolvedOrientations[id] = Number(rotation);
+    }
+    for (const placement of layout.placements) {
+      if (!randomIds.has(placement.id) || Object.prototype.hasOwnProperty.call(resolvedOrientations, placement.id)) continue;
+      const choices = window.KF_CONFLICT_BOARD_DATA?.randomOrientations?.[placement.orientation] || [0];
+      resolvedOrientations[placement.id] = choices[Math.floor(Math.random() * choices.length)];
+    }
+    const placementIds = new Set(layout.placements.map(item => item.id));
+    const knightPlacementIds = new Set(layout.placements.filter(item => item.kind === "knight").map(item => item.id));
+    const usedKnightPlacements = new Set();
+    const knightAssignments = (Array.isArray(raw?.knightAssignments) ? raw.knightAssignments : []).flatMap(item => {
+      const placementId = String(item?.placementId || "");
+      const heroId = String(item?.heroId || "");
+      if (!knightPlacementIds.has(placementId) || usedKnightPlacements.has(placementId) || !/^[a-z0-9-]{1,40}$/.test(heroId)) return [];
+      usedKnightPlacements.add(placementId);
+      return [{
+        placementId,
+        heroId,
+        name: String(item?.name || heroId).slice(0, 100),
+        memberType: item?.memberType === "squire" ? "squire" : "knight",
+      }];
+    });
+    const usedNumbers = new Set();
+    const mobAssignments = (Array.isArray(raw?.mobAssignments) ? raw.mobAssignments : []).flatMap(item => {
+      const number = Number(item?.number);
+      if (!placementIds.has(item?.placementId) || !Number.isInteger(number) || number < 1 || number > 20 || usedNumbers.has(number)) return [];
+      usedNumbers.add(number);
+      return [{ placementId: item.placementId, number }];
+    });
+    const expectsAssignments = layout.placements.some(item => item.kind === "monster" || ["RedSapling", "LictorDecoy"].includes(item.asset));
+    const fallback = expectsAssignments && !mobAssignments.length ? buildConflictBoard(monster, level, battle) : null;
+    return {
+      layoutId: layout.id,
+      monsterId: monster.id,
+      kingdom: layout.kingdom,
+      requestedKingdom: raw?.requestedKingdom === "stone" ? "stone" : "sunken",
+      level: Number(raw?.level) || Number(level) || 1,
+      resolvedOrientations,
+      knightAssignments: knightAssignments.length ? knightAssignments : conflictKnightAssignments(layout),
+      mobAssignments: mobAssignments.length ? mobAssignments : (fallback?.mobAssignments || []),
+      terrain: normalizeConflictTerrain(raw?.terrain, layout, resolvedOrientations),
+      showStarts: raw?.showStarts !== false,
+      createdAt: String(raw?.createdAt || new Date().toISOString()),
+    };
+  }
+
   function emptyBattle(monster = DATA.monsters[0]) {
     return {
       monsterId: monster?.id || "",
@@ -641,6 +799,7 @@
       ruleState: defaultRuleState(monster, 1, suggestedClashPhase()),
       conflictStatus: "active", failureReason: "",
       conflictLocation: "",
+      conflictBoard: buildConflictBoard(monster, 1),
       aiView: "discard", bpView: "damage", galleryKind: "ALL",
       log: []
     };
@@ -766,6 +925,7 @@
       conflictLocation: String(raw?.conflictLocation || ""),
       log: Array.isArray(raw?.log) ? raw.log.slice(-100) : []
     };
+    normalized.conflictBoard = normalizeConflictBoard(raw?.conflictBoard, monster, level, normalized);
     ensureWingedAiDiscard(normalized);
     return normalized;
   }
@@ -878,6 +1038,7 @@
   let mobMarkerAssetId = DEFAULT_MOB_MARKER_ASSET_IDS[state.battle.monsterId] || "token-01";
   let deckConfigOpen = false;
   let sheetTokenToolsOpen = false;
+  let selectedTerrainId = "";
 
   function syncCurrentEncounter() {
     if (!state.battle?.monsterId) return;
@@ -1067,6 +1228,7 @@
       singleWounds: 0, doubleWounds: 0,
       aiView: "discard", bpView: "damage", log: []
     });
+    battle.conflictBoard = buildConflictBoard(monster, battle.level, battle);
     ensureWingedAiDiscard(battle);
     const initialSw = exhibitionStartingWounds(monster, battle.level, battle.clashPhase);
     for (let index = 0; index < initialSw; index++) addWound("single");
@@ -4160,6 +4322,182 @@
     });
   }
 
+  function conflictBoardLayout(battle = state.battle) {
+    return (window.KF_CONFLICT_BOARD_DATA?.layouts || []).find(layout => layout.id === battle.conflictBoard?.layoutId) || null;
+  }
+
+  function conflictAssetSrc(asset) {
+    const value = String(asset || "");
+    const source = window.KF_CONFLICT_BOARD_DATA?.assets?.[value]
+      || (value.includes("/") ? value.replace(/^\/+/, "") : "");
+    return source ? `../display/${source}` : "";
+  }
+
+  function conflictBoardCropStyle() {
+    const board = window.KF_CONFLICT_BOARD_DATA?.board;
+    const crop = board?.crop;
+    if (!board || !crop) return "";
+    return `--board-image-width:${board.width / crop.width * 100}%;--board-image-height:${board.height / crop.height * 100}%;--board-image-left:${-crop.x / crop.width * 100}%;--board-image-top:${-crop.y / crop.height * 100}%`;
+  }
+
+  function conflictTerrainLabel(asset) {
+    return String(asset || "地形").replace(/([a-z])([A-Z])/g, "$1 $2").replace(/(\D)(\d+)/g, "$1 $2");
+  }
+
+  function conflictTerrainCards(terrain = state.battle.conflictBoard?.terrain || []) {
+    const cardData = window.KF_CONFLICT_BOARD_DATA?.terrainCards;
+    if (!cardData?.sheet || !cardData.byAsset) return [];
+    const seen = new Set();
+    return terrain.flatMap(placement => {
+      const card = cardData.byAsset[placement.asset];
+      if (!card || seen.has(card.cardId)) return [];
+      seen.add(card.cardId);
+      return [{ ...card, asset: placement.asset }];
+    });
+  }
+
+  function conflictTerrainCardFaceHtml(card, className = "") {
+    const sheet = window.KF_CONFLICT_BOARD_DATA?.terrainCards?.sheet;
+    if (!sheet || !card) return "";
+    return `<span class="terrain-card-face ${esc(className)}" style="--card-sheet-width:${sheet.columns * 100}%;--card-sheet-height:${sheet.rows * 100}%;--card-left:${-card.column * 100}%;--card-top:${-card.row * 100}%"><img src="${esc(conflictAssetSrc(sheet.asset))}" alt=""></span>`;
+  }
+
+  function conflictTerrainCatalog() {
+    const catalog = new Map();
+    for (const layout of window.KF_CONFLICT_BOARD_DATA?.layouts || []) {
+      for (const placement of layout.placements || []) {
+        if (placement.kind !== "terrain" || catalog.has(placement.asset)) continue;
+        catalog.set(placement.asset, placement);
+      }
+    }
+    return [...catalog.values()].sort((a, b) => a.asset.localeCompare(b.asset));
+  }
+
+  function conflictTerrainGeometry(placement) {
+    const rowSpan = placement.rowEnd - placement.rowStart + 1;
+    const columnSpan = placement.columnEnd - placement.columnStart + 1;
+    const quarterTurn = Math.abs(Number(placement.rotation || 0)) % 180 === 90;
+    return {
+      rowSpan,
+      columnSpan,
+      centerRow: (placement.rowStart + placement.rowEnd) / 2,
+      centerColumn: (placement.columnStart + placement.columnEnd) / 2,
+      artRowSpan: quarterTurn ? columnSpan : rowSpan,
+      artColumnSpan: quarterTurn ? rowSpan : columnSpan,
+    };
+  }
+
+  function conflictTerrainPlacementHtml(placement, selected = false) {
+    const geometry = conflictTerrainGeometry(placement);
+    const src = conflictAssetSrc(placement.asset);
+    return `<button type="button" class="terrain-control-placement ${selected ? "selected" : ""}" data-terrain-id="${esc(placement.id)}"
+      aria-label="${esc(conflictTerrainLabel(placement.asset))}" title="${esc(conflictTerrainLabel(placement.asset))}"
+      style="left:${(geometry.centerColumn - .5) / 14 * 100}%;top:${(geometry.centerRow - .5) / 10 * 100}%;width:${geometry.artColumnSpan / 14 * 100}%;height:${geometry.artRowSpan / 10 * 100}%;transform:translate(-50%,-50%) rotate(${placement.rotation}deg);--terrain-layer:${placement.layer || 10}">
+      <img src="${esc(src)}" alt="" style="transform:scaleX(${placement.flipped ? -1 : 1})">
+    </button>`;
+  }
+
+  function conflictBoardEditorHtml(monster, battle) {
+    const boardState = battle.conflictBoard;
+    const layout = conflictBoardLayout(battle);
+    if (!boardState || !layout) return `<section class="panel terrain-control-panel"><p class="empty-message">当前怪物没有可用的 TTS 高清冲突布局。</p></section>`;
+    const terrain = Array.isArray(boardState.terrain) ? boardState.terrain : [];
+    if (!terrain.some(item => item.id === selectedTerrainId)) selectedTerrainId = "";
+    const selected = terrain.find(item => item.id === selectedTerrainId);
+    const knightAssignments = new Map((boardState.knightAssignments || []).map(item => [item.placementId, item]));
+    const mobAssignments = new Map((boardState.mobAssignments || []).map(item => [item.placementId, item.number]));
+    const starts = (layout.placements || []).filter(item => item.kind !== "terrain")
+      .filter(item => boardState.showStarts !== false || !(["knight", "monster", "number"].includes(item.kind) || item.asset === "LictorDecoy")).map(item => {
+      const rowSpan = item.rowEnd - item.rowStart + 1;
+      const columnSpan = item.columnEnd - item.columnStart + 1;
+      const rotation = boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0;
+      const knight = knightAssignments.get(item.id);
+      const arrow = ["knight", "monster"].includes(item.kind) ? `<span class="terrain-start-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>` : "";
+      const avatar = knight ? `<img src="../../assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt="">${arrow}` : "";
+      const label = knight ? "" : `${item.kind === "monster" ? conflictTerrainLabel(item.asset) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}${mobAssignments.has(item.id) ? `<b>${mobAssignments.get(item.id)}</b>` : ""}`;
+      return `<span class="terrain-control-start ${item.kind} ${knight ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i>${avatar || `${arrow}${label}`}</i></span>`;
+    }).join("");
+    const catalog = conflictTerrainCatalog();
+    const usedAssets = [...new Set(terrain.map(item => item.asset))];
+    const terrainCards = conflictTerrainCards(terrain);
+    const boardAsset = window.KF_CONFLICT_BOARD_DATA?.board?.asset;
+    const selection = selected
+      ? `<strong>${esc(conflictTerrainLabel(selected.asset))}</strong><span>第 ${selected.columnStart} 列 · ${String.fromCharCode(75 - selected.rowStart)} 行 · ${selected.rotation}°${selected.flipped ? " · 反面" : ""}</span>`
+      : "未选择地形";
+    return `<section class="panel terrain-control-panel" aria-label="冲突版图地形控制">
+      <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>冲突版图与地形</h3></div><div class="inline-actions">
+        <label class="terrain-start-toggle"><input type="checkbox" data-terrain-starts ${boardState.showStarts !== false ? "checked" : ""}>显示初始位置</label>
+        <button type="button" class="button secondary small" data-terrain-reset>重置版图</button>
+      </div></div>
+      <div class="terrain-control-workspace">
+        <div class="terrain-control-board" data-terrain-board style="${conflictBoardCropStyle()}">
+          <img class="terrain-control-board-source" src="../display/${esc(boardAsset)}" alt="TTS 高清冲突版图">
+          <div class="terrain-control-grid">${Array.from({ length: 140 }, () => "<span></span>").join("")}</div>
+          ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId)).join("")}${starts}
+        </div>
+        <aside class="terrain-control-tools">
+          <div class="terrain-tool-row">
+            <button type="button" class="button secondary small" data-terrain-rotate="-90" ${selected ? "" : "disabled"} title="逆时针旋转 90°">↶ 左转</button>
+            <button type="button" class="button secondary small" data-terrain-rotate="90" ${selected ? "" : "disabled"} title="顺时针旋转 90°">↷ 右转</button>
+            <button type="button" class="button secondary small ${selected?.flipped ? "active" : ""}" data-terrain-flip ${selected ? "" : "disabled"}>⇅ 翻面</button>
+            <button type="button" class="button danger small" data-terrain-delete ${selected ? "" : "disabled"}>× 删除</button>
+          </div>
+          <div class="terrain-add-row"><select data-terrain-add-select aria-label="新增地形">${catalog.map(item => `<option value="${esc(item.asset)}">${esc(conflictTerrainLabel(item.asset))}</option>`).join("")}</select><button type="button" class="button small" data-terrain-add>+ 新增</button></div>
+          <div class="terrain-selection">${selection}</div>
+          <p class="muted">选择地形后点击版图格位移动；所有修改会同步到第二屏。</p>
+        </aside>
+      </div>
+      <div class="terrain-reference"><div class="terrain-reference-head"><strong>当前地形卡</strong><span>${terrainCards.length} 张</span></div><div class="terrain-reference-list">${terrainCards.map(card => `<button type="button" data-terrain-card="${card.cardId}" title="查看 ${esc(card.label)} 地形卡">${conflictTerrainCardFaceHtml(card)}<span>${esc(card.label)}</span></button>`).join("") || `<span class="muted">${usedAssets.length ? "当前地形没有对应卡牌" : "当前版图没有地形"}</span>`}</div></div>
+    </section>`;
+  }
+
+  function snapConflictTerrainCoordinate(value, span, maximum) {
+    const offset = span % 2 === 0 ? .5 : 0;
+    const snapped = Math.round(Number(value) - offset) + offset;
+    return clamp(snapped, (span + 1) / 2, maximum - (span - 1) / 2);
+  }
+
+  function moveConflictTerrain(placement, targetRow, targetColumn) {
+    const rowSpan = placement.rowEnd - placement.rowStart + 1;
+    const columnSpan = placement.columnEnd - placement.columnStart + 1;
+    const centerRow = snapConflictTerrainCoordinate(targetRow, rowSpan, 10);
+    const centerColumn = snapConflictTerrainCoordinate(targetColumn, columnSpan, 14);
+    const rowStart = Math.round(centerRow - (rowSpan - 1) / 2);
+    const columnStart = Math.round(centerColumn - (columnSpan - 1) / 2);
+    return { ...placement, rowStart, rowEnd: rowStart + rowSpan - 1, columnStart, columnEnd: columnStart + columnSpan - 1 };
+  }
+
+  function rotateConflictTerrain(placement, delta) {
+    const geometry = conflictTerrainGeometry(placement);
+    const rotated = {
+      ...placement,
+      rowEnd: placement.rowStart + geometry.columnSpan - 1,
+      columnEnd: placement.columnStart + geometry.rowSpan - 1,
+      rotation: (placement.rotation + delta + 360) % 360,
+    };
+    return moveConflictTerrain(rotated, geometry.centerRow, geometry.centerColumn);
+  }
+
+  function editSelectedTerrain(transform) {
+    const board = state.battle.conflictBoard;
+    const index = board?.terrain?.findIndex(item => item.id === selectedTerrainId) ?? -1;
+    if (index < 0) return;
+    remember();
+    board.terrain[index] = transform({ ...board.terrain[index] });
+    save();
+  }
+
+  function resetConflictTerrain() {
+    const layout = conflictBoardLayout();
+    if (!layout) return false;
+    remember();
+    state.battle.conflictBoard.terrain = defaultConflictTerrain(layout, state.battle.conflictBoard.resolvedOrientations);
+    state.battle.conflictBoard.showStarts = true;
+    selectedTerrainId = "";
+    save();
+    return true;
+  }
+
   function renderApp() {
     const root = $("#app");
     const b = state.battle;
@@ -4331,6 +4669,7 @@
               <div class="battle-log">${b.log.map(entry => `<p><time>${esc(entry.at)}</time>${esc(entry.message)}</p>`).join("") || "<p>暂无操作</p>"}</div>
             </details>
           </section>
+          ${conflictBoardEditorHtml(monster, b)}
         </div>
       </div>`;
     const directoryToggle = $("#monsterDirectoryToggle");
@@ -4343,6 +4682,63 @@
   function bindEvents(monster) {
     $("[data-deck-config]")?.addEventListener("toggle", event => { deckConfigOpen = event.currentTarget.open; });
     $("[data-sheet-token-tools]")?.addEventListener("toggle", event => { sheetTokenToolsOpen = event.currentTarget.open; });
+    $$('[data-terrain-id]').forEach(button => button.addEventListener('click', event => {
+      if (selectedTerrainId !== button.dataset.terrainId) {
+        event.stopPropagation();
+        selectedTerrainId = button.dataset.terrainId;
+        renderApp();
+      }
+    }));
+    $('[data-terrain-board]')?.addEventListener('click', event => {
+      if (!selectedTerrainId) return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const column = clamp(Math.floor((event.clientX - rect.left) / rect.width * 14) + 1, 1, 14);
+      const row = clamp(Math.floor((event.clientY - rect.top) / rect.height * 10) + 1, 1, 10);
+      editSelectedTerrain(placement => moveConflictTerrain(placement, row, column));
+    });
+    $$('[data-terrain-rotate]').forEach(button => button.addEventListener('click', () => {
+      const delta = Number(button.dataset.terrainRotate) || 0;
+      editSelectedTerrain(placement => rotateConflictTerrain(placement, delta));
+    }));
+    $('[data-terrain-flip]')?.addEventListener('click', () => editSelectedTerrain(placement => ({ ...placement, flipped: !placement.flipped })));
+    $('[data-terrain-delete]')?.addEventListener('click', () => {
+      if (!selectedTerrainId) return;
+      remember();
+      state.battle.conflictBoard.terrain = state.battle.conflictBoard.terrain.filter(item => item.id !== selectedTerrainId);
+      selectedTerrainId = "";
+      save();
+    });
+    $('[data-terrain-add]')?.addEventListener('click', () => {
+      const asset = $('[data-terrain-add-select]')?.value;
+      const template = conflictTerrainCatalog().find(item => item.asset === asset);
+      if (!template) return;
+      remember();
+      const rowSpan = template.rowEnd - template.rowStart + 1;
+      const columnSpan = template.columnEnd - template.columnStart + 1;
+      const id = `terrain-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const placement = moveConflictTerrain({ id, asset, rowStart: 1, rowEnd: rowSpan, columnStart: 1, columnEnd: columnSpan, rotation: template.rotation ?? 0, flipped: false, layer: 10 }, 5, 7);
+      state.battle.conflictBoard.terrain.push(placement);
+      selectedTerrainId = id;
+      save();
+    });
+    $('[data-terrain-reset]')?.addEventListener('click', () => {
+      resetConflictTerrain();
+    });
+    $('[data-terrain-starts]')?.addEventListener('change', event => {
+      remember();
+      state.battle.conflictBoard.showStarts = event.target.checked;
+      save();
+    });
+    $$('[data-terrain-select-asset]').forEach(button => button.addEventListener('click', () => {
+      const match = state.battle.conflictBoard?.terrain?.find(item => item.asset === button.dataset.terrainSelectAsset);
+      if (!match) return;
+      selectedTerrainId = match.id;
+      renderApp();
+    }));
+    $$('[data-terrain-card]').forEach(button => button.addEventListener('click', () => {
+      const card = conflictTerrainCards().find(item => String(item.cardId) === button.dataset.terrainCard);
+      showTerrainCardPreview(card);
+    }));
     $$("[data-monster]").forEach(button => button.addEventListener("click", () => {
       selectMonster(monsterById(button.dataset.monster));
     }));
@@ -4617,6 +5013,18 @@
     }));
   }
 
+  function showTerrainCardPreview(card) {
+    if (!card) return;
+    const modal = $("#modal");
+    modal.innerHTML = `<div class="modal-backdrop" data-close-modal></div><div class="modal-card terrain-card-preview-modal">
+      <button class="modal-close" data-close-modal aria-label="关闭地形卡预览">×</button>
+      ${conflictTerrainCardFaceHtml(card, "terrain-card-preview")}
+      <h3>${esc(card.label)}</h3>
+    </div>`;
+    modal.hidden = false;
+    $$('[data-close-modal]', modal).forEach(node => node.addEventListener('click', () => { modal.hidden = true; }));
+  }
+
   function showOriginalPreview(src, title) {
     if (!src) return;
     const modal = $("#modal");
@@ -4730,6 +5138,7 @@
       spawnMob, resolveMobActivation, resolveEtherealUnity, completeRatwolfSignature,
       resolveWingedNightmareAttack, resolveWingedAiResponse, ensureWingedAiDiscard,
       selectMob, settleMob: action => settleMob(monsterById(state.battle.monsterId), action),
+      resetConflictTerrain, moveConflictTerrain, rotateConflictTerrain, conflictTerrainGeometry,
       validateState, renderApp, showPreview, showGuardedPreview, remember, commit: () => save(false),
       activeReferenceIds: () => activeReferenceCards(
         monsterById(state.battle.monsterId), state.battle

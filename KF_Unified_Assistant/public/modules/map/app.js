@@ -33,7 +33,7 @@
   }
   const KINGDOM_PANEL_ZONES = Object.freeze({
     SK: {
-      active: { x: 72.5, y: 50, width: 17 },
+      active: { x: 72.5, y: 50, width: 31 },
       wheelCenter: { x: 25.6, y: 75.7, width: 6.7 },
       monsterSlots: {
         drowned: { x: 14.6, y: 80.9, width: 9.4 },
@@ -42,7 +42,7 @@
       }
     },
     POS: {
-      active: { x: 72.5, y: 50, width: 17 },
+      active: { x: 72.5, y: 50, width: 31 },
       wheelCenter: { x: 26, y: 73, width: 6.7 },
       monsterSlots: {
         noble: { x: 14, y: 64.5, width: 9.4 },
@@ -467,6 +467,8 @@
       const previous = existing.find(item => item.sheetId === member.id || (!item.sheetId && item.name === member.name));
       return {
         id: previous?.id || uid(), sheetId: member.id, memberType: member.type || "knight", name: member.name,
+        heroId: member.type === "squire" ? member.squireId || "" : member.knightId || "",
+        knightId: member.knightId || "", squireId: member.squireId || "",
         clues: { martial: 0, errant: 0, historic: 0, mystic: 0, ...(previous?.clues || {}) },
         primary: previous?.primary || "", secondary: previous?.secondary || "", task: previous?.task || ""
       };
@@ -588,11 +590,14 @@
   }
 
   let state = readState();
+  const normalizedInitialState = JSON.stringify(state);
+  if (localStorage.getItem(SAVE_KEY) !== normalizedInitialState) localStorage.setItem(SAVE_KEY, normalizedInitialState);
   let activeTool = STEP_TOOL[state.step] || (state.step === 3 ? "exploration" : "tile");
   let saveTimer = 0;
   let encounterNavigationTimer = 0;
   let pendingEncounterAutoStart = false;
   let kingdomPanelExpanded = true;
+  let kingdomPanelDialogOpen = false;
   let mapFocusFrame = 0;
   const mapState = () => state.maps[state.kingdom];
   const mainlineKnight = () => state.knights.find(knight =>
@@ -602,6 +607,18 @@
   const activeRogues = face => state.mercenaries.active.filter(item =>
     item.face === face && MERCENARY_RULES.CATALOG[item.cardId]?.role === "rogue"
   );
+
+  function openKingdomPanelDialog() {
+    kingdomPanelDialogOpen = true;
+    const dialog = $("#kingdomPanelDialog");
+    if (dialog && !dialog.open) dialog.showModal();
+  }
+
+  function closeKingdomPanelDialog() {
+    kingdomPanelDialogOpen = false;
+    const dialog = $("#kingdomPanelDialog");
+    if (dialog?.open) dialog.close();
+  }
 
   function setCurrentTile(current, tileId) {
     if (current.current !== tileId) current.encounterSuppressions = [];
@@ -1253,74 +1270,14 @@
   }
 
   function mapSvg() {
-    const current = mapState();
-    const all = kingdomData().tiles.filter(item => Number.isFinite(item.x) && Number.isFinite(item.y));
-    const shown = all.filter(item => current.showAll || current.placed.includes(item.id));
-    const geometrySource = current.showAll ? all : shown;
-    const geometry = geometrySource.map(item => {
-      const size = tileSize(item);
-      const radians = ttsAngle(item) * Math.PI / 180;
-      return {
-        item,
-        bx: Math.abs(Math.cos(radians)) * size.width / 2 + Math.abs(Math.sin(radians)) * size.height / 2,
-        by: Math.abs(Math.sin(radians)) * size.width / 2 + Math.abs(Math.cos(radians)) * size.height / 2
-      };
+    return window.KFMapView.renderMapStage({
+      state,
+      data: DATA,
+      legalTileIds: legalUnexplored(),
+      party: campaignParty(),
+      mainlineKnight: mainlineKnight(),
+      interactive: true
     });
-    const pad = 1.2;
-    const minX = Math.min(...geometry.map(row => row.item.x - row.bx)) - pad;
-    const maxX = Math.max(...geometry.map(row => row.item.x + row.bx)) + pad;
-    const minY = Math.min(...geometry.map(row => row.item.y - row.by)) - pad;
-    const maxY = Math.max(...geometry.map(row => row.item.y + row.by)) + pad;
-    const worldWidth = maxX - minX;
-    const worldHeight = maxY - minY;
-    const legal = new Set(legalUnexplored());
-    const randomHighlights = new Set(current.randomTileHighlights || []);
-    const cards = shown.map(item => {
-      const size = tileSize(item);
-      const status = current.tileState[item.id] || "hidden";
-      const face = current.showAll || status !== "hidden";
-      const source = item.image?.[face ? "face" : "back"] || item.image?.face;
-      const monsters = current.monsters.filter(marker => marker.tileId === item.id);
-      const tileMarkers = current.tileMarkers.filter(marker => marker.tileId === item.id);
-      const pathMarkers = current.pathMarkers.filter(marker => marker.from === item.id || marker.to === item.id);
-      const classes = [
-        "map-tile",
-        current.selected === item.id ? "selected" : "",
-        current.current === item.id ? "current" : "",
-        legal.has(item.id) && !current.showAll ? "legal" : "",
-        status === "revealed" ? "revealed-unexplored" : "",
-        randomHighlights.has(item.id) ? "random-highlight" : ""
-      ].filter(Boolean).join(" ");
-      const angle = ttsAngle(item);
-      const mapTokens = [
-        ...tileMarkers.map(marker => ({
-          record: marker,
-          kind: "tile",
-          source: markerToken(marker.type),
-          label: tileMarkerLabel(marker)
-        })),
-        ...pathMarkers.map(marker => ({
-          record: marker,
-          kind: "path",
-          source: markerToken(marker.type),
-          label: PATH_MARKERS.find(([id]) => id === marker.type)?.[1] || marker.type
-        })),
-        ...monsters.map(marker => ({
-          record: marker,
-          kind: "monster",
-          source: monsterToken(marker.monsterId),
-          label: DATA.monsters.find(monster => monster.id === marker.monsterId)?.name || marker.monsterId
-        }))
-      ];
-      return `<button class="${classes}" data-tile="${esc(item.id)}" title="${esc(tileLabel(item))}"
-        data-angle="${angle}"
-        style="left:${(item.x - size.width / 2 - minX) / worldWidth * 100}%;top:${(item.y - size.height / 2 - minY) / worldHeight * 100}%;width:${size.width / worldWidth * 100}%;height:${size.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg">
-        <img class="map-tile-image" src="${esc(source)}" alt="${esc(tileLabel(item))}" draggable="false">
-        ${current.current === item.id ? partyLocationMarker(item.id) : ""}
-        ${mapTokens.map((entry, index) => mapTokenImage(entry.source, entry.label, entry.record, entry.kind, item.id, index)).join("")}
-      </button>`;
-    }).join("");
-    return `<div class="map-stage" style="aspect-ratio:${worldWidth}/${worldHeight}">${cards}</div>`;
   }
 
   function keepPartyMarkerVisible(board, preferredPoint = null) {
@@ -2473,7 +2430,6 @@
       const item = card(placement.cardId);
       if (!item) return "";
       return `<figure class="kingdom-effect-placement ${placement.kind}" style="--zone-x:${placement.zone.x}%;--zone-y:${placement.zone.y}%;--zone-width:${placement.zone.width}%" title="${esc(placement.label)} · ${esc(item.name)}">
-        <figcaption>${esc(placement.label)}</figcaption>
         ${placedEffectCard(item, "active")}
       </figure>`;
     }).join("");
@@ -2653,58 +2609,13 @@
   }
 
   function tracksPanel() {
-    const limits = rules().limits;
-    const icons = DATA.tokens?.tracks || {};
-    const tracks = [
-      ["threat", "威胁", value => THREAT_HUNT[value] ? `追猎 ${THREAT_HUNT[value]}` : ""],
-      ["curse", "诅咒", () => ""],
-      ["time", "时间", value => value === 8 ? "初步" : value === 16 ? "完全" : ""]
-    ];
-    return `<section class="panel">
-      <div class="panel-header"><div><div class="eyebrow">DELVE TRACKS</div><h3>深入轨道</h3></div><span class="tiny">点击格子或按钮可修正当前位置</span></div>
-      <div class="delve-tracks">
-        ${tracks.map(([id, label, eventLabel]) => {
-          const value = trackerValue(state.trackers[id]);
-          const limit = limits[id];
-          const notes = state.trackNotes[id] || {};
-          const selectedNotePosition = clamp(value, 0, limit);
-          const selectedNote = notes[String(selectedNotePosition)] || "";
-          return `<div class="delve-track track-${id}${value > limit ? " over-limit" : ""}">
-            <div class="delve-track-heading">
-              <span class="delve-track-logo">${icons[id] ? `<img src="${esc(icons[id])}?v=3" alt="">` : ""}</span>
-              <span class="delve-track-status"><strong class="delve-track-name">${label}</strong><small>当前 ${value}${value > limit ? " · 已溢出" : ""}</small></span>
-              <form class="track-note-editor" data-track-note-form="${id}">
-                <details class="track-note-position-picker">
-                  <summary data-track-note-summary="${id}" title="已选数值 ${selectedNotePosition}">${selectedNotePosition}</summary>
-                  <div class="track-note-position-options" role="group" aria-label="${label}轨道标记数值">
-                    ${Array.from({ length: limit + 1 }, (_, cell) => `<label><input type="checkbox" data-track-note-value="${id}" value="${cell}" ${cell === selectedNotePosition ? "checked" : ""}><span>${cell}</span></label>`).join("")}
-                  </div>
-                </details>
-                <input data-track-note-text="${id}" maxlength="${TRACK_NOTE_MAX_LENGTH}" value="${esc(selectedNote)}" placeholder="标记内容" aria-label="${label}轨道标记内容">
-                <button type="submit" class="small secondary">保存</button>
-                <button type="button" class="small danger" data-track-note-clear="${id}" ${selectedNote ? "" : "disabled"}>清除</button>
-              </form>
-            </div>
-            <div class="delve-track-scroll">
-              <div class="delve-track-cells" style="--track-cells:${limit + 1}">
-                ${Array.from({ length: limit + 1 }, (_, cell) => {
-                  const marker = eventLabel(cell);
-                  const note = notes[String(cell)] || "";
-                  const description = [`${label} ${cell}`, marker, note].filter(Boolean).join("，");
-                  return `<button type="button" class="delve-track-cell${cell === value ? " active" : ""}${marker ? " event-cell" : ""}${note ? " noted" : ""}"
-                    data-track-cell="${id}" data-track-value="${cell}" aria-label="${esc(description)}"
-                    aria-pressed="${cell === value}" title="${esc(description)}">
-                    <span class="track-cell-note">${note ? esc(note) : ""}</span>
-                    <span class="track-number">${cell}</span>
-                    <small class="track-event-label">${marker ? esc(marker) : ""}</small>
-                  </button>`;
-                }).join("")}
-              </div>
-            </div>
-          </div>`;
-        }).join("")}
-      </div>
-    </section>`;
+    return window.KFMapView.renderDelveTracks({
+      state,
+      data: DATA,
+      limits: rules().limits,
+      interactive: true,
+      maxNoteLength: TRACK_NOTE_MAX_LENGTH,
+    });
   }
 
   function roundStepAction() {
@@ -2721,19 +2632,11 @@
 
   function render() {
     const current = mapState();
-    const selected = tile(current.selected);
-    const exploredCount = Object.values(current.tileState).filter(value => value === "explored").length;
-    const revealedCount = Object.values(current.tileState).filter(value => value === "revealed").length;
     if (!TOOL_TABS.some(([id]) => id === activeTool)) activeTool = STEP_TOOL[state.step] || "tile";
 
     $("#kingdomSelect").value = state.kingdom;
     $("#kingdomSelect").disabled = Boolean(state.mercenaries.pendingAction);
     $("#undoButton").disabled = !current.history.length;
-    $("#stepNav").innerHTML = STEPS.map((name, index) => `<button type="button" class="${state.step === index ? "active" : ""}" aria-current="${state.step === index ? "step" : "false"}" disabled>
-      <span class="step-index">${index + 1}</span>
-      <span class="step-copy"><strong>${name}</strong><small>${state.step === index ? `第 ${state.round} 轮 · 当前` : index < state.step ? "本轮已完成" : "等待进行"}</small></span>
-    </button>`).join("");
-
     const toolTabs = TOOL_TABS.map(([id, label]) => `<button id="tool-tab-${id}" type="button" role="tab" data-tool-tab="${id}" aria-controls="tool-panel-${id}" aria-selected="${activeTool === id}" tabindex="${activeTool === id ? "0" : "-1"}" class="${activeTool === id ? "active" : ""}">${label}</button>`).join("");
     const toolPanel = (id, content) => `<div id="tool-panel-${id}" class="tool-panel stack" role="tabpanel" aria-labelledby="tool-tab-${id}" data-tool-panel="${id}" tabindex="0" ${activeTool === id ? "" : "hidden"}>${content}</div>`;
 
@@ -2741,7 +2644,6 @@
     $("#app").innerHTML = `<div class="host-layout">
       <div class="map-column stack">
         <div class="delve-tracks-sticky">${tracksPanel()}</div>
-        ${kingdomPanel()}
         <section class="panel map-shell">
           <div class="map-heading">
             <div class="map-title">
@@ -2758,18 +2660,12 @@
               <button id="openKingdomPanelToolbar" class="small secondary">查看王国面板</button>
             </div>
           </div>
-          <div class="map-status" aria-label="地图状态">
-            <span class="badge gold">当前位置 ${esc(tileLabel(tile(current.current)))}</span>
-            <span class="badge green">已探索 ${exploredCount}</span>
-            <span class="badge">已揭示 ${revealedCount}</span>
-            <span class="badge">已生成 ${current.placed.length} / ${kingdomData().tiles.length}</span>
-            <span class="badge">所选 ${esc(tileLabel(selected))}</span>
-          </div>
           <div class="map-workspace">
             <section class="map-board" aria-label="王国地图"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
           </div>
         </section>
         ${partyOverviewPanel()}
+        ${kingdomPanel()}
       </div>
 
       <aside class="host-sidebar" aria-label="主持工具">
@@ -2802,6 +2698,7 @@
       </aside>
     </div>`;
     bind();
+    if (kingdomPanelDialogOpen) openKingdomPanelDialog();
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
     board.scrollTop = current.scrollTop || 0;
@@ -2814,7 +2711,6 @@
     $("#kingdomSelect").value = state.kingdom;
     $("#kingdomSelect").disabled = Boolean(state.mercenaries.pendingAction);
     $("#undoButton").disabled = !current.history.length;
-    $("#stepNav").innerHTML = STEPS.map((name, index) => `<button data-step="${index}" class="${state.step === index ? "active" : ""}">${index + 1}. ${name}</button>`).join("");
     $("#app").innerHTML = `<div class="stack">
       <section class="panel">
         <div class="panel-header">
@@ -2840,8 +2736,8 @@
         <div class="stack">
           <div class="map-workspace">
             <section class="map-board"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
-            ${kingdomPanel()}
           </div>
+          ${kingdomPanel()}
           ${tracksPanel()}
           ${state.step === 0 ? travelPanel() : ""}
           ${tileResolutionPanel()}
@@ -2864,6 +2760,7 @@
       </div>
     </div>`;
     bind();
+    if (kingdomPanelDialogOpen) openKingdomPanelDialog();
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
     board.scrollTop = current.scrollTop || 0;
@@ -3066,15 +2963,13 @@
       save(true);
     });
     $("#toggleAll")?.addEventListener("click", () => { current.showAll = !current.showAll; save(true); });
-    $("#openKingdomPanel")?.addEventListener("click", () => $("#kingdomPanelDialog")?.showModal());
-    $("#openKingdomPanelToolbar")?.addEventListener("click", () => $("#kingdomPanelDialog")?.showModal());
+    $("#openKingdomPanel")?.addEventListener("click", openKingdomPanelDialog);
+    $("#openKingdomPanelToolbar")?.addEventListener("click", openKingdomPanelDialog);
     $("#kingdomPanelDetails")?.addEventListener("toggle", event => {
       kingdomPanelExpanded = event.currentTarget.open;
     });
-    $("#closeKingdomPanel")?.addEventListener("click", () => $("#kingdomPanelDialog")?.close());
-    $("#kingdomPanelDialog")?.addEventListener("click", event => {
-      if (event.target === event.currentTarget) event.currentTarget.close();
-    });
+    $("#closeKingdomPanel")?.addEventListener("click", closeKingdomPanelDialog);
+    $("#kingdomPanelDialog")?.addEventListener("cancel", event => event.preventDefault());
     $("#selectedBeginButton")?.addEventListener("click", () => beginTile(current.selected));
     $("#forceMovePartyButton")?.addEventListener("click", () => forceMoveParty(current.selected));
     $("#showSpecificKingdomTile")?.addEventListener("click", () => {
@@ -3235,20 +3130,16 @@
       current.kingdomMarkers ||= [];
       const type = button.closest(".kingdom-marker-toolbar")?.querySelector("[data-kingdom-marker-select]")?.value || "generic";
       const [x, y] = KINGDOM_MARKER_STARTS[current.kingdomMarkers.length % KINGDOM_MARKER_STARTS.length];
-      const dialogWasOpen = Boolean(button.closest("dialog")?.open);
       snapshot("添加王国版图标记");
       current.kingdomMarkers.push({ id: uid(), type, x, y });
       saveCritical(true);
-      if (dialogWasOpen) $("#kingdomPanelDialog")?.showModal();
     }));
     $$("[data-remove-kingdom-marker]").forEach(button => button.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
-      const dialogWasOpen = Boolean(button.closest("dialog")?.open);
       snapshot("移除王国版图标记");
       current.kingdomMarkers = (current.kingdomMarkers || []).filter(marker => marker.id !== button.dataset.removeKingdomMarker);
       saveCritical(true);
-      if (dialogWasOpen) $("#kingdomPanelDialog")?.showModal();
     }));
 
     $$(".kingdom-board-scene").forEach(scene => {

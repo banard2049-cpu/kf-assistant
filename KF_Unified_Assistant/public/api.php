@@ -148,6 +148,15 @@ function default_state(string $knightId='', string $player=''): array {
         'choices'=>(object)[],'choicesUnlocked'=>false,'successfulInvestigations'=>(object)[],'firstDeath'=>false,
     ];
 }
+function default_presentation_state(): array {
+    return [
+        'scene'=>'map','updatedAt'=>stamp(),'sourceClientId'=>'',
+        'settings'=>[
+            'mapScale'=>100,'conflictScale'=>100,'conflictRotation'=>90,
+            'conflictSwapped'=>false,'conflictBoardVisible'=>true,
+        ],
+    ];
+}
 function default_campaign_state(): array {
     return [
         'schemaVersion'=>2,'kingdom'=>'sunken','leaderSheetId'=>'','party'=>[],'squires'=>[],
@@ -158,8 +167,92 @@ function default_campaign_state(): array {
         ]],
         'encounter'=>['active'=>false,'monster'=>'','level'=>1,'type'=>'normal','phase'=>'setup','board'=>(object)[],'result'=>''],
         'aibp'=>['monster'=>'','level'=>1,'ai'=>[],'bp'=>[],'discard'=>[],'wounds'=>[],'promotion'=>0,'history'=>[]],
-        'modules'=>['map'=>null,'encounter'=>null,'aibp'=>null]
+        'modules'=>['map'=>null,'encounter'=>null,'aibp'=>null],
+        'presentation'=>default_presentation_state(),
     ];
+}
+
+function normalized_presentation_state(mixed $value): array {
+    $base=default_presentation_state();
+    if(!is_array($value))return $base;
+    $scene=in_array($value['scene']??'', ['map','encounter','conflict'], true)?$value['scene']:'map';
+    $settings=is_array($value['settings']??null)?$value['settings']:[];
+    $conflictRotation=((int)($settings['conflictRotation']??90)%360+360)%360;
+    return [
+        'scene'=>$scene,
+        'updatedAt'=>text_value($value['updatedAt']??$base['updatedAt'],64),
+        'sourceClientId'=>text_value($value['sourceClientId']??'',100),
+        'settings'=>[
+            'mapScale'=>max(50,min(200,(int)($settings['mapScale']??100))),
+            'conflictScale'=>max(50,min(200,(int)($settings['conflictScale']??100))),
+            'conflictRotation'=>in_array($conflictRotation,[90,270],true)?$conflictRotation:90,
+            'conflictSwapped'=>($settings['conflictSwapped']??false)===true,
+            'conflictBoardVisible'=>($settings['conflictBoardVisible']??true)!==false,
+        ],
+    ];
+}
+
+function public_aibp_display_state(mixed $module): ?array {
+    if(!is_array($module))return null;
+    $battle=is_array($module['battle']??null)?$module['battle']:[];
+    $publicKeys=['monsterId','level','clashPhase','mobCount','aiDiscard','aiRemoved','bpDiscard','bpDamage','bpRemoved','activeAI','activeBP','mobTacticCard','lastMobWoundRank','mobActivations','activeMobActivationId','sheetTokens','singleWounds','doubleWounds','conflictStatus','failureReason','conflictLocation','conflictBoard'];
+    $public=[];
+    foreach($publicKeys as $key)if(array_key_exists($key,$battle))$public[$key]=$battle[$key];
+    $public['bpTrack']=array_map(function($slot){
+        if(!is_array($slot))return ['id'=>'','occupied'=>false,'revealed'=>false,'side'=>'face','markers'=>0,'markerTokens'=>(object)[]];
+        $revealed=($slot['revealed']??false)===true;
+        return [
+            'id'=>$revealed?text_value($slot['id']??'',120):'',
+            'occupied'=>text_value($slot['id']??'',120)!=='',
+            'revealed'=>$revealed,
+            'side'=>$revealed&&($slot['side']??'')==='back'?'back':'face',
+            'markers'=>max(0,(int)($slot['markers']??0)),
+            'markerTokens'=>is_array($slot['markerTokens']??null)?$slot['markerTokens']:new stdClass(),
+            'decoy'=>($slot['decoy']??false)===true,
+        ];
+    },is_array($battle['bpTrack']??null)?$battle['bpTrack']:[]);
+    $rule=is_array($battle['ruleState']??null)?$battle['ruleState']:[];
+    $monsterId=text_value($battle['monsterId']??'',80);
+    $public['bossMobTrack']=null;
+    if($monsterId==='M_KnightFen'){
+        $slots=[];
+        foreach(array_slice(is_array($rule['doppelgangers']??null)?$rule['doppelgangers']:[],0,10) as $item){
+            if(!is_array($item))continue;
+            $cards=array_values(array_filter(array_map(fn($id)=>text_value($id,120),is_array($item['cards']??null)?$item['cards']:[])));
+            $revealed=($item['revealed']??false)===true;
+            $slots[]=['occupied'=>count($cards)>0,'revealed'=>$revealed,'cardCount'=>count($cards),'cardIds'=>$revealed?$cards:[]];
+        }
+        $public['bossMobTrack']=['type'=>'doppelganger','slots'=>$slots];
+    }elseif($monsterId==='M_WhiteApe'){
+        $guardians=is_array($rule['guardians']??null)?$rule['guardians']:[];
+        $guardianSlots=is_array($guardians['slots']??null)?array_slice($guardians['slots'],0,6):[];
+        $carrier=max(0,min(5,(int)($guardians['carrier']??0)));
+        $public['bossMobTrack']=['type'=>'guardian','slots'=>array_map(
+            fn($occupied,$index)=>['occupied'=>$occupied===true,'carrier'=>$occupied===true&&$index===$carrier],
+            array_pad($guardianSlots,6,false),array_keys(array_pad($guardianSlots,6,false))
+        )];
+    }
+    $public['ruleState']=[
+        'promotionLevel'=>max(0,(int)($rule['promotionLevel']??0)),
+        'pendingCoordinatedAttacks'=>max(0,(int)($rule['pendingCoordinatedAttacks']??0)),
+        'reinforcementTokens'=>max(0,(int)($rule['reinforcementTokens']??0)),
+        'vengeanceTokens'=>max(0,(int)($rule['vengeanceTokens']??0)),
+        'cookieTokens'=>max(0,(int)($rule['cookieTokens']??0)),
+        'ruleNotice'=>text_value($rule['ruleNotice']??'',500),
+    ];
+    $public['aiDeckCount']=is_array($battle['aiDeck']??null)?count($battle['aiDeck']):0;
+    $public['bpDeckCount']=is_array($battle['bpDeck']??null)?count($battle['bpDeck']):0;
+    $deckLevels=function(mixed $ids,string $prefix): array {
+        if(!is_array($ids))return [];
+        $levels=[];
+        foreach($ids as $id){
+            if(preg_match('/:'.preg_quote($prefix,'/').'([0-3])(?::|$)/',(string)$id,$match))$levels[]=(int)$match[1];
+        }
+        return $levels;
+    };
+    $public['aiDeckLevels']=$deckLevels($battle['aiDeck']??[],'AI');
+    $public['bpDeckLevels']=$deckLevels($battle['bpDeck']??[],'BP');
+    return ['version'=>$module['version']??null,'selectedMonsterId'=>$module['selectedMonsterId']??($battle['monsterId']??''),'battle'=>$public,'updatedAt'=>$module['updatedAt']??null];
 }
 function ensure_default_campaign(PDO $db,string $userId): string {
     $q=$db->prepare('SELECT id FROM campaigns WHERE user_id=? AND deleted_at IS NULL ORDER BY created_at LIMIT 1');$q->execute([$userId]);
@@ -370,6 +463,19 @@ try {
         $data=request_data();$id=uuid4();$time=stamp();$state=default_campaign_state();$q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');
         $q->execute([$id,$user['id'],title_value($data['name']??'新战役'),json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);respond(201,['campaign'=>parsed_campaign(owned_campaign($db,$id,$user['id']))]);
     }
+    if ($route === 'display-state' && $method === 'GET') {
+        $id=(string)($_GET['campaignId']??$defaultCampaignId);$row=owned_campaign($db,$id,$user['id']);if(!$row)respond(404,['error'=>'战役不存在']);
+        $etag='"'.hash('sha256',$row['id'].':'.$row['revision'].':'.$row['updated_at']).'"';
+        header('Cache-Control: private, no-cache');header('ETag: '.$etag);
+        if(trim((string)($_SERVER['HTTP_IF_NONE_MATCH']??''))===$etag){http_response_code(304);exit;}
+        $state=json_decode($row['state_json'],true);if(!is_array($state))$state=[];
+        $modules=is_array($state['modules']??null)?$state['modules']:[];
+        respond(200,[
+            'campaign'=>['id'=>$row['id'],'name'=>$row['name'],'revision'=>(int)$row['revision'],'updatedAt'=>$row['updated_at'],'kingdom'=>$state['monsterPool']['kingdom']??$state['kingdom']??'sunken'],
+            'presentation'=>normalized_presentation_state($state['presentation']??null),
+            'modules'=>['map'=>$modules['map']??null,'encounter'=>$modules['encounter']??null,'aibp'=>public_aibp_display_state($modules['aibp']??null)],
+        ],['ETag'=>$etag,'Cache-Control'=>'private, no-cache']);
+    }
     if (preg_match('/^campaigns\/([a-f0-9-]+)(?:\/(copy|trash|restore))?$/',$route,$m)) {
         $action=$m[2]??'';$row=owned_campaign($db,$m[1],$user['id'],$action==='restore');if(!$row)respond(404,['error'=>'战役不存在']);
         if($action===''&&$method==='GET')respond(200,['campaign'=>parsed_campaign($row)]);
@@ -408,7 +514,7 @@ try {
     }
     if ($route === 'campaign-import' && $method === 'POST') {
         $data=request_data();if(($data['format']??'')!=='kf-unified-campaign'||($data['schemaVersion']??0)!==2||!is_array($data['campaign']??null))respond(400,['error'=>'只支持新版 KF 一体化战役存档（版本 2）']);
-        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$seenKnights=[];$catalog=knight_catalog();
+        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$state['presentation']=default_presentation_state();$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$seenKnights=[];$catalog=knight_catalog();
         $existingByKnight=[];$q=$db->prepare('SELECT id,state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll() as $existing){$existingState=json_decode($existing['state_json'],true);$existingKnight=(string)($existingState['knightId']??'');if($existingKnight!=='')$existingByKnight[$existingKnight]=$existing['id'];}
         foreach($sourceSheets as $sheet)if(is_array($sheet)){
             $sheetState=$sheet['state']??null;$knightId=is_array($sheetState)?(string)($sheetState['knightId']??''):'';

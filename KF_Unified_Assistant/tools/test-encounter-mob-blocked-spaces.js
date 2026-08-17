@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const appSource = fs.readFileSync("public/modules/encounter/app.js", "utf8").replace(/\r\n/g, "\n");
+const viewSource = fs.readFileSync("public/modules/encounter/encounter-view.js", "utf8").replace(/\r\n/g, "\n");
 const stylesSource = fs.readFileSync("public/modules/encounter/styles.css", "utf8").replace(/\r\n/g, "\n");
 const indexSource = fs.readFileSync("public/modules/encounter/index.html", "utf8");
 const blockedStart = appSource.indexOf("  function isUnavailableBoardSpace(");
@@ -37,7 +38,7 @@ assert.equal(context.moveToOne, "", "movement rejects mob space 1");
 assert.equal(context.moveToTwo, "2", "movement keeps normal mob spaces available");
 assert.match(appSource, /isUnavailableBoardSpace\(piece\.space, savedBoard, savedTier\)/,
   "saved pieces on blocked mob spaces are removed during load");
-assert.match(appSource, /unavailable \? "unavailable"/,
+assert.match(viewSource, /unavailable \? "unavailable"/,
   "blocked spaces receive a visible unavailable state");
 assert.match(appSource, /杂兵版图的 1、15 格不能放置棋子/,
   "direct movement attempts are rejected with the board rule");

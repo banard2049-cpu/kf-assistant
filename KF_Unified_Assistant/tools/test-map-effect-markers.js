@@ -40,6 +40,8 @@ assert.match(appSource, /record\.x = Number\(effectMarkerDrag\.x\.toFixed\(2\)\)
 assert.match(appSource, /record\.y = Number\(effectMarkerDrag\.y\.toFixed\(2\)\)/, "dragged y coordinate must persist");
 assert.match(appSource, /button\.dataset\.effectMarkerMoved === "true"/, "a completed drag must not trigger click-to-remove");
 assert.match(appSource, /placedEffectCard\(item, "active"\)/, "active effect cards must use the draggable card renderer");
+assert.doesNotMatch(appSource, /<figcaption>\$\{esc\(placement\.label\)\}<\/figcaption>/,
+  "active effect cards must not show the removed corner label");
 assert.match(appSource, /placedEffectCard\(item, `district:\$\{district\.id\}`\)/,
   "district effect cards must use the draggable card renderer");
 
@@ -48,7 +50,9 @@ assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*touch-action: non
 assert.match(styleSource, /button\.effect-card-marker\.dragging \{/);
 assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*border-radius: 0;/,
   "effect marker assets must not be forced into circles");
-assert.match(indexSource, /styles\.css\?v=59/);
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(styleSource, /\.kingdom-board-dialog \.kingdom-board-layout \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) clamp\(270px, 27vw, 380px\);/,
+  "district effect cards opened from the kingdom panel button must be slightly larger");
+assert.match(indexSource, /styles\.css\?v=68/);
+assert.match(indexSource, /app\.js\?v=108/);
 
 console.log("map effect markers: defaults, migration, dragging, persistence and styling verified");

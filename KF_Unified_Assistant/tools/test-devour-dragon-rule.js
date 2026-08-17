@@ -39,7 +39,7 @@ assert.equal(context.ineligible.rule.drawn, true);
 assert.equal(context.ineligible.rule.boundIndex, null, "no binding is allowed when only kings or dragons were drawn");
 
 assert.match(indexSource, /id="devourDragonRule"/);
-assert.match(indexSource, /app\.js\?v=24/);
+assert.match(indexSource, /app\.js\?v=27/);
 assert.match(appSource, /devourDragonBound:true,conflictLocation:"巨兽之腹"/);
 assert.match(mapSource, /districtWheelLocations/);
 assert.match(mapSource, /conflictLocation: destination === "conflict"/);

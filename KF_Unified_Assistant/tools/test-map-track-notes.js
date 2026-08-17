@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const appSource = fs.readFileSync("public/modules/map/app.js", "utf8").replace(/\r\n/g, "\n");
+const mapViewSource = fs.readFileSync("public/modules/map/map-view.js", "utf8").replace(/\r\n/g, "\n");
 const styleSource = fs.readFileSync("public/modules/map/styles.css", "utf8");
 const indexSource = fs.readFileSync("public/modules/map/index.html", "utf8");
 const functionStart = appSource.indexOf("  function trackNoteText(");
@@ -50,16 +51,18 @@ assert.match(appSource, /trackNotes: normalizeTrackNotes\(\)/, "new saves must i
 assert.match(appSource, /saved\.trackNotes = normalizeTrackNotes\(saved\.trackNotes\)/, "old saves must normalize track notes");
 assert.match(appSource, /trackNotes: deepCopy\(state\.trackNotes\)/, "undo snapshots must include track notes");
 assert.match(appSource, /state\.trackNotes = normalizeTrackNotes\(item\.trackNotes \|\| state\.trackNotes\)/, "undo must restore track notes");
-assert.match(appSource, /data-track-note-form="\$\{id\}"/, "all three tracks must render note editors");
-assert.match(appSource, /type="checkbox" data-track-note-value="\$\{id\}"/, "track note values must support multi-selection");
-assert.match(appSource, /data-track-note-summary="\$\{id\}"[^>]*>\$\{selectedNotePosition\}<\/summary>/, "track note selectors must show the selected value without a redundant label");
+assert.match(appSource, /KFMapView\.renderDelveTracks/, "the first screen must use the shared track renderer");
+assert.match(mapViewSource, /data-track-note-form="\$\{id\}"/, "all three tracks must render note editors");
+assert.match(mapViewSource, /type="checkbox" data-track-note-value="\$\{id\}"/, "track note values must support multi-selection");
+assert.match(mapViewSource, /data-track-note-summary="\$\{id\}"[^>]*>\$\{selectedNotePosition\}<\/summary>/, "track note selectors must show the selected value without a redundant label");
 assert.match(appSource, /summary\.textContent = positions\.join\("、"\)/, "multi-selected track values must remain label-free after interaction");
 assert.match(appSource, /changedPositions\.forEach\(position => \{ state\.trackNotes\[key\]\[String\(position\)\] = note; \}\)/, "one save must apply a note to every selected value");
 assert.match(appSource, /markedPositions\.forEach\(position => \{ delete state\.trackNotes\[key\]\[String\(position\)\]; \}\)/, "clear must apply to every selected value");
-assert.match(appSource, /data-track-note-clear="\$\{id\}"[^>]*>清除<\/button>/, "track note clear button must use the short label");
+assert.match(mapViewSource, /data-track-note-clear="\$\{id\}"[^>]*>清除<\/button>/, "track note clear button must use the short label");
 assert.doesNotMatch(appSource, /清除所选/);
-assert.match(appSource, /class="track-cell-note"/, "track cells must render note text above their number");
-assert.match(appSource, /data-track-note-text="\$\{id\}"[^>]*maxlength="\$\{TRACK_NOTE_MAX_LENGTH\}"/, "note input must enforce its length limit");
+assert.match(mapViewSource, /class="track-cell-note"/, "track cells must render note text above their number");
+assert.match(mapViewSource, /data-track-note-text="\$\{id\}"[^>]*maxlength="\$\{maxNoteLength\}"/, "note input must enforce its length limit");
+assert.match(appSource, /maxNoteLength: TRACK_NOTE_MAX_LENGTH/, "the first screen must pass its note limit to the shared renderer");
 assert.match(appSource, /\$\$\('\[data-track-note-form\]'\)/, "note forms must bind save handling");
 assert.match(appSource, /delete state\.trackNotes\[key\]\[String\(position\)\]/, "notes must be removable");
 assert.match(appSource, /state\.trackNotes = normalizeTrackNotes\(\)/, "reset must clear track notes");
@@ -79,6 +82,8 @@ assert.match(appSource, /const after = trackerValue\(before \+ Number\(amount \|
   "threat reductions must stop at zero");
 assert.doesNotMatch(appSource, /delve-track-compact|curse-counter|data-track-adjust/, "curse must use the shared track and note controls");
 assert.doesNotMatch(styleSource, /delve-track-compact|curse-counter/, "removed curse counter styles must not remain");
+assert.doesNotMatch(mapViewSource, /DELVE TRACKS|深入轨道/,
+  "the delve tracks must render without the removed bilingual heading");
 
 assert.match(styleSource, /\.track-note-editor \{/);
 assert.match(styleSource, /\.track-note-position-options \{/);
@@ -88,8 +93,20 @@ assert.match(styleSource, /\.track-curse \.track-note-editor \{[\s\S]*?grid-temp
 assert.match(styleSource, /\.track-note-editor button \{[\s\S]*?white-space: nowrap;/, "track-note action labels must remain on one line");
 assert.match(styleSource, /button\.delve-track-cell \.track-cell-note \{/);
 assert.match(styleSource, /grid-template-rows: 20px 20px 11px;/, "track cell height must remain stable with notes");
-assert.match(styleSource, /grid-template-columns: minmax\(340px, 10fr\) minmax\(240px, 6fr\) minmax\(620px, 17fr\);/, "curse must be wider than before while time still receives the most track space");
-assert.match(indexSource, /styles\.css\?v=59/);
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(styleSource, /\.delve-tracks \{[\s\S]*?grid-template-columns: minmax\(0, 10fr\) minmax\(240px, 7fr\) minmax\(0, 17fr\);[\s\S]*?overflow: visible;/,
+  "the three tracks must proportionally fill the available width without an outer scrollbar");
+assert.match(styleSource, /\.delve-track-scroll \{[\s\S]*?max-width: 100%;[\s\S]*?overflow-x: auto;[\s\S]*?overflow-y: hidden;/,
+  "each track must scroll horizontally inside its own bounded section");
+assert.match(styleSource, /\.track-curse \.delve-track-scroll \{ overflow-x: hidden; \}/,
+  "the widened curse track must fit all five cells without a scrollbar");
+assert.match(styleSource, /\.delve-track-cells \{[\s\S]*?grid-template-columns: repeat\(var\(--track-cells\), 40px\);[\s\S]*?width: max-content;/,
+  "track cells must keep a stable readable width inside their scroll area");
+assert.match(styleSource, /button\.delve-track-cell \{[\s\S]*?width: 40px;[\s\S]*?min-width: 40px;[\s\S]*?max-width: 40px;/,
+  "track cells must keep their fixed width without overlapping");
+assert.match(styleSource, /\.delve-tracks-sticky \.delve-tracks \{\s+grid-template-columns: 1fr;/,
+  "narrow screens must stack the tracks instead of scrolling them");
+assert.match(indexSource, /styles\.css\?v=68/);
+assert.match(indexSource, /map-view\.js\?v=8/);
+assert.match(indexSource, /app\.js\?v=108/);
 
 console.log("map track notes: normalization, persistence, controls and styling verified");

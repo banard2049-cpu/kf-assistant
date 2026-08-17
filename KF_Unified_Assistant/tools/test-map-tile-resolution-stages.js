@@ -43,6 +43,6 @@ assert.match(appSource, /splittingBc \? "完成 b-c，进入 d-e" : resolvingDe 
   "the controls expose separate b-c and d-e confirmations");
 assert.match(appSource, /if \(pending\.huntSteps\) moveHunt\(pending\.huntSteps\);[\s\S]*?spawnThreatSeven\(pending\.spawnTileId, pending\.district\)/,
   "d-e still moves existing monsters before spawning the threat-seven monster");
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(indexSource, /app\.js\?v=108/);
 
 console.log("map tile resolution: step d work splits b-c from d-e");

@@ -52,6 +52,7 @@
     ["/modules/map/", "地图"],
     ["/modules/encounter/", "遭遇"],
     ["/modules/aibp/", "AI / BP"],
+    ["/modules/display/", "第二屏"],
   ];
   bar.innerHTML = `<strong>KF 一体化战役</strong>${links.map(([href, label]) =>
     `<a href="${href}" class="${href.includes(`/modules/${moduleName}/`) ? "active" : ""}">${label}</a>`
@@ -109,10 +110,14 @@
   }
   const operationId = () => compatibleUuid().replace(/-/g, "");
   const clientId = localStorage.kfClientId || (localStorage.kfClientId = operationId());
+  const sceneName = { map: "map", encounter: "encounter", aibp: "conflict" }[moduleName] || "map";
+  const presentationChannel = "BroadcastChannel" in window ? new BroadcastChannel("kf-presentation") : null;
   let campaignRevision = 0;
   let lastValue = "";
   let saving = false;
   let queued = false;
+  let operationQueue = [];
+  let lastScenePublish = 0;
 
   function applyAuthoritativeConflict(result) {
     const path = `modules.${moduleName}`;
@@ -169,49 +174,70 @@
     window.dispatchEvent(new CustomEvent("kf:aibp-handoff", { detail: handoff }));
   }
 
-  async function pushValue(value) {
-    if (!activeCampaign || saving) { queued = true; return; }
+  function queueOperation(path, value) {
+    operationQueue = operationQueue.filter(operation => operation.path !== path);
+    operationQueue.push({ id: operationId(), clientId, path, value });
+  }
+
+  function publishScene(force = false) {
+    if (!activeCampaign) return;
+    const now = Date.now();
+    if (!force && now - lastScenePublish < 1200) return;
+    lastScenePublish = now;
+    const updatedAt = new Date(now).toISOString();
+    queueOperation("presentation.scene", sceneName);
+    queueOperation("presentation.updatedAt", updatedAt);
+    queueOperation("presentation.sourceClientId", clientId);
+    presentationChannel?.postMessage({ campaignId: activeCampaign, scene: sceneName, updatedAt, sourceClientId: clientId });
+    drainQueue();
+  }
+
+  async function drainQueue() {
+    if (!activeCampaign || saving || !operationQueue.length || !navigator.onLine) { queued = operationQueue.length > 0; return; }
     saving = true;
+    queued = false;
+    const batch = operationQueue.splice(0, 200).map(operation => ({ ...operation, baseRevision: campaignRevision }));
     status.textContent = navigator.onLine ? "同步中…" : "离线暂存";
     try {
       const result = await api("campaign-sync", {
         method: "POST",
-        body: JSON.stringify({
-          campaignId: activeCampaign,
-          operations: [{
-            id: operationId(), clientId, path: `modules.${moduleName}`,
-            value: JSON.parse(value), baseRevision: campaignRevision,
-          }],
-        }),
+        body: JSON.stringify({ campaignId: activeCampaign, operations: batch }),
       });
       campaignRevision = result.revision;
       const serverWon = applyAuthoritativeConflict(result);
       status.textContent = serverWon ? "已保留服务器较高轮次存档" : "已同步";
     } catch (error) {
+      operationQueue.unshift(...batch.map(({ baseRevision, ...operation }) => operation));
       queued = true;
       status.textContent = navigator.onLine ? error.message : "离线暂存";
     } finally {
       saving = false;
-      if (queued && navigator.onLine) {
-        queued = false;
-        const current = localStorage.getItem(storageKey);
-        if (current) setTimeout(() => pushValue(current), 500);
-      }
+      if (operationQueue.length && navigator.onLine) setTimeout(drainQueue, 250);
     }
+  }
+
+  async function pushValue(value) {
+    if (!activeCampaign) return;
+    queueOperation(`modules.${moduleName}`, JSON.parse(value));
+    publishScene();
+    await drainQueue();
   }
 
   async function flushCurrentValue() {
-    const deadline = Date.now() + 1200;
-    while (saving && Date.now() < deadline) {
+    const current = localStorage.getItem(storageKey);
+    if (current) {
+      lastValue = current;
+      queueOperation(`modules.${moduleName}`, JSON.parse(current));
+    }
+    publishScene(true);
+    const deadline = Date.now() + 1600;
+    while ((saving || operationQueue.length) && Date.now() < deadline) {
+      await drainQueue();
       await new Promise(resolve => setTimeout(resolve, 40));
     }
-    const current = localStorage.getItem(storageKey);
-    if (!current) return;
-    lastValue = current;
-    await pushValue(current);
   }
 
-  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue };
+  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue, publishScene };
 
   async function boot() {
     if (!activeCampaign) {
@@ -263,6 +289,7 @@
       await script();
       if (moduleName === "encounter") applyEncounterHandoff();
       if (moduleName === "aibp") applyAibpHandoff();
+      publishScene(true);
       setInterval(() => {
         const current = localStorage.getItem(storageKey) || "";
         if (current && current !== lastValue) {
@@ -292,6 +319,11 @@
   addEventListener("online", () => {
     const current = localStorage.getItem(storageKey);
     if (current) pushValue(current);
+    else drainQueue();
   });
+  addEventListener("focus", () => publishScene());
+  addEventListener("pointerdown", () => publishScene(), { passive: true });
+  addEventListener("keydown", () => publishScene(), { passive: true });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) publishScene(true); });
   boot();
 })();

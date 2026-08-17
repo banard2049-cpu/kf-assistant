@@ -301,3 +301,9 @@
 .account-passwords .password-empty{margin:0;padding:0 8px 8px;color:var(--muted);font-size:12px}
 .account-passwords .remove-row{padding:2px;font-size:16px}
 .leader-name-mark{color:var(--red);font-size:.9em}
+.presentation-controls{margin:13px 0;border:1px solid #a99a85;background:#f8f0df}
+.presentation-controls>summary{display:flex;align-items:center;justify-content:space-between;padding:10px;cursor:pointer;list-style:none}
+.presentation-controls>summary::-webkit-details-marker{display:none}.presentation-controls>summary span{font-size:10px;color:var(--muted)}
+.presentation-controls>label{display:grid;grid-template-columns:1fr auto;gap:4px 8px;padding:7px 10px;font-size:12px}.presentation-controls>label input{grid-column:1/-1;width:100%}
+.presentation-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:7px 10px}.presentation-actions.icon-actions{grid-template-columns:repeat(3,1fr)}
+.presentation-actions.icon-actions button{min-height:36px;font-size:20px}.presentation-actions button.active{border-color:var(--red);background:#efe0d3;color:var(--red)}

@@ -51,6 +51,7 @@ for (const file of [
   "public/modules/aibp/data/mob-activation-config.js",
   "public/modules/aibp/data/boss-rule-config.js",
   "public/modules/aibp/data/conflict-setup-data.js",
+  "public/modules/display/data/conflict-board-data.js",
   "public/modules/aibp/app.js"
 ]) {
   vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context, { filename: file });
@@ -69,8 +70,28 @@ function select(id, level = 1) {
   api.rebuild();
 }
 
+select("M_Pumpkinhead", 1);
+const pumpkinLayout = context.window.KF_CONFLICT_BOARD_DATA.layouts.find(item => item.id === battle().conflictBoard.layoutId);
+const defaultTerrainCount = pumpkinLayout.placements.filter(item => item.kind === "terrain").length;
+assert.strictEqual(battle().conflictBoard.terrain.length, defaultTerrainCount, "新冲突必须生成可编辑 TTS 地形状态");
+const legacyTerrainSave = JSON.parse(JSON.stringify(state()));
+delete legacyTerrainSave.battle.conflictBoard.terrain;
+delete legacyTerrainSave.battle.conflictBoard.showStarts;
+const migratedTerrainSave = api.validateState(legacyTerrainSave);
+assert.strictEqual(migratedTerrainSave.battle.conflictBoard.terrain.length, defaultTerrainCount, "旧存档必须自动补齐 TTS 地形");
+battle().conflictBoard.terrain[0].rotation = 90;
+battle().conflictBoard.terrain[0].flipped = true;
+const terrainSave = JSON.parse(JSON.stringify(state()));
+terrainSave.encounters = {};
+const terrainRoundTrip = api.validateState(terrainSave);
+assert.strictEqual(terrainRoundTrip.battle.conflictBoard.terrain[0].rotation, 90, "地形旋转必须持久化");
+assert.strictEqual(terrainRoundTrip.battle.conflictBoard.terrain[0].flipped, true, "地形翻面必须持久化");
+assert.ok(api.resetConflictTerrain(), "地形重置必须可执行");
+assert.strictEqual(battle().conflictBoard.terrain.length, defaultTerrainCount, "地形重置必须恢复 TTS 默认布局");
+assert.strictEqual(battle().conflictBoard.showStarts, true, "地形重置必须恢复初始位置");
+
 select("M_YoungDevour", 1);
-assert.deepStrictEqual([...battle().ruleState.phaseIds], ["M_YoungDevour:Trait:38", "M_YoungDevour:Trait:39"]);
+assert.deepStrictEqual([...battle().ruleState.phaseIds], ["M_YoungDevour:Trait:38", "M_YoungDevour:Trait:39", "M_YoungDevour:Trait:40"]);
 const youngAiBefore = ranks(battle().aiDeck, "AI");
 api.draw("bp");
 api.settle("bp", "defeat");
@@ -91,13 +112,18 @@ assert.strictEqual(battle().doubleWounds, 1);
 assert.deepStrictEqual(ranks(battle().aiDeck, "AI"), youngCriticalAi, "幼龙暴击也不得晋升 AI");
 
 select("M_WhiteApe", 1);
+assert.strictEqual(battle().ruleState.guardians.count, 2, "冲突设置必须包含 2 名先民护卫");
 api.startWhiteApeRound();
-assert.strictEqual(battle().ruleState.guardians.count, 0, "等级 1–2 不应在怪物轮自动生成护卫");
+assert.strictEqual(battle().ruleState.guardians.count, 3, "等级 1 新回合应生成 1 名护卫");
+assert.strictEqual(battle().ruleState.pendingCoordinatedAttacks, 1);
+api.resolveGuardianAttack();
 for (let index = 0; index < 4; index++) {
   api.draw("bp");
   api.settle("bp", "defeat");
 }
-assert.strictEqual(battle().ruleState.guardians.count, 1, "累计 4 次受伤应生成护卫");
+assert.strictEqual(battle().ruleState.reinforcementTokens, 4, "累计 4 次受伤应达到增援阈值");
+api.resolveWhiteReinforcement();
+assert.strictEqual(battle().ruleState.guardians.count, 4, "结算增援应生成第 4 名护卫");
 assert.strictEqual(battle().ruleState.pendingCoordinatedAttacks, 1);
 api.resolveGuardianAttack();
 assert.strictEqual(battle().ruleState.pendingCoordinatedAttacks, 0);
@@ -113,8 +139,10 @@ assert.deepStrictEqual(ranks(battle().aiDeck, "AI"), whiteAiBefore);
 assert.strictEqual(battle().ruleState.thickSkinSetAside, true);
 api.startWhiteApeRound();
 assert.strictEqual(battle().bpDeck[0], thickSkin);
-assert.strictEqual(battle().ruleState.guardians.count, 2);
+assert.strictEqual(battle().ruleState.guardians.count, 4);
+api.resolveGuardianAttack();
 api.startWhiteApeRound();
+api.resolveGuardianAttack();
 api.startWhiteApeRound();
 assert.strictEqual(battle().ruleState.guardians.count, 5, "等级 3 护卫上限应为 5");
 
@@ -158,22 +186,22 @@ battle().bpDeck = [indexFinger];
 api.draw("bp");
 api.settle("bp", "defeat");
 assert.strictEqual(battle().singleWounds, 1);
-api.addFallenKnight();
-const fallenId = battle().ruleState.fallenKnights[0].id;
-api.woundFallenKnight(fallenId);
-api.woundFallenKnight(fallenId);
-assert.strictEqual(battle().ruleState.fallenKnights.length, 0);
+api.damagePuppetFallenKnight();
+assert.strictEqual(battle().ruleState.puppetKing.fallenKnightTokens, 1);
+api.damagePuppetFallenKnight();
+assert.strictEqual(battle().ruleState.puppetKing.fallenKnightTokens, 0);
 assert.strictEqual(battle().singleWounds, 2);
 battle().level = 4;
 api.rebuild();
 battle().aiDeck = ["M_PuppetKing:AI1:20", "M_PuppetKing:AI1:23"];
 api.revealPuppetTopTwo();
-assert.strictEqual(battle().ruleState.recommendedAiId, "M_PuppetKing:AI1:23", "同阶应优先推荐 Command AI");
+assert.deepStrictEqual([...battle().ruleState.aiChoiceIds], ["M_PuppetKing:AI1:20", "M_PuppetKing:AI1:23"]);
+assert.strictEqual(battle().ruleState.recommendedAiId, "", "新版选择器不应代替玩家推荐 AI");
 api.choosePuppetAi("M_PuppetKing:AI1:23");
 api.settle("ai", "discard");
 battle().aiDeck = ["M_PuppetKing:AI1:20", "M_PuppetKing:AI1:21"];
 api.revealPuppetTopTwo();
-assert.strictEqual(battle().ruleState.aiChoiceMode, "routine");
+assert.strictEqual(battle().ruleState.aiChoiceMode, "choose");
 api.executePuppetRoutine();
 assert.strictEqual(battle().ruleState.ruleCard, "M_PuppetKing:SIG:38");
 
@@ -184,18 +212,18 @@ assert.strictEqual(battle().ruleState.aiAttachments.length, 1);
 assert.strictEqual(battle().aiDiscard.length, 0);
 api.draw("ai");
 api.attachBogAi("测试骑士");
-assert.strictEqual(battle().ruleState.aiAttachments.length, 1);
-assert.strictEqual(battle().aiDiscard.length, 1, "等级 1 被替换的附着 AI 应归还弃牌堆");
+assert.strictEqual(battle().ruleState.aiAttachments.length, 2);
+assert.strictEqual(battle().aiDiscard.length, 0, "同一骑士可以保留多张附着 AI");
 const attachmentId = battle().ruleState.aiAttachments[0].id;
 api.returnBogAttachment(attachmentId);
-assert.strictEqual(battle().ruleState.aiAttachments.length, 0);
-assert.strictEqual(battle().aiDiscard.length, 2);
+assert.strictEqual(battle().ruleState.aiAttachments.length, 1);
+assert.strictEqual(battle().aiDiscard.length, 1);
 battle().aiDeck = [];
 battle().aiDiscard = [];
 api.draw("ai");
 assert.strictEqual(battle().conflictStatus, "failed");
 
-select("M_BogWitch", 1);
+select("M_BogWitch", 3);
 const originalBpOrder = [...battle().bpDeck];
 api.hiddenBogBpTop(2);
 assert.strictEqual(battle().bpDeck[0], originalBpOrder[2]);
@@ -358,10 +386,9 @@ duplicatePatient.battle.ruleState.patient.discard.push(duplicatePatient.battle.r
 assert.throws(() => api.validateState(duplicatePatient), /Patient 卡同时出现在多个区域/);
 
 for (const [id, expectedText] of [
-  ["M_DevilAncientDusk", "恶魔讨价还价"],
-  ["M_DevilSmeltedFears", "倒序结算"],
+  ["M_DevilSmeltedFears", "窖牢"],
   ["M_Eggknight", "Jacked"],
-  ["M_Knighteater", "狼吞虎咽"],
+  ["M_Knighteater", "开始暴走"],
   ["M_Stonemason", "磁力聚甲"]
 ]) {
   select(id, 4);
@@ -369,6 +396,8 @@ for (const [id, expectedText] of [
   assert.ok(panel.includes("boss-rule-panel"), `${id} 应渲染专用规则区`);
   assert.ok(panel.includes(expectedText), `${id} 专用规则区缺少关键操作`);
 }
+select("M_DevilAncientDusk", 4);
+assert.strictEqual(api.renderBossRules(), "", "远古薄暮恶魔使用主战斗区规则，不渲染独立操作面板");
 select("M_KingLaidLow", 4);
 assert.strictEqual(api.renderBossRules(), "", "俯伏王不应渲染当前 Boss 专用操作区");
 
@@ -431,9 +460,8 @@ assert.strictEqual(battle().sheetTokens.length, 0, "石匠自动盔甲 Token 不
 select("M_Eggknight", 2);
 api.setSheetTokenCount("token-armor", 3);
 const armorSheetTokens = battle().sheetTokens.filter(token => token.assetId === "token-armor");
-assert.strictEqual(armorSheetTokens.length, 3, "盔甲 Token 应生成三个可独立放置的实例");
-assert.strictEqual(new Set(armorSheetTokens.map(token => token.id)).size, 3);
-assert.ok(armorSheetTokens.every(token => token.count === 1));
+assert.strictEqual(armorSheetTokens.length, 1, "同类盔甲 Token 应聚合为一个可拖动堆叠");
+assert.strictEqual(armorSheetTokens[0].count, 3);
 api.renderApp();
 assert.ok(element("#app").innerHTML.includes("httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png"));
 assert.ok(element("#app").innerHTML.includes("token-square"));
@@ -469,7 +497,6 @@ assert.strictEqual(battle().bpTrack[0].markerTokens["token-armor"], 2, "撤销�
 
 const expectedMobBp = {
   M_Ratwolves: { BP1: 4 },
-  M_WingedNightmare: { BPS: 1 },
   M_Pumpkinhead: { BPS: 6 },
   M_PalebloodWorms: { BP1: 4 },
   M_FirstmenWarriors: { BP1: 6 },
@@ -506,13 +533,11 @@ assert.ok(pumpkinSlots.filter(slot => slot.side === "face").every(slot => slot.m
   "南瓜头正面 BP 初始不得带幼苗指示物");
 
 select("M_WingedNightmare", 1);
-assert.strictEqual(battle().bpTrack.filter(slot => slot.id).length, 1);
-assert.strictEqual(battle().bpTrack[0].side, "face", "翼生梦魇 BPS 不得初始化为南瓜头幼苗面");
-assert.strictEqual(battle().bpTrack[0].markers, 0, "翼生梦魇 BPS 不得获得南瓜头初始标记");
-api.selectMob(0);
-api.settleMob("defeat");
+assert.strictEqual(battle().mobCount, 1);
+assert.strictEqual(battle().bpTrack.length, 0, "翼生梦魇固定 BPS 不进入杂兵轨");
+api.resolveWingedNightmareAttack(true);
 assert.strictEqual(battle().singleWounds, 1, "翼生梦魇 BPS 击伤应按普通杂兵伤口结算");
-assert.strictEqual(battle().bpTrack[0].id, "", "翼生梦魇被击伤后应离开杂兵轨");
+assert.strictEqual(battle().bpTrack.length, 0, "翼生梦魇固定 BPS 击伤后仍不进入杂兵轨");
 assert.strictEqual(battle().conflictStatus, "active", "翼生梦魇不得触发生态灾难失败");
 
 select("M_Pumpkinhead", 1);

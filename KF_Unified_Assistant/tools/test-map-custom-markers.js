@@ -59,8 +59,8 @@ const fogPng = fs.readFileSync("public/modules/map/assets/tokens/fog.png");
 assert.equal(fogPng.subarray(1, 4).toString("ascii"), "PNG", "fog must reference a valid PNG file");
 assert.equal(fogPng[25], 6, "fog PNG must include an alpha channel");
 
-assert.match(indexSource, /styles\.css\?v=59/);
+assert.match(indexSource, /styles\.css\?v=68/);
 assert.match(indexSource, /data\/map-data\.js\?v=6/);
-assert.match(indexSource, /app\.js\?v=99/);
+assert.match(indexSource, /app\.js\?v=108/);
 
 console.log("map custom markers: input, text rendering, persistence shape and styling verified");

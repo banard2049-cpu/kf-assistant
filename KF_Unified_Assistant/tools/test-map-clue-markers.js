@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const source = fs.readFileSync("public/modules/map/app.js", "utf8").replace(/\r\n/g, "\n");
+const sharedView = fs.readFileSync("public/modules/map/map-view.js", "utf8").replace(/\r\n/g, "\n");
 const constantsStart = source.indexOf("  const CLUES = [");
 const constantsEnd = source.indexOf("\n  const $ =", constantsStart);
 const markerTokenStart = source.indexOf("  function markerToken(");
@@ -45,6 +46,7 @@ for (const [id, name, icon] of expected) {
 }
 
 assert.match(source, /current\.tileMarkers\.push\(\{ id: uid\(\), tileId: current\.selected, type: \$\("#tileMarkerType"\)\.value \}\)/);
-assert.match(source, /\.\.\.tileMarkers\.map\(marker => \(\{/);
+assert.match(source, /KFMapView\.renderMapStage/);
+assert.match(sharedView, /\.\.\.tileMarkers\.map\(marker => \(\{/);
 
 console.log("map clue markers: four placeable marker types and assets verified");
