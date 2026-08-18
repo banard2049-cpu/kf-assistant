@@ -75,6 +75,57 @@ const rebuild = (phase, level = state().level) => {
   api.rebuild();
 };
 
+assert.equal(state().conflictBoard.showCoordinates, false,
+  "新冲突默认不显示格子位置");
+assert.doesNotMatch(api.conflictGridHtml(state().conflictBoard), /<b>J1<\/b>/,
+  "坐标关闭时不应渲染格位文字");
+api.toggleConflictCoordinates();
+assert.equal(state().conflictBoard.showCoordinates, true,
+  "格子位置按钮应开启坐标显示");
+assert.match(api.conflictGridHtml(state().conflictBoard), /<b>J1<\/b>/,
+  "坐标层左上角应为 J1");
+assert.match(api.conflictGridHtml(state().conflictBoard), /<b>A14<\/b>/,
+  "坐标层右下角应为 A14");
+api.drawOrResetFoolCard();
+const drawnFoolCard = context.window.KF_CONFLICT_BOARD_DATA.foolDeck.cards
+  .find(card => card.cardId === state().conflictBoard.activeFoolCardId);
+assert.ok(drawnFoolCard, "抽取愚者卡组后应保存有效的当前牌");
+assert.equal(state().conflictBoard.foolDeckOrder.length, 14,
+  "抽出的愚者牌应从剩余牌组移除");
+assert.equal((api.conflictGridHtml(state().conflictBoard).match(/fool-highlight/g) || []).length,
+  drawnFoolCard.spaces.length, "抽牌后应标红牌面列出的所有候选格位");
+assert.match(nodes.get("#app").innerHTML, /class="fool-card-face"/,
+  "抽牌后控制区应显示从 TTS 导入的牌面");
+assert.match(nodes.get("#app").innerHTML, /data-fool-deck>取消标红<\/button>/,
+  "牌组尚未抽完时按钮不应提示洗牌");
+api.drawOrResetFoolCard();
+assert.equal(state().conflictBoard.activeFoolCardId, null,
+  "再次点击愚者卡组应取消当前牌");
+assert.equal((api.conflictGridHtml(state().conflictBoard).match(/fool-highlight/g) || []).length, 0,
+  "取消当前牌后不应保留红色格位");
+assert.equal(new Set(state().conflictBoard.foolDeckOrder).size, 14,
+  "取消当前牌后应保留剩余牌组，不应重新洗牌");
+assert.equal(api.validateState(JSON.parse(JSON.stringify(api.state()))).battle.conflictBoard.foolDeckOrder.length, 14,
+  "重新载入存档时不应把已经抽过的牌放回剩余牌组");
+api.undo();
+assert.equal(state().conflictBoard.activeFoolCardId, drawnFoolCard.cardId,
+  "撤销取消操作应恢复抽出的愚者牌及标红");
+api.drawOrResetFoolCard();
+state().conflictBoard.foolDeckOrder = [17108];
+state().conflictBoard.activeFoolCardId = null;
+api.drawOrResetFoolCard();
+assert.equal(state().conflictBoard.activeFoolCardId, 17108,
+  "牌组仅剩一张时应抽出最后一张牌");
+assert.equal(state().conflictBoard.foolDeckOrder.length, 0,
+  "抽出最后一张牌后剩余牌组应为空");
+assert.match(nodes.get("#app").innerHTML, /data-fool-deck>取消标红并洗牌<\/button>/,
+  "最后一张牌应提示处理后洗牌");
+api.drawOrResetFoolCard();
+assert.equal(state().conflictBoard.activeFoolCardId, null,
+  "处理最后一张牌后应取消标红");
+assert.equal(new Set(state().conflictBoard.foolDeckOrder).size, 15,
+  "只有全部 15 张抽完后才应重新洗牌");
+
 assert.doesNotMatch(api.renderBossRules(), /BOSS RULES|当前 Boss 专用操作/,
   "所有 Boss 专用面板都不应显示共用标题文字");
 

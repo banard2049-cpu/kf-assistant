@@ -166,6 +166,158 @@
       }
     }
   },
+  "foolDeck": {
+    "sheet": {
+      "asset": "assets/conflict/fool-card-sheet.jpg",
+      "width": 2420,
+      "height": 2232,
+      "columns": 5,
+      "rows": 3
+    },
+    "back": {
+      "asset": "assets/conflict/fool-card-back.jpg",
+      "width": 484,
+      "height": 744
+    },
+    "cards": [
+      {
+        "cardId": 17100,
+        "label": "The Devil",
+        "spaces": [
+          "F6"
+        ],
+        "column": 0,
+        "row": 0
+      },
+      {
+        "cardId": 17101,
+        "label": "The Dragon",
+        "spaces": [
+          "E9"
+        ],
+        "column": 1,
+        "row": 0
+      },
+      {
+        "cardId": 17102,
+        "label": "The Tower",
+        "spaces": [
+          "E6"
+        ],
+        "column": 2,
+        "row": 0
+      },
+      {
+        "cardId": 17103,
+        "label": "The Saint",
+        "spaces": [
+          "F9"
+        ],
+        "column": 3,
+        "row": 0
+      },
+      {
+        "cardId": 17104,
+        "label": "The Comet",
+        "spaces": [
+          "A7",
+          "J8"
+        ],
+        "column": 4,
+        "row": 0
+      },
+      {
+        "cardId": 17105,
+        "label": "The Mage",
+        "spaces": [
+          "J2"
+        ],
+        "column": 0,
+        "row": 1
+      },
+      {
+        "cardId": 17106,
+        "label": "The King",
+        "spaces": [
+          "C11"
+        ],
+        "column": 1,
+        "row": 1
+      },
+      {
+        "cardId": 17107,
+        "label": "The Crone",
+        "spaces": [
+          "C4"
+        ],
+        "column": 2,
+        "row": 1
+      },
+      {
+        "cardId": 17108,
+        "label": "Tenebrae",
+        "spaces": [
+          "A2"
+        ],
+        "column": 3,
+        "row": 1
+      },
+      {
+        "cardId": 17109,
+        "label": "The Pope",
+        "spaces": [
+          "H7"
+        ],
+        "column": 4,
+        "row": 1
+      },
+      {
+        "cardId": 17110,
+        "label": "The Princess",
+        "spaces": [
+          "C8"
+        ],
+        "column": 0,
+        "row": 2
+      },
+      {
+        "cardId": 17111,
+        "label": "Lux",
+        "spaces": [
+          "J13"
+        ],
+        "column": 1,
+        "row": 2
+      },
+      {
+        "cardId": 17112,
+        "label": "Judgement",
+        "spaces": [
+          "A13"
+        ],
+        "column": 2,
+        "row": 2
+      },
+      {
+        "cardId": 17113,
+        "label": "The Empress",
+        "spaces": [
+          "H4"
+        ],
+        "column": 3,
+        "row": 2
+      },
+      {
+        "cardId": 17114,
+        "label": "The Saved Man",
+        "spaces": [
+          "H11"
+        ],
+        "column": 4,
+        "row": 2
+      }
+    ]
+  },
   "randomOrientations": {
     "R": [
       0,

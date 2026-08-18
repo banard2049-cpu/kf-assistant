@@ -198,6 +198,7 @@ function public_aibp_display_state(mixed $module): ?array {
     $publicKeys=['monsterId','level','clashPhase','mobCount','aiDiscard','aiRemoved','bpDiscard','bpDamage','bpRemoved','activeAI','activeBP','mobTacticCard','lastMobWoundRank','mobActivations','activeMobActivationId','sheetTokens','singleWounds','doubleWounds','conflictStatus','failureReason','conflictLocation','conflictBoard'];
     $public=[];
     foreach($publicKeys as $key)if(array_key_exists($key,$battle))$public[$key]=$battle[$key];
+    if(is_array($public['conflictBoard']??null))unset($public['conflictBoard']['foolDeckOrder']);
     $public['bpTrack']=array_map(function($slot){
         if(!is_array($slot))return ['id'=>'','occupied'=>false,'revealed'=>false,'side'=>'face','markers'=>0,'markerTokens'=>(object)[]];
         $revealed=($slot['revealed']??false)===true;

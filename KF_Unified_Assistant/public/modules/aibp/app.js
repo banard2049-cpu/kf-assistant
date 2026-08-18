@@ -660,6 +660,19 @@
     });
   }
 
+  function foolDeckCards() {
+    return Array.isArray(window.KF_CONFLICT_BOARD_DATA?.foolDeck?.cards)
+      ? window.KF_CONFLICT_BOARD_DATA.foolDeck.cards : [];
+  }
+
+  function foolCardById(cardId) {
+    return foolDeckCards().find(card => card.cardId === Number(cardId)) || null;
+  }
+
+  function shuffledFoolDeck() {
+    return shuffle(foolDeckCards().map(card => card.cardId));
+  }
+
   function defaultConflictTerrain(layout, resolvedOrientations = {}) {
     return (layout?.placements || []).filter(placement => placement.kind === "terrain").map(placement => ({
       id: placement.id,
@@ -724,6 +737,9 @@
       mobAssignments: numberable.slice(0, numbers.length).map((placement, index) => ({ placementId: placement.id, number: numbers[index] })),
       terrain: defaultConflictTerrain(layout, resolvedOrientations),
       showStarts: true,
+      showCoordinates: false,
+      foolDeckOrder: [],
+      activeFoolCardId: null,
       createdAt: new Date().toISOString(),
     };
   }
@@ -766,6 +782,17 @@
     });
     const expectsAssignments = layout.placements.some(item => item.kind === "monster" || ["RedSapling", "LictorDecoy"].includes(item.asset));
     const fallback = expectsAssignments && !mobAssignments.length ? buildConflictBoard(monster, level, battle) : null;
+    const foolCardIds = new Set(foolDeckCards().map(card => card.cardId));
+    const usedFoolCards = new Set();
+    const storedFoolDeckOrder = Array.isArray(raw?.foolDeckOrder);
+    const foolDeckOrder = (storedFoolDeckOrder ? raw.foolDeckOrder : []).flatMap(value => {
+      const cardId = Number(value);
+      if (!foolCardIds.has(cardId) || usedFoolCards.has(cardId)) return [];
+      usedFoolCards.add(cardId);
+      return [cardId];
+    });
+    const activeFoolCardId = Number(raw?.activeFoolCardId);
+    const normalizedActiveFoolCardId = foolCardIds.has(activeFoolCardId) ? activeFoolCardId : null;
     return {
       layoutId: layout.id,
       monsterId: monster.id,
@@ -777,6 +804,9 @@
       mobAssignments: mobAssignments.length ? mobAssignments : (fallback?.mobAssignments || []),
       terrain: normalizeConflictTerrain(raw?.terrain, layout, resolvedOrientations),
       showStarts: raw?.showStarts !== false,
+      showCoordinates: raw?.showCoordinates === true,
+      foolDeckOrder: foolDeckOrder.filter(cardId => cardId !== normalizedActiveFoolCardId),
+      activeFoolCardId: normalizedActiveFoolCardId,
       createdAt: String(raw?.createdAt || new Date().toISOString()),
     };
   }
@@ -4362,6 +4392,37 @@
     return `<span class="terrain-card-face ${esc(className)}" style="--card-sheet-width:${sheet.columns * 100}%;--card-sheet-height:${sheet.rows * 100}%;--card-left:${-card.column * 100}%;--card-top:${-card.row * 100}%"><img src="${esc(conflictAssetSrc(sheet.asset))}" alt=""></span>`;
   }
 
+  function conflictGridCellRef(index) {
+    const row = Math.floor(index / 14) + 1;
+    const column = index % 14 + 1;
+    return `${String.fromCharCode(75 - row)}${column}`;
+  }
+
+  function conflictGridHtml(boardState) {
+    const activeSpaces = new Set(foolCardById(boardState?.activeFoolCardId)?.spaces || []);
+    return Array.from({ length: 140 }, (_, index) => {
+      const ref = conflictGridCellRef(index);
+      const highlighted = activeSpaces.has(ref);
+      const label = boardState?.showCoordinates ? `<b>${ref}</b>` : "";
+      return `<span class="${highlighted ? "fool-highlight" : ""}"${highlighted ? ` aria-label="愚者牌格位 ${ref}"` : ""}>${label}</span>`;
+    }).join("");
+  }
+
+  function foolCardFaceHtml(card) {
+    const sheet = window.KF_CONFLICT_BOARD_DATA?.foolDeck?.sheet;
+    if (!sheet || !card) return "";
+    return `<span class="fool-card-face" style="--card-sheet-width:${sheet.columns * 100}%;--card-sheet-height:${sheet.rows * 100}%;--card-left:${-card.column * 100}%;--card-top:${-card.row * 100}%"><img src="${esc(conflictAssetSrc(sheet.asset))}" alt="${esc(card.label)}"></span>`;
+  }
+
+  function foolDeckPreviewHtml(boardState) {
+    const activeCard = foolCardById(boardState?.activeFoolCardId);
+    const remaining = Array.isArray(boardState?.foolDeckOrder) ? boardState.foolDeckOrder.length : 0;
+    if (activeCard) return `<div class="fool-deck-preview active">${foolCardFaceHtml(activeCard)}<strong>${esc(activeCard.label)}</strong><span>格位：${activeCard.spaces.map(esc).join(" / ")} · 剩余 ${remaining} 张</span></div>`;
+    const back = window.KF_CONFLICT_BOARD_DATA?.foolDeck?.back;
+    const status = remaining ? `剩余 ${remaining} / ${foolDeckCards().length} 张${remaining === foolDeckCards().length ? " · 已洗牌" : ""}` : "首次抽取时洗牌";
+    return `<div class="fool-deck-preview">${back?.asset ? `<img class="fool-card-back" src="${esc(conflictAssetSrc(back.asset))}" alt="愚者卡组牌背">` : ""}<strong>愚者卡组</strong><span>${status}</span></div>`;
+  }
+
   function conflictTerrainCatalog() {
     const catalog = new Map();
     for (const layout of window.KF_CONFLICT_BOARD_DATA?.layouts || []) {
@@ -4421,21 +4482,29 @@
     const usedAssets = [...new Set(terrain.map(item => item.asset))];
     const terrainCards = conflictTerrainCards(terrain);
     const boardAsset = window.KF_CONFLICT_BOARD_DATA?.board?.asset;
+    const activeFoolCard = foolCardById(boardState.activeFoolCardId);
+    const foolDeckExhausted = activeFoolCard && !boardState.foolDeckOrder.length;
+    const foolDeckButtonLabel = activeFoolCard
+      ? (foolDeckExhausted ? "取消标红并洗牌" : "取消标红")
+      : "抽取愚者卡组";
     const selection = selected
       ? `<strong>${esc(conflictTerrainLabel(selected.asset))}</strong><span>第 ${selected.columnStart} 列 · ${String.fromCharCode(75 - selected.rowStart)} 行 · ${selected.rotation}°${selected.flipped ? " · 反面" : ""}</span>`
       : "未选择地形";
     return `<section class="panel terrain-control-panel" aria-label="冲突版图地形控制">
       <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>冲突版图与地形</h3></div><div class="inline-actions">
+        <button type="button" class="button secondary small ${boardState.showCoordinates ? "active" : ""}" data-grid-coordinates>${boardState.showCoordinates ? "隐藏格子位置" : "显示格子位置"}</button>
+        <button type="button" class="button small ${activeFoolCard ? "danger" : ""}" data-fool-deck>${foolDeckButtonLabel}</button>
         <label class="terrain-start-toggle"><input type="checkbox" data-terrain-starts ${boardState.showStarts !== false ? "checked" : ""}>显示初始位置</label>
         <button type="button" class="button secondary small" data-terrain-reset>重置版图</button>
       </div></div>
       <div class="terrain-control-workspace">
         <div class="terrain-control-board" data-terrain-board style="${conflictBoardCropStyle()}">
           <img class="terrain-control-board-source" src="../display/${esc(boardAsset)}" alt="TTS 高清冲突版图">
-          <div class="terrain-control-grid">${Array.from({ length: 140 }, () => "<span></span>").join("")}</div>
+          <div class="terrain-control-grid">${conflictGridHtml(boardState)}</div>
           ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId)).join("")}${starts}
         </div>
         <aside class="terrain-control-tools">
+          ${foolDeckPreviewHtml(boardState)}
           <div class="terrain-tool-row">
             <button type="button" class="button secondary small" data-terrain-rotate="-90" ${selected ? "" : "disabled"} title="逆时针旋转 90°">↶ 左转</button>
             <button type="button" class="button secondary small" data-terrain-rotate="90" ${selected ? "" : "disabled"} title="顺时针旋转 90°">↷ 右转</button>
@@ -4496,6 +4565,36 @@
     selectedTerrainId = "";
     save();
     return true;
+  }
+
+  function toggleConflictCoordinates() {
+    if (!state.battle.conflictBoard) return;
+    state.battle.conflictBoard.showCoordinates = !state.battle.conflictBoard.showCoordinates;
+    save();
+  }
+
+  function drawOrResetFoolCard() {
+    const boardState = state.battle.conflictBoard;
+    if (!boardState || !foolDeckCards().length) return toast("愚者卡组资源缺失");
+    remember();
+    if (foolCardById(boardState.activeFoolCardId)) {
+      const exhausted = !boardState.foolDeckOrder.length;
+      boardState.activeFoolCardId = null;
+      if (exhausted) {
+        boardState.foolDeckOrder = shuffledFoolDeck();
+        log("取消愚者牌标红；牌组已抽完，重新洗牌");
+      } else {
+        log(`取消愚者牌标红（牌组剩余 ${boardState.foolDeckOrder.length} 张）`);
+      }
+    } else {
+      const validOrder = Array.isArray(boardState.foolDeckOrder)
+        ? boardState.foolDeckOrder.filter(cardId => foolCardById(cardId)) : [];
+      boardState.foolDeckOrder = validOrder.length ? validOrder : shuffledFoolDeck();
+      const card = foolCardById(boardState.foolDeckOrder.shift());
+      boardState.activeFoolCardId = card?.cardId || null;
+      if (card) log(`抽取愚者牌：${card.label}（${card.spaces.join(" / ")}，剩余 ${boardState.foolDeckOrder.length} 张）`);
+    }
+    save();
   }
 
   function renderApp() {
@@ -4682,6 +4781,8 @@
   function bindEvents(monster) {
     $("[data-deck-config]")?.addEventListener("toggle", event => { deckConfigOpen = event.currentTarget.open; });
     $("[data-sheet-token-tools]")?.addEventListener("toggle", event => { sheetTokenToolsOpen = event.currentTarget.open; });
+    $("[data-grid-coordinates]")?.addEventListener("click", toggleConflictCoordinates);
+    $("[data-fool-deck]")?.addEventListener("click", drawOrResetFoolCard);
     $$('[data-terrain-id]').forEach(button => button.addEventListener('click', event => {
       if (selectedTerrainId !== button.dataset.terrainId) {
         event.stopPropagation();
@@ -5139,6 +5240,7 @@
       resolveWingedNightmareAttack, resolveWingedAiResponse, ensureWingedAiDiscard,
       selectMob, settleMob: action => settleMob(monsterById(state.battle.monsterId), action),
       resetConflictTerrain, moveConflictTerrain, rotateConflictTerrain, conflictTerrainGeometry,
+      toggleConflictCoordinates, drawOrResetFoolCard, conflictGridCellRef, conflictGridHtml,
       validateState, renderApp, showPreview, showGuardedPreview, remember, commit: () => save(false),
       activeReferenceIds: () => activeReferenceCards(
         monsterById(state.battle.monsterId), state.battle

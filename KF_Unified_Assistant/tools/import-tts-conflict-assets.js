@@ -34,6 +34,23 @@ const TERRAIN_CARD_ASSETS = {
   Tower: "Tower",
   Well: "Bottomless Well",
 };
+const FOOL_CARDS = [
+  { cardId: 17100, label: "The Devil", spaces: ["F6"] },
+  { cardId: 17101, label: "The Dragon", spaces: ["E9"] },
+  { cardId: 17102, label: "The Tower", spaces: ["E6"] },
+  { cardId: 17103, label: "The Saint", spaces: ["F9"] },
+  { cardId: 17104, label: "The Comet", spaces: ["A7", "J8"] },
+  { cardId: 17105, label: "The Mage", spaces: ["J2"] },
+  { cardId: 17106, label: "The King", spaces: ["C11"] },
+  { cardId: 17107, label: "The Crone", spaces: ["C4"] },
+  { cardId: 17108, label: "Tenebrae", spaces: ["A2"] },
+  { cardId: 17109, label: "The Pope", spaces: ["H7"] },
+  { cardId: 17110, label: "The Princess", spaces: ["C8"] },
+  { cardId: 17111, label: "Lux", spaces: ["J13"] },
+  { cardId: 17112, label: "Judgement", spaces: ["A13"] },
+  { cardId: 17113, label: "The Empress", spaces: ["H4"] },
+  { cardId: 17114, label: "The Saved Man", spaces: ["H11"] },
+];
 
 function tokenize(source, offset = 0) {
   const tokens = [];
@@ -354,6 +371,40 @@ function run(options = {}) {
     cacheFile: path.basename(terrainCardSource), publicPath: terrainCardPublicPath, ...terrainCardMeta,
   });
 
+  let foolCardBag = null;
+  walkObjects(save.ObjectStates, object => {
+    if (!foolCardBag && object.Nickname === "愚者卡组") foolCardBag = object;
+  });
+  const foolCardDeck = foolCardBag?.ContainedObjects?.find(object =>
+    object.Name === "Deck" && object.CustomDeck && Array.isArray(object.ContainedObjects)
+  );
+  const foolCardDeckDefinition = Object.values(foolCardDeck?.CustomDeck || {})[0];
+  if (!foolCardDeckDefinition?.FaceURL || !foolCardDeckDefinition?.BackURL) throw new Error("TTS fool card deck not found");
+  const foolColumns = Number(foolCardDeckDefinition.NumWidth) || 0;
+  const foolRows = Number(foolCardDeckDefinition.NumHeight) || 0;
+  if (foolColumns !== 5 || foolRows !== 3) throw new Error(`Unexpected TTS fool card sheet: ${foolColumns}x${foolRows}`);
+  const foolDeckIds = new Set(foolCardDeck.ContainedObjects.map(card => Number(card.CardID)));
+  for (const card of FOOL_CARDS) {
+    if (!foolDeckIds.has(card.cardId)) throw new Error(`TTS fool card missing: ${card.cardId}`);
+  }
+  const foolFaceSource = findCachedFile(foolCardDeckDefinition.FaceURL, cacheRoot, cacheFiles);
+  const foolBackSource = findCachedFile(foolCardDeckDefinition.BackURL, cacheRoot, cacheFiles);
+  const foolFaceTarget = path.join(ASSET_ROOT, `fool-card-sheet${path.extname(foolFaceSource).toLowerCase()}`);
+  const foolBackTarget = path.join(ASSET_ROOT, `fool-card-back${path.extname(foolBackSource).toLowerCase()}`);
+  fs.copyFileSync(foolFaceSource, foolFaceTarget);
+  fs.copyFileSync(foolBackSource, foolBackTarget);
+  const foolFaceMeta = inspectFile(foolFaceSource);
+  const foolBackMeta = inspectFile(foolBackSource);
+  const foolFacePublicPath = `assets/conflict/${path.basename(foolFaceTarget)}`;
+  const foolBackPublicPath = `assets/conflict/${path.basename(foolBackTarget)}`;
+  manifestAssets.push({
+    id: "fool-card-sheet", kind: "fool-card-sheet", sourceUrl: foolCardDeckDefinition.FaceURL,
+    cacheFile: path.basename(foolFaceSource), publicPath: foolFacePublicPath, ...foolFaceMeta,
+  }, {
+    id: "fool-card-back", kind: "fool-card-back", sourceUrl: foolCardDeckDefinition.BackURL,
+    cacheFile: path.basename(foolBackSource), publicPath: foolBackPublicPath, ...foolBackMeta,
+  });
+
   const kingdomNames = { "sunken kingdom": "sunken", "principality of stone": "stone" };
   const layouts = Object.entries(kingdoms).flatMap(([name, kingdomLayouts]) =>
     Object.entries(kingdomLayouts).map(([label, entries]) => normalizeLayout(kingdomNames[name.toLowerCase()] || name, label, entries, monsterTagMap, orientationMap))
@@ -367,6 +418,15 @@ function run(options = {}) {
     terrainCards: {
       sheet: { asset: terrainCardPublicPath, width: terrainCardMeta.width, height: terrainCardMeta.height, columns: terrainCardColumns, rows: terrainCardRows },
       byAsset: terrainCardsByAsset,
+    },
+    foolDeck: {
+      sheet: { asset: foolFacePublicPath, width: foolFaceMeta.width, height: foolFaceMeta.height, columns: foolColumns, rows: foolRows },
+      back: { asset: foolBackPublicPath, width: foolBackMeta.width, height: foolBackMeta.height },
+      cards: FOOL_CARDS.map(card => ({
+        ...card,
+        column: card.cardId % 100 % foolColumns,
+        row: Math.floor(card.cardId % 100 / foolColumns),
+      })),
     },
     randomOrientations: { R: [0, 90, 180, 270], K: [180, 270] },
     orientationMap,

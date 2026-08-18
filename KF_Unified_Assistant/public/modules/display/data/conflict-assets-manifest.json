@@ -77,6 +77,28 @@
       "sha256": "36d83e0b371ae1c9464803e068dc00dee81c79bfdbd6bd66bb5676f6e2bbc022"
     },
     {
+      "id": "fool-card-back",
+      "kind": "fool-card-back",
+      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/10792521070176408/FC1854B67107FBFABACDB5A37B4E6896BF2B2B74/",
+      "cacheFile": "httpssteamusercontentaakamaihdnetugc10792521070176408FC1854B67107FBFABACDB5A37B4E6896BF2B2B74.jpg",
+      "publicPath": "assets/conflict/fool-card-back.jpg",
+      "height": 744,
+      "width": 484,
+      "bytes": 410792,
+      "sha256": "fff74fff91cbc8fe8f1b5729415994a86857d5c2ffd2fb29a77d008a03433247"
+    },
+    {
+      "id": "fool-card-sheet",
+      "kind": "fool-card-sheet",
+      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/10792521070176403/1F3154644FCA46E7833C038E1087E2B0B2E1A12F/",
+      "cacheFile": "httpssteamusercontentaakamaihdnetugc107925210701764031F3154644FCA46E7833C038E1087E2B0B2E1A12F.jpg",
+      "publicPath": "assets/conflict/fool-card-sheet.jpg",
+      "height": 2232,
+      "width": 2420,
+      "bytes": 7462827,
+      "sha256": "7c8083491e1eade498ec27cb665148458374712bd9f62d00fcbc0c2e3b25a183"
+    },
+    {
       "id": "GreatMangrove",
       "kind": "terrain",
       "guid": "7ca02d",

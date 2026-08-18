@@ -339,6 +339,24 @@
       }
     }
   }
+
+  function conflictGridCellRef(index) {
+    const row = Math.floor(index / 14) + 1;
+    const column = index % 14 + 1;
+    return `${String.fromCharCode(75 - row)}${column}`;
+  }
+
+  function conflictGridHtml(boardState) {
+    const foolCards = window.KF_CONFLICT_BOARD_DATA?.foolDeck?.cards || [];
+    const activeCard = foolCards.find(card => card.cardId === Number(boardState?.activeFoolCardId));
+    const activeSpaces = new Set(activeCard?.spaces || []);
+    return Array.from({length:140},(_,index)=>{
+      const ref=conflictGridCellRef(index),highlighted=activeSpaces.has(ref);
+      const label=boardState?.showCoordinates?`<b>${ref}</b>`:"";
+      return `<span class="${highlighted?"fool-highlight":""}"${highlighted?` aria-label="愚者牌格位 ${ref}"`:""}>${label}</span>`;
+    }).join("");
+  }
+
   function renderConflict(payload) {
     const module = payload.modules?.aibp, battle = module?.battle;
     if (!battle?.monsterId) return stateView("冲突尚未建立", "在主屏建立 AI / BP 后会自动显示。", "CL");
@@ -380,7 +398,7 @@
       }
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
     }).join("");
-    const grid=Array.from({length:140},()=>"<span></span>").join("");
+    const grid=conflictGridHtml(boardState);
     const settings=payload.presentation?.settings || {}, scale=clamp(settings.conflictScale || 100,50,200), boardVisible=settings.conflictBoardVisible!==false;
     const rotation=Number(settings.conflictRotation)===270?270:90;
     const activeCards=[publicCard(monster,battle.activeAI,"当前 AI","face","active-ai-card"),publicCard(monster,battle.activeBP,"当前 BP","face","active-bp-card")].filter(Boolean).join("");

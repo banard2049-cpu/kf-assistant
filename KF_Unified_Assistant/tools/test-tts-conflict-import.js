@@ -20,6 +20,19 @@ const manifest = result.manifest;
 assert.deepStrictEqual({ width:data.board.width,height:data.board.height }, { width:7994,height:4553 });
 assert.deepStrictEqual(data.board.crop, { x:748,y:340,width:5328,height:3808 });
 assert.strictEqual(data.layouts.length, 30);
+assert.deepStrictEqual(data.foolDeck.sheet, {
+  asset:"assets/conflict/fool-card-sheet.jpg",width:2420,height:2232,columns:5,rows:3
+});
+assert.deepStrictEqual(data.foolDeck.back, {
+  asset:"assets/conflict/fool-card-back.jpg",width:484,height:744
+});
+assert.strictEqual(data.foolDeck.cards.length, 15);
+assert.deepStrictEqual(data.foolDeck.cards.find(card => card.cardId === 17104), {
+  cardId:17104,label:"The Comet",spaces:["A7","J8"],column:4,row:0
+});
+assert.deepStrictEqual(data.foolDeck.cards.find(card => card.cardId === 17108), {
+  cardId:17108,label:"Tenebrae",spaces:["A2"],column:3,row:1
+});
 assert.deepStrictEqual([...new Set(data.layouts.map(layout => layout.kingdom))].sort(), ["stone","sunken"]);
 assert.deepStrictEqual(data.randomOrientations, { R:[0,90,180,270],K:[180,270] });
 assert.deepStrictEqual(data.terrainCards.sheet, {
@@ -68,4 +81,4 @@ assert.strictEqual(snapshot("stone:M_Pumpkinhead:all"), "dd7d5ebfd0e5fe42e49f218
 assert.strictEqual(snapshot("sunken:M_DevilAncientDusk:1"), "90d8d08e540c7c7f39baf512efb91e640987efc5d86e8df190c33b365c01f3ce");
 assert.strictEqual(snapshot("sunken:M_DevilAncientDusk:2+"), "63ce9b1c85873e8274e2f52978726604a041618df8758a662bb1899ad3bae24f");
 
-console.log("TTS conflict import: 30 layouts, 38 original assets, terrain cards, bounds, hashes and snapshots verified");
+console.log("TTS conflict import: layouts, 40 original assets, terrain and fool cards, bounds, hashes and snapshots verified");

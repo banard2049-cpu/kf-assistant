@@ -28,6 +28,7 @@ assert.match(api, /\$route === 'display-state' && \$method === 'GET'/);
 assert.match(api, /HTTP_IF_NONE_MATCH/);
 assert.match(api, /http_response_code\(304\)/);
 assert.match(api, /public_aibp_display_state/);
+assert.match(api, /unset\(\$public\['conflictBoard'\]\['foolDeckOrder'\]\)/);
 assert.match(api, /'aiDeckCount'/);
 assert.match(api, /'bpDeckCount'/);
 assert.match(api, /\$public\['aiDeckLevels'\]/);
@@ -97,6 +98,10 @@ assert.match(mapApp, /KFMapView\.renderMapStage/);
 assert.match(display, /KFMapView\?\.renderMapStage/);
 assert.match(display, /interactive:\s*false/);
 assert.match(display, /function terrainCardsFor/);
+assert.match(display, /function conflictGridHtml/);
+assert.match(display, /activeFoolCardId/);
+assert.match(display, /showCoordinates/);
+assert.match(displayStyles, /\.conflict-grid span\.fool-highlight/);
 assert.match(display, /conflict-terrain-card-list/);
 assert.match(display, /\["knight","monster","number"\]\.includes\(item\.kind\) \|\| item\.asset === "LictorDecoy"/);
 assert.match(display, /KFMapView\.renderKingdomBoard/);
@@ -124,8 +129,8 @@ assert.match(displayStyles, /\.display-body \.track-time \.delve-track-cells\{gr
 assert.match(displayStyles, /@media\(min-width:3000px\) and \(min-height:1700px\)/);
 assert.match(displayStyles, /\.map-scene\{grid-template-columns:minmax\(0,1fr\) clamp\(960px,27vw,1160px\)\}/);
 assert.match(displayStyles, /\.sidebar-clue-panel \.display-clue-list\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:8px;overflow:hidden\}/);
-assert.match(index, /styles\.css\?v=38/);
-assert.match(index, /app\.js\?v=30/);
+assert.match(index, /styles\.css\?v=39/);
+assert.match(index, /app\.js\?v=31/);
 assert.match(index, /map-view\.js\?v=8/);
 assert.doesNotMatch(mapView, /<figcaption>激活效果<\/figcaption>/,
   "active effect cards must not show the removed corner label");
@@ -352,7 +357,7 @@ assert.match(main, /id="rotateConflict"[^>]*旋转第二屏 AI\/BP 区域 180 �
 assert.match(main, /app\.js\?v=28/);
 assert.match(mainApp, /function portraitConflictRotation\(value\)\{return Number\(value\)===270\?270:90\}/);
 assert.match(mainApp, /portraitConflictRotation\(settings\.conflictRotation\)\+180/);
-assert.match(index, /app\.js\?v=30/);
+assert.match(index, /app\.js\?v=31/);
 
 const trackContext = vm.createContext({ window: {} });
 vm.runInContext(mapView, trackContext);

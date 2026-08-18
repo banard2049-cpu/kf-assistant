@@ -1661,6 +1661,8 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 
 .terrain-control-panel { overflow: hidden; }
 .terrain-control-head { align-items: center; }
+.terrain-control-head .inline-actions { flex-wrap: wrap; justify-content: flex-end; }
+.terrain-control-head .button.active { box-shadow: inset 0 0 0 2px var(--gold-bright); }
 .terrain-start-toggle { display: flex; align-items: center; grid-auto-flow: column; gap: 7px; }
 .terrain-start-toggle input { width: 16px; height: 16px; margin: 0; }
 .terrain-control-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; margin-top: 14px; }
@@ -1673,8 +1675,10 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
   position: absolute; left: var(--board-image-left, 0); top: var(--board-image-top, 0);
   width: var(--board-image-width, 100%); height: var(--board-image-height, 100%); max-width: none;
 }
-.terrain-control-grid { position: absolute; inset: 0; z-index: 20; display: grid; grid-template-columns: repeat(14, 1fr); grid-template-rows: repeat(10, 1fr); pointer-events: none; }
-.terrain-control-grid span { border-right: 1px solid rgba(244, 228, 194, .18); border-bottom: 1px solid rgba(244, 228, 194, .18); }
+.terrain-control-grid { position: absolute; inset: 0; z-index: 60; display: grid; grid-template-columns: repeat(14, 1fr); grid-template-rows: repeat(10, 1fr); pointer-events: none; }
+.terrain-control-grid span { position: relative; display: grid; place-items: center; border-right: 1px solid rgba(244, 228, 194, .18); border-bottom: 1px solid rgba(244, 228, 194, .18); }
+.terrain-control-grid span b { position: relative; z-index: 2; padding: 2px 3px; border-radius: 2px; background: rgba(8, 8, 7, .72); color: #fff1ca; font-size: 10px; line-height: 1; text-shadow: 0 1px 2px #000; }
+.terrain-control-grid span.fool-highlight { background: rgba(210, 28, 31, .58); box-shadow: inset 0 0 0 3px #ff3b3f, inset 0 0 18px rgba(255, 0, 0, .7); }
 .terrain-control-placement { position: absolute; z-index: var(--terrain-layer); padding: 0; border: 0; background: transparent; transform-origin: center; }
 .terrain-control-placement img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 2px #000); pointer-events: none; }
 .terrain-control-placement.selected { z-index: 30; outline: 3px solid var(--gold-bright); outline-offset: -2px; background: rgba(198, 154, 75, .14); }
@@ -1689,6 +1693,14 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 .terrain-start-arrow.facing-180 { left: 50%; bottom: 0; transform: translate(-50%, 72%) rotate(180deg); }
 .terrain-start-arrow.facing-270 { left: 0; top: 50%; transform: translate(-72%, -50%) rotate(270deg); }
 .terrain-control-tools { display: grid; align-content: start; gap: 12px; min-width: 0; padding: 12px; border: 1px solid var(--line); background: var(--surface-2); }
+.fool-deck-preview { display: grid; grid-template-columns: 88px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 4px 10px; min-width: 0; padding: 9px; border: 1px solid #514937; background: #111513; }
+.fool-deck-preview.active { border-color: #c94842; box-shadow: inset 3px 0 #d13232; }
+.fool-deck-preview strong { align-self: end; overflow: hidden; color: var(--ink); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.fool-deck-preview > span:last-child { align-self: start; color: var(--muted); font-size: 10px; line-height: 1.35; }
+.fool-card-face,.fool-card-back { grid-row: 1 / 3; width: 88px; aspect-ratio: 121 / 186; }
+.fool-card-face { position: relative; display: block; overflow: hidden; background: #171513; }
+.fool-card-face img { position: absolute; left: var(--card-left); top: var(--card-top); width: var(--card-sheet-width); height: var(--card-sheet-height); max-width: none; }
+.fool-card-back { display: block; height: auto; object-fit: cover; }
 .terrain-tool-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
 .terrain-tool-row .button.active { box-shadow: inset 0 0 0 2px var(--gold-bright); }
 .terrain-add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
