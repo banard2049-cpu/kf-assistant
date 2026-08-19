@@ -1934,4 +1934,119 @@ assert.match(conflictBoardHtml, /terrain-control-start monster[\s\S]*terrain-sta
 assert.doesNotMatch(conflictBoardHtml, /terrain-start-arrow[^>]*rotate\((45|135|225|315)deg\)/,
   "冲突版图中的 Boss 不得显示斜向箭头");
 
+// ---- 视线叠加层 -----------------------------------------------------------
+// 这个 harness 默认没有载入 kf-los / kf-facing / kf-overlay，正好用来验证
+// 引擎缺失时 app.js 必须优雅降级，而不是整页崩掉。
+assert.equal(context.window.KF_OVERLAY, undefined, "此处应尚未载入叠加层模块");
+assert.equal(api.conflictOverlay(), null, "引擎缺失时叠加层应为 null");
+assert.doesNotThrow(() => api.conflictGridHtml(state().conflictBoard, null),
+  "引擎缺失时网格仍应能渲染");
+assert.doesNotThrow(() => api.updateConflictOverlay({ los: false }),
+  "引擎缺失时改设置不应抛错");
+assert.doesNotThrow(() => api.renderApp(), "引擎缺失时整页仍应能渲染");
+// 注意：断言范围要限定在网格上。控制面板的图例本身就带 kf-ov-* 类名做色块，
+// 拿整页 innerHTML 去断言会永远命中图例。
+const gridHtml = () => api.conflictGridHtml(state().conflictBoard, api.conflictOverlay());
+const gridClassCount = cls => (gridHtml().match(/<span[^>]*class="([^"]*)"[^>]*>/g) || [])
+  .filter(span => (span.match(/class="([^"]*)"/)?.[1] || "").split(/\s+/).includes(cls)).length;
+assert.doesNotMatch(gridHtml(), /kf-ov-/, "引擎缺失时网格里不应出现叠加层类名");
+assert.doesNotMatch(nodes.get("#app").innerHTML, /data-overlay-clear/,
+  "引擎缺失时不应渲染叠加层控件");
+
+// 载入引擎后再测真正的接线。app.js 是在调用时才读 window.KF_OVERLAY，所以
+// 这里后补载入是有效的。
+for (const relative of ["data/terrain-keywords.js", "kf-los.js", "kf-facing.js", "kf-overlay.js"]) {
+  vm.runInContext(fs.readFileSync(path.join(root, relative), "utf8"), context, { filename: relative });
+}
+assert.ok(context.window.KF_OVERLAY, "叠加层模块应已载入");
+assert.equal(context.window.KF_OVERLAY.LAYERS.join(","), "los,path", "kfboss 叠加层应包含视线与寻路，不包含射程层");
+
+api.selectMonster("M_Toadragon");
+rebuild("full", 1);
+const board = () => state().conflictBoard;
+assert.ok(board().overlay, "新建冲突时应带上叠加层默认设置");
+assert.equal(board().overlay.sourceCell, null, "默认不选起点");
+assert.equal(board().overlay.targetCell, null, "默认不选目标");
+assert.equal(board().overlay.sourceMode, "boss", "默认按当前 Boss 大小计算");
+assert.equal(board().overlay.los, true, "默认开启视线层");
+assert.equal(api.conflictOverlay().active, false, "没有起点时叠加层不激活");
+api.renderApp();
+assert.match(nodes.get("#app").innerHTML, /data-overlay-clear/, "控制面板应出现起点清除控件");
+assert.match(nodes.get("#app").innerHTML, /data-overlay-clear-target/, "控制面板应出现目标清除控件");
+assert.match(nodes.get("#app").innerHTML, /data-overlay-mode="boss"/, "控制面板应出现 Boss 模式");
+assert.match(nodes.get("#app").innerHTML, /data-overlay-mode="knight"/, "控制面板应出现骑士模式");
+assert.match(nodes.get("#app").innerHTML, /data-overlay-layer="path"/, "控制面板应出现寻路层");
+assert.doesNotMatch(nodes.get("#app").innerHTML, /data-overlay-move/, "目标寻路不应再出现可达范围移动输入");
+assert.doesNotMatch(nodes.get("#app").innerHTML, /data-overlay-source/, "控制面板不应再出现固定视点下拉");
+assert.doesNotMatch(nodes.get("#app").innerHTML, /data-overlay-band/, "控制面板不应出现射程带下拉");
+assert.doesNotMatch(gridHtml(), /kf-ov-/, "没选起点时网格里不应画任何叠加格");
+
+// 选一个棋盘格当视线起点。
+const sourceCell = { row: 5, column: 7 };
+api.updateConflictOverlay({ sourceCell });
+const activeOverlay = api.conflictOverlay();
+assert.equal(activeOverlay.active, true, "选定视点后叠加层应激活");
+assert.equal(`${activeOverlay.settings.sourceCell.column},${activeOverlay.settings.sourceCell.row}`, "7,5",
+  "起点应为选定的棋盘格");
+assert.equal(activeOverlay.source.kind, "cell", "起点不应来自怪物/骑士固定 placement");
+assert.ok(activeOverlay.counts.visible >= 1 && activeOverlay.counts.visible <= 140,
+  "可见格数应在 1..140");
+api.renderApp();
+assert.match(gridHtml(), /kf-ov-source/, "版图上应标出视线起点");
+assert.equal(activeOverlay.footprint.label, "Boss 3×3", "蟾蜍龙应按当前 Boss 3×3 足迹计算");
+assert.equal(gridClassCount("kf-ov-source"), 9,
+  "Boss 模式应画出当前 Boss 的完整足迹");
+assert.match(nodes.get("#app").innerHTML, /kf-ov-marker-source/, "Boss 起点应画一个覆盖完整足迹的大圆");
+assert.doesNotMatch(gridHtml(), /kf-ov-(range|attack)/, "kfboss 不应画射程/可攻击格");
+assert.doesNotMatch(nodes.get("#app").innerHTML, /射程内 <b>|可攻击 <b>/, "不应显示射程统计");
+
+api.updateConflictOverlay({ sourceMode: "knight" });
+api.renderApp();
+assert.equal(api.conflictOverlay().footprint.label, "骑士 1×1", "应能切换为骑士 1×1 视线");
+assert.equal(gridClassCount("kf-ov-source"), 1,
+  "骑士模式应只画 1 格起点");
+
+api.updateConflictOverlay({ targetCell: { row: 3, column: 7 }, path: true });
+api.renderApp();
+assert.match(gridHtml(), /kf-ov-path/, "设置目标后应画到目标的路径");
+assert.match(gridHtml(), /kf-ov-target/, "设置目标后应标出目标格");
+assert.match(nodes.get("#app").innerHTML, /路线 <b>/, "开启寻路后应显示路线统计");
+assert.match(nodes.get("#app").innerHTML, /步数 <b>/, "开启寻路后应显示路径步数");
+
+// 关掉视线层后不应再有被遮挡格。
+api.updateConflictOverlay({ los: false });
+api.renderApp();
+assert.doesNotMatch(gridHtml(), /kf-ov-blocked/,
+  "关掉视线层后不应再标被遮挡格");
+
+// 叠加层设置要能存档并读回。
+const roundTripped = api.validateState(JSON.parse(JSON.stringify(api.state())));
+assert.equal(`${roundTripped.battle.conflictBoard.overlay.sourceCell.column},${roundTripped.battle.conflictBoard.overlay.sourceCell.row}`, "7,5",
+  "叠加层起点应能存档读回");
+assert.equal(`${roundTripped.battle.conflictBoard.overlay.targetCell.column},${roundTripped.battle.conflictBoard.overlay.targetCell.row}`, "7,3",
+  "叠加层目标应能存档读回");
+assert.equal(roundTripped.battle.conflictBoard.overlay.los, false,
+  "叠加层开关应能存档读回");
+assert.equal(roundTripped.battle.conflictBoard.overlay.sourceMode, "knight",
+  "叠加层模式应能存档读回");
+assert.equal(roundTripped.battle.conflictBoard.overlay.path, true,
+  "寻路层开关应能存档读回");
+
+// 旧错误版本的 sourceId/range 字段必须被丢掉，否则会回到固定视点/射程逻辑。
+const stale = JSON.parse(JSON.stringify(api.state()));
+let staleWrites = 0;
+for (const target of [stale.battle, ...Object.values(stale.encounters || {}).map(item => item.battle)]) {
+  if (!target?.conflictBoard?.overlay) continue;
+  target.conflictBoard.overlay.sourceId = "definitely-not-in-this-layout";
+  target.conflictBoard.overlay.range = true;
+  target.conflictBoard.overlay.bandId = "ranged2-4";
+  staleWrites += 1;
+}
+// 没写进去的话下面那条断言会因为「本来就是空」而假通过，所以先确认真的写了。
+assert.ok(staleWrites >= 2, `应至少改到顶层与 encounters 两份，实际 ${staleWrites}`);
+const cleanedOverlay = api.validateState(stale).battle.conflictBoard.overlay;
+assert.equal("sourceId" in cleanedOverlay, false, "旧固定视点 id 应被清空");
+assert.equal("range" in cleanedOverlay, false, "旧射程开关应被清空");
+assert.equal("bandId" in cleanedOverlay, false, "旧射程带应被清空");
+
 console.log("AIBP initialization tests passed");

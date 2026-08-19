@@ -188,6 +188,10 @@
     if (!sheet || !card) return "";
     return `<span class="terrain-card-face" style="--card-sheet-width:${sheet.columns*100}%;--card-sheet-height:${sheet.rows*100}%;--card-left:${-card.column*100}%;--card-top:${-card.row*100}%"><img src="${esc(displayAsset(sheet.asset))}" alt=""></span>`;
   }
+  function publicTerrainCard(entry) {
+    const card = entry?.terrainCard;
+    return card ? `<figure class="display-track-terrain" aria-label="地形 · ${esc(card.label)}" title="${esc(card.label)}">${terrainCardFace(card)}</figure>` : "";
+  }
   function aibpAsset(value) { return value ? `/modules/aibp/${String(value).replace(/^\/+/, "")}` : ""; }
   function cardById(monster, id) { return monster?.cards?.find(card => card.id === id); }
   function cardArt(card, side = "face") {
@@ -198,7 +202,7 @@
   }
   function publicCard(monster,id,label,side="face",className="") { const card=cardById(monster,id); return card ? `<figure class="public-card ${esc(className)}" data-public-card="${esc(id)}"><div class="public-card-art" style="${cardArt(card,side)}"></div><figcaption>${esc(label)} · ${esc(card.name)}</figcaption></figure>` : ""; }
   function publicFeatureCard(entry) {
-    return entry?.card ? `<figure class="public-card feature-card" data-public-card="${esc(entry.card.id)}" aria-label="${esc(entry.label)} · ${esc(entry.card.name)}" title="${esc(entry.card.name)}"><div class="public-card-art" style="${cardArt(entry.card)}"></div></figure>` : "";
+    return entry?.card ? `<figure class="public-card feature-card" data-public-card="${esc(entry.key || entry.card.id)}" aria-label="${esc(entry.label)} · ${esc(entry.card.name)}" title="${esc(entry.card.name)}"><div class="public-card-art" style="${cardArt(entry.card,entry.side||"face")}"></div><figcaption>${esc(entry.label)} · ${esc(entry.card.name)}</figcaption></figure>` : "";
   }
   function publicDeckLevelText(levels) {
     const normalized=(Array.isArray(levels)?levels:[]).map(Number).filter(level=>Number.isInteger(level)&&level>=0&&level<=3);
@@ -245,34 +249,39 @@
     "token-knighteater-berserk":"httpssteamusercontentaakamaihdnetugc10792521070176964E460F00E6C698AFEB4F862A2B09A8B61D30EB2CD.png",
     "token-armor":"httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png"
   };
-  function tokenSrc(id) { return TOKEN_FILES[id] ? `/modules/aibp/assets/tokens/${TOKEN_FILES[id]}` : ""; }
+  function tokenSrc(id) {
+    if (id === "bog-witch-encounter") return "/modules/aibp/assets/tokens/bog-witch-encounter.png";
+    return TOKEN_FILES[id] ? `/modules/aibp/assets/tokens/${TOKEN_FILES[id]}` : "";
+  }
+  function tokenShapeClass(id) { return id === "token-armor" ? "token-square" : ""; }
   function publicTokenStacks(tokens) {
     return (tokens || []).map(token => {
       const src=tokenSrc(token.assetId); if(!src)return "";
-      return `<span class="boss-sheet-token" style="left:${clamp(token.x,0,100)}%;top:${clamp(token.y,0,100)}%"><img src="${esc(src)}" alt=""><b>×${clamp(token.count||1,1,20)}</b></span>`;
+      return `<span class="boss-sheet-token ${token.auto ? "auto-token" : ""}" style="left:${clamp(token.x,0,100)}%;top:${clamp(token.y,0,100)}%"><img class="${tokenShapeClass(token.assetId)}" src="${esc(src)}" alt=""><b>×${clamp(token.count||1,1,20)}</b></span>`;
     }).join("");
   }
   function bossSheetHtml(monster,battle) {
     if(!monster?.sheet?.face&&!monster?.sheet?.back)return "";
-    return `<section class="boss-sheet-block" aria-label="Boss 大卡"><div class="boss-sheet-stage"><div class="boss-sheet-spread">${monster.sheet.face?`<img src="${esc(aibpAsset(monster.sheet.face))}" alt="${esc(monster.name)} 怪物面板正面">`:""}${monster.sheet.back?`<img src="${esc(aibpAsset(monster.sheet.back))}" alt="${esc(monster.name)} 怪物面板背面">`:""}</div><div class="boss-sheet-token-layer">${publicTokenStacks(battle.sheetTokens)}</div></div></section>`;
+    const tokens=[...(Array.isArray(battle.sheetTokens)?battle.sheetTokens:[]),...(Array.isArray(battle.sheetAutoTokens)?battle.sheetAutoTokens:[])];
+    return `<section class="boss-sheet-block" aria-label="Boss 大卡"><div class="boss-sheet-stage"><div class="boss-sheet-spread">${monster.sheet.face?`<img src="${esc(aibpAsset(monster.sheet.face))}" alt="${esc(monster.name)} 怪物面板正面">`:""}${monster.sheet.back?`<img src="${esc(aibpAsset(monster.sheet.back))}" alt="${esc(monster.name)} 怪物面板背面">`:""}</div><div class="boss-sheet-token-layer">${publicTokenStacks(tokens)}</div></div></section>`;
   }
   function markerStacks(markerTokens) {
-    return Object.entries(markerTokens||{}).map(([assetId,count])=>{const src=tokenSrc(assetId);return src&&count?`<span class="display-bp-marker"><img src="${esc(src)}" alt=""><b>×${clamp(count,1,20)}</b></span>`:""}).join("");
+    return Object.entries(markerTokens||{}).map(([assetId,count])=>{const src=tokenSrc(assetId);return src&&count?`<span class="display-bp-marker"><img class="${tokenShapeClass(assetId)}" src="${esc(src)}" alt=""></span>`:""}).join("");
   }
   function publicMobTrack(monster,battle,fillers=[]) {
-    const standardSlots=Array.isArray(battle?.bpTrack)&&battle.bpTrack.length?battle.bpTrack:null;
-    const bossTrack=!standardSlots&&["doppelganger","guardian"].includes(battle?.bossMobTrack?.type)?battle.bossMobTrack:null;
-    if(!standardSlots&&!bossTrack)return {html:"",used:0};
-    const trackType=standardSlots?"standard":bossTrack.type;
-    const sourceSlots=standardSlots||bossTrack.slots||[];
+    const bossTrack=["doppelganger","guardian"].includes(battle?.bossMobTrack?.type)?battle.bossMobTrack:null;
+    const standardSlots=bossTrack?null:(Array.isArray(battle?.bpTrack)?battle.bpTrack:[]);
+    const trackType=bossTrack?bossTrack.type:"standard";
+    const sourceSlots=bossTrack?bossTrack.slots||[]:standardSlots;
     const backCard=monster.cards.find(card=>/^BP[123SX]$/.test(card.kind));
     let used=0;
     const slots=Array.from({length:10},(_,index)=>sourceSlots[index]||{id:"",occupied:false,revealed:false,side:"face",markerTokens:{}}).map((slot,index)=>{
       const card=trackType==="standard"&&slot.revealed&&slot.id?cardById(monster,slot.id):null;
       const occupied=slot.occupied===true||Boolean(slot.id);
-      const filler=!occupied&&fillers[used]?.card?fillers[used++]:null;
+      const filler=!occupied&&(fillers[used]?.card||fillers[used]?.terrainCard)?fillers[used++]:null;
       let cardContent="";
-      if(filler)cardContent=`<div class="display-track-card" data-public-feature="${esc(filler.card.id)}" aria-label="${esc(filler.label)} · ${esc(filler.card.name)}" title="${esc(filler.card.name)}" style="${cardArt(filler.card)}"></div>`;
+      if(filler?.terrainCard)cardContent=publicTerrainCard(filler);
+      else if(filler?.card)cardContent=`<div class="display-track-card" data-public-feature="${esc(filler.key || filler.card.id)}" aria-label="${esc(filler.label)} · ${esc(filler.card.name)}" title="${esc(filler.card.name)}" style="${cardArt(filler.card,filler.side||"face")}"></div>`;
       else if(trackType==="standard"&&card)cardContent=`<div class="display-track-card" data-public-bp="${esc(slot.id)}" style="${cardArt(card,slot.side)}"></div>`;
       else if(trackType==="standard"&&occupied&&backCard)cardContent=`<div class="display-track-card" style="${cardArt(backCard,"back")}"></div>`;
       else if(trackType==="doppelganger"&&occupied){
@@ -346,15 +355,61 @@
     return `${String.fromCharCode(75 - row)}${column}`;
   }
 
-  function conflictGridHtml(boardState) {
+  function conflictOverlayMarkerHtml(marker) {
+    if (!marker) return "";
+    const column = Math.max(1, Number(marker.column) || 1);
+    const row = Math.max(1, Number(marker.row) || 1);
+    const width = Math.max(1, Number(marker.width) || 1);
+    const height = Math.max(1, Number(marker.height) || 1);
+    const classes = ["kf-ov-marker", marker.className, marker.facing != null ? `kf-ov-marker-facing-${marker.facing}` : ""].filter(Boolean).join(" ");
+    const left = (column - 1) / 14 * 100;
+    const top = (row - 1) / 10 * 100;
+    const markerWidth = width / 14 * 100;
+    const markerHeight = height / 10 * 100;
+    const style = `left:${left}%;top:${top}%;width:${markerWidth}%;height:${markerHeight}%;`;
+    return `<i class="${classes}" style="${style}" aria-hidden="true"></i>`;
+  }
+
+  function conflictOverlayMarkersHtml(overlay) {
+    if (!overlay?.active) return "";
+    const markers = [];
+    if (overlay.source) {
+      markers.push({
+        className: "kf-ov-marker-source",
+        column: overlay.source.columnStart,
+        row: overlay.source.rowStart,
+        width: overlay.source.columnEnd - overlay.source.columnStart + 1,
+        height: overlay.source.rowEnd - overlay.source.rowStart + 1,
+      });
+    }
+    if (overlay.target) markers.push({ className: "kf-ov-marker-target", column: overlay.target.column, row: overlay.target.row, width: 1, height: 1 });
+    (overlay.movement?.rules || []).forEach((path, index) => {
+      markers.push({
+        className: index === 0 ? "kf-ov-marker-final-a" : "kf-ov-marker-final-b",
+        column: path.finalOrigin.column,
+        row: path.finalOrigin.row,
+        width: overlay.footprint?.width || 1,
+        height: overlay.footprint?.height || 1,
+        facing: path.facing,
+      });
+    });
+    return markers.length ? `<div class="kf-ov-marker-layer">${markers.map(conflictOverlayMarkerHtml).join("")}</div>` : "";
+  }
+
+  function conflictGridHtml(boardState, overlay = null) {
     const foolCards = window.KF_CONFLICT_BOARD_DATA?.foolDeck?.cards || [];
     const activeCard = foolCards.find(card => card.cardId === Number(boardState?.activeFoolCardId));
     const activeSpaces = new Set(activeCard?.spaces || []);
-    return Array.from({length:140},(_,index)=>{
+    const cells = Array.from({length:140},(_,index)=>{
       const ref=conflictGridCellRef(index),highlighted=activeSpaces.has(ref);
-      const label=boardState?.showCoordinates?`<b>${ref}</b>`:"";
-      return `<span class="${highlighted?"fool-highlight":""}"${highlighted?` aria-label="愚者牌格位 ${ref}"`:""}>${label}</span>`;
+      // 与主屏同一套 kf-ov-* 类名；网格是 row-major、14 列 10 行。
+      const row=Math.floor(index/14)+1,column=index%14+1;
+      const distance=overlay?.active?overlay.distanceAt(column,row):null;
+      const label=distance!=null?`<b class="kf-ov-distance">${distance}</b>`:(boardState?.showCoordinates?`<b>${ref}</b>`:"");
+      const classes=[highlighted?"fool-highlight":"",...(overlay?.active?overlay.classesAt(column,row):[])].filter(Boolean).join(" ");
+      return `<span class="${classes}"${highlighted?` aria-label="愚者牌格位 ${ref}"`:""}>${label}</span>`;
     }).join("");
+    return cells;
   }
 
   function renderConflict(payload) {
@@ -398,16 +453,27 @@
       }
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
     }).join("");
-    const grid=conflictGridHtml(boardState);
+    // 叠加层设置随 conflictBoard 一起从主屏同步过来，第二屏只负责画。
+    const overlay=window.KF_OVERLAY?.computeOverlay(boardState,layout.placements||[])||null;
+    const grid=conflictGridHtml(boardState,overlay);
     const settings=payload.presentation?.settings || {}, scale=clamp(settings.conflictScale || 100,50,200), boardVisible=settings.conflictBoardVisible!==false;
     const rotation=Number(settings.conflictRotation)===270?270:90;
     const activeCards=[publicCard(monster,battle.activeAI,"当前 AI","face","active-ai-card"),publicCard(monster,battle.activeBP,"当前 BP","face","active-bp-card")].filter(Boolean).join("");
     const kingdomTrait=layout.kingdom==="stone"?"Trait_POS":"Trait_SK";
-    const references=(monster?.cards||[]).filter(card=>card.kind==="Trait"||card.kind===kingdomTrait||card.kind==="BPX");
+    const referenceLabel=card=>card.kind==="BPX"?"BPX":"特质";
+    const signatureCard=(monster?.cards||[]).find(card=>card.kind==="SIG");
+    const references=(monster?.cards||[]).filter(card=>["Trait",kingdomTrait,"BPX"].includes(card.kind));
     const tacticCard=cardById(monster,battle.mobTacticCard);
-    const featureEntries=[tacticCard?{card:tacticCard,label:"战术"}:null,...references.map(card=>({card,label:"特质"}))].filter(Boolean);
-    const mobTrack=publicMobTrack(monster,battle,featureEntries);
-    const remainingFeatures=featureEntries.slice(mobTrack.used);
+    const featureEntries=[
+      tacticCard?{card:tacticCard,label:"战术"}:null,
+      signatureCard?{card:signatureCard,label:"惯常",side:"face",key:`${signatureCard.id}:routine`}:null,
+      ...references.map(card=>({card,label:referenceLabel(card)})),
+      signatureCard?{card:signatureCard,label:"标志",side:"back",key:`${signatureCard.id}:signature`}:null,
+    ].filter(Boolean);
+    const trackFillers=boardVisible?[...terrainCards.map(card=>({terrainCard:card,label:"地形"})),...featureEntries]:featureEntries;
+    const mobTrack=publicMobTrack(monster,battle,trackFillers);
+    const usedFeatures=boardVisible?Math.max(0,mobTrack.used-terrainCards.length):mobTrack.used;
+    const remainingFeatures=featureEntries.slice(usedFeatures);
     const featureCards=remainingFeatures.map(publicFeatureCard).join("");
     const featureSection=featureCards?`<section class="conflict-card-block conflict-feature-block" aria-label="战术与公开特质"><div class="public-card-row feature-card-row">${featureCards}</div></section>`:"";
     const mirrorTerrainCards=boardVisible?"":terrainCards.map(card=>`<figure class="conflict-terrain-card" aria-label="${esc(card.label)}" title="${esc(card.label)}">${terrainCardFace(card)}</figure>`).join("");
@@ -415,12 +481,12 @@
     const heroClues=conflictHeroClues(payload.modules?.map);
     const resolvingSummary=publicDeckSummary(battle);
     const primaryFollowup=boardVisible
-      ? mobTrack.html
+      ? `${mobTrack.html}${featureSection}`
       : `${mobTrack.html}${heroClues}${featureSection}${mirrorPrimaryCards}`;
     applyBoardCrop(window.KF_CONFLICT_BOARD_DATA.board);
     const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"}`;
     root.innerHTML=`<section class="${sceneClass}">
-      <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(window.KF_CONFLICT_BOARD_DATA.board.asset))}" alt="TTS 高清冲突版图"><div class="conflict-grid">${grid}</div>${placements}</div></div></div>
+      <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(window.KF_CONFLICT_BOARD_DATA.board.asset))}" alt="TTS 高清冲突版图"><div class="conflict-grid">${grid}</div>${conflictOverlayMarkersHtml(overlay)}${placements}</div></div></div>
       <aside class="conflict-side"><div class="conflict-side-content"><header class="conflict-side-head"><div><p class="side-subtitle">CLASH · ${esc(kingdomLabel(layout.kingdom))}</p><h2 class="side-title">${esc(monster?.name || battle.monsterId)}</h2></div><dl class="conflict-quick-facts"><div><dt>等级</dt><dd>${esc(battle.level)}</dd></div><div><dt>AI</dt><dd>${esc(battle.aiDeckCount||0)}</dd></div><div><dt>BP</dt><dd>${esc(battle.bpDeckCount||0)}</dd></div><div><dt>损伤</dt><dd>${esc((battle.singleWounds||0)+(battle.doubleWounds||0)*2)}</dd></div></dl></header>
         <div class="conflict-side-primary">${bossSheetHtml(monster,battle)}${primaryFollowup}</div>
         <div class="conflict-side-secondary">

@@ -192,6 +192,51 @@ function normalized_presentation_state(mixed $value): array {
     ];
 }
 
+function public_aibp_auto_sheet_tokens(array $battle,array $rule): array {
+    $monsterId=text_value($battle['monsterId']??'',80);
+    $level=max(1,(int)($battle['level']??1));
+    $tokens=[];
+    $add=function(string $assetId,mixed $count,float $x,float $y)use(&$tokens):void{
+        $amount=max(0,(int)$count);
+        if($amount)$tokens[]=['assetId'=>$assetId,'count'=>$amount,'x'=>$x,'y'=>$y,'auto'=>true];
+    };
+    $value=function(string $group,string $key)use($rule):int{
+        return max(0,(int)(is_array($rule[$group]??null)?($rule[$group][$key]??0):0));
+    };
+    if($monsterId==='M_Eggknight'){
+        $armor=is_array($rule['eggknight']['armor']??null)?$rule['eggknight']['armor']:[];
+        $add('token-armor',$armor[1]??0,57.1,40.2);$add('token-armor',$armor[2]??0,63.6,40.3);$add('token-armor',$armor[3]??0,70.7,40.2);
+        $add('token-01',$value('eggknight','counter'),24.3,74.0);$add('token-armor',$value('eggknight','jacked'),96.2,10.4);
+    }elseif($monsterId==='M_Stonemason'){
+        $armor=is_array($rule['stonemason']['armor']??null)?$rule['stonemason']['armor']:[];
+        $add('token-armor',$armor['back']??0,85.7,36.5);$add('token-armor',$armor['right']??0,78.3,61.6);$add('token-armor',$armor['left']??0,94.0,61.8);$add('token-armor',$armor['front']??0,86.1,83.7);
+    }elseif($monsterId==='M_Knighteater'){
+        $add('token-knighteater-berserk',$value('knighteater','berserk'),25,50);
+        if($level>=2)$add('token-01',$value('knighteater','brute'),72,47.5);
+    }elseif($monsterId==='M_KnightFen'&&$level>=2){
+        $add('token-armor',$value('knightFen','armor'),96.0,8.0);
+    }elseif($monsterId==='M_FirstmenLictor'){
+        $add('token-01',$rule['lictorDecoyTokens']??0,68.5,8.5);
+    }elseif($monsterId==='M_FirstmenWarriors'&&$level>=3){
+        $add('token-01',$value('firstmenWarriors','retributionMarkers'),97,28.7);
+    }elseif($monsterId==='M_HauntOf'){
+        $add('token-01',$value('etherealUnity','counter'),24.3,69.0);
+    }elseif($monsterId==='M_Ironcast'&&$level>=2){
+        $add('token-01',$value('ironcast','necrofusion'),16.0,66.5);
+    }elseif($monsterId==='M_WhiteApe'){
+        $add('token-01',$rule['reinforcementTokens']??0,72.5,23.5);
+        if($level>=2)$add('token-01',$rule['vengeanceTokens']??0,72.5,88.0);
+    }elseif($monsterId==='M_KingLaidLow'&&$level>=2){
+        $add('token-01',$value('kingLaidLow','putrid'),73.5,41.0);
+    }elseif($monsterId==='M_BogWitch'){
+        $positions=[[6.95,59.05],[13.85,59.05],[20.65,59.05]];
+        $position=max(0,min(2,$value('bogWitch','position')));
+        $add('bog-witch-encounter',1,$positions[$position][0],$positions[$position][1]);
+        if($level>=3)$add('token-01',$rule['cookieTokens']??0,94.5,50.5);
+    }
+    return $tokens;
+}
+
 function public_aibp_display_state(mixed $module): ?array {
     if(!is_array($module))return null;
     $battle=is_array($module['battle']??null)?$module['battle']:[];
@@ -213,6 +258,7 @@ function public_aibp_display_state(mixed $module): ?array {
         ];
     },is_array($battle['bpTrack']??null)?$battle['bpTrack']:[]);
     $rule=is_array($battle['ruleState']??null)?$battle['ruleState']:[];
+    $public['sheetAutoTokens']=public_aibp_auto_sheet_tokens($battle,$rule);
     $monsterId=text_value($battle['monsterId']??'',80);
     $public['bossMobTrack']=null;
     if($monsterId==='M_KnightFen'){

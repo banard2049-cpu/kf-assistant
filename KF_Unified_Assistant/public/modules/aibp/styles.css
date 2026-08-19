@@ -1678,8 +1678,69 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 .terrain-control-grid { position: absolute; inset: 0; z-index: 60; display: grid; grid-template-columns: repeat(14, 1fr); grid-template-rows: repeat(10, 1fr); pointer-events: none; }
 .terrain-control-grid span { position: relative; display: grid; place-items: center; border-right: 1px solid rgba(244, 228, 194, .18); border-bottom: 1px solid rgba(244, 228, 194, .18); }
 .terrain-control-grid span b { position: relative; z-index: 2; padding: 2px 3px; border-radius: 2px; background: rgba(8, 8, 7, .72); color: #fff1ca; font-size: 10px; line-height: 1; text-shadow: 0 1px 2px #000; }
+.terrain-control-grid span b.kf-ov-distance { min-width: 14px; padding: 2px; border: 1px solid rgba(225, 243, 238, .5); background: rgba(7, 19, 16, .82); color: #ecfff8; font-weight: 800; text-align: center; }
 .terrain-control-grid span.fool-highlight { background: rgba(210, 28, 31, .58); box-shadow: inset 0 0 0 3px #ff3b3f, inset 0 0 18px rgba(255, 0, 0, .7); }
-.terrain-control-placement { position: absolute; z-index: var(--terrain-layer); padding: 0; border: 0; background: transparent; transform-origin: center; }
+/* 视线叠加层。 */
+.terrain-control-grid span.kf-ov-path { background: rgba(76, 142, 94, .28); box-shadow: inset 0 0 0 1px rgba(126, 204, 142, .55); }
+.terrain-control-grid span.kf-ov-path-a { background: rgba(46, 145, 116, .32); box-shadow: inset 0 0 0 2px rgba(98, 221, 177, .65); }
+.terrain-control-grid span.kf-ov-path-b { background: rgba(184, 112, 45, .34); box-shadow: inset 0 0 0 2px rgba(242, 168, 74, .68); }
+.terrain-control-grid span.kf-ov-path-overlap { background: rgba(106, 91, 170, .42); box-shadow: inset 0 0 0 2px rgba(183, 160, 255, .82); }
+.terrain-control-grid span.kf-ov-blocked { background: rgba(10, 10, 9, .66); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5); }
+.terrain-control-grid span.kf-ov-target { background: rgba(80, 132, 190, .12); }
+.terrain-control-grid span.kf-ov-source { background: rgba(232, 199, 129, .08); }
+.terrain-control-grid span.kf-ov-final-a { box-shadow: inset 0 0 0 3px rgba(98, 221, 177, .96); }
+.terrain-control-grid span.kf-ov-final-b { box-shadow: inset 0 0 0 3px rgba(242, 168, 74, .98); }
+.terrain-control-grid span.kf-ov-final-overlap { box-shadow: inset 0 0 0 3px rgba(183, 160, 255, .98), inset 0 0 0 6px rgba(8, 8, 7, .5); }
+.terrain-control-board .kf-ov-marker-layer { position: absolute; inset: 0; z-index: 65; pointer-events: none; }
+.terrain-control-board .kf-ov-marker { position: absolute; box-sizing: border-box; border-radius: 50%; background: rgba(8, 8, 7, .24); pointer-events: none; transform: scale(.86); }
+.terrain-control-board .kf-ov-marker-source { border: 3px solid var(--gold-bright); box-shadow: 0 1px 6px rgba(0, 0, 0, .72), inset 0 0 0 1px rgba(8, 8, 7, .75); }
+.terrain-control-board .kf-ov-marker-target { border: 3px solid rgba(130, 184, 245, .96); box-shadow: 0 1px 6px rgba(0, 0, 0, .72), inset 0 0 0 1px rgba(8, 8, 7, .78); }
+.terrain-control-board .kf-ov-marker-final-a { border: 3px solid rgba(98, 221, 177, .96); box-shadow: 0 1px 6px rgba(0, 0, 0, .72), inset 0 0 0 1px rgba(8, 8, 7, .78); }
+.terrain-control-board .kf-ov-marker-final-b { border: 3px solid rgba(242, 168, 74, .98); box-shadow: 0 1px 6px rgba(0, 0, 0, .72), inset 0 0 0 1px rgba(8, 8, 7, .78); }
+.terrain-control-board .kf-ov-marker[class*="kf-ov-marker-facing-"]::after { position: absolute; z-index: 5; display: grid; width: 22px; height: 22px; place-items: center; border-radius: 50%; background: rgba(8, 8, 7, .86); color: #fff7df; font-size: 15px; font-weight: 800; line-height: 1; box-shadow: 0 1px 4px rgba(0, 0, 0, .7); }
+.terrain-control-board .kf-ov-marker-final-a::after { border: 2px solid rgba(98, 221, 177, .96); }
+.terrain-control-board .kf-ov-marker-final-b::after { border: 2px solid rgba(242, 168, 74, .98); }
+.terrain-control-board .kf-ov-marker-facing-0::after { content: "^"; top: 2px; left: 50%; transform: translateX(-50%); }
+.terrain-control-board .kf-ov-marker-facing-90::after { content: ">"; top: 50%; right: 2px; transform: translateY(-50%); }
+.terrain-control-board .kf-ov-marker-facing-180::after { content: "v"; bottom: 2px; left: 50%; transform: translateX(-50%); }
+.terrain-control-board .kf-ov-marker-facing-270::after { content: "<"; top: 50%; left: 2px; transform: translateY(-50%); }
+/* 愚者牌标红是玩家主动画上去的标记，必须盖在叠加层之上，所以放在最后。 */
+.terrain-control-grid span.fool-highlight[class*="kf-ov-"] { background: rgba(210, 28, 31, .58); box-shadow: inset 0 0 0 3px #ff3b3f, inset 0 0 18px rgba(255, 0, 0, .7); }
+.terrain-control-placement.path-active { pointer-events: none; }
+.overlay-tools { display: grid; gap: 8px; min-width: 0; padding: 10px; border: 1px solid #514937; background: #111513; }
+.overlay-tool-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.overlay-tool-head strong { color: var(--ink); font-size: 13px; }
+.overlay-tool-head span { font-size: 10px; }
+.overlay-tools select { width: 100%; min-width: 0; }
+.overlay-origin-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+.overlay-origin-row strong { min-width: 0; overflow: hidden; color: var(--ink); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.overlay-tool-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.overlay-tool-row .button { flex: 1 1 auto; }
+.overlay-tool-row [data-overlay-layer="path"] { border-color: #48605a; background: #18231f; color: #c6d5cb; }
+.overlay-tool-row [data-overlay-layer="path"].active { border-color: #74e0bd; background: #176b5a; color: #f4fff9; box-shadow: inset 0 0 0 1px #a2f2d2, 0 0 0 1px rgba(38, 178, 137, .35); }
+.overlay-tool-row [data-overlay-layer="los"] { border-color: #654a42; background: #281b18; color: #dec8bd; }
+.overlay-tool-row [data-overlay-layer="los"].active { border-color: #ff9a79; background: #8b3d31; color: #fff5ef; box-shadow: inset 0 0 0 1px #ffc0aa, 0 0 0 1px rgba(232, 89, 62, .38); }
+.overlay-tool-row [data-overlay-mode="boss"] { border-color: #695b3d; background: #262116; color: #d8caad; }
+.overlay-tool-row [data-overlay-mode="boss"].active { border-color: #f0ce80; background: #806228; color: #fff9e8; box-shadow: inset 0 0 0 1px #ffe5a8, 0 0 0 1px rgba(231, 180, 70, .38); }
+.overlay-tool-row [data-overlay-mode="knight"] { border-color: #465d78; background: #17202b; color: #c3d5e7; }
+.overlay-tool-row [data-overlay-mode="knight"].active { border-color: #91c7ff; background: #2e6090; color: #f4faff; box-shadow: inset 0 0 0 1px #c5e3ff, 0 0 0 1px rgba(99, 174, 244, .38); }
+.overlay-move-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+.overlay-move-row input { width: 100%; min-width: 0; padding: 5px 7px; border: 1px solid #514937; background: #0c100e; color: var(--ink); }
+.overlay-stats { display: flex; flex-wrap: wrap; gap: 4px 10px; color: var(--muted); font-size: 11px; }
+.overlay-stats b { color: var(--ink); font-size: 12px; }
+.overlay-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; color: var(--muted); font-size: 10px; }
+.overlay-legend span { width: 12px; height: 12px; border: 1px solid rgba(244, 228, 194, .3); }
+.overlay-legend span.kf-ov-source { background: transparent; border-color: var(--gold-bright); border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(232, 199, 129, .85); }
+.overlay-legend span.kf-ov-target { background: transparent; border-color: rgba(130, 184, 245, .9); border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(130, 184, 245, .78); }
+.overlay-legend span.kf-ov-path { background: rgba(76, 142, 94, .5); }
+.overlay-legend span.kf-ov-path-a { background: rgba(46, 145, 116, .72); border-color: rgba(98, 221, 177, .75); }
+.overlay-legend span.kf-ov-path-b { background: rgba(184, 112, 45, .72); border-color: rgba(242, 168, 74, .78); }
+.overlay-legend span.kf-ov-path-overlap { background: rgba(106, 91, 170, .78); border-color: rgba(183, 160, 255, .9); }
+.overlay-legend span.kf-ov-final-a { background: transparent; border-color: rgba(98, 221, 177, .95); box-shadow: inset 0 0 0 2px rgba(98, 221, 177, .95); }
+.overlay-legend span.kf-ov-final-b { background: transparent; border-color: rgba(242, 168, 74, .95); box-shadow: inset 0 0 0 2px rgba(242, 168, 74, .95); }
+.overlay-legend span.kf-ov-blocked { background: rgba(10, 10, 9, .8); }
+.terrain-control-placement { position: absolute; z-index: var(--terrain-layer); padding: 0; border: 0; background: transparent; cursor: grab; transform-origin: center; }
+.terrain-control-placement.dragging { z-index: 50; cursor: grabbing; filter: drop-shadow(0 0 6px var(--gold-bright)); }
 .terrain-control-placement img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 2px #000); pointer-events: none; }
 .terrain-control-placement.selected { z-index: 30; outline: 3px solid var(--gold-bright); outline-offset: -2px; background: rgba(198, 154, 75, .14); }
 .terrain-control-start { position: absolute; z-index: 40; display: grid; place-items: center; padding: 5px; pointer-events: none; }

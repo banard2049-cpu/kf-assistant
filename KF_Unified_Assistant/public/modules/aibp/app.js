@@ -738,6 +738,7 @@
       terrain: defaultConflictTerrain(layout, resolvedOrientations),
       showStarts: true,
       showCoordinates: false,
+      overlay: window.KF_OVERLAY?.normalizeSettings(null) || null,
       foolDeckOrder: [],
       activeFoolCardId: null,
       createdAt: new Date().toISOString(),
@@ -805,6 +806,7 @@
       terrain: normalizeConflictTerrain(raw?.terrain, layout, resolvedOrientations),
       showStarts: raw?.showStarts !== false,
       showCoordinates: raw?.showCoordinates === true,
+      overlay: window.KF_OVERLAY?.normalizeSettings(raw?.overlay) || null,
       foolDeckOrder: foolDeckOrder.filter(cardId => cardId !== normalizedActiveFoolCardId),
       activeFoolCardId: normalizedActiveFoolCardId,
       createdAt: String(raw?.createdAt || new Date().toISOString()),
@@ -1069,6 +1071,7 @@
   let deckConfigOpen = false;
   let sheetTokenToolsOpen = false;
   let selectedTerrainId = "";
+  let overlayPlacementMode = "";
 
   function syncCurrentEncounter() {
     if (!state.battle?.monsterId) return;
@@ -4398,14 +4401,144 @@
     return `${String.fromCharCode(75 - row)}${column}`;
   }
 
-  function conflictGridHtml(boardState) {
+  // 视线叠加层。计算在 kf-overlay.js 里，这里只取结果。
+  function conflictOverlay(battle = state.battle) {
+    const boardState = battle?.conflictBoard;
+    if (!boardState || !window.KF_OVERLAY) return null;
+    const layout = conflictBoardLayout(battle);
+    return window.KF_OVERLAY.computeOverlay(boardState, layout?.placements || []);
+  }
+
+  function conflictOverlayCellLabel(cell) {
+    if (!cell) return "未设置";
+    const row = cell.row != null ? cell.row : cell.rowStart;
+    const column = cell.column != null ? cell.column : cell.columnStart;
+    return `${column}列${String.fromCharCode(75 - row)}行`;
+  }
+
+  function conflictOverlayFacingLabel(facing) {
+    if (facing === 0) return "上";
+    if (facing === 90) return "右";
+    if (facing === 180) return "下";
+    if (facing === 270) return "左";
+    return "未定";
+  }
+
+  function conflictOverlayPathDetailsHtml(overlay) {
+    const rules = overlay?.movement?.rules || [];
+    if (!rules.length) return "";
+    return rules.map((path, index) => {
+      const route = index === 0 ? "A" : "B";
+      return `<span>${route}终点 <b>${esc(conflictOverlayCellLabel(path.finalOrigin))}</b></span><span>${route}朝向 <b>${esc(conflictOverlayFacingLabel(path.facing))}</b></span>`;
+    }).join("");
+  }
+
+  function conflictOverlayMarkerHtml(marker) {
+    if (!marker) return "";
+    const column = Math.max(1, Number(marker.column) || 1);
+    const row = Math.max(1, Number(marker.row) || 1);
+    const width = Math.max(1, Number(marker.width) || 1);
+    const height = Math.max(1, Number(marker.height) || 1);
+    const classes = ["kf-ov-marker", marker.className, marker.facing != null ? `kf-ov-marker-facing-${marker.facing}` : ""]
+      .filter(Boolean).join(" ");
+    const left = (column - 1) / 14 * 100;
+    const top = (row - 1) / 10 * 100;
+    const markerWidth = width / 14 * 100;
+    const markerHeight = height / 10 * 100;
+    const style = `left:${left}%;top:${top}%;width:${markerWidth}%;height:${markerHeight}%;`;
+    return `<i class="${esc(classes)}" style="${style}" aria-hidden="true"></i>`;
+  }
+
+  function conflictOverlayMarkersHtml(overlay) {
+    if (!overlay?.active) return "";
+    const markers = [];
+    if (overlay.source) {
+      markers.push({
+        className: "kf-ov-marker-source",
+        column: overlay.source.columnStart,
+        row: overlay.source.rowStart,
+        width: overlay.source.columnEnd - overlay.source.columnStart + 1,
+        height: overlay.source.rowEnd - overlay.source.rowStart + 1,
+      });
+    }
+    if (overlay.target) {
+      markers.push({ className: "kf-ov-marker-target", column: overlay.target.column, row: overlay.target.row, width: 1, height: 1 });
+    }
+    (overlay.movement?.rules || []).forEach((path, index) => {
+      markers.push({
+        className: index === 0 ? "kf-ov-marker-final-a" : "kf-ov-marker-final-b",
+        column: path.finalOrigin.column,
+        row: path.finalOrigin.row,
+        width: overlay.footprint?.width || 1,
+        height: overlay.footprint?.height || 1,
+        facing: path.facing,
+      });
+    });
+    return markers.length ? `<div class="kf-ov-marker-layer">${markers.map(conflictOverlayMarkerHtml).join("")}</div>` : "";
+  }
+
+  function conflictOverlayToolsHtml(boardState, layout, overlay) {
+    const OV = window.KF_OVERLAY;
+    if (!OV || !overlay) return "";
+    const settings = overlay.settings;
+    const modeButtons = [
+      { key: "boss", label: overlay.footprint?.mode === "boss" ? overlay.footprint.label : "Boss" },
+      { key: "knight", label: "骑士 1×1" },
+    ].map(item => `<button type="button" class="button secondary small ${overlayPlacementMode === item.key ? "active" : ""}" data-overlay-mode="${item.key}">放置 ${esc(item.label)}</button>`).join("");
+    const toggles = [
+      { key: "los", label: "遮挡", title: "标出没有视线的格子（P50）" },
+      { key: "path", label: "寻路", title: "按当前模型足迹标出靠近骑士目标的路径" },
+    ].map(item => `<button type="button" class="button secondary small ${settings[item.key] ? "active" : ""}" data-overlay-layer="${item.key}" title="${esc(item.title)}">${item.label}</button>`).join("");
+    const pathStatus = !settings.path
+      ? ""
+      : overlay.target
+        ? `<span>路线 <b>${overlay.counts.routes}</b></span><span>步数 <b>${overlay.counts.pathCost}</b></span>${conflictOverlayPathDetailsHtml(overlay)}`
+        : `<span>骑士目标 <b>未设置</b></span>`;
+    const stats = overlay.active
+      ? `<div class="overlay-stats">
+          <span>起点 <b>${esc(conflictOverlayCellLabel(overlay.source))}</b></span>
+          <span>骑士目标 <b>${esc(conflictOverlayCellLabel(overlay.target))}</b></span>
+          <span>足迹 <b>${esc(overlay.footprint?.label || "")}</b></span>
+          <span>可见 <b>${overlay.counts.visible}</b>/140</span>
+          ${pathStatus}
+        </div>`
+      : `<p class="muted">起点：未设置</p>`;
+    return `<div class="overlay-tools" aria-label="视线与寻路叠加层">
+      <div class="overlay-tool-head"><strong>视线 / 寻路</strong><span class="muted">中规 1.06</span></div>
+      <div class="overlay-origin-row"><span>起点</span><strong>${esc(overlay.source ? conflictOverlayCellLabel(overlay.source) : "未设置")}</strong><button type="button" class="button secondary small" data-overlay-clear ${settings.sourceCell ? "" : "disabled"}>清除</button></div>
+      <div class="overlay-origin-row"><span>骑士目标</span><strong>${esc(overlay.target ? conflictOverlayCellLabel(overlay.target) : "未设置")}</strong><button type="button" class="button secondary small" data-overlay-clear-target ${settings.targetCell ? "" : "disabled"}>清除</button></div>
+      <div class="overlay-tool-row">${modeButtons}</div>
+      <div class="overlay-tool-row">${toggles}</div>
+      ${stats}
+      <div class="overlay-legend" aria-hidden="true">
+        <span class="kf-ov-source"></span>起点
+        <span class="kf-ov-target"></span>骑士目标
+        <span class="kf-ov-path"></span>路径
+        <span class="kf-ov-path-a"></span>路径A
+        <span class="kf-ov-path-b"></span>路径B
+        <span class="kf-ov-path-overlap"></span>重叠
+        <span class="kf-ov-final-a"></span>终点A
+        <span class="kf-ov-final-b"></span>终点B
+        <span class="kf-ov-blocked"></span>无视线
+      </div>
+    </div>`;
+  }
+
+  function conflictGridHtml(boardState, overlay = null) {
     const activeSpaces = new Set(foolCardById(boardState?.activeFoolCardId)?.spaces || []);
-    return Array.from({ length: 140 }, (_, index) => {
+    const cells = Array.from({ length: 140 }, (_, index) => {
       const ref = conflictGridCellRef(index);
       const highlighted = activeSpaces.has(ref);
-      const label = boardState?.showCoordinates ? `<b>${ref}</b>` : "";
-      return `<span class="${highlighted ? "fool-highlight" : ""}"${highlighted ? ` aria-label="愚者牌格位 ${ref}"` : ""}>${label}</span>`;
+      // 网格 span 是 row-major、14 列 10 行，与 kf-overlay 的坐标系一致。
+      const row = Math.floor(index / 14) + 1;
+      const column = index % 14 + 1;
+      const distance = overlay?.active ? overlay.distanceAt(column, row) : null;
+      const label = distance != null ? `<b class="kf-ov-distance">${distance}</b>` : (boardState?.showCoordinates ? `<b>${ref}</b>` : "");
+      const classes = [highlighted ? "fool-highlight" : "", ...(overlay?.active ? overlay.classesAt(column, row) : [])]
+        .filter(Boolean).join(" ");
+      return `<span class="${classes}"${highlighted ? ` aria-label="愚者牌格位 ${ref}"` : ""}>${label}</span>`;
     }).join("");
+    return cells;
   }
 
   function foolCardFaceHtml(card) {
@@ -4448,10 +4581,10 @@
     };
   }
 
-  function conflictTerrainPlacementHtml(placement, selected = false) {
+  function conflictTerrainPlacementHtml(placement, selected = false, interactionLocked = false) {
     const geometry = conflictTerrainGeometry(placement);
     const src = conflictAssetSrc(placement.asset);
-    return `<button type="button" class="terrain-control-placement ${selected ? "selected" : ""}" data-terrain-id="${esc(placement.id)}"
+    return `<button type="button" class="terrain-control-placement ${selected ? "selected" : ""} ${interactionLocked ? "path-active" : ""}" data-terrain-id="${esc(placement.id)}"
       aria-label="${esc(conflictTerrainLabel(placement.asset))}" title="${esc(conflictTerrainLabel(placement.asset))}"
       style="left:${(geometry.centerColumn - .5) / 14 * 100}%;top:${(geometry.centerRow - .5) / 10 * 100}%;width:${geometry.artColumnSpan / 14 * 100}%;height:${geometry.artRowSpan / 10 * 100}%;transform:translate(-50%,-50%) rotate(${placement.rotation}deg);--terrain-layer:${placement.layer || 10}">
       <img src="${esc(src)}" alt="" style="transform:scaleX(${placement.flipped ? -1 : 1})">
@@ -4490,6 +4623,7 @@
     const selection = selected
       ? `<strong>${esc(conflictTerrainLabel(selected.asset))}</strong><span>第 ${selected.columnStart} 列 · ${String.fromCharCode(75 - selected.rowStart)} 行 · ${selected.rotation}°${selected.flipped ? " · 反面" : ""}</span>`
       : "未选择地形";
+    const overlay = conflictOverlay(battle);
     return `<section class="panel terrain-control-panel" aria-label="冲突版图地形控制">
       <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>冲突版图与地形</h3></div><div class="inline-actions">
         <button type="button" class="button secondary small ${boardState.showCoordinates ? "active" : ""}" data-grid-coordinates>${boardState.showCoordinates ? "隐藏格子位置" : "显示格子位置"}</button>
@@ -4500,8 +4634,9 @@
       <div class="terrain-control-workspace">
         <div class="terrain-control-board" data-terrain-board style="${conflictBoardCropStyle()}">
           <img class="terrain-control-board-source" src="../display/${esc(boardAsset)}" alt="TTS 高清冲突版图">
-          <div class="terrain-control-grid">${conflictGridHtml(boardState)}</div>
-          ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId)).join("")}${starts}
+          <div class="terrain-control-grid">${conflictGridHtml(boardState, overlay)}</div>
+          ${conflictOverlayMarkersHtml(overlay)}
+          ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId, Boolean(overlay?.settings?.path || overlayPlacementMode))).join("")}${starts}
         </div>
         <aside class="terrain-control-tools">
           ${foolDeckPreviewHtml(boardState)}
@@ -4514,6 +4649,7 @@
           <div class="terrain-add-row"><select data-terrain-add-select aria-label="新增地形">${catalog.map(item => `<option value="${esc(item.asset)}">${esc(conflictTerrainLabel(item.asset))}</option>`).join("")}</select><button type="button" class="button small" data-terrain-add>+ 新增</button></div>
           <div class="terrain-selection">${selection}</div>
           <p class="muted">选择地形后点击版图格位移动；所有修改会同步到第二屏。</p>
+          ${conflictOverlayToolsHtml(boardState, layout, overlay)}
         </aside>
       </div>
       <div class="terrain-reference"><div class="terrain-reference-head"><strong>当前地形卡</strong><span>${terrainCards.length} 张</span></div><div class="terrain-reference-list">${terrainCards.map(card => `<button type="button" data-terrain-card="${card.cardId}" title="查看 ${esc(card.label)} 地形卡">${conflictTerrainCardFaceHtml(card)}<span>${esc(card.label)}</span></button>`).join("") || `<span class="muted">${usedAssets.length ? "当前地形没有对应卡牌" : "当前版图没有地形"}</span>`}</div></div>
@@ -4556,6 +4692,47 @@
     save();
   }
 
+  function startConflictTerrainDrag(event) {
+    if (event.button !== undefined && event.button !== 0) return;
+    if (conflictOverlaySettings().path || overlayPlacementMode) return;
+    const node = event.currentTarget;
+    const boardNode = node.closest("[data-terrain-board]");
+    const terrain = state.battle.conflictBoard?.terrain?.find(item => item.id === node.dataset.terrainId);
+    if (!boardNode || !terrain) return;
+    selectedTerrainId = terrain.id;
+    let preview = { ...terrain };
+    let moved = false;
+
+    const move = pointerEvent => {
+      const rect = boardNode.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const column = clamp(Math.floor((pointerEvent.clientX - rect.left) / rect.width * 14) + 1, 1, 14);
+      const row = clamp(Math.floor((pointerEvent.clientY - rect.top) / rect.height * 10) + 1, 1, 10);
+      const next = moveConflictTerrain({ ...terrain }, row, column);
+      if (next.rowStart === preview.rowStart && next.columnStart === preview.columnStart) return;
+      preview = next;
+      const geometry = conflictTerrainGeometry(preview);
+      node.style.left = `${(geometry.centerColumn - .5) / 14 * 100}%`;
+      node.style.top = `${(geometry.centerRow - .5) / 10 * 100}%`;
+      moved = true;
+      pointerEvent.preventDefault();
+    };
+    const finish = pointerEvent => {
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", finish);
+      node.removeEventListener("pointercancel", finish);
+      node.classList.remove("dragging");
+      if (node.hasPointerCapture?.(pointerEvent.pointerId)) node.releasePointerCapture(pointerEvent.pointerId);
+      if (moved) editSelectedTerrain(() => preview);
+    };
+
+    node.classList.add("dragging");
+    node.setPointerCapture?.(event.pointerId);
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", finish);
+    node.addEventListener("pointercancel", finish);
+  }
+
   function resetConflictTerrain() {
     const layout = conflictBoardLayout();
     if (!layout) return false;
@@ -4570,6 +4747,23 @@
   function toggleConflictCoordinates() {
     if (!state.battle.conflictBoard) return;
     state.battle.conflictBoard.showCoordinates = !state.battle.conflictBoard.showCoordinates;
+    save();
+  }
+
+  function conflictOverlaySettings() {
+    return window.KF_OVERLAY?.normalizeSettings(state.battle.conflictBoard?.overlay)
+      || { sourceCell: null, targetCell: null, sourceMode: "boss", move: 5, los: true, path: false };
+  }
+
+  // 叠加层是纯查看用的显示开关，不进撤销栈（和显示格子位置一致）。
+  function updateConflictOverlay(patch) {
+    const boardState = state.battle.conflictBoard;
+    if (!boardState || !window.KF_OVERLAY) return;
+    boardState.overlay = window.KF_OVERLAY.normalizeSettings({ ...conflictOverlaySettings(), ...patch });
+    if (boardState.overlay.path) {
+      selectedTerrainId = "";
+      overlayPlacementMode = "";
+    }
     save();
   }
 
@@ -4784,18 +4978,34 @@
     $("[data-grid-coordinates]")?.addEventListener("click", toggleConflictCoordinates);
     $("[data-fool-deck]")?.addEventListener("click", drawOrResetFoolCard);
     $$('[data-terrain-id]').forEach(button => button.addEventListener('click', event => {
+      if (conflictOverlaySettings().path || overlayPlacementMode) return;
+      if (selectedTerrainId && selectedTerrainId !== button.dataset.terrainId) return;
       if (selectedTerrainId !== button.dataset.terrainId) {
         event.stopPropagation();
         selectedTerrainId = button.dataset.terrainId;
         renderApp();
+      } else {
+        event.stopPropagation();
+        selectedTerrainId = "";
+        renderApp();
       }
     }));
+    $$('[data-terrain-id]').forEach(button => button.addEventListener('pointerdown', startConflictTerrainDrag));
     $('[data-terrain-board]')?.addEventListener('click', event => {
-      if (!selectedTerrainId) return;
       const rect = event.currentTarget.getBoundingClientRect();
       const column = clamp(Math.floor((event.clientX - rect.left) / rect.width * 14) + 1, 1, 14);
       const row = clamp(Math.floor((event.clientY - rect.top) / rect.height * 10) + 1, 1, 10);
-      editSelectedTerrain(placement => moveConflictTerrain(placement, row, column));
+      const settings = conflictOverlaySettings();
+      if (overlayPlacementMode) {
+        const sourceMode = overlayPlacementMode;
+        return updateConflictOverlay({ sourceMode, sourceCell: { row, column }, targetCell: null });
+      }
+      if (!settings.path) {
+        if (selectedTerrainId) return editSelectedTerrain(placement => moveConflictTerrain(placement, row, column));
+        return;
+      }
+      if (!settings.sourceCell) return;
+      updateConflictOverlay({ targetCell: { row, column } });
     });
     $$('[data-terrain-rotate]').forEach(button => button.addEventListener('click', () => {
       const delta = Number(button.dataset.terrainRotate) || 0;
@@ -4830,6 +5040,24 @@
       state.battle.conflictBoard.showStarts = event.target.checked;
       save();
     });
+    $$('[data-overlay-layer]').forEach(button => button.addEventListener('click', () => {
+      const key = button.dataset.overlayLayer;
+      if (!window.KF_OVERLAY?.LAYERS.includes(key)) return;
+      updateConflictOverlay({ [key]: !conflictOverlaySettings()[key] });
+    }));
+    $$('[data-overlay-mode]').forEach(button => button.addEventListener('click', () => {
+      const sourceMode = button.dataset.overlayMode;
+      if (!window.KF_OVERLAY?.MODES.includes(sourceMode)) return;
+      if (overlayPlacementMode === sourceMode) {
+        overlayPlacementMode = "";
+        return renderApp();
+      }
+      overlayPlacementMode = sourceMode;
+      selectedTerrainId = "";
+      updateConflictOverlay({ sourceMode, path: false, targetCell: null });
+    }));
+    $('[data-overlay-clear]')?.addEventListener('click', () => updateConflictOverlay({ sourceCell: null, targetCell: null }));
+    $('[data-overlay-clear-target]')?.addEventListener('click', () => updateConflictOverlay({ targetCell: null }));
     $$('[data-terrain-select-asset]').forEach(button => button.addEventListener('click', () => {
       const match = state.battle.conflictBoard?.terrain?.find(item => item.asset === button.dataset.terrainSelectAsset);
       if (!match) return;
@@ -5241,6 +5469,7 @@
       selectMob, settleMob: action => settleMob(monsterById(state.battle.monsterId), action),
       resetConflictTerrain, moveConflictTerrain, rotateConflictTerrain, conflictTerrainGeometry,
       toggleConflictCoordinates, drawOrResetFoolCard, conflictGridCellRef, conflictGridHtml,
+      conflictOverlay, conflictOverlaySettings, updateConflictOverlay,
       validateState, renderApp, showPreview, showGuardedPreview, remember, commit: () => save(false),
       activeReferenceIds: () => activeReferenceCards(
         monsterById(state.battle.monsterId), state.battle

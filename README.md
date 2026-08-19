@@ -41,6 +41,35 @@ KF_Unified_Assistant/public/modules/*/assets/
 
 Android 版无需手工复制第二份资源；构建脚本会从相邻的 Web 项目同步到 `app/src/main/assets/web/`。
 
+### 打包图片资源用于分发
+
+在**已有完整图片**的本地副本上运行下面的脚本，可以把所有被 `.gitignore` 排除的图片打包成单个 zip，交给其他开发者补齐资源：
+
+```powershell
+cd KF_Unified_Assistant\tools
+.\pack-ignored-images.ps1
+```
+
+默认在仓库根目录生成 `KF_Assistant_Images_<日期>.zip` 和对应的 `.sha256.txt`。脚本直接使用 git 的忽略规则来判断哪些图片没有进仓库，因此不需要手工维护目录清单。
+
+压缩包内保留完整的仓库相对路径，接收方在仓库根目录解压覆盖即可，无需移动目录：
+
+```powershell
+Expand-Archive -LiteralPath KF_Assistant_Images_<日期>.zip -DestinationPath . -Force
+```
+
+常用参数：
+
+| 参数 | 用途 |
+| --- | --- |
+| `-DryRun` | 只统计文件数量、体积和目录分布，不写出文件 |
+| `-OutputPath <路径>` | 指定输出位置，默认仓库根目录 |
+| `-Force` | 覆盖已存在的同名输出文件 |
+| `-IncludeGenerated` | 一并打包 Android 生成的 web 副本和便携版运行时中的图片 |
+| `-NoHash` | 跳过 SHA256 校验文件 |
+
+脚本始终排除 `.env`、`data/`、`backups/` 和 `logs/`，即使通过 `-Extension` 传入了自定义扩展名，也不会把本地配置或数据库打进包里。由于 `modules/*/assets/` 中的部分图片是 `public/assets/` 的副本，压缩包体积会明显大于去重后的实际素材量；这样做是为了解压后可以直接运行，不需要额外的恢复步骤。
+
 ## Web 版运行
 
 ### Windows
