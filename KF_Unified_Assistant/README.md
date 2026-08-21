@@ -43,11 +43,19 @@
 3. 双击 `start-windows.bat`。
 4. 访问 `http://127.0.0.1:8789`，局域网设备使用脚本显示的地址。
 
+## macOS
+
+安装 PHP 8.2 或更高版本后，可双击 `start-macos.command`，或在终端运行 `./start-macos.sh`。脚本会检查 SQLite 扩展、创建运行目录并打开本地页面。
+
+如果使用 Docker Desktop，可运行 `./start-docker.sh`。该脚本调用同目录的 `compose.yaml`，默认构建并后台启动服务；例如 `./start-docker.sh down` 可停止服务。
+
 ## Docker / NAS
 
 ```bash
 docker compose up -d --build
 ```
+
+macOS/Linux 可运行 `./start-docker.sh`；不带参数时它会构建并启动服务，需要执行其他 Compose 命令时可传参，例如 `./start-docker.sh down`。
 
 访问 `http://NAS地址:8789`。数据库与备份分别保存在 `./data`、`./backups`。
 

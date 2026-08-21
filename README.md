@@ -22,7 +22,10 @@ KF 助手是面向《Kingdoms Forlorn》的非官方一体化战役管理工具�
 │  ├─ public/                     # Web 入口及地图、遭遇、AI/BP 模块
 │  ├─ tools/                      # 管理、数据导入与测试脚本
 │  ├─ compose.yaml                # Docker Compose 配置
-│  └─ start-windows.bat           # Windows 启动脚本
+│  ├─ start-windows.bat           # Windows 网页版启动脚本
+│  ├─ start-macos.command         # macOS 双击启动入口
+│  ├─ start-macos.sh              # macOS 本地 PHP 启动脚本
+│  └─ start-docker.sh             # Docker Compose 启动脚本
 └─ KF_Unified_Assistant_Android/  # Android 本地版外壳与构建脚本
    ├─ app/                        # Android 应用
    └─ build-apk.bat               # 一键同步 Web 资源并构建 APK
@@ -101,6 +104,10 @@ powershell -ExecutionPolicy Bypass -File .\tools\build-portable-windows.ps1
 cd KF_Unified_Assistant
 docker compose up -d --build
 ```
+
+macOS/Linux 可运行 `./start-docker.sh` 启动 Docker Compose 服务。
+
+macOS 本地运行可双击 `start-macos.command`，或在终端执行 `./start-macos.sh`。本地运行需要 PHP 8.2+ 和 SQLite 扩展；Docker 运行需要安装 Docker Desktop（已包含 Docker Compose）。
 
 服务默认监听 `8789` 端口，持久化数据保存在 `KF_Unified_Assistant/data/`，备份保存在 `KF_Unified_Assistant/backups/`。
 
