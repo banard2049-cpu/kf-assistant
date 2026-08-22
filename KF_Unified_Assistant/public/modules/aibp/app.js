@@ -83,6 +83,10 @@
     return Math.round(normalized / 90) % 4 * 90;
   };
   const facingClass = value => `facing-${cardinalFacing(value)}`;
+  const mobNumberClass = value => {
+    const number = Number(value);
+    return Number.isInteger(number) && number >= 1 && number <= 10 ? `mob-number-${number}` : "";
+  };
 
   function monsterById(id) {
     return DATA.monsters.find(monster => monster.id === id);
@@ -3992,7 +3996,7 @@
           ${muscularChest ? `<button type="button" class="button danger small warrior-muscular-defeat" data-warrior-muscular-defeat ${muscularChestMarkers >= 4 ? "disabled" : ""}>结算击败</button>` : ""}
         </div>`;
       }).join("")}${battle.bpTrack.map((slot, index) => {
-        if (!slot.id) return `<div class="mob-slot empty"><span>${index + 1}</span><strong>空位</strong></div>`;
+        if (!slot.id) return `<div class="mob-slot empty"><span class="${mobNumberClass(index + 1)}">${index + 1}</span><strong>空位</strong></div>`;
         const markerTokens = slot.markerTokens || {};
         const selectedCount = clamp(markerTokens[selectedAsset.id], 0, MAX_SHEET_TOKENS_PER_TYPE);
         const selectedMax = selectedAsset.id === "token-01" && isPumpkinhead(monster) && isSpecialMobSlot(monster, slot)
@@ -4000,7 +4004,7 @@
         const placedMarkers = TOKEN_ASSETS.map(asset => ({ asset, count: clamp(markerTokens[asset.id], 0, MAX_SHEET_TOKENS_PER_TYPE) }))
           .filter(item => item.count);
         return `<div class="mob-slot ${slot.revealed ? "revealed" : ""} ${slot.id === battle.activeBP ? "active" : ""} ${slot.decoy ? "decoy" : ""}">
-          <span>${index + 1}</span>
+          <span class="${mobNumberClass(index + 1)}">${index + 1}</span>
           <div class="mob-card-stage">
             <button class="mob-card-button" data-mob="${index}" ${battle.activeBP || ratwolfPending ? "disabled" : ""}>
               ${cardHtml(cardById(monster, slot.id), "track-card", slot.revealed ? slot.side : "back", false, false)}
@@ -4055,7 +4059,7 @@
           </div>`;
         }).join("");
         return `<article class="mob-slot doppelganger-slot ${paired ? "paired" : ""} ${revealed ? "revealed" : ""}">
-          <span>${index + 1}</span>
+          <span class="${mobNumberClass(index + 1)}">${index + 1}</span>
           <div class="doppelganger-card-stack ${paired ? "paired" : ""}">${stack}</div>
           <div class="doppelganger-slot-meta"><strong>拟身骑士 ${index + 1}</strong><small>BP × ${item.cards.length} · 总强度 ${strength}</small></div>
           <div class="rule-actions compact doppelganger-slot-actions">
@@ -4128,7 +4132,7 @@
           const carrier = guardians.carrier === index;
           const locked = index >= cap;
           return `<div class="guardian-track-slot ${occupied ? "occupied" : "empty"} ${carrier ? "carrier" : ""} ${locked ? "locked" : ""}" data-guardian-slot="${index}" ${carrier ? "data-guardian-carrier" : ""}>
-            <span class="guardian-track-number">${index + 1}</span>
+            <span class="guardian-track-number ${mobNumberClass(index + 1)}">${index + 1}</span>
             <div class="guardian-track-body">
               ${carrier ? cardHtml(cardById(monster, rule.cards.guardian), "guardian-track-card track-card", "face", false) : occupied ? `<div class="guardian-track-figure">
                 <img src="assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫 ${index + 1}">
@@ -4608,8 +4612,12 @@
       const knight = knightAssignments.get(item.id);
       const arrow = ["knight", "monster"].includes(item.kind) ? `<span class="terrain-start-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>` : "";
       const avatar = knight ? `<img src="../../assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt="">${arrow}` : "";
-      const label = knight ? "" : `${item.kind === "monster" ? conflictTerrainLabel(item.asset) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}${mobAssignments.has(item.id) ? `<b>${mobAssignments.get(item.id)}</b>` : ""}`;
-      return `<span class="terrain-control-start ${item.kind} ${knight ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i>${avatar || `${arrow}${label}`}</i></span>`;
+      const assignedNumber = mobAssignments.get(item.id);
+      const label = knight ? "" : `${item.kind === "monster" ? conflictTerrainLabel(item.asset) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}${assignedNumber ? `<b class="${mobNumberClass(assignedNumber)}">${assignedNumber}</b>` : ""}`;
+      const numberImage = item.kind === "number"
+        ? `<img class="terrain-control-number-image" src="${esc(conflictAssetSrc(item.asset))}" alt="${esc(item.asset)}">`
+        : "";
+      return `<span class="terrain-control-start ${item.kind} ${knight ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i>${avatar || numberImage || `${arrow}${label}`}</i></span>`;
     }).join("");
     const catalog = conflictTerrainCatalog();
     const usedAssets = [...new Set(terrain.map(item => item.asset))];

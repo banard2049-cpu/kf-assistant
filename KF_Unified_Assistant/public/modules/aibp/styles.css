@@ -1808,6 +1808,17 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
   width: 24px; height: 24px; place-items: center; color: #111;
   background: var(--gold); border-radius: 50%; font-weight: 800;
 }
+/* 杂兵轨编号底色（1-10：黑、白、红、蓝、绿、黄、紫、棕、橙、粉）。 */
+.mob-slot > span.mob-number-1,.guardian-track-number.mob-number-1,.terrain-control-start i.mob-number-1,.terrain-control-start i b.mob-number-1 { background: #000 !important; color: #fff !important; }
+.mob-slot > span.mob-number-2,.guardian-track-number.mob-number-2,.terrain-control-start i.mob-number-2,.terrain-control-start i b.mob-number-2 { background: #fff !important; color: #111 !important; }
+.mob-slot > span.mob-number-3,.guardian-track-number.mob-number-3,.terrain-control-start i.mob-number-3,.terrain-control-start i b.mob-number-3 { background: #f00 !important; color: #fff !important; }
+.mob-slot > span.mob-number-4,.guardian-track-number.mob-number-4,.terrain-control-start i.mob-number-4,.terrain-control-start i b.mob-number-4 { background: #00f !important; color: #fff !important; }
+.mob-slot > span.mob-number-5,.guardian-track-number.mob-number-5,.terrain-control-start i.mob-number-5,.terrain-control-start i b.mob-number-5 { background: #008000 !important; color: #fff !important; }
+.mob-slot > span.mob-number-6,.guardian-track-number.mob-number-6,.terrain-control-start i.mob-number-6,.terrain-control-start i b.mob-number-6 { background: #ff0 !important; color: #111 !important; }
+.mob-slot > span.mob-number-7,.guardian-track-number.mob-number-7,.terrain-control-start i.mob-number-7,.terrain-control-start i b.mob-number-7 { background: #800080 !important; color: #fff !important; }
+.mob-slot > span.mob-number-8,.guardian-track-number.mob-number-8,.terrain-control-start i.mob-number-8,.terrain-control-start i b.mob-number-8 { background: #a52a2a !important; color: #fff !important; }
+.mob-slot > span.mob-number-9,.guardian-track-number.mob-number-9,.terrain-control-start i.mob-number-9,.terrain-control-start i b.mob-number-9 { background: #ffa500 !important; color: #111 !important; }
+.mob-slot > span.mob-number-10,.guardian-track-number.mob-number-10,.terrain-control-start i.mob-number-10,.terrain-control-start i b.mob-number-10 { background: #ffc0cb !important; color: #111 !important; }
 .mob-slot.revealed { border-style: solid; border-color: var(--gold); }
 .mob-slot.active { box-shadow: 0 0 0 2px var(--gold); }
 .mob-slot.decoy { border-style: solid; border-color: #d7a83f; background: rgba(215, 168, 63, .08); }
@@ -1924,6 +1935,9 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
   color: #fff;
   font-size: 10px;
 }
+.warrior-companion-markers strong,
+.mob-bp-marker strong { background: #111513 !important; color: #fff !important; }
+.sheet-token .sheet-token-quantity { background: rgba(12, 15, 14, .92) !important; color: #fff !important; }
 .mob-card-stage { position: relative; }
 .mob-rule-note {
   display: flex;

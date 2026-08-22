@@ -12,6 +12,10 @@
     return Math.round(normalized / 90) % 4 * 90;
   };
   const facingClass = value => `facing-${cardinalFacing(value)}`;
+  const mobNumberClass = value => {
+    const number = Number(value);
+    return Number.isInteger(number) && number >= 1 && number <= 10 ? `mob-number-${number}` : "";
+  };
   let etag = "";
   let lastPayload = null;
   let lastSuccess = 0;
@@ -294,7 +298,7 @@
       }
       const activations=trackType==="standard"?(battle.mobActivations||[]).filter(token=>token.position===index).map(token=>`<span class="display-activation ${token.used?"used":""} ${token.id===battle.activeMobActivationId?"active":""}">${esc(token.type)}</span>`).join(""):"";
       const markers=trackType==="standard"?markerStacks(slot.markerTokens):"";
-      return `<div class="display-mob-slot ${trackType} ${occupied?"occupied":filler?"feature":"empty"} ${slot.revealed?"revealed":"hidden"} ${card&&slot.id===battle.activeBP?"active":""} ${slot.decoy?"decoy":""}" data-track-index="${index}"><span class="display-slot-number">${index+1}</span>${cardContent||'<strong class="display-empty-slot">空位</strong>'}<div class="display-bp-markers">${markers}</div>${activations}${slot.decoy?'<b class="display-decoy">诱匿</b>':""}</div>`;
+      return `<div class="display-mob-slot ${trackType} ${occupied?"occupied":filler?"feature":"empty"} ${slot.revealed?"revealed":"hidden"} ${card&&slot.id===battle.activeBP?"active":""} ${slot.decoy?"decoy":""}" data-track-index="${index}"><span class="display-slot-number ${mobNumberClass(index+1)}">${index+1}</span>${cardContent||'<strong class="display-empty-slot">空位</strong>'}<div class="display-bp-markers">${markers}</div>${activations}${slot.decoy?'<b class="display-decoy">诱匿</b>':""}</div>`;
     }).join("");
     return {html:`<section class="display-mob-track-block" aria-label="杂兵 BP 轨"><div class="display-mob-track" data-track-slot-count="10">${slots}</div></section>`,used};
   }
@@ -449,7 +453,7 @@
         content=`<span class="board-marker knight" aria-label="${esc(knight.name)}" title="${esc(knight.name)}"><img class="knight-avatar" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt=""><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span></span>`;
       } else {
         const label=item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
-        content=`<span class="board-marker ${item.kind}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${esc(label)}${assignment.has(item.id)?`<span class="marker-number">${assignment.get(item.id)}</span>`:""}</span>`;
+        content=`<span class="board-marker ${item.kind}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
       }
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
     }).join("");
