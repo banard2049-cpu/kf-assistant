@@ -576,6 +576,22 @@ try {
             if($importedStoryMarkers||$importedPasswords){$settings=load_user_settings($db,$user['id']);$settings['storyMarkers']=array_replace(normalize_story_markers($settings['storyMarkers']??[]),$importedStoryMarkers);$settings['passwords']=normalize_password_records(array_merge(normalize_password_records($settings['passwords']??[]),$importedPasswords));store_user_settings($db,$user['id'],$settings);}
             $db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}respond(201,['id'=>$id]);
     }
+    if ($route === 'sheet-import' && $method === 'POST') {
+        $data=request_data();
+        if(($data['format']??'')!=='kf-unified-knight'||($data['schemaVersion']??0)!==1||!is_array($data['sheet']??null))respond(400,['error'=>'只支持新版 KF 骑士档案（版本 1）']);
+        $payload=$data['sheet'];$incoming=$payload['state']??null;$catalog=knight_catalog();
+        if(!is_array($incoming))respond(400,['error'=>'骑士档案内容无效']);
+        $knightId=(string)($incoming['knightId']??'');if(!isset($catalog[$knightId]))respond(400,['error'=>'导入文件包含无效的骑士身份']);
+        $base=default_state($knightId,(string)($incoming['player']??''));foreach($incoming as $key=>$value)$base[$key]=$value;$incoming=$base;
+        $encoded=json_encode($incoming,JSON_UNESCAPED_UNICODE);if($encoded===false||strlen($encoded)>20000)respond(400,['error'=>'骑士档案内容过大']);
+        $replaceId=(string)($data['replaceSheetId']??'');$existing=null;$q=$db->prepare('SELECT * FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);
+        foreach($q->fetchAll() as $row){$saved=json_decode($row['state_json'],true);if(is_array($saved)&&($saved['knightId']??'')===$knightId){$existing=$row;break;}}
+        if($existing&&$replaceId!==$existing['id'])respond(409,['error'=>'已经有这名骑士的共享档案，是否覆盖？','sheetId'=>$existing['id']]);
+        $incoming['knight']=$catalog[$knightId];$title=title_value($payload['title']??'');if($title==='')$title=$catalog[$knightId];$time=stamp();
+        if($existing){$q=$db->prepare('UPDATE knight_sheets SET title=?,state_json=?,field_versions_json=?,revision=revision+1,updated_at=? WHERE id=? AND user_id=?');$q->execute([$title,json_encode($incoming,JSON_UNESCAPED_UNICODE),'{}',$time,$existing['id'],$user['id']]);$id=$existing['id'];}
+        else{$id=uuid4();$q=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,field_versions_json,revision,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)');$q->execute([$id,$user['id'],null,$title,json_encode($incoming,JSON_UNESCAPED_UNICODE),'{}',0,$time,$time]);}
+        respond(201,['sheet'=>parsed_sheet(owned_sheet($db,$id,$user['id'])),'replaced'=>(bool)$existing]);
+    }
     if ($route === 'encounters/start' && $method === 'POST') {
         $data=request_data();$row=owned_campaign($db,(string)($data['campaignId']??''),$user['id']);if(!$row)respond(404,['error'=>'战役不存在']);$state=json_decode($row['state_json'],true);
         $monster=text_value($data['monster']??'',80);$level=max(1,min(4,(int)($data['level']??1)));$type=in_array($data['type']??'normal',['normal','ambush','special'],true)?$data['type']:'normal';

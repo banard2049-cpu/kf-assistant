@@ -176,7 +176,7 @@ const api=async(path,options={})=>{
   const raw=path.replace(/^\/api\/?/,""),parts=raw.split("?"),target=`/api.php?route=${encodeURIComponent(parts[0])}${parts[1]?`&${parts[1]}`:""}`;
   const res=await fetch(target,{credentials:"same-origin",headers:{"Content-Type":"application/json",...(options.headers||{})},...options});
   const data=await res.json().catch(()=>({}));
-  if(!res.ok)throw new Error(data.error||"请求失败");
+  if(!res.ok){const error=new Error(data.error||"请求失败");error.status=res.status;error.data=data;throw error;}
   return data;
 };
 const normalizePermanentStoryMarkers=value=>Object.fromEntries(Object.entries(value&&typeof value==="object"&&!Array.isArray(value)?value:{})
@@ -568,6 +568,9 @@ $("#newKnightForm").onsubmit=async e=>{
 };
 $("#sheetTitle").onchange=async e=>{if(!active)return;await api(`/api/sheets/${active}`,{method:"PATCH",body:JSON.stringify({title:e.target.value})});refreshLists()};
 $("#deleteSheet").onclick=async()=>{if(confirm("将这张档案移入回收站？30 天内可以恢复。")){await api(`/api/sheets/${active}/trash`,{method:"POST"});active=null;await refreshLists()}};
+function knightExportPayload(){return {format:"kf-unified-knight",schemaVersion:1,exportedAt:new Date().toISOString(),sheet:{title:$("#sheetTitle").value||state?.knight||"骑士档案",state:structuredClone(state)}}}
+$("#exportKnight").onclick=()=>{if(!state)return toast("请先打开一张骑士档案");download(`kf-knight-${state.knightId||"sheet"}.json`,knightExportPayload());toast("骑士档案已导出")};
+$("#importKnightFile").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());if(payload?.format!=="kf-unified-knight"||payload?.schemaVersion!==1||!payload?.sheet?.state)throw new Error("只支持 KF 骑士档案（版本 1）");const knightId=payload.sheet.state.knightId;if(!knightCatalog.some(item=>item.id===knightId))throw new Error("导入文件包含无效的骑士身份");await sync();let result;try{result=await api("/api/sheet-import",{method:"POST",body:JSON.stringify(payload)})}catch(error){if(error.status!==409||!error.data?.sheetId||!confirm(`${error.message}\n是否覆盖现有的${payload.sheet.state.knight||"骑士"}档案？`))throw error;result=await api("/api/sheet-import",{method:"POST",body:JSON.stringify({...payload,replaceSheetId:error.data.sheetId})})}await refreshLists();await openSheet(result.sheet.id);toast(result.replaced?"骑士档案已覆盖导入":"骑士档案已导入")}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#sheetForm").addEventListener("input",e=>{const el=e.target;if(!el.dataset.path)return;let value=el.type==="checkbox"?el.checked:el.type==="number"&&el.hasAttribute("data-investigation-success")&&el.value===""?"":el.type==="number"?Math.max(Number(el.min||-999),Math.min(Number(el.max||99999),Number(el.value)||0)):el.value;
   op(el.dataset.path,value);renderValues()
 });

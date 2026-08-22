@@ -72,6 +72,7 @@
       <details class="trash-panel"><summary>回收站</summary><div id="trashList" class="sheet-list"></div></details>
       <div class="sidebar-tools">
         <button id="exportAll" class="button">导出存档</button>
+        <label class="button file-button">导入骑士<input id="importKnightFile" type="file" accept=".json,application/json"></label>
         <label class="button file-button">导入存档<input id="importFile" type="file" accept=".json,application/json"></label>
       </div>
       <p class="sidebar-user">当前用户：<span id="currentUser"></span></p>
@@ -135,6 +136,7 @@
           <input id="sheetTitle" class="title-input" maxlength="80" aria-label="档案名称">
           <div class="toolbar-actions">
             <span class="shared-sheet-badge">跨战役共享</span>
+            <button id="exportKnight" type="button" class="button">导出骑士</button>
             <button id="deleteSheet" type="button" class="danger">删除</button>
           </div>
         </div>

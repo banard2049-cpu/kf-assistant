@@ -339,8 +339,8 @@ h3 { font-size: .94rem; color: var(--gold); margin-bottom: .5rem; }
 .placement-piece-meta { max-width: 100%; color: var(--muted); font-size: .65rem; line-height: 1.2; overflow-wrap: anywhere; }
 .pool { display: flex; gap: .5rem; flex-wrap: wrap; margin: .7rem 0; }
 .token { padding: .55rem .75rem; border-radius: 999px; background: #2c2d28; border: 1px solid var(--line); }
-.token.opportunity { color: #efcf73; }
-.token.break { color: #9dc9df; }
+.token.opportunity { color: #9dc9df; }
+.token.break { color: #efcf73; }
 .token.scrape { color: #e48475; }
 .knight-actions { display: grid; gap: .55rem; }
 .knight-action { border: 1px solid var(--line); border-radius: 8px; padding: .7rem; background: #20211e; }
