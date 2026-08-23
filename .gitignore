@@ -19,7 +19,7 @@ KF_Unified_Assistant/logs/
 # Image resources are intentionally not published
 KF_Unified_Assistant/public/assets/
 KF_Unified_Assistant/public/modules/*/assets/
-KF_Unified_Assistant_Android/app/src/main/res/drawable-nodpi/
+KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/
 *.png
 *.jpg
 *.jpeg
@@ -63,7 +63,7 @@ local.properties
 *.keystore
 
 # Generated Android web bundle
-KF_Unified_Assistant_Android/app/src/main/assets/web/
+KF_Unified_Assistant/tools/packaging/android/app/src/main/assets/web/
 
 # Local caches and browser preview profiles
 .cache/

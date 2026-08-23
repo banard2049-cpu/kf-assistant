@@ -86,7 +86,7 @@ jobs:
         run: |
           $version = '${{ steps.release.outputs.version }}'
           $output = Join-Path $env:GITHUB_WORKSPACE "KF-Unified-Assistant-Android-$version.apk"
-          & .\KF_Unified_Assistant_Android\tools\build-release-apk.ps1 -Version $version -OutputPath $output -KeystorePath $env:KF_KEYSTORE -StorePassword $env:KF_STORE_PASSWORD -KeyAlias $env:KF_KEY_ALIAS -KeyPassword $env:KF_KEY_PASSWORD
+          & .\KF_Unified_Assistant\tools\packaging\android\tools\build-release-apk.ps1 -Version $version -OutputPath $output -KeystorePath $env:KF_KEYSTORE -StorePassword $env:KF_STORE_PASSWORD -KeyAlias $env:KF_KEY_ALIAS -KeyPassword $env:KF_KEY_PASSWORD
           "APK_PATH=$output" >> $env:GITHUB_ENV
 
       - name: Upload workflow artifact

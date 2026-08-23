@@ -1,5 +1,5 @@
 param(
-  [string]$Source = (Join-Path $PSScriptRoot "..\KF_Unified_Assistant"),
+  [string]$Source = (Join-Path $PSScriptRoot "..\..\.."),
   [string]$Toolchain = "D:\download\ato2\ATO-android-local\.build-tools",
   [switch]$SkipSync,
   [switch]$SkipClean,

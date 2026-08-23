@@ -78,8 +78,8 @@ $blockedPatterns = @(
 
 # 构建产物中的图片副本，默认排除，-IncludeGenerated 可加回。
 $generatedPatterns = @(
-  '(^|/)KF_Unified_Assistant_Android/',
-  '(^|/)KF_Unified_Assistant_Android/app/src/main/assets/web/',
+  '(^|/)KF_Unified_Assistant/tools/packaging/android/',
+  '(^|/)KF_Unified_Assistant/tools/packaging/android/app/src/main/assets/web/',
   '(^|/)KF_Unified_Assistant/runtime/'
 )
 

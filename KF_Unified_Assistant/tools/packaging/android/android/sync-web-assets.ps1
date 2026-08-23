@@ -1,5 +1,5 @@
 param(
-  [string]$Source = (Join-Path $PSScriptRoot "..\..\KF_Unified_Assistant")
+  [string]$Source = (Join-Path $PSScriptRoot "..\..\..\..")
 )
 
 $ErrorActionPreference = "Stop"

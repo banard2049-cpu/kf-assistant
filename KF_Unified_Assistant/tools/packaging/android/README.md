@@ -1,6 +1,6 @@
 # KF 一体化助手 Android 本地版
 
-这是 `KF_Unified_Assistant` 的独立 Android 版本。APK 内置完整网页和图片资源，使用 Android SQLite 保存账号、战役、骑士、地图、遭遇及 AI/BP 状态，运行时不需要 PHP、电脑服务器或网络。
+这是 `KF_Unified_Assistant` 的 Android 打包工程。APK 内置完整网页和图片资源，使用 Android SQLite 保存账号、战役、骑士、地图、遭遇及 AI/BP 状态，运行时不需要 PHP、电脑服务器或网络。
 
 ## 一键生成 APK
 
@@ -12,7 +12,7 @@ build-apk.bat
 
 脚本会自动执行以下操作：
 
-1. 从相邻的 `KF_Unified_Assistant/public` 同步最新网页资源。
+1. 从项目根目录的 `public/` 同步最新网页资源。
 2. 排除 PHP、测试文件、数据库、备份和日志。
 3. 注入 Android 本地 API。
 4. 构建、对齐并使用持久化本地密钥签名 APK。

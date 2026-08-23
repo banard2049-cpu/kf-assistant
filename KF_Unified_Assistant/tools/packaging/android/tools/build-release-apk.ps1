@@ -6,7 +6,7 @@ param(
   [Parameter(Mandatory = $true)][string]$StorePassword,
   [Parameter(Mandatory = $true)][string]$KeyAlias,
   [Parameter(Mandatory = $true)][string]$KeyPassword,
-  [string]$Source = (Join-Path $PSScriptRoot "..\..\KF_Unified_Assistant")
+  [string]$Source = (Join-Path $PSScriptRoot "..\..\..\..")
 )
 
 $ErrorActionPreference = "Stop"
