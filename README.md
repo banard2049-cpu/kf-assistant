@@ -130,12 +130,14 @@ macOS 本地运行可双击 `start-macos.command`，或在终端执行 `./start-
 
 Android APK 使用 `KF_Unified_Assistant/tools/packaging/android/` 工程构建。版本标签会触发 `.github/workflows/android-release.yml`，从资源 ZIP 恢复图片、同步 Web 前端、生成签名 APK，并把 APK 上传到同一 GitHub Release。
 
-在 GitHub 仓库中设置变量 `KF_RESOURCE_ZIP_URL`，值为公开可下载的 `KF_Assistant_Images_*.zip` 地址；同时配置以下 Actions secrets：
+Android APK 构建会主动排除图片资源，不会把图片打进 APK。同时配置以下 Actions secrets：
 
 - `KF_ANDROID_KEYSTORE_BASE64`
 - `KF_ANDROID_STORE_PASSWORD`
 - `KF_ANDROID_KEY_ALIAS`
 - `KF_ANDROID_KEY_PASSWORD`
+
+没有配置完整签名 secrets 时，工作流会生成临时签名以保证 APK 可以构建和安装，但不同临时签名版本不能直接覆盖升级；正式持续发布应使用固定密钥。
 
 Android App 不依赖 PHP 或外部服务器，应用数据保存在 Android 私有存储中。
 

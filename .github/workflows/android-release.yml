@@ -10,10 +10,6 @@ on:
         description: 'Release version, for example 1.0.1'
         required: true
         type: string
-      resource_zip_url:
-        description: 'URL of the KF_Assistant_Images resource ZIP'
-        required: true
-        type: string
 
 permissions:
   contents: write
@@ -52,17 +48,6 @@ jobs:
           if ($version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(?:[-.][0-9A-Za-z.-]+)?$') { throw "Invalid release version: $version" }
           "version=$version" >> $env:GITHUB_OUTPUT
 
-      - name: Restore resource ZIP
-        shell: pwsh
-        env:
-          RESOURCE_ZIP_URL: ${{ inputs.resource_zip_url || vars.KF_RESOURCE_ZIP_URL }}
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:RESOURCE_ZIP_URL)) { throw 'Set the resource_zip_url input or KF_RESOURCE_ZIP_URL repository variable.' }
-          $zip = Join-Path $env:RUNNER_TEMP 'kf-resources.zip'
-          Invoke-WebRequest -Uri $env:RESOURCE_ZIP_URL -OutFile $zip
-          Expand-Archive -LiteralPath $zip -DestinationPath $env:GITHUB_WORKSPACE -Force
-          if (-not (Test-Path 'KF_Unified_Assistant/public/assets')) { throw 'Resource ZIP did not restore KF_Unified_Assistant/public/assets.' }
-
       - name: Install Android signing key
         shell: pwsh
         env:
@@ -72,17 +57,24 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KF_ANDROID_KEY_PASSWORD }}
         run: |
           $values = @($env:KEYSTORE_BASE64, $env:STORE_PASSWORD, $env:KEY_ALIAS, $env:KEY_PASSWORD)
-          if ($values.Where({ [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) { throw 'Configure KF_ANDROID_KEYSTORE_BASE64, KF_ANDROID_STORE_PASSWORD, KF_ANDROID_KEY_ALIAS and KF_ANDROID_KEY_PASSWORD.' }
           $keystore = Join-Path $env:RUNNER_TEMP 'kf-release.jks'
-          [IO.File]::WriteAllBytes($keystore, [Convert]::FromBase64String($env:KEYSTORE_BASE64))
+          if ($values.Where({ [string]::IsNullOrWhiteSpace($_) }).Count -eq 0) {
+            [IO.File]::WriteAllBytes($keystore, [Convert]::FromBase64String($env:KEYSTORE_BASE64))
+          } else {
+            Write-Warning 'Android signing secrets are incomplete; generating a temporary signing key. Configure fixed KF_ANDROID_* secrets before releases that must support in-place upgrades.'
+            $env:STORE_PASSWORD = 'kf-ci-temporary-2026'
+            $env:KEY_PASSWORD = $env:STORE_PASSWORD
+            $env:KEY_ALIAS = 'kf-ci-temporary'
+            & keytool -genkeypair -noprompt -keystore $keystore -storepass $env:STORE_PASSWORD -keypass $env:KEY_PASSWORD -alias $env:KEY_ALIAS -keyalg RSA -keysize 2048 -validity 10000 -dname 'CN=KF Assistant CI, O=KF Community, C=CN'
+            if ($LASTEXITCODE -ne 0) { throw 'Could not generate temporary Android signing key.' }
+          }
           "KF_KEYSTORE=$keystore" >> $env:GITHUB_ENV
+          "KF_STORE_PASSWORD=$env:STORE_PASSWORD" >> $env:GITHUB_ENV
+          "KF_KEY_ALIAS=$env:KEY_ALIAS" >> $env:GITHUB_ENV
+          "KF_KEY_PASSWORD=$env:KEY_PASSWORD" >> $env:GITHUB_ENV
 
       - name: Build signed APK
         shell: pwsh
-        env:
-          KF_STORE_PASSWORD: ${{ secrets.KF_ANDROID_STORE_PASSWORD }}
-          KF_KEY_ALIAS: ${{ secrets.KF_ANDROID_KEY_ALIAS }}
-          KF_KEY_PASSWORD: ${{ secrets.KF_ANDROID_KEY_PASSWORD }}
         run: |
           $version = '${{ steps.release.outputs.version }}'
           $output = Join-Path $env:GITHUB_WORKSPACE "KF-Unified-Assistant-Android-$version.apk"

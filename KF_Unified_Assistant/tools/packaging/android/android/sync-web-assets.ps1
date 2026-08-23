@@ -19,7 +19,7 @@ New-Item -ItemType Directory -Path $Target -Force | Out-Null
 
 $robocopyArgs = @(
   $Public, $Target, "/E", "/COPY:DAT", "/DCOPY:DAT", "/R:2", "/W:1", "/NFL", "/NDL", "/NP",
-  "/XF", "*.php", "*.log", "/XD", "tests", "__pycache__"
+  "/XF", "*.php", "*.log", "*.png", "*.jpg", "*.jpeg", "*.jfif", "*.gif", "*.webp", "*.avif", "*.bmp", "*.ico", "*.svg", "*.tif", "*.tiff", "*.heic", "*.heif", "*.psd", "*.xcf", "/XD", "tests", "__pycache__"
 )
 & robocopy.exe @robocopyArgs | Out-Host
 if ($LASTEXITCODE -ge 8) { throw "Web asset sync failed with robocopy exit code $LASTEXITCODE" }
