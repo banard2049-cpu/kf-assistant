@@ -41,15 +41,6 @@ jobs:
           if (-not ($listing -match 'KF_Unified_Assistant_Portable/runtime/php/php.exe')) { throw 'Portable ZIP does not contain PHP runtime.' }
           if (-not ($listing -match 'KF_Unified_Assistant_Portable/public/index.html')) { throw 'Portable ZIP does not contain the web app.' }
 
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          generate_release_notes: true
-          files: |
-            ${{ env.PORTABLE_ZIP }}
-            ${{ env.PORTABLE_ZIP }}.sha256.txt
-
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
@@ -57,3 +48,58 @@ jobs:
           path: |
             ${{ env.PORTABLE_ZIP }}
             ${{ env.PORTABLE_ZIP }}.sha256.txt
+
+  build-macos:
+    strategy:
+      matrix:
+        include:
+          - runner: macos-13
+            arch: x64
+          - runner: macos-14
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Build macOS package
+        shell: bash
+        run: |
+          chmod +x ./KF_Unified_Assistant/tools/build-portable-macos.sh
+          version="${GITHUB_REF_NAME:-build-${GITHUB_RUN_NUMBER}}"
+          output="$GITHUB_WORKSPACE/KF_Unified_Assistant_Portable_macOS_${version}_${{ matrix.arch }}.tar.gz"
+          ./KF_Unified_Assistant/tools/build-portable-macos.sh "$output"
+          echo "PORTABLE_MACOS=$output" >> "$GITHUB_ENV"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KF-Unified-Assistant-Portable-macOS-${{ matrix.arch }}
+          path: |
+            ${{ env.PORTABLE_MACOS }}
+            ${{ env.PORTABLE_MACOS }}.sha256.txt
+
+  publish-release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [build-portable, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download portable packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: KF-Unified-Assistant-Portable*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: release-assets/*

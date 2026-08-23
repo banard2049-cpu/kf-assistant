@@ -107,6 +107,8 @@ git push origin v1.0.0
 
 也可以在仓库的 Actions 页面手动运行 `Portable Windows Release`；手动运行只上传 workflow artifact，不会创建 GitHub Release。
 
+macOS 版本同样会在版本标签发布时生成 portable 包，分别提供 Intel（x64）和 Apple Silicon（arm64）构建。macOS portable 包会把 PHP 运行时一起打包；如果构建环境无法定位完整 PHP 安装，构建会失败而不会生成不完整的包。
+
 ### Docker / NAS
 
 ```bash
