@@ -1,6 +1,6 @@
 # KF 助手
 
-KF 助手是面向《Kingdoms Forlorn》的非官方一体化战役管理工具。仓库同时包含可自托管的 PHP Web 版和完全离线的 Android 本地版，用于统一管理骑士档案、战役、地图深入、怪物池、遭遇战以及 AI/BP 状态。
+KF 助手是面向《Kingdoms Forlorn》的非官方一体化战役管理工具，用于统一管理骑士档案、战役、地图深入、怪物池、遭遇战以及 AI/BP 状态。
 
 > 本项目是玩家自制工具，与游戏发行商及版权方无关。图片、卡牌、版图、角色立绘等美术资源不包含在 Git 仓库中。
 
@@ -12,7 +12,7 @@ KF 助手是面向《Kingdoms Forlorn》的非官方一体化战役管理工具�
 - AI/BP 牌库、杂兵轨、损伤、晋升、历史记录与撤销
 - 完整战役存档的 JSON 导入与导出
 - IndexedDB 离线队列、字段级同步和 SQLite 自动备份
-- Web 自托管与 Android 完全离线两种运行方式
+- Web 自托管与 Windows/macOS portable 两种运行方式
 
 ## 仓库结构
 
@@ -26,14 +26,11 @@ KF 助手是面向《Kingdoms Forlorn》的非官方一体化战役管理工具�
 │  ├─ start-macos.command         # macOS 双击启动入口
 │  ├─ start-macos.sh              # macOS 本地 PHP 启动脚本
 │  └─ start-docker.sh             # Docker Compose 启动脚本
-└─ KF_Unified_Assistant_Android/  # Android 本地版外壳与构建脚本
-   ├─ app/                        # Android 应用
-   └─ build-apk.bat               # 一键同步 Web 资源并构建 APK
 ```
 
 ## 图片资源
 
-仓库通过根目录 `.gitignore` 排除了 `png`、`jpg`、`jpeg`、`gif`、`webp`、`bmp`、`ico` 和 `svg` 等图片文件，同时排除了 Android 构建时生成的完整 Web 资源副本。
+仓库通过根目录 `.gitignore` 排除了 `png`、`jpg`、`jpeg`、`gif`、`webp`、`bmp`、`ico` 和 `svg` 等图片文件。
 
 因此，直接克隆本仓库可以阅读、修改和测试业务代码，但界面中的卡牌、版图、图标及角色图片会缺失。若要完整运行，请从你合法持有的本地项目副本恢复图片，并保持原目录和文件名不变，主要位置包括：
 
@@ -41,8 +38,6 @@ KF 助手是面向《Kingdoms Forlorn》的非官方一体化战役管理工具�
 KF_Unified_Assistant/public/assets/
 KF_Unified_Assistant/public/modules/*/assets/
 ```
-
-Android 版无需手工复制第二份资源；构建脚本会从相邻的 Web 项目同步到 `app/src/main/assets/web/`。
 
 ### 打包图片资源用于分发
 
@@ -68,7 +63,7 @@ Expand-Archive -LiteralPath KF_Assistant_Images_<日期>.zip -DestinationPath . 
 | `-DryRun` | 只统计文件数量、体积和目录分布，不写出文件 |
 | `-OutputPath <路径>` | 指定输出位置，默认仓库根目录 |
 | `-Force` | 覆盖已存在的同名输出文件 |
-| `-IncludeGenerated` | 一并打包 Android 生成的 web 副本和便携版运行时中的图片 |
+| `-IncludeGenerated` | 一并打包便携版运行时中的图片 |
 | `-NoHash` | 跳过 SHA256 校验文件 |
 
 脚本始终排除 `.env`、`data/`、`backups/` 和 `logs/`，即使通过 `-Extension` 传入了自定义扩展名，也不会把本地配置或数据库打进包里。由于 `modules/*/assets/` 中的部分图片是 `public/assets/` 的副本，压缩包体积会明显大于去重后的实际素材量；这样做是为了解压后可以直接运行，不需要额外的恢复步骤。
@@ -131,23 +126,6 @@ macOS 本地运行可双击 `start-macos.command`，或在终端执行 `./start-
 | `DATA_DIR` | `./data` | SQLite 数据目录 |
 | `BACKUP_DIR` | `./backups` | 自动备份目录 |
 
-## Android 本地版
-
-Android 版将 Web 前端打包进 APK，并使用 Android SQLite 保存数据，不依赖 PHP、外部服务器或网络。
-
-```bat
-cd KF_Unified_Assistant_Android
-build-apk.bat
-```
-
-构建脚本会同步相邻 `KF_Unified_Assistant/public/` 下的最新代码和本地图片资源，再生成签名 APK。构建工具链、签名密钥、APK 及同步后的 Web 副本均已忽略。
-
-也可以显式指定本地工具链：
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\build-android.ps1 -Toolchain "D:\path\to\.build-tools"
-```
-
 ## 数据与管理
 
 Windows 下可使用：
@@ -167,7 +145,7 @@ php tools/admin.php list
 php tools/admin.php reset-password 用户名 新密码
 ```
 
-存档导入仅支持 `kf-unified-campaign` v2 格式。卸载 Android App 会清除其私有数据库，请先从应用内导出存档。
+存档导入仅支持 `kf-unified-campaign` v2 格式。
 
 ## 测试
 
