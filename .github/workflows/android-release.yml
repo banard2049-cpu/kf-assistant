@@ -95,7 +95,6 @@ jobs:
           name: KF-Unified-Assistant-Android-${{ steps.release.outputs.version }}
           path: |
             ${{ env.APK_PATH }}
-            ${{ env.APK_PATH }}.sha256
 
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
@@ -104,4 +103,3 @@ jobs:
           generate_release_notes: false
           files: |
             ${{ env.APK_PATH }}
-            ${{ env.APK_PATH }}.sha256

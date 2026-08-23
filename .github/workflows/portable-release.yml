@@ -47,7 +47,6 @@ jobs:
           name: KF-Unified-Assistant-Portable
           path: |
             ${{ env.PORTABLE_ZIP }}
-            ${{ env.PORTABLE_ZIP }}.sha256.txt
 
   build-macos:
     strategy:
@@ -84,7 +83,6 @@ jobs:
           name: KF-Unified-Assistant-Portable-macOS-${{ matrix.arch }}
           path: |
             ${{ env.PORTABLE_MACOS }}
-            ${{ env.PORTABLE_MACOS }}.sha256.txt
 
   publish-release:
     if: startsWith(github.ref, 'refs/tags/')
