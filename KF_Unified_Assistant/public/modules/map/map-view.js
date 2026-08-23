@@ -327,7 +327,9 @@
 
   function renderClueTracking(options = {}) {
     const state = record(options.state);
-    const knights = list(state.knights).filter(knight => knight.id !== state.mainKnightId).slice(0, 3);
+    const knights = list(state.knights)
+      .filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId)
+      .slice(0, 4);
     if (!knights.length) return '<p class="display-empty-copy">暂无骑士线索记录</p>';
     const clueSlot = (knight, id, role) => {
       const clue = CLUES.find(([clueId]) => clueId === id);

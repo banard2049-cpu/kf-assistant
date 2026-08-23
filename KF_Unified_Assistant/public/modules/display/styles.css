@@ -250,3 +250,14 @@ body{height:100vh;overflow:hidden}
   .display-mob-track{gap:6px}
   .conflict-terrain-card-list{grid-auto-columns:190px;gap:12px}
 }
+
+/* Keep all four knight clue summaries on a single compact row at every display size. */
+.sidebar-clue-panel .display-clue-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.sidebar-clue-panel .display-clue-knight{padding:3px}
+.sidebar-clue-panel .display-clue-heading{margin-bottom:2px}
+.sidebar-clue-panel .display-clue-heading strong{font-size:10px}
+.sidebar-clue-panel .display-clue-values{gap:2px}
+.sidebar-clue-panel .display-clue-value{grid-template-columns:16px auto;gap:2px;padding:2px;border-left-width:2px}
+.sidebar-clue-panel .display-clue-value strong{font-size:13px}
+.sidebar-clue-panel .clue-token-icon,.sidebar-clue-panel .clue-token-placeholder{width:16px;height:16px}
+.sidebar-clue-panel .display-clue-list:has(>.display-clue-knight:nth-child(3)):not(:has(>.display-clue-knight:nth-child(4))){grid-template-columns:repeat(3,minmax(0,1fr))}

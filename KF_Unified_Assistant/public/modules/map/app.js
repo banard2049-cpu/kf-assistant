@@ -603,6 +603,7 @@
   const mainlineKnight = () => state.knights.find(knight =>
     knight.id === state.mainKnightId && knight.memberType !== "squire"
   ) || null;
+  const clueAssignmentKnights = () => state.knights.filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId);
   const activeMercenary = cardId => state.mercenaries.active.find(item => item.cardId === cardId) || null;
   const activeRogues = face => state.mercenaries.active.filter(item =>
     item.face === face && MERCENARY_RULES.CATALOG[item.cardId]?.role === "rogue"
@@ -1673,7 +1674,7 @@
   }
 
   function knightMatchesClue(knight, clueType) {
-    if (knight.id === state.mainKnightId) return false;
+    if (state.mainKnightId && knight.id === state.mainKnightId) return false;
     if (state.taskMode && knight.task) return knight.task === clueType;
     return knight.primary === clueType || knight.secondary === clueType;
   }
@@ -2356,12 +2357,12 @@
     const current = mapState();
     const lastClue = current.exploration.lastClueResolution;
     const selectableMainKnights = state.knights.filter(knight => knight.memberType !== "squire");
-    const clueKnights = state.knights.filter(knight => knight.id !== state.mainKnightId);
+    const clueKnights = clueAssignmentKnights();
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">CLUES & STORY</div><h3>队伍线索与故事队列</h3></div><span class="badge">自选未分配 ${state.trackers.unassignedClues}</span></div>
       <div class="fields">
-        <label>主线骑士<select id="mainKnightSelect"><option value="">未指定</option>${selectableMainKnights.map(knight => `<option value="${esc(knight.id)}" ${knight.id === state.mainKnightId ? "selected" : ""}>${esc(knight.name)}</option>`).join("")}</select></label>
-        <button id="autoAssignClueRequirements" type="button" class="secondary">自动分配主次线索</button>
+        <label>主线骑士（可选）<select id="mainKnightSelect"><option value="">未指定</option>${selectableMainKnights.map(knight => `<option value="${esc(knight.id)}" ${knight.id === state.mainKnightId ? "selected" : ""}>${esc(knight.name)}</option>`).join("")}</select></label>
+        <button id="autoAssignClueRequirements" type="button" class="secondary">自动分配可分配队员主次线索</button>
       </div>
       <label class="check"><input id="taskMode" type="checkbox" ${state.taskMode ? "checked" : ""}>任务模式（冲突与休息按骑士手册／故事段落人工确认）</label>
       ${lastClue ? `<div class="alert"><strong>最近自动线索：</strong>${directionName(lastClue.direction)}向 · ${clueName(lastClue.clueType)} · ${lastClue.recipients.length ? `${lastClue.recipients.map(esc).join("、")}各获得 1 枚` : "无人需求匹配"}</div>` : ""}
@@ -2380,7 +2381,7 @@
         <label>探索密码<input id="storyCode" placeholder="密码"></label><button id="addCode" class="secondary">记录密码</button>
       </div>
       <div class="list">${current.storyQueue.map(item => `<label class="list-row check"><input type="checkbox" data-story="${item.id}" ${item.read ? "checked" : ""}><span>${esc(item.code ? `${item.code} · ${item.text}` : item.text)}</span></label>`).join("") || '<span class="muted">没有待阅读段落</span>'}</div>
-      <p class="tiny">探索密码：${current.explorationCodes.map(esc).join("、") || "无"}。规则：第一枚线索按旅行方向读取顶部探索卡；每枚额外线索各抽一张轻型伤亡牌确认方向。任务骑士匹配任务需求，其他骑士匹配主要或次要需求。</p>
+      <p class="tiny">探索密码：${current.explorationCodes.map(esc).join("、") || "无"}。规则：第一枚线索按旅行方向读取顶部探索卡；每枚额外线索各抽一张轻型伤亡牌确认方向。主线骑士可不指定；每名队员按任务、主要或次要需求匹配线索。</p>
     </section>`;
   }
 
@@ -2553,7 +2554,7 @@
 
   function partyOverviewPanel() {
     const party = campaignParty();
-    const clueKnights = state.knights.filter(knight => knight.id !== state.mainKnightId);
+    const clueKnights = clueAssignmentKnights();
     const memberFor = knight => party.find(member =>
       member.id === knight.sheetId
       || member.sheetId === knight.sheetId
@@ -3917,9 +3918,7 @@
       save(true);
     });
     $("#autoAssignClueRequirements")?.addEventListener("click", () => {
-      const mainKnight = mainlineKnight();
-      if (!mainKnight) return toast("请先选择主线骑士");
-      const recipients = state.knights.filter(knight => knight.id !== mainKnight.id);
+      const recipients = clueAssignmentKnights();
       if (!recipients.length) return toast("没有可分配线索需求的队伍成员");
       if (recipients.length > CLUES.length) return toast("队伍成员超过四种线索颜色，无法保证主线索不重复");
 
@@ -3930,8 +3929,6 @@
       recipients.forEach((knight, index) => {
         knight.secondary = recipients[(index + 1) % recipients.length].primary;
       });
-      mainKnight.primary = "";
-      mainKnight.secondary = "";
       addLog(`自动分配主次线索：${recipients.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}`);
       save(true);
     });
