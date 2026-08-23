@@ -56,6 +56,14 @@ cd KF_Unified_Assistant\tools
 Expand-Archive -LiteralPath KF_Assistant_Images_<日期>.zip -DestinationPath . -Force
 ```
 
+Android 版恢复图片：在主界面侧栏点击“导入资源 ZIP”，选择本资源包即可。Android 会读取压缩包中
+`KF_Unified_Assistant/public/` 下的图片，并保存到应用私有目录；导入后会自动刷新，之后更新 APK
+也会保留已导入资源。资源包必须保留脚本生成的目录结构；导入只接受图片文件，不会读取存档、配置或日志。
+
+Android 版第二屏：主界面“第二屏控制”中显示的是手机当前 Wi-Fi/热点的局域网地址，格式为
+`http://手机IP:端口/modules/display/?campaignId=...`。让另一台设备连接同一 Wi-Fi 或手机热点后，
+直接打开该地址即可；Android 应用保持运行时，第二屏会每秒读取最新战役状态。
+
 常用参数：
 
 | 参数 | 用途 |

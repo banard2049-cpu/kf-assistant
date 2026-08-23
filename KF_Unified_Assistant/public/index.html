@@ -65,6 +65,7 @@
       <details class="presentation-controls" open>
         <summary><strong>第二屏控制</strong><span>DISPLAY</span></summary>
         <div class="presentation-actions"><button id="openDisplay" type="button" class="primary">打开第二屏</button><button id="copyDisplayUrl" type="button" class="button">复制网址</button></div>
+        <small id="displayUrlHint" class="display-url-hint"></small>
         <label>地图缩放 <output id="mapScaleValue">100%</output><input id="mapScale" type="range" min="50" max="200" step="5" value="100"></label>
         <label>冲突版图缩放 <output id="conflictScaleValue">100%</output><input id="conflictScale" type="range" min="50" max="200" step="5" value="100"></label>
         <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 180 度" aria-label="旋转第二屏 AI/BP 区域 180 度">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button></div>
@@ -74,6 +75,7 @@
         <button id="exportAll" class="button">导出存档</button>
         <label class="button file-button">导入骑士<input id="importKnightFile" type="file" accept=".json,application/json"></label>
         <label class="button file-button">导入存档<input id="importFile" type="file" accept=".json,application/json"></label>
+        <button id="importResourcesButton" class="button import-resources-button" type="button">导入资源 ZIP</button>
       </div>
       <p class="sidebar-user">当前用户：<span id="currentUser"></span></p>
     </aside>

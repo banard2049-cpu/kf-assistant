@@ -25,17 +25,26 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public final class MainActivity extends Activity {
     private static final int FILE_CHOOSER_REQUEST = 8101;
+    private static final int RESOURCE_PICKER_REQUEST = 8102;
     private static final String LOCAL_HOST = "kf.local";
     private WebView webView;
     private ValueCallback<Uri[]> filePathCallback;
+    private ResourceStore resourceStore;
+    private LocalApi localApi;
+    private LocalSecondScreenServer secondScreenServer;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        resourceStore = new ResourceStore(this);
+        localApi = new LocalApi(this);
+        secondScreenServer = new LocalSecondScreenServer(this, resourceStore, localApi);
+        try { secondScreenServer.start(); } catch (Exception error) { Toast.makeText(this, "局域网第二屏启动失败", Toast.LENGTH_LONG).show(); }
         webView = new WebView(this);
         setContentView(webView);
 
@@ -49,7 +58,7 @@ public final class MainActivity extends Activity {
         settings.setDisplayZoomControls(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
 
-        webView.addJavascriptInterface(new LocalApi(this), "KFAndroid");
+        webView.addJavascriptInterface(localApi, "KFAndroid");
         webView.addJavascriptInterface(new AndroidFiles(), "KFAndroidFiles");
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -98,9 +107,10 @@ public final class MainActivity extends Activity {
         if (path.isEmpty() || path.endsWith("/")) path += "index.html";
         if (path.contains("..") || path.startsWith("api.php")) return null;
         try {
-            InputStream input = getAssets().open("web/" + path);
+            InputStream input = resourceStore.open(path);
+            if (input == null) input = getAssets().open("web/" + path);
             String extension = MimeTypeMap.getFileExtensionFromUrl(path);
-            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase());
+            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase(Locale.ROOT));
             if (mime == null) {
                 if (path.endsWith(".js")) mime = "text/javascript";
                 else if (path.endsWith(".json")) mime = "application/json";
@@ -116,10 +126,20 @@ public final class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESOURCE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK && data != null) importResourceZip(data.getData());
+            return;
+        }
         if (requestCode != FILE_CHOOSER_REQUEST || filePathCallback == null) return;
         Uri[] result = WebChromeClient.FileChooserParams.parseResult(resultCode, data);
         filePathCallback.onReceiveValue(result);
         filePathCallback = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (secondScreenServer != null) secondScreenServer.stop();
+        super.onDestroy();
     }
 
     @Override
@@ -129,6 +149,35 @@ public final class MainActivity extends Activity {
     }
 
     private final class AndroidFiles {
+        @JavascriptInterface
+        public void openResourcePicker() {
+            runOnUiThread(() -> {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("application/zip");
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                try {
+                    startActivityForResult(intent, RESOURCE_PICKER_REQUEST);
+                } catch (Exception error) {
+                    Toast.makeText(MainActivity.this, "无法打开资源包选择器", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public String lanDisplayUrl(String campaignId) {
+            return secondScreenServer == null ? "" : secondScreenServer.displayUrl(campaignId);
+        }
+
+        @JavascriptInterface
+        public void openExternalUrl(String url) {
+            if (url == null || url.trim().isEmpty()) return;
+            runOnUiThread(() -> {
+                try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url))); }
+                catch (Exception error) { Toast.makeText(MainActivity.this, "无法打开局域网第二屏", Toast.LENGTH_SHORT).show(); }
+            });
+        }
+
         @JavascriptInterface
         public String saveTextFile(String fileName, String content, String mimeType) {
             String safeName = fileName == null ? "kf-unified-save.json" : fileName.replaceAll("[\\\\/:*?\"<>|]", "_");
@@ -166,5 +215,21 @@ public final class MainActivity extends Activity {
                 return "error";
             }
         }
+    }
+
+    private void importResourceZip(Uri source) {
+        Toast.makeText(this, "正在导入资源，请稍候…", Toast.LENGTH_SHORT).show();
+        new Thread(() -> {
+            try {
+                ResourceStore.ImportResult result = resourceStore.importZip(source);
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "已导入 " + result.fileCount + " 个图片资源", Toast.LENGTH_LONG).show();
+                    webView.reload();
+                });
+            } catch (Exception error) {
+                String detail = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "资源导入失败：" + detail, Toast.LENGTH_LONG).show());
+            }
+        }, "kf-resource-import").start();
     }
 }

@@ -89,8 +89,10 @@ final class LocalApi {
         if ("campaigns".equals(route)) return campaigns(store, userId, defaultCampaignId, method, uri, data);
         if (route.startsWith("campaigns/")) return campaignRecord(store, userId, method, route, data);
         if ("campaign-sync".equals(route) && "POST".equals(method)) return campaignSync(store, userId, data);
+        if ("display-state".equals(route) && "GET".equals(method)) return displayState(store, userId, defaultCampaignId, uri);
         if ("campaign-export".equals(route) && "GET".equals(method)) return campaignExport(store, userId, uri);
         if ("campaign-import".equals(route) && "POST".equals(method)) return campaignImport(store, userId, data);
+        if ("sheet-import".equals(route) && "POST".equals(method)) return sheetImport(store, userId, data);
         if ("encounters/start".equals(route) && "POST".equals(method)) return encounter(store, userId, data, true);
         if ("encounters/complete".equals(route) && "POST".equals(method)) return encounter(store, userId, data, false);
         if ("sheets".equals(route)) return sheets(store, userId, defaultCampaignId, method, uri, data);
@@ -230,6 +232,25 @@ final class LocalApi {
                 .put("shared", copyObject(settings)).put("campaign", payload));
     }
 
+    private JSONObject displayState(JSONObject store, String userId, String defaultCampaignId, Uri uri) throws JSONException {
+        String campaignId = uri.getQueryParameter("campaignId");
+        if (campaignId == null || campaignId.isEmpty()) campaignId = defaultCampaignId;
+        JSONObject campaign = activeCampaign(store, userId, campaignId);
+        if (campaign == null) return envelope(404, error("战役不存在"));
+        JSONObject state = campaign.getJSONObject("state");
+        JSONObject modules = state.optJSONObject("modules");
+        if (modules == null) modules = new JSONObject();
+        JSONObject monsterPool = state.optJSONObject("monsterPool");
+        String kingdom = monsterPool == null ? state.optString("kingdom", "sunken")
+                : monsterPool.optString("kingdom", state.optString("kingdom", "sunken"));
+        JSONObject summary = new JSONObject().put("id", campaign.getString("id")).put("name", campaign.getString("name"))
+                .put("revision", campaign.optInt("revision")).put("updatedAt", campaign.optString("updatedAt")).put("kingdom", kingdom);
+        JSONObject publicModules = new JSONObject().put("map", valueOrNull(modules.opt("map")))
+                .put("encounter", valueOrNull(modules.opt("encounter"))).put("aibp", valueOrNull(modules.opt("aibp")));
+        return ok(new JSONObject().put("campaign", summary).put("presentation", normalizedPresentation(state.optJSONObject("presentation")))
+                .put("modules", publicModules));
+    }
+
     private JSONObject campaignImport(JSONObject store, String userId, JSONObject data) throws JSONException {
         if (!"kf-unified-campaign".equals(data.optString("format")) || data.optInt("schemaVersion") != 2 || data.optJSONObject("campaign") == null)
             return envelope(400, error("只支持新版 KF 一体化战役存档（版本 2）"));
@@ -275,6 +296,42 @@ final class LocalApi {
         }
         mergeSettings(store, userId, data.optJSONObject("shared"));
         return envelope(201, new JSONObject().put("id", campaign.getString("id")));
+    }
+
+    private JSONObject sheetImport(JSONObject store, String userId, JSONObject data) throws JSONException {
+        JSONObject payload = data.optJSONObject("sheet");
+        JSONObject incomingSource = payload == null ? null : payload.optJSONObject("state");
+        if (!"kf-unified-knight".equals(data.optString("format")) || data.optInt("schemaVersion") != 1 || incomingSource == null)
+            return envelope(400, error("只支持新版 KF 骑士档案（版本 1）"));
+        String knightId = incomingSource.optString("knightId");
+        if (!KNIGHTS.containsKey(knightId)) return envelope(400, error("导入文件包含无效的骑士身份"));
+        JSONObject incoming = defaultKnightState(knightId, incomingSource.optString("player"));
+        for (Iterator<String> keys = incomingSource.keys(); keys.hasNext();) {
+            String key = keys.next(); incoming.put(key, valueOrNull(incomingSource.opt(key)));
+        }
+        incoming.put("knight", KNIGHTS.get(knightId));
+        if (incoming.toString().getBytes(StandardCharsets.UTF_8).length > 20000) return envelope(400, error("骑士档案内容过大"));
+
+        JSONObject bucket = sheetBucket(store, userId);
+        JSONObject existing = null;
+        for (JSONObject record : sortedRecords(bucket)) if (!isDeleted(record)
+                && knightId.equals(record.getJSONObject("state").optString("knightId"))) { existing = record; break; }
+        String replaceId = data.optString("replaceSheetId");
+        if (existing != null && !existing.optString("id").equals(replaceId))
+            return envelope(409, error("已经有这名骑士的共享档案，是否覆盖？").put("sheetId", existing.getString("id")));
+
+        String requestedTitle = payload.optString("title").trim();
+        String importedTitle = requestedTitle.isEmpty() ? KNIGHTS.get(knightId) : title(requestedTitle);
+        boolean replaced = existing != null;
+        JSONObject record;
+        if (replaced) {
+            record = existing.put("title", importedTitle).put("state", incoming).put("fieldVersions", new JSONObject())
+                    .put("appliedOps", new JSONObject()).put("revision", existing.optInt("revision") + 1).put("updatedAt", now());
+        } else {
+            record = newSheet(uuid(), importedTitle, incoming);
+            bucket.put(record.getString("id"), record);
+        }
+        return envelope(201, new JSONObject().put("sheet", parsedSheet(record)).put("replaced", replaced));
     }
 
     private JSONObject encounter(JSONObject store, String userId, JSONObject data, boolean start) throws JSONException {
@@ -403,7 +460,33 @@ final class LocalApi {
                         .put("phase", "setup").put("board", new JSONObject()).put("result", ""))
                 .put("aibp", new JSONObject().put("monster", "").put("level", 1).put("ai", new JSONArray()).put("bp", new JSONArray())
                         .put("discard", new JSONArray()).put("wounds", new JSONArray()).put("promotion", 0).put("history", new JSONArray()))
-                .put("modules", new JSONObject().put("map", JSONObject.NULL).put("encounter", JSONObject.NULL).put("aibp", JSONObject.NULL));
+                .put("modules", new JSONObject().put("map", JSONObject.NULL).put("encounter", JSONObject.NULL).put("aibp", JSONObject.NULL))
+                .put("presentation", defaultPresentation());
+    }
+
+    private JSONObject defaultPresentation() throws JSONException {
+        return new JSONObject().put("scene", "map").put("updatedAt", now()).put("sourceClientId", "")
+                .put("settings", new JSONObject().put("mapScale", 100).put("conflictScale", 100).put("conflictRotation", 90)
+                        .put("conflictSwapped", false).put("conflictBoardVisible", true));
+    }
+
+    private JSONObject normalizedPresentation(JSONObject source) throws JSONException {
+        JSONObject result = defaultPresentation();
+        if (source == null) return result;
+        String scene = source.optString("scene", "map");
+        if (!"encounter".equals(scene) && !"conflict".equals(scene)) scene = "map";
+        JSONObject settings = source.optJSONObject("settings");
+        if (settings == null) settings = new JSONObject();
+        int rotation = ((settings.optInt("conflictRotation", 90) % 360) + 360) % 360;
+        result.put("scene", scene).put("updatedAt", source.optString("updatedAt", result.optString("updatedAt")))
+                .put("sourceClientId", source.optString("sourceClientId", ""))
+                .put("settings", new JSONObject()
+                        .put("mapScale", Math.max(50, Math.min(200, settings.optInt("mapScale", 100))))
+                        .put("conflictScale", Math.max(50, Math.min(200, settings.optInt("conflictScale", 100))))
+                        .put("conflictRotation", rotation == 270 ? 270 : 90)
+                        .put("conflictSwapped", settings.optBoolean("conflictSwapped"))
+                        .put("conflictBoardVisible", !settings.has("conflictBoardVisible") || settings.optBoolean("conflictBoardVisible")));
+        return result;
     }
 
     private JSONObject defaultKnightState(String knightId, String player) throws JSONException {

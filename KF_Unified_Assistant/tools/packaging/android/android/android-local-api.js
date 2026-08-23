@@ -56,4 +56,16 @@
   };
 
   document.documentElement.classList.add("kf-android-local");
+
+  const installResourcePicker = () => {
+    const button = document.getElementById("importResourcesButton");
+    if (!button || button.dataset.nativeResourcePicker) return;
+    button.dataset.nativeResourcePicker = "1";
+    button.addEventListener("click", () => {
+      if (window.KFAndroidFiles?.openResourcePicker) window.KFAndroidFiles.openResourcePicker();
+      else window.alert("当前 Android 版本不支持导入资源，请更新 APK");
+    });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", installResourcePicker, { once: true });
+  else installResourcePicker();
 })();

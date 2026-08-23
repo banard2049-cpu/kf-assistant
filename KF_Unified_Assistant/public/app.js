@@ -487,10 +487,15 @@ function renderValues(){
 }
 function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function closeSidebar(){$("#sidebar").classList.remove("open");$("#scrim").classList.remove("open")}
+function secondScreenUrl(){
+  if(window.KFAndroidFiles?.lanDisplayUrl)return String(window.KFAndroidFiles.lanDisplayUrl(activeCampaign||"")||"");
+  return new URL(`/modules/display/?campaignId=${encodeURIComponent(activeCampaign||"")}`,location.href).href
+}
+function refreshDisplayUrlHint(){const output=$("#displayUrlHint");if(!output)return;const url=secondScreenUrl();output.textContent=url||"请连接 Wi-Fi 或开启手机热点"}
 $("#authMode").onclick=()=>{isRegister=!isRegister;$("#authSubmit").textContent=isRegister?"注册":"登录";$("#authMode").textContent=isRegister?"已有账号？登录":"没有账号？注册";$("#authPassword").autocomplete=isRegister?"new-password":"current-password"};
 $("#authForm").onsubmit=async e=>{e.preventDefault();try{const route=isRegister?"register":"login";const data=await api(`/api/auth/${route}`,{method:"POST",body:JSON.stringify({username:$("#authUsername").value,password:$("#authPassword").value})});user=data.user;await showApp()}catch(err){$("#authHint").textContent=err.message}};
 $("#logoutButton").onclick=async()=>{await api("/api/auth/logout",{method:"POST"});user=null;active=null;state=null;campaigns=[];activeCampaign=null;campaignState=null;sharedSettings={storyMarkers:{},passwords:[]};sharedSettingsDirty=false;renderPermanentStoryMarkers();renderPasswordRecords();showAuth()};
-$("#menuButton").onclick=()=>{$("#sidebar").classList.add("open");$("#scrim").classList.add("open")};$("#closeSidebar").onclick=$("#scrim").onclick=closeSidebar;
+$("#menuButton").onclick=()=>{$("#sidebar").classList.add("open");$("#scrim").classList.add("open");refreshDisplayUrlHint()};$("#closeSidebar").onclick=$("#scrim").onclick=closeSidebar;
 $("#searchSheets").oninput=e=>{search=e.target.value;renderLists()};
 $("#permanentStoryMarkerGroups").onchange=e=>{const input=e.target.closest("[data-permanent-story-marker]");if(!input)return;const id=input.dataset.permanentStoryMarker;if(!permanentStoryMarkerIds.has(id))return;if(input.checked)sharedSettings.storyMarkers[id]=true;else delete sharedSettings.storyMarkers[id];renderPermanentStoryMarkers();queueSharedSettingsSave()};
 $("#addPasswordRecord").onclick=()=>{sharedSettings.passwords.push({id:compatibleUuid().replace(/-/g,""),matrix:Array(6).fill("dot"),number:""});renderPasswordRecords();queueSharedSettingsSave()};
@@ -516,8 +521,8 @@ $("#restoreCampaign").onclick=async()=>{
 $("#overview").onclick=e=>{const leader=e.target.closest("[data-leader-sheet]");if(leader){e.stopPropagation();gameSettings.leaderSheetId=leader.dataset.leaderSheet;$("#leaderSelect").value=gameSettings.leaderSheetId;saveGameSettings();return}const target=e.target.closest("[data-edit-sheet],[data-open-sheet]");if(target)openSheet(target.dataset.editSheet||target.dataset.openSheet)};
 $("#overview").onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open-sheet]")){e.preventDefault();openSheet(e.target.dataset.openSheet)}};
 $("#overviewNew").onclick=()=>$("#newSheet").click();
-$("#openDisplay").onclick=()=>window.open("/modules/display/","kf-second-screen","noopener");
-$("#copyDisplayUrl").onclick=async()=>{try{await navigator.clipboard.writeText(`${location.origin}/modules/display/`);toast("第二屏网址已复制")}catch{toast("无法访问剪贴板")}};
+$("#openDisplay").onclick=()=>{const url=secondScreenUrl();if(!url)return toast("请先连接 Wi-Fi 或开启手机热点");if(window.KFAndroidFiles?.openExternalUrl)window.KFAndroidFiles.openExternalUrl(url);else window.open(url,"kf-second-screen","noopener")};
+$("#copyDisplayUrl").onclick=async()=>{const url=secondScreenUrl();if(!url)return toast("请先连接 Wi-Fi 或开启手机热点");try{await navigator.clipboard.writeText(url);toast(`第二屏局域网地址已复制：${url}`)}catch{toast("无法访问剪贴板")}};
 $("#mapScale").oninput=e=>{$("#mapScaleValue").textContent=`${e.target.value}%`};
 $("#mapScale").onchange=e=>campaignOp("presentation.settings.mapScale",Math.max(50,Math.min(200,Number(e.target.value)||100)));
 $("#conflictScale").oninput=e=>{$("#conflictScaleValue").textContent=`${e.target.value}%`};

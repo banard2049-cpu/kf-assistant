@@ -40,6 +40,11 @@
 @media(max-width:600px){.paper-head .logo{grid-column:auto}.paper-head .logo img{width:min(72vw,210px)}}
 @media print{.paper-head .logo{display:flex;grid-column:auto}.paper-head .logo img{width:48mm}}
 
+/* Android resource packs live outside the APK; keep this native-only action out of web builds. */
+.import-resources-button{display:none}
+.kf-android-local .import-resources-button{display:block}
+.display-url-hint{display:block;margin:7px 0;overflow-wrap:anywhere;color:var(--muted);font:11px/1.45 Consolas,monospace}
+
 /* Printed-sheet layout */
 .sheet{max-width:1240px}
 .paper{padding:28px 30px;background:#fbfaf5}
