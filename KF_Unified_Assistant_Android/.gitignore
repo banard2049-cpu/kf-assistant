@@ -1,6 +1,0 @@
-.gradle/
-.build-tools/*.jks
-app/build/
-app/src/main/assets/web/
-dist/*.apk
-dist/*.idsig

@@ -98,6 +98,15 @@ powershell -ExecutionPolicy Bypass -File .\tools\build-portable-windows.ps1
 
 也可以通过 `-PhpSource` 指定包含 `php.exe` 的目录，通过 `-OutputPath` 指定输出文件。生成的 ZIP、SHA-256 校验文件和本地 `runtime/` 均不会提交到 Git。
 
+推送版本标签（例如 `v1.0.0`）后，GitHub Actions 会自动构建 Windows portable ZIP，并将 ZIP 与对应的 SHA-256 校验文件作为 Release 附件发布：
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+也可以在仓库的 Actions 页面手动运行 `Portable Windows Release`；手动运行只上传 workflow artifact，不会创建 GitHub Release。
+
 ### Docker / NAS
 
 ```bash

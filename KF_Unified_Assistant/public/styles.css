@@ -29,6 +29,10 @@
 @media(max-width:700px){.encounter-controls,.bestiary-slots,.squire-slots{grid-template-columns:1fr}.encounter-heading,.party-heading{align-items:flex-start;flex-direction:column}.bestiary-slot{grid-template-columns:1fr 90px}.knight-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .module-nav a{text-decoration:none;text-align:center}
 
+/* Main interface attribution. Keep it visible without taking up workspace space. */
+.app-signature{position:fixed;right:14px;bottom:10px;z-index:20;color:#d8c8b4;font-size:12px;line-height:1.2;letter-spacing:.02em;text-shadow:0 1px 2px #120c0acc;pointer-events:none;user-select:none}
+@media(max-width:600px){.app-signature{right:9px;bottom:7px;font-size:11px}}
+
 /* Official sheet logo, extracted from the printed knight record. */
 .paper-head .logo{display:flex;align-items:flex-start;min-width:0;padding-top:0;transform:none;font:inherit}
 .paper-head .logo img{display:block;width:min(100%,240px);height:auto}

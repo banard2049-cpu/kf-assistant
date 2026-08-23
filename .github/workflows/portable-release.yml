@@ -1,0 +1,59 @@
+name: Portable Windows Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-portable:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Build portable package
+        shell: pwsh
+        run: |
+          $php = Get-Command php -ErrorAction Stop
+          $phpSource = Split-Path -Parent $php.Source
+          $version = if ($env:GITHUB_REF_NAME -and $env:GITHUB_REF_NAME -ne 'main') { $env:GITHUB_REF_NAME } else { "build-$env:GITHUB_RUN_NUMBER" }
+          $output = Join-Path $env:GITHUB_WORKSPACE "KF_Unified_Assistant_Portable_$version.zip"
+          & .\KF_Unified_Assistant\tools\build-portable-windows.ps1 -PhpSource $phpSource -OutputPath $output
+          "PORTABLE_ZIP=$output" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Verify package contents
+        shell: pwsh
+        run: |
+          if (-not (Test-Path -LiteralPath $env:PORTABLE_ZIP)) { throw 'Portable ZIP was not created.' }
+          $listing = tar.exe -tf $env:PORTABLE_ZIP
+          if (-not ($listing -match 'KF_Unified_Assistant_Portable/runtime/php/php.exe')) { throw 'Portable ZIP does not contain PHP runtime.' }
+          if (-not ($listing -match 'KF_Unified_Assistant_Portable/public/index.html')) { throw 'Portable ZIP does not contain the web app.' }
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: true
+          files: |
+            ${{ env.PORTABLE_ZIP }}
+            ${{ env.PORTABLE_ZIP }}.sha256.txt
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KF-Unified-Assistant-Portable
+          path: |
+            ${{ env.PORTABLE_ZIP }}
+            ${{ env.PORTABLE_ZIP }}.sha256.txt
