@@ -1,0 +1,30 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "com.kingdomsforlorn.unified.local"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.kingdomsforlorn.unified.local"
+        minSdk 24
+        targetSdk 35
+        versionCode (project.findProperty("kfVersionCode") ?: "1").toInteger()
+        versionName project.findProperty("kfVersionName") ?: "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    androidResources {
+        noCompress += ["png", "jpg", "jpeg", "webp", "gif", "svg", "json", "js", "css"]
+    }
+
+    lint {
+        abortOnError false
+    }
+}

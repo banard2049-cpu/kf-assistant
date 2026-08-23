@@ -1,0 +1,107 @@
+name: Android Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, for example 1.0.1'
+        required: true
+        type: string
+      resource_zip_url:
+        description: 'URL of the KF_Assistant_Images resource ZIP'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        shell: pwsh
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'platform-tools'
+
+      - name: Resolve release version
+        id: release
+        shell: pwsh
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          $version = if ($env:EVENT_NAME -eq 'push') { $env:REF_NAME -replace '^v', '' } else { $env:INPUT_VERSION -replace '^v', '' }
+          if ($version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(?:[-.][0-9A-Za-z.-]+)?$') { throw "Invalid release version: $version" }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Restore resource ZIP
+        shell: pwsh
+        env:
+          RESOURCE_ZIP_URL: ${{ inputs.resource_zip_url || vars.KF_RESOURCE_ZIP_URL }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:RESOURCE_ZIP_URL)) { throw 'Set the resource_zip_url input or KF_RESOURCE_ZIP_URL repository variable.' }
+          $zip = Join-Path $env:RUNNER_TEMP 'kf-resources.zip'
+          Invoke-WebRequest -Uri $env:RESOURCE_ZIP_URL -OutFile $zip
+          Expand-Archive -LiteralPath $zip -DestinationPath $env:GITHUB_WORKSPACE -Force
+          if (-not (Test-Path 'KF_Unified_Assistant/public/assets')) { throw 'Resource ZIP did not restore KF_Unified_Assistant/public/assets.' }
+
+      - name: Install Android signing key
+        shell: pwsh
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KF_ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.KF_ANDROID_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KF_ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KF_ANDROID_KEY_PASSWORD }}
+        run: |
+          $values = @($env:KEYSTORE_BASE64, $env:STORE_PASSWORD, $env:KEY_ALIAS, $env:KEY_PASSWORD)
+          if ($values.Where({ [string]::IsNullOrWhiteSpace($_) }).Count -gt 0) { throw 'Configure KF_ANDROID_KEYSTORE_BASE64, KF_ANDROID_STORE_PASSWORD, KF_ANDROID_KEY_ALIAS and KF_ANDROID_KEY_PASSWORD.' }
+          $keystore = Join-Path $env:RUNNER_TEMP 'kf-release.jks'
+          [IO.File]::WriteAllBytes($keystore, [Convert]::FromBase64String($env:KEYSTORE_BASE64))
+          "KF_KEYSTORE=$keystore" >> $env:GITHUB_ENV
+
+      - name: Build signed APK
+        shell: pwsh
+        env:
+          KF_STORE_PASSWORD: ${{ secrets.KF_ANDROID_STORE_PASSWORD }}
+          KF_KEY_ALIAS: ${{ secrets.KF_ANDROID_KEY_ALIAS }}
+          KF_KEY_PASSWORD: ${{ secrets.KF_ANDROID_KEY_PASSWORD }}
+        run: |
+          $version = '${{ steps.release.outputs.version }}'
+          $output = Join-Path $env:GITHUB_WORKSPACE "KF-Unified-Assistant-Android-$version.apk"
+          & .\KF_Unified_Assistant_Android\tools\build-release-apk.ps1 -Version $version -OutputPath $output -KeystorePath $env:KF_KEYSTORE -StorePassword $env:KF_STORE_PASSWORD -KeyAlias $env:KF_KEY_ALIAS -KeyPassword $env:KF_KEY_PASSWORD
+          "APK_PATH=$output" >> $env:GITHUB_ENV
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KF-Unified-Assistant-Android-${{ steps.release.outputs.version }}
+          path: |
+            ${{ env.APK_PATH }}
+            ${{ env.APK_PATH }}.sha256
+
+      - name: Upload APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          generate_release_notes: false
+          files: |
+            ${{ env.APK_PATH }}
+            ${{ env.APK_PATH }}.sha256

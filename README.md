@@ -126,6 +126,19 @@ macOS 本地运行可双击 `start-macos.command`，或在终端执行 `./start-
 | `DATA_DIR` | `./data` | SQLite 数据目录 |
 | `BACKUP_DIR` | `./backups` | 自动备份目录 |
 
+## Android 版与 Release
+
+Android APK 使用 `KF_Unified_Assistant_Android/` 工程构建。版本标签会触发 `.github/workflows/android-release.yml`，从资源 ZIP 恢复图片、同步 Web 前端、生成签名 APK，并把 APK 与 SHA-256 上传到同一 GitHub Release。
+
+在 GitHub 仓库中设置变量 `KF_RESOURCE_ZIP_URL`，值为公开可下载的 `KF_Assistant_Images_*.zip` 地址；同时配置以下 Actions secrets：
+
+- `KF_ANDROID_KEYSTORE_BASE64`
+- `KF_ANDROID_STORE_PASSWORD`
+- `KF_ANDROID_KEY_ALIAS`
+- `KF_ANDROID_KEY_PASSWORD`
+
+Android App 不依赖 PHP 或外部服务器，应用数据保存在 Android 私有存储中。
+
 ## 数据与管理
 
 Windows 下可使用：
