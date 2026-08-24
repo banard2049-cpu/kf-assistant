@@ -1,7 +1,9 @@
 services:
   kf-unified-assistant:
+    image: ${KF_IMAGE:-ghcr.io/banard2049-cpu/kf-assistant:latest}
     build: .
     container_name: kf-unified-assistant
+    pull_policy: missing
     restart: unless-stopped
     ports:
       - "8789:8793"
