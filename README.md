@@ -2,7 +2,11 @@
 
 《Kingdoms Forlorn》的非官方战役管理工具，整合骑士档案、战役、地图深入、遭遇战和 AI/BP。项目不包含游戏图片等受版权保护的素材；请从你合法持有的本地副本补齐资源。
 
-## Docker / NAS（推荐）
+## 从 Release 运行（推荐）
+
+版本标签会自动构建 Windows/macOS portable 包和 Android APK，文件位于 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
+
+## Docker / NAS
 
 服务器或 NAS 安装 Docker 后，执行一行命令即可从公开 GHCR 镜像部署：
 
@@ -27,9 +31,12 @@ curl -fsSL https://raw.githubusercontent.com/banard2049-cpu/kf-assistant/main/to
   | KF_IMAGE=ghcr.io/banard2049-cpu/kf-assistant:1.0.9 bash
 ```
 
-## 从 Release 运行
+本地构建 Docker：
 
-版本标签会自动构建 Windows/macOS portable 包和 Android APK，文件位于 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
+```bash
+cd KF_Unified_Assistant
+./start-docker.sh
+```
 
 ## 本地运行
 
@@ -44,11 +51,10 @@ macOS/Linux：
 
 ```bash
 cd KF_Unified_Assistant
-./start-macos.sh       # PHP 本地运行
-./start-docker.sh      # 本地构建 Docker
+./start-macos.sh
 ```
 
-默认地址为 `http://127.0.0.1:8789/`。Docker 本地构建也可执行 `docker compose up -d --build`。
+默认地址为 `http://127.0.0.1:8789/`。
 
 ## 图片资源
 

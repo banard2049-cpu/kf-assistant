@@ -451,23 +451,47 @@ function migrate_global_knights(PDO $db, string $backupDir): void {
         $db->exec('UPDATE knight_sheets SET campaign_id=NULL');$q=$db->prepare('INSERT INTO app_meta(meta_key,meta_value,updated_at) VALUES(?,?,?)');$q->execute([$key,'complete',stamp()]);$db->commit();
     }catch(Throwable $e){$db->rollBack();throw $e;}
 }
+function backup_source_signature(PDO $db): string {
+    $queries=[
+        'SELECT id,username,password_hash,active,created_at FROM users ORDER BY id',
+        'SELECT id,user_id,title,version,state_json,field_versions_json,revision,created_at,updated_at,deleted_at,campaign_id FROM knight_sheets ORDER BY id',
+        'SELECT id,user_id,name,state_json,field_versions_json,revision,created_at,updated_at,deleted_at FROM campaigns ORDER BY id',
+        'SELECT user_id,settings_json,updated_at FROM user_settings ORDER BY user_id',
+        'SELECT seq,operation_id,sheet_id,user_id,client_id,field_path,value_json,base_revision,created_at FROM sync_operations ORDER BY seq',
+        'SELECT seq,operation_id,campaign_id,user_id,client_id,field_path,value_json,base_revision,created_at FROM campaign_operations ORDER BY seq',
+        'SELECT meta_key,meta_value,updated_at FROM app_meta ORDER BY meta_key',
+    ];
+    $hash=hash_init('sha256');
+    foreach($queries as $query){
+        foreach($db->query($query,PDO::FETCH_NUM) as $row){
+            hash_update($hash,json_encode($row,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+            hash_update($hash,"\n");
+        }
+        hash_update($hash,"\0");
+    }
+    return hash_final($hash);
+}
+function prune_backups(string $backupDir, int $limit=50): void {
+    $files=glob($backupDir.DIRECTORY_SEPARATOR.'*.db')?:[];
+    usort($files,fn($a,$b)=>(filemtime($b)<=>filemtime($a))?:strcmp(basename($b),basename($a)));
+    foreach(array_slice($files,$limit) as $file)@unlink($file);
+}
 function maintenance(PDO $db, string $backupDir): void {
     $cutoff = gmdate('Y-m-d\TH:i:s.v\Z', time()-30*86400);
     $q=$db->prepare('DELETE FROM knight_sheets WHERE deleted_at IS NOT NULL AND deleted_at<?');$q->execute([$cutoff]);
     $q=$db->prepare('DELETE FROM campaigns WHERE deleted_at IS NOT NULL AND deleted_at<?');$q->execute([$cutoff]);
     $q=$db->prepare('DELETE FROM sessions WHERE expires_at<?');$q->execute([stamp()]);
-    $marker=$backupDir.DIRECTORY_SEPARATOR.'.last-daily';
-    $today=gmdate('Y-m-d');
-    if (!is_file($marker) || trim((string)file_get_contents($marker))!==$today) {
-        create_backup($db,$backupDir,'daily'); file_put_contents($marker,$today,LOCK_EX);
-        $files=glob($backupDir.DIRECTORY_SEPARATOR.'*.db')?:[]; usort($files,fn($a,$b)=>filemtime($b)<=>filemtime($a));
-        $days=[];$weeks=[];$keep=[];
-        foreach($files as $file){$time=filemtime($file);$day=gmdate('Y-m-d',$time);$week=gmdate('o-W',$time);
-            if(count($days)<7&&!isset($days[$day])){$days[$day]=1;$keep[$file]=1;}
-            if(count($weeks)<4&&!isset($weeks[$week])){$weeks[$week]=1;$keep[$file]=1;}
-        }
-        foreach($files as $file)if(!isset($keep[$file]))@unlink($file);
+    $marker=$backupDir.DIRECTORY_SEPARATOR.'.backup-state.json';
+    $state=[];
+    if(is_file($marker)){$decoded=json_decode((string)file_get_contents($marker),true);if(is_array($decoded))$state=$decoded;}
+    $signature=backup_source_signature($db);
+    $lastAt=(int)($state['created_at']??0);
+    $changed=($state['source_signature']??'')!==$signature;
+    if($lastAt===0||($changed&&time()-$lastAt>=3600)){
+        create_backup($db,$backupDir,'automatic');
+        file_put_contents($marker,json_encode(['created_at'=>time(),'source_signature'=>$signature],JSON_UNESCAPED_SLASHES),LOCK_EX);
     }
+    prune_backups($backupDir);
 }
 
 migrate_global_knights($db, $backupDir);
