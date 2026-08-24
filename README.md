@@ -133,8 +133,8 @@ macOS 本地运行可双击 `start-macos.command`，或在终端执行 `./start-
 docker pull ghcr.io/banard2049-cpu/kf-assistant:latest
 docker run -d --name kf-unified-assistant \
   -p 8789:80 \
-  -v "$PWD/data:/var/www/data" \
-  -v "$PWD/backups:/var/www/backups" \
+  -v "$PWD/data:/app/data" \
+  -v "$PWD/backups:/app/backups" \
   ghcr.io/banard2049-cpu/kf-assistant:latest
 ```
 

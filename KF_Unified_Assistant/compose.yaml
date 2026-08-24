@@ -4,10 +4,10 @@ services:
     container_name: kf-unified-assistant
     restart: unless-stopped
     ports:
-      - "8789:80"
+      - "8789:8793"
     environment:
       ALLOW_REGISTRATION: "true"
       SESSION_DAYS: "30"
     volumes:
-      - ./data:/var/www/data
-      - ./backups:/var/www/backups
+      - ./data:/app/data
+      - ./backups:/app/backups

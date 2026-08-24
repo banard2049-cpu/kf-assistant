@@ -64,7 +64,7 @@ macOS/Linux 可运行 `./start-docker.sh`；不带参数时它会构建并启动
 ```bash
 docker pull ghcr.io/banard2049-cpu/kf-assistant:latest
 docker run -d --name kf-unified-assistant -p 8789:80 \
-  -v "$PWD/data:/var/www/data" -v "$PWD/backups:/var/www/backups" \
+  -v "$PWD/data:/app/data" -v "$PWD/backups:/app/backups" \
   ghcr.io/banard2049-cpu/kf-assistant:latest
 ```
 
