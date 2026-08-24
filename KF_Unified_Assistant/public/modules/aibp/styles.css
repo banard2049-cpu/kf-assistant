@@ -726,6 +726,30 @@ h3 { font-size: 19px; }
 }
 .deck-level:first-child { border-color: var(--gold); color: var(--gold-bright); }
 .deck-level-empty { color: var(--muted); font-size: 11px; }
+.deck-level-summary {
+  display: inline-block;
+  max-width: 240px;
+  overflow: hidden;
+  color: var(--gold-bright);
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.deck-order-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 31px;
+  padding: 4px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--gold-bright);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.deck-order-toggle input { width: 15px; height: 15px; margin: 0; accent-color: var(--gold); }
 .aibp-draw-box {
   display: grid;
   grid-template-columns: minmax(205px, 0.8fr) minmax(190px, 1fr);
@@ -745,6 +769,8 @@ h3 { font-size: 19px; }
   line-height: 1.2;
 }
 .aibp-pending { display: grid; gap: 7px; align-content: start; text-align: center; }
+.scry-bottom-actions { display: flex; justify-content: center; margin-top: 12px; }
+.scry-bottom-actions .button { min-width: 140px; }
 .aibp-pending .battle-card { width: min(100%, 270px); margin-inline: auto; }
 .puppet-ai-choice-pending { min-width: 0; }
 .puppet-ai-choice-grid {
@@ -2097,6 +2123,35 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
   position: absolute; top: 8px; right: 8px; z-index: 2; width: 34px; height: 34px;
   color: white; background: #8f2e2e; border: 0; border-radius: 50%; font-size: 24px; cursor: pointer;
 }
+.scry-modal { width: min(1080px, 94vw); max-height: calc(100vh - 36px); }
+.scry-hint { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+.scry-count-label { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 13px; font-weight: 800; }
+.scry-count-label input { width: 64px; min-height: 32px; padding: 4px 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-3); color: var(--ink); text-align: center; }
+.scry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
+  justify-content: center;
+  gap: 10px;
+  max-height: min(62vh, 620px);
+  overflow: auto;
+  padding: 4px;
+}
+.scry-card-item {
+  display: grid;
+  grid-template-rows: minmax(170px, 1fr) auto;
+  gap: 7px;
+  min-width: 0;
+  max-width: 220px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-3);
+}
+.scry-card-item .card-button { width: 100%; min-width: 0; }
+.scry-card { width: 100%; }
+.scry-card-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.scry-card-actions .button { min-height: 27px; padding: 3px 6px; font-size: 11px; }
+.scry-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 7px; margin-top: 14px; }
 @media (max-width: 760px) {
   .standalone-layout { grid-template-columns: 1fr; }
   .standalone-layout.directory-collapsed { grid-template-columns: 1fr; }

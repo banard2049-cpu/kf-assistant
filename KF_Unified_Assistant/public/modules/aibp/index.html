@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KF AI/BP 辅助器</title>
-  <link rel="stylesheet" href="styles.css?v=65">
+  <link rel="stylesheet" href="styles.css?v=66">
   <link rel="stylesheet" href="../module-bridge.css">
 </head>
-<body data-kf-module="aibp" data-storage-key="kf-aibp-assistant-v1" data-original-app="app.js?v=111">
+<body data-kf-module="aibp" data-storage-key="kf-aibp-assistant-v1" data-original-app="app.js?v=112">
   <header class="topbar">
     <div class="topbar-title-group">
       <button class="directory-header-toggle" id="monsterDirectoryToggle" type="button"
@@ -15,6 +15,10 @@
       <div><span class="eyebrow">KINGDOMS FORLORN</span><h1>KF AI/BP 辅助器</h1></div>
     </div>
     <div class="top-actions">
+      <label class="deck-order-toggle" title="切换 AI/BP 卡背顺序的详细程度">
+        <input type="checkbox" id="deckOrderToggle" checked>
+        显示牌背顺序
+      </label>
       <span id="saveStatus" class="status">已保存</span>
       <button class="button ghost" id="newBattle">新建冲突</button>
       <button class="button ghost" id="exportSave">导出</button>
@@ -38,6 +42,6 @@
   <script src="kf-los.js?v=1"></script>
   <script src="kf-facing.js?v=1"></script>
   <script src="kf-overlay.js?v=1"></script>
-  <script src="../module-bridge.js?v=13" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=111';document.body.append(app)"></script>
+  <script src="../module-bridge.js?v=13" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=112';document.body.append(app)"></script>
 </body>
 </html>

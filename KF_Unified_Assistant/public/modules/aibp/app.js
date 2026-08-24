@@ -7,6 +7,7 @@
   const BOSS_RULES = window.KF_BOSS_RULE_CONFIG || {};
   const CONFLICT_SETUPS = window.KF_CONFLICT_SETUPS || { standard: [], aftermath: [], monsters: [] };
   const STORAGE_KEY = "kf-aibp-assistant-v1";
+  const DECK_ORDER_VIEW_KEY = "kf-aibp-view-deck-order-v1";
   const VERSION = 10;
   const WOUND_PREFIX = "WOUND:";
   const MAX_SHEET_TOKENS_PER_TYPE = 20;
@@ -1076,6 +1077,8 @@
   let sheetTokenToolsOpen = false;
   let selectedTerrainId = "";
   let overlayPlacementMode = "";
+  let deckOrderVisible = localStorage.getItem(DECK_ORDER_VIEW_KEY) !== "0";
+  let activeScry = null;
 
   function syncCurrentEncounter() {
     if (!state.battle?.monsterId) return;
@@ -3577,10 +3580,155 @@
   function deckLevelOrderHtml(ids, monster, label) {
     const cards = ids.map(id => cardById(monster, id)).filter(Boolean);
     if (!cards.length) return '<span class="deck-level-empty">空</span>';
-    return `<div class="deck-level-order" aria-label="${esc(label)}等级顺序">${cards.map((card, index) => {
-      const level = String(card.kind || "").match(/^(?:AI|BP)([0-3])$/)?.[1] || "?";
+    const levels = cards.map(card => String(card.kind || "").match(/^(?:AI|BP)([0-3])$/)?.[1] || "?");
+    if (!deckOrderVisible) {
+      const counts = new Map();
+      levels.forEach(level => counts.set(level, (counts.get(level) || 0) + 1));
+      const composition = [...counts.entries()].map(([level, count]) => `${level}×${count}`).join("，");
+      return `<span class="deck-level-summary" title="${esc(label)}牌组共 ${cards.length} 张">${esc(levels[0])}（${esc(composition)}）</span>`;
+    }
+    return `<div class="deck-level-order" aria-label="${esc(label)}等级顺序">${levels.map((level, index) => {
       return `<span class="deck-level" title="第 ${index + 1} 张">${level}</span>`;
     }).join("")}</div>`;
+  }
+
+  function scryCardMarkup(card, index, total) {
+    const cardData = cardById(monsterById(state.battle.monsterId), card);
+    return `<div class="scry-card-item">
+      ${cardHtml(cardData, "scry-card", "face", true, false)}
+      <div class="scry-card-actions">
+        <button class="button small secondary" data-scry-move="${index}:up" ${index === 0 ? "disabled" : ""}>↑</button>
+        <button class="button small secondary" data-scry-move="${index}:down" ${index === total - 1 ? "disabled" : ""}>↓</button>
+        <button class="button small" data-scry-card-action="${index}:top">置顶</button>
+        <button class="button small secondary" data-scry-card-action="${index}:bottom">置底</button>
+        <button class="button small secondary" data-scry-card-action="${index}:shuffle">洗回</button>
+        <button class="button small danger" data-scry-card-action="${index}:remove">移除</button>
+      </div>
+    </div>`;
+  }
+
+  function renderScryModal() {
+    const modal = $("#modal");
+    if (!modal || !activeScry) return;
+    const typeLabel = activeScry.type.toUpperCase();
+    if (!activeScry.started) {
+      const max = Math.min(3, activeScry.available);
+      modal.innerHTML = `<div class="modal-backdrop"></div><div class="modal-card scry-modal">
+        <button class="modal-close" data-scry-cancel aria-label="取消观星">×</button>
+        <h3>${typeLabel} 观星</h3>
+        <p class="scry-hint">查看牌顶若干张 ${typeLabel}，最多 ${max} 张。</p>
+        <label class="scry-count-label">观星张数 <input id="scryCount" type="number" min="1" max="${max}" value="${max}"></label>
+        <div class="scry-footer"><button class="button" data-scry-start>开始观星</button><button class="button ghost" data-scry-cancel>取消</button></div>
+      </div>`;
+      modal.hidden = false;
+      $$('[data-scry-start]', modal).forEach(button => button.addEventListener("click", startScry));
+      $$('[data-scry-cancel]', modal).forEach(button => button.addEventListener("click", cancelScry));
+      return;
+    }
+    modal.innerHTML = `<div class="modal-backdrop"></div><div class="modal-card scry-modal">
+      <button class="modal-close" data-scry-cancel aria-label="取消观星">×</button>
+      <h3>${typeLabel} 观星</h3>
+      <p class="scry-hint">查看牌顶 ${activeScry.cards.length} 张，可调整顺序或分别处理；完成后点击下方按钮。</p>
+      <div class="scry-grid">${activeScry.cards.map((card, index) => scryCardMarkup(card, index, activeScry.cards.length)).join("")}</div>
+      <div class="scry-footer">
+        <button class="button" data-scry-finish="top">全部盖回牌顶</button>
+        <button class="button secondary" data-scry-finish="bottom">全部放到底部</button>
+        <button class="button secondary" data-scry-finish="shuffle">全部洗回牌堆</button>
+        <button class="button danger" data-scry-finish="remove">全部移除</button>
+        <button class="button ghost" data-scry-cancel>取消并恢复</button>
+      </div>
+    </div>`;
+    modal.hidden = false;
+    $$('[data-scry-move]', modal).forEach(button => button.addEventListener("click", () => {
+      const [rawIndex, direction] = button.dataset.scryMove.split(":");
+      moveScryCard(Number(rawIndex), direction === "up" ? -1 : 1);
+    }));
+    $$('[data-scry-card-action]', modal).forEach(button => button.addEventListener("click", () => {
+      const [rawIndex, action] = button.dataset.scryCardAction.split(":");
+      applyScryCardAction(Number(rawIndex), action);
+    }));
+    $$('[data-scry-finish]', modal).forEach(button => button.addEventListener("click", () => finishScry(button.dataset.scryFinish)));
+    $$('[data-scry-cancel]', modal).forEach(button => button.addEventListener("click", cancelScry));
+  }
+
+  function openScry(type) {
+    const monster = monsterById(state.battle.monsterId);
+    const b = state.battle;
+    if (!["ai", "bp"].includes(type)) return;
+    if (type === "bp" && isMob(monster)) return toast("杂兵 BP 需从杂兵轨选择，不能观星牌组");
+    if (activeScry) return;
+    const activeKey = `active${type.toUpperCase()}`;
+    if (b[activeKey]) return toast(`请先处理当前 ${type.toUpperCase()} 卡`);
+    const available = b[`${type}Deck`].length + b[`${type}Discard`].length;
+    if (!available) {
+      return toast(`${type.toUpperCase()} 牌组为空，无法观星`);
+    }
+    activeScry = { type, cards: [], available, started: false };
+    renderScryModal();
+  }
+
+  function startScry() {
+    if (!activeScry || activeScry.started) return;
+    remember();
+    reshuffleIfEmpty(activeScry.type);
+    const deck = state.battle[`${activeScry.type}Deck`];
+    const count = Math.max(1, Math.min(deck.length, Number($("#scryCount")?.value) || 1));
+    if (!count) {
+      state.history.pop();
+      return toast(`${activeScry.type.toUpperCase()} 牌组为空，无法观星`);
+    }
+    activeScry.cards = deck.splice(0, count);
+    activeScry.started = true;
+    log(`${activeScry.type.toUpperCase()} 观星 ${count} 张`);
+    renderScryModal();
+  }
+
+  function moveScryCard(index, delta) {
+    if (!activeScry) return;
+    const target = index + delta;
+    if (target < 0 || target >= activeScry.cards.length) return;
+    [activeScry.cards[index], activeScry.cards[target]] = [activeScry.cards[target], activeScry.cards[index]];
+    renderScryModal();
+  }
+
+  function applyScryCardAction(index, action) {
+    if (!activeScry) return;
+    const destination = action === "top" ? "top" : action === "bottom" ? "bottom" : action === "shuffle" ? "shuffle" : "remove";
+    if (!activeScry.cards[index] || !["top", "bottom", "shuffle", "remove"].includes(destination)) return;
+    const card = activeScry.cards.splice(index, 1)[0];
+    const deck = state.battle[`${activeScry.type}Deck`];
+    if (destination === "top") deck.unshift(card);
+    else if (destination === "bottom") deck.push(card);
+    else if (destination === "shuffle") insertRandom(deck, card);
+    else state.battle[`${activeScry.type}Removed`].push(card);
+    if (!activeScry.cards.length) return finishScry(null);
+    renderScryModal();
+  }
+
+  function finishScry(mode) {
+    if (!activeScry) return;
+    const session = activeScry;
+    const deck = state.battle[`${session.type}Deck`];
+    if (mode === "top") deck.unshift(...session.cards);
+    else if (mode === "bottom") deck.push(...session.cards);
+    else if (mode === "shuffle") session.cards.forEach(card => insertRandom(deck, card));
+    else if (mode === "remove") state.battle[`${session.type}Removed`].push(...session.cards);
+    else if (mode !== null) return;
+    activeScry = null;
+    $("#modal").hidden = true;
+    save();
+  }
+
+  function cancelScry() {
+    if (!activeScry) return;
+    const started = activeScry.started;
+    activeScry = null;
+    if (started) {
+      const previous = state.history.pop();
+      if (previous) state.battle = normalizeBattle(previous);
+    }
+    $("#modal").hidden = true;
+    renderApp();
   }
 
   function pileIds(type, view, monster) {
@@ -4919,6 +5067,7 @@
                 </div>
                 ${tabs("ai", b.aiView)}
                 <div class="card-gallery aibp-pile-grid">${pileGridForView("ai", b.aiView, monster)}</div>
+                <div class="scry-bottom-actions"><button class="button secondary" data-scry="ai" title="查看并调整 AI 牌顶顺序">观星 AI</button></div>
               </div>
               <div class="aibp-column">
                 <div class="panel-header"><div><span class="eyebrow">${winged ? "PERMANENT BP" : mob ? "MOB BP TRACK" : "BP DECK"}</span><div class="deck-title-row"><h3>BP</h3>${mob ? "" : deckLevelOrderHtml(b.bpDeck, monster, "BP")}</div></div><span class="badge gold">总损伤 ${totalDamage} / 单重 ${b.singleWounds} / 双重 ${b.doubleWounds}</span></div>
@@ -4951,6 +5100,7 @@
                 </div>
                 ${mob ? `<div class="card-gallery aibp-pile-grid">${pileGrid(b.bpDamage, monster)}</div>` :
                   `${tabs("bp", b.bpView)}<div class="card-gallery aibp-pile-grid">${pileGridForView("bp", b.bpView, monster)}</div>`}
+                ${!mob ? '<div class="scry-bottom-actions"><button class="button secondary" data-scry="bp" title="查看并调整 BP 牌顶顺序">观星 BP</button></div>' : ""}
               </div>
             </div>
           </section>
@@ -5139,6 +5289,7 @@
     });
     $("#undo").addEventListener("click", undo);
     $$("[data-draw]").forEach(button => button.addEventListener("click", () => draw(button.dataset.draw)));
+    $$("[data-scry]").forEach(button => button.addEventListener("click", () => openScry(button.dataset.scry)));
     $$("[data-rule-action]").forEach(button => button.addEventListener("click", () => {
       const action = button.dataset.ruleAction;
       if (action === "advance-stage") return advanceDevourStage();
@@ -5434,6 +5585,15 @@
     monsterDirectoryOpen = !monsterDirectoryOpen;
     renderApp();
   });
+  const deckOrderToggle = $("#deckOrderToggle");
+  if (deckOrderToggle) {
+    deckOrderToggle.checked = deckOrderVisible;
+    deckOrderToggle.addEventListener("change", () => {
+      deckOrderVisible = deckOrderToggle.checked;
+      localStorage.setItem(DECK_ORDER_VIEW_KEY, deckOrderVisible ? "1" : "0");
+      renderApp();
+    });
+  }
 
   window.addEventListener?.("kf:aibp-handoff", event => {
     const location = String(event.detail?.mapWheel?.conflictLocation || "");
@@ -5454,7 +5614,7 @@
       rebuild: preserveHistory => initializeBattle(
         monsterById(state.battle.monsterId), { preserveHistory: Boolean(preserveHistory) }
       ),
-      draw, settle, moveAibpCard, undo, advanceDevourStage,
+      draw, settle, moveAibpCard, undo, advanceDevourStage, openScry, startScry, finishScry, cancelScry,
       startWhiteApeRound, spawnWhiteGuardian, passGuardianBp, resolveGuardianAttack, defeatGuardian,
       recordWhiteReinforcement, changeWhiteReinforcementCounter, resolveWhiteReinforcement,
       changeWhiteVengeanceCounter, resolveWhiteVengeance, whiteVengeanceThreshold, recordBossWoundCounters,
