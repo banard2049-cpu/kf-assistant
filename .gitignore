@@ -54,6 +54,8 @@ KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/
 
 # Bundled portable runtime
 KF_Unified_Assistant/runtime/
+KF_Unified_Assistant/export/
+KF_Unified_Assistant/tools/.packaging-cache/
 /KF_Unified_Assistant_Portable_*/
 /portable-verify-*/
 

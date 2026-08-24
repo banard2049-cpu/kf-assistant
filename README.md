@@ -125,6 +125,32 @@ macOS 本地运行可双击 `start-macos.command`，或在终端执行 `./start-
 
 服务默认监听 `8789` 端口，持久化数据保存在 `KF_Unified_Assistant/data/`，备份保存在 `KF_Unified_Assistant/backups/`。
 
+#### 直接使用 GHCR 镜像
+
+版本标签会由 Docker workflow 推送镜像到 GitHub Container Registry：
+
+```bash
+docker pull ghcr.io/banard2049-cpu/kf-assistant:latest
+docker run -d --name kf-unified-assistant \
+  -p 8789:80 \
+  -v "$PWD/data:/var/www/data" \
+  -v "$PWD/backups:/var/www/backups" \
+  ghcr.io/banard2049-cpu/kf-assistant:latest
+```
+
+也可以使用固定版本，例如 `ghcr.io/banard2049-cpu/kf-assistant:1.0.8`。
+
+#### Docker 发布包
+
+可在不安装 Docker 的环境中先生成 Docker ZIP；运行该成品时仍需要 Docker Desktop 或 Docker Engine + Compose：
+
+```powershell
+cd KF_Unified_Assistant
+python .\tools\export_docker.py --version 1.0.0
+```
+
+输出位于 `KF_Unified_Assistant/export/`。解压后进入包目录，运行 `docker compose up -d --build` 即可启动。版本标签会由独立的 Docker workflow 构建并推送 GHCR 镜像。
+
 可用环境变量：
 
 | 变量 | 默认值 | 说明 |

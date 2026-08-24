@@ -59,6 +59,22 @@ macOS/Linux 可运行 `./start-docker.sh`；不带参数时它会构建并启动
 
 访问 `http://NAS地址:8789`。数据库与备份分别保存在 `./data`、`./backups`。
 
+版本标签还会将运行镜像推送到 GHCR，可直接使用：
+
+```bash
+docker pull ghcr.io/banard2049-cpu/kf-assistant:latest
+docker run -d --name kf-unified-assistant -p 8789:80 \
+  -v "$PWD/data:/var/www/data" -v "$PWD/backups:/var/www/backups" \
+  ghcr.io/banard2049-cpu/kf-assistant:latest
+```
+
+### Docker 发布包
+
+在仓库目录执行 `python tools/export_docker.py --version 1.0.0` 可生成
+`export/KF-Unified-Assistant-Docker-1.0.0.zip`。该 ZIP 只包含运行所需的
+`public`、Dockerfile、Compose 配置和空的数据目录；解压后执行
+`docker compose up -d --build` 启动。
+
 群晖 Web Station 可将文档根目录直接指向 `public`，PHP 必须启用 `pdo_sqlite`。
 
 ## 配置
