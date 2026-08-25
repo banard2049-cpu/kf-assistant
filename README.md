@@ -14,12 +14,12 @@
 curl -fsSL https://raw.githubusercontent.com/banard2049-cpu/kf-assistant/main/tools/install-docker.sh | bash
 ```
 
-默认访问 `http://服务器IP:8789/`。部署目录为 `~/kf-assistant/`，存档和 SQLite 备份分别保存在 `data/`、`backups/`，更新不会丢失这些目录。
+默认访问 `http://服务器IP:8789/`。脚本会把 `compose.yaml`、`data/` 和 `backups/` 放在执行命令时的当前目录；更新不会丢失这些目录。也可以通过 `KF_DIR=/目标目录` 指定安装位置。
 
 手动更新：
 
 ```bash
-cd ~/kf-assistant
+cd /你的部署目录
 docker compose pull
 docker compose up -d
 ```

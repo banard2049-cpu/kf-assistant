@@ -220,6 +220,8 @@ final class LocalApi {
         if (campaign == null) return envelope(404, error("战役不存在"));
         JSONArray exportedSheets = new JSONArray();
         JSONObject sheets = sheetBucket(store, userId);
+        Set<String> usedTitles = new HashSet<>();
+        for (JSONObject existing : sortedRecords(sheets)) if (!isDeleted(existing)) usedTitles.add(existing.optString("title"));
         for (JSONObject sheet : sortedRecords(sheets)) if (!isDeleted(sheet)) {
             exportedSheets.put(new JSONObject().put("id", sheet.getString("id")).put("title", sheet.getString("title"))
                     .put("state", copyObject(sheet.getJSONObject("state"))));
@@ -259,20 +261,16 @@ final class LocalApi {
         if (importedState.length() == 0) importedState = defaultCampaignState();
         importedState.put("schemaVersion", 2);
         JSONObject sheets = sheetBucket(store, userId);
-        Map<String, String> existingByKnight = new HashMap<>();
-        for (JSONObject existing : sortedRecords(sheets)) if (!isDeleted(existing)) {
-            String knightId = existing.getJSONObject("state").optString("knightId");
-            if (!knightId.isEmpty()) existingByKnight.put(knightId, existing.getString("id"));
-        }
         JSONArray sourceSheets = payload.optJSONArray("sheets");
         Map<String, String> sheetMap = new HashMap<>();
-        Set<String> seen = new HashSet<>();
         for (int index = 0; sourceSheets != null && index < Math.min(100, sourceSheets.length()); index++) {
             JSONObject source = sourceSheets.optJSONObject(index);
             JSONObject state = source == null ? null : source.optJSONObject("state");
             String knightId = state == null ? "" : state.optString("knightId");
-            if (!KNIGHTS.containsKey(knightId) || !seen.add(knightId)) return envelope(400, error("导入文件包含无效或重复的骑士身份"));
-            sheetMap.put(source.optString("id", uuid()), existingByKnight.containsKey(knightId) ? existingByKnight.get(knightId) : uuid());
+            if (!KNIGHTS.containsKey(knightId)) return envelope(400, error("导入文件包含无效的骑士身份"));
+            String sheetTitle = uniqueTitle(usedTitles, source.optString("title", KNIGHTS.get(knightId)));
+            source.put("_resolvedTitle", sheetTitle);
+            sheetMap.put(source.optString("id", uuid()), uuid());
         }
         String leader = importedState.optString("leaderSheetId");
         if (sheetMap.containsKey(leader)) importedState.put("leaderSheetId", sheetMap.get(leader));
@@ -288,10 +286,9 @@ final class LocalApi {
             JSONObject state = source == null ? null : source.optJSONObject("state");
             if (state == null) continue;
             String knightId = state.optString("knightId");
-            if (existingByKnight.containsKey(knightId)) continue;
             JSONObject copy = copyObject(state).put("knight", KNIGHTS.get(knightId));
             String newId = sheetMap.get(source.optString("id"));
-            JSONObject record = newSheet(newId == null ? uuid() : newId, title(source.optString("title", KNIGHTS.get(knightId))), copy);
+            JSONObject record = newSheet(newId == null ? uuid() : newId, source.optString("_resolvedTitle", title(source.optString("title", KNIGHTS.get(knightId)))), copy);
             sheets.put(record.getString("id"), record);
         }
         mergeSettings(store, userId, data.optJSONObject("shared"));
@@ -314,16 +311,16 @@ final class LocalApi {
 
         JSONObject bucket = sheetBucket(store, userId);
         JSONObject existing = null;
-        for (JSONObject record : sortedRecords(bucket)) if (!isDeleted(record)
-                && knightId.equals(record.getJSONObject("state").optString("knightId"))) { existing = record; break; }
         String replaceId = data.optString("replaceSheetId");
-        if (existing != null && !existing.optString("id").equals(replaceId))
-            return envelope(409, error("已经有这名骑士的共享档案，是否覆盖？").put("sheetId", existing.getString("id")));
+        if (!replaceId.isEmpty()) existing = bucket.optJSONObject(replaceId);
 
         String requestedTitle = payload.optString("title").trim();
         String importedTitle = requestedTitle.isEmpty() ? KNIGHTS.get(knightId) : title(requestedTitle);
         boolean replaced = existing != null;
         JSONObject record;
+        Set<String> usedTitles = new HashSet<>();
+        for (JSONObject candidate : sortedRecords(bucket)) if (!isDeleted(candidate) && !candidate.optString("id").equals(existing == null ? "" : existing.optString("id"))) usedTitles.add(candidate.optString("title"));
+        importedTitle = uniqueTitle(usedTitles, importedTitle);
         if (replaced) {
             record = existing.put("title", importedTitle).put("state", incoming).put("fieldVersions", new JSONObject())
                     .put("appliedOps", new JSONObject()).put("revision", existing.optInt("revision") + 1).put("updatedAt", now());
@@ -368,11 +365,13 @@ final class LocalApi {
         if ("POST".equals(method)) {
             String knightId = data.optString("knightId");
             if (!KNIGHTS.containsKey(knightId)) return envelope(400, error("请选择一个有效的骑士"));
-            for (JSONObject existing : sortedRecords(bucket)) if (!isDeleted(existing) && knightId.equals(existing.getJSONObject("state").optString("knightId")))
-                return envelope(409, error("已经有这名骑士的共享档案"));
-            JSONObject state = defaultKnightState(knightId, data.optString("player"));
             String requestedTitle = data.optString("title").trim();
-            JSONObject record = newSheet(uuid(), requestedTitle.isEmpty() ? KNIGHTS.get(knightId) : title(requestedTitle), state);
+            String sheetTitle = requestedTitle.isEmpty() ? KNIGHTS.get(knightId) : title(requestedTitle);
+            Set<String> usedTitles = new HashSet<>();
+            for (JSONObject existing : sortedRecords(bucket)) if (!isDeleted(existing)) usedTitles.add(existing.optString("title"));
+            sheetTitle = uniqueTitle(usedTitles, sheetTitle);
+            JSONObject state = defaultKnightState(knightId, data.optString("player"));
+            JSONObject record = newSheet(uuid(), sheetTitle, state);
             bucket.put(record.getString("id"), record);
             return envelope(201, new JSONObject().put("sheet", parsedSheet(record)));
         }
@@ -392,7 +391,11 @@ final class LocalApi {
         if (record == null || (isDeleted(record) && !"restore".equals(action))) return envelope(404, error("档案不存在"));
         if (action.isEmpty() && "GET".equals(method)) return ok(new JSONObject().put("sheet", parsedSheet(record)));
         if (action.isEmpty() && "PATCH".equals(method)) {
-            record.put("title", title(data.optString("title"))).put("updatedAt", now());
+            String nextTitle = title(data.optString("title"));
+            Set<String> usedTitles = new HashSet<>();
+            for (JSONObject existing : sortedRecords(bucket)) if (!isDeleted(existing) && !existing.optString("id").equals(record.optString("id"))) usedTitles.add(existing.optString("title"));
+            nextTitle = uniqueTitle(usedTitles, nextTitle);
+            record.put("title", nextTitle).put("updatedAt", now());
             return ok(new JSONObject().put("ok", true));
         }
         if ("copy".equals(action) && "POST".equals(method)) return envelope(409, error("骑士档案跨战役共享，无需复制"));
@@ -412,9 +415,6 @@ final class LocalApi {
             return ok(new JSONObject().put("ok", true));
         }
         if ("restore".equals(action) && "POST".equals(method)) {
-            String knightId = record.getJSONObject("state").optString("knightId");
-            for (JSONObject existing : sortedRecords(bucket)) if (!isDeleted(existing) && knightId.equals(existing.getJSONObject("state").optString("knightId")))
-                return envelope(409, error("这名骑士已有共享档案，无法恢复重复备份"));
             record.put("deletedAt", JSONObject.NULL).put("updatedAt", now());
             return ok(new JSONObject().put("ok", true));
         }
@@ -707,6 +707,7 @@ final class LocalApi {
     private JSONObject ok(JSONObject body) throws JSONException { return envelope(200, body); }
     private JSONObject envelope(int status, JSONObject body) throws JSONException { return new JSONObject().put("status", status).put("body", body); }
     private String title(String value) { String text = value == null ? "" : value.trim(); return text.isEmpty() ? "未命名骑士" : text.length() > 80 ? text.substring(0, 80) : text; }
+    private String uniqueTitle(Set<String> used, String value) { String base = title(value); if (used.add(base)) return base; for (int n = 1;; n++) { String suffix = String.valueOf(n); String prefix = base.substring(0, Math.max(1, Math.min(base.length(), 80 - suffix.length()))); String candidate = prefix + suffix; if (used.add(candidate)) return candidate; } }
     private String uuid() { return UUID.randomUUID().toString(); }
     private String safeMessage(Exception error) { return error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage(); }
     private String hash(String value) throws Exception {

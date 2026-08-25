@@ -15,7 +15,7 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 if [[ $# -eq 0 ]]; then
-  docker compose up -d --build
+  ALLOW_REGISTRATION=true docker compose up -d --build --force-recreate
   echo "KF Unified Campaign Assistant: http://127.0.0.1:8789"
   open "http://127.0.0.1:8789" 2>/dev/null || true
 else

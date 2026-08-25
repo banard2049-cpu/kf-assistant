@@ -316,9 +316,8 @@ async function openSheet(id){
 function showEmpty(){$("#overview").classList.add("hidden");$("#emptyState").classList.remove("hidden");$("#sheetForm").classList.add("hidden")}
 function normalizedParty(input=campaignState?.party||[]){
   const valid=new Set(knightSheets().map(sheet=>sheet.id)),leader=gameSettings.leaderSheetId;
-  let party=[...new Set((Array.isArray(input)?input:[]).filter(id=>valid.has(id)))],seenKnights=new Set();
-  party=party.filter(id=>{const knightId=sheetKnightId(sheets.find(sheet=>sheet.id===id))||id;if(seenKnights.has(knightId))return false;seenKnights.add(knightId);return true});
-  if(leader&&valid.has(leader)){const leaderKnight=sheetKnightId(sheets.find(sheet=>sheet.id===leader));party=party.filter(id=>id!==leader&&(!leaderKnight||sheetKnightId(sheets.find(sheet=>sheet.id===id))!==leaderKnight));party.unshift(leader)}
+  let party=[...new Set((Array.isArray(input)?input:[]).filter(id=>valid.has(id)))];
+  if(leader&&valid.has(leader)){const leaderCount=party.filter(id=>id===leader).length;party=party.filter(id=>id!==leader);party.unshift(...Array(Math.max(1,leaderCount)).fill(leader))}
   return party.slice(0,4);
 }
 function normalizedSquires(party,current=campaignState?.squires||[]){
@@ -343,8 +342,8 @@ function renderPartyBuilder(){
   const squires=normalizedSquires(party);
   $("#partySummary").textContent=`${party.length} 名骑士 ＋ ${squires.length} 名侍从`;
   $("#partyKnights").innerHTML=knightSheets().map(sheet=>{
-    const checked=party.includes(sheet.id),isLeader=sheet.id===leader;
-    return `<label class="party-knight ${isLeader?"leader":""}"><input type="checkbox" data-party-sheet="${sheet.id}" ${checked?"checked":""} ${isLeader?"disabled":""}><span>${esc(sheet.state?.knight||sheet.title)}${isLeader?" · 主骑士":""}</span></label>`;
+    const count=party.filter(id=>id===sheet.id).length,isLeader=sheet.id===leader;
+    return `<label class="party-knight ${isLeader?"leader":""}"><input type="checkbox" data-party-sheet="${sheet.id}" ${count?"checked":""} ${isLeader?"disabled":""}><span>${esc(sheet.state?.knight||sheet.title)}${isLeader?" · 主骑士":""}</span></label>`;
   }).join("");
   $("#squireSlots").innerHTML=squires.length?squires.map((id,index)=>{
     const item=squireCatalog.find(entry=>entry.id===id);
@@ -555,11 +554,11 @@ $("#monsterPoolForm").onsubmit=e=>{e.preventDefault();saveChosenMonsterPool()};
 $("#undoPool").onclick=()=>{const current=campaignState.monsterPool||{},history=[...(current.history||[])],previous=history.pop();if(!previous)return toast("没有可撤销的怪物池");const restored={kingdom:previous.kingdom||campaignState.kingdom,row:previous.row,cards:previous.cards,districts:previous.districts,devourDragon:previous.devourDragon,history};campaignOp("monsterPool",restored);renderMonsterPool(restored);renderEncounterBuilder();toast("已恢复上一组区域怪物")};
 $("#trashList").onclick=async e=>{const b=e.target.closest("[data-sheet]");if(b&&confirm("恢复这张档案？")){await api(`/api/sheets/${b.dataset.sheet}/restore`,{method:"POST"});refreshLists()}};
 function openNewKnightDialog(){
-  const used=new Set(sheets.map(sheet=>sheetKnightId(sheet)).filter(Boolean)),available=knightCatalog.filter(item=>!used.has(item.id));
-  if(!available.length)return toast("当前战役中的骑士档案已经齐全");
-  $("#newKnightGallery").innerHTML=knightCatalog.map(item=>`<button class="knight-choice ${item.id===available[0].id?"selected":""}" type="button" role="radio" aria-checked="${item.id===available[0].id}" data-knight-choice="${item.id}" ${used.has(item.id)?"disabled":""}><img src="/assets/heroes/${item.id}-avatar.jpg" alt=""><span>${esc(item.name)}</span></button>`).join("");
-  $("#newKnightIdentity").value=available[0].id;
-  $("#newKnightTitle").value="";$("#newKnightTitle").placeholder=`默认：${available[0].name}`;$("#newKnightPlayer").value="";$("#newKnightDialog").showModal();
+  const first=knightCatalog[0];
+  if(!first)return toast("暂无可用骑士");
+  $("#newKnightGallery").innerHTML=knightCatalog.map(item=>`<button class="knight-choice ${item.id===first.id?"selected":""}" type="button" role="radio" aria-checked="${item.id===first.id}" data-knight-choice="${item.id}"><img src="/assets/heroes/${item.id}-avatar.jpg" alt=""><span>${esc(item.name)}</span></button>`).join("");
+  $("#newKnightIdentity").value=first.id;
+  $("#newKnightTitle").value="";$("#newKnightTitle").placeholder=`默认：${first.name}`;$("#newKnightPlayer").value="";$("#newKnightDialog").showModal();
 }
 $("#newSheet").onclick=openNewKnightDialog;
 $("#closeKnightDialog").onclick=$("#cancelKnightDialog").onclick=()=>$("#newKnightDialog").close();

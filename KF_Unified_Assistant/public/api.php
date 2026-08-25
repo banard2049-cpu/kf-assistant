@@ -458,7 +458,10 @@ function backup_source_signature(PDO $db): string {
         'SELECT id,user_id,name,state_json,field_versions_json,revision,created_at,updated_at,deleted_at FROM campaigns ORDER BY id',
         'SELECT user_id,settings_json,updated_at FROM user_settings ORDER BY user_id',
         'SELECT seq,operation_id,sheet_id,user_id,client_id,field_path,value_json,base_revision,created_at FROM sync_operations ORDER BY seq',
-        'SELECT seq,operation_id,campaign_id,user_id,client_id,field_path,value_json,base_revision,created_at FROM campaign_operations ORDER BY seq',
+        // campaign_operations is an append-only undo/audit log and can contain
+        // very large AIBP snapshots.  It is deliberately excluded from the
+        // per-request backup signature; current campaign state is stored in
+        // campaigns.state_json and remains covered by this signature.
         'SELECT meta_key,meta_value,updated_at FROM app_meta ORDER BY meta_key',
     ];
     $hash=hash_init('sha256');
@@ -470,6 +473,17 @@ function backup_source_signature(PDO $db): string {
         hash_update($hash,"\0");
     }
     return hash_final($hash);
+}
+function unique_sheet_title(PDO $db, string $userId, mixed $value, string $excludeId = ''): string {
+    $base = title_value($value); $used = [];
+    $q = $db->prepare('SELECT title FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL AND id<>?'); $q->execute([$userId, $excludeId]);
+    foreach ($q->fetchAll(PDO::FETCH_COLUMN) as $title) $used[(string)$title] = true;
+    if (!isset($used[$base])) return $base;
+    for ($n=1;;$n++) { $suffix=(string)$n; $prefix=function_exists('mb_substr')?mb_substr($base,0,max(1,80-(function_exists('mb_strlen')?mb_strlen($suffix):strlen($suffix)))):substr($base,0,max(1,80-strlen($suffix))); $candidate=$prefix.$suffix; if(!isset($used[$candidate])) return $candidate; }
+}
+function unique_title_from_set(array &$used, mixed $value): string {
+    $base=title_value($value); if(!isset($used[$base])){$used[$base]=true;return $base;}
+    for($n=1;;$n++){$suffix=(string)$n;$prefix=function_exists('mb_substr')?mb_substr($base,0,max(1,80-(function_exists('mb_strlen')?mb_strlen($suffix):strlen($suffix)))):substr($base,0,max(1,80-strlen($suffix)));$candidate=$prefix.$suffix;if(!isset($used[$candidate])){$used[$candidate]=true;return $candidate;}}
 }
 function prune_backups(string $backupDir, int $limit=50): void {
     $files=glob($backupDir.DIRECTORY_SEPARATOR.'*.db')?:[];
@@ -492,6 +506,48 @@ function maintenance(PDO $db, string $backupDir): void {
         file_put_contents($marker,json_encode(['created_at'=>time(),'source_signature'=>$signature],JSON_UNESCAPED_SLASHES),LOCK_EX);
     }
     prune_backups($backupDir);
+}
+
+/**
+ * AIBP keeps its undo/step history inside modules.aibp.history.  Only the
+ * campaign currently being edited needs that history; keeping it in every
+ * campaign makes each sync operation needlessly huge.  The campaign state
+ * itself remains intact for all other campaigns, with only their history
+ * cleared.
+ */
+function retain_active_aibp_history(PDO $db, string $activeCampaignId, string $userId): void {
+    $q = $db->prepare('SELECT id,state_json FROM campaigns WHERE user_id=? AND deleted_at IS NULL AND id<>?');
+    $q->execute([$userId, $activeCampaignId]);
+    $update = $db->prepare('UPDATE campaigns SET state_json=?,revision=revision+1,updated_at=? WHERE id=?');
+    $deleteOps = $db->prepare("DELETE FROM campaign_operations WHERE campaign_id=? AND (field_path='aibp' OR field_path LIKE 'aibp.%' OR field_path='modules.aibp')");
+    foreach ($q->fetchAll() as $other) {
+        $state = json_decode($other['state_json'], true);
+        if (!is_array($state)) {
+            $deleteOps->execute([$other['id']]);
+            continue;
+        }
+        $changed = false;
+        foreach (['aibp', 'modules'] as $container) {
+            if ($container === 'aibp') {
+                if (is_array($state['aibp'] ?? null) && !empty($state['aibp']['history'])) {
+                    $state['aibp']['history'] = [];
+                    $changed = true;
+                }
+                continue;
+            }
+            if (is_array($state['modules']['aibp'] ?? null) && !empty($state['modules']['aibp']['history'])) {
+                $state['modules']['aibp']['history'] = [];
+                $changed = true;
+            }
+        }
+        if ($changed) $update->execute([json_encode($state, JSON_UNESCAPED_UNICODE), stamp(), $other['id']]);
+        $deleteOps->execute([$other['id']]);
+    }
+}
+
+function is_aibp_operation_path(mixed $path): bool {
+    $path = (string)$path;
+    return $path === 'aibp' || str_starts_with($path, 'aibp.') || $path === 'modules.aibp';
 }
 
 migrate_global_knights($db, $backupDir);
@@ -572,9 +628,22 @@ try {
                 $exists->execute([$op['id']]);if($exists->fetch())continue;$path=(string)($op['path']??'');$incoming=$op['value']??null;validate_value($path,$incoming);$base=is_int($op['baseRevision']??null)?$op['baseRevision']:0;$selected=$incoming;
                 if(($versions[$path]??0)>$base){$previous=get_path($state,$path);$choice=resolve_campaign_sync_conflict($path,$previous,$incoming);$selected=$choice['value'];$conflict=['path'=>$path,'previous'=>$previous,'resolution'=>$choice['resolution']];if(isset($choice['previousRound'])){$conflict['previousRound']=$choice['previousRound'];$conflict['incomingRound']=$choice['incomingRound'];}$conflicts[]=$conflict;}
                 $revision++;set_path($state,$path,$selected);$versions[$path]=$revision;
-                $insert->execute([$op['id'],$row['id'],$user['id'],$op['clientId'],$path,json_encode($incoming,JSON_UNESCAPED_UNICODE),$base,stamp()]);
+                // The authoritative current AIBP state (including its undo
+                // steps) is already stored in campaigns.state_json.  Do not
+                // duplicate the full snapshot in the append-only audit log.
+                $loggedValue = $path === 'modules.aibp'
+                    ? '{"snapshot":true}'
+                    : json_encode($incoming,JSON_UNESCAPED_UNICODE);
+                $insert->execute([$op['id'],$row['id'],$user['id'],$op['clientId'],$path,$loggedValue,$base,stamp()]);
             }
-            $q=$db->prepare('UPDATE campaigns SET state_json=?,field_versions_json=?,revision=?,updated_at=? WHERE id=?');$q->execute([json_encode($state,JSON_UNESCAPED_UNICODE),json_encode($versions),$revision,stamp(),$row['id']]);$db->exec('COMMIT');
+            $q=$db->prepare('UPDATE campaigns SET state_json=?,field_versions_json=?,revision=?,updated_at=? WHERE id=?');$q->execute([json_encode($state,JSON_UNESCAPED_UNICODE),json_encode($versions),$revision,stamp(),$row['id']]);
+            // The active AIBP campaign is the only one allowed to retain its
+            // undo/step history.  Other campaigns keep their current state,
+            // but their historical AIBP snapshots are discarded.
+            if (array_filter($operations, fn($op) => is_array($op) && is_aibp_operation_path($op['path'] ?? ''))) {
+                retain_active_aibp_history($db, $row['id'], $user['id']);
+            }
+            $db->exec('COMMIT');
         }catch(Throwable $e){$db->exec('ROLLBACK');throw $e;}respond(200,['state'=>$state,'revision'=>$revision,'conflicts'=>$conflicts]);
     }
     if ($route === 'campaign-export' && $method === 'GET') {
@@ -585,18 +654,17 @@ try {
     }
     if ($route === 'campaign-import' && $method === 'POST') {
         $data=request_data();if(($data['format']??'')!=='kf-unified-campaign'||($data['schemaVersion']??0)!==2||!is_array($data['campaign']??null))respond(400,['error'=>'只支持新版 KF 一体化战役存档（版本 2）']);
-        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$state['presentation']=default_presentation_state();$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$seenKnights=[];$catalog=knight_catalog();
-        $existingByKnight=[];$q=$db->prepare('SELECT id,state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll() as $existing){$existingState=json_decode($existing['state_json'],true);$existingKnight=(string)($existingState['knightId']??'');if($existingKnight!=='')$existingByKnight[$existingKnight]=$existing['id'];}
-        foreach($sourceSheets as $sheet)if(is_array($sheet)){
+        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$state['presentation']=default_presentation_state();$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$catalog=knight_catalog();$seenTitles=[];$q=$db->prepare('SELECT title FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll(PDO::FETCH_COLUMN) as $title)$seenTitles[(string)$title]=true;
+        foreach($sourceSheets as &$sheet)if(is_array($sheet)){
             $sheetState=$sheet['state']??null;$knightId=is_array($sheetState)?(string)($sheetState['knightId']??''):'';
-            if(!isset($catalog[$knightId])||isset($seenKnights[$knightId]))respond(400,['error'=>'导入文件包含无效或重复的骑士身份']);
-            $seenKnights[$knightId]=true;$sheetMap[(string)($sheet['id']??uuid4())]=$existingByKnight[$knightId]??uuid4();
-        }
+            if(!isset($catalog[$knightId]))respond(400,['error'=>'导入文件包含无效的骑士身份']);
+            $title=unique_title_from_set($seenTitles,$sheet['title']??'');$sheet['_resolvedTitle']=$title;$sheetMap[(string)($sheet['id']??uuid4())]=uuid4();
+        } unset($sheet);
         if(isset($sheetMap[$state['leaderSheetId']??'']))$state['leaderSheetId']=$sheetMap[$state['leaderSheetId']];
         $state['party']=array_values(array_map(fn($sheetId)=>$sheetMap[$sheetId]??$sheetId,is_array($state['party']??null)?$state['party']:[]));$db->beginTransaction();
         try{$q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');$q->execute([$id,$user['id'],title_value($payload['name']??'导入战役').'（导入）',json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
             $insert=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');
-            foreach($sourceSheets as $sheet)if(is_array($sheet)&&is_array($sheet['state']??null)){$oldId=(string)($sheet['id']??'');$sheetState=$sheet['state'];$knightId=(string)$sheetState['knightId'];if(isset($existingByKnight[$knightId]))continue;$sheetState['knight']=$catalog[$knightId];$insert->execute([$sheetMap[$oldId]??uuid4(),$user['id'],null,title_value($sheet['title']??''),json_encode($sheetState,JSON_UNESCAPED_UNICODE),$time,$time]);}
+            foreach($sourceSheets as $sheet)if(is_array($sheet)&&is_array($sheet['state']??null)){$oldId=(string)($sheet['id']??'');$sheetState=$sheet['state'];$knightId=(string)$sheetState['knightId'];$sheetState['knight']=$catalog[$knightId];$insert->execute([$sheetMap[$oldId]??uuid4(),$user['id'],null,(string)($sheet['_resolvedTitle']??title_value($sheet['title']??'')),json_encode($sheetState,JSON_UNESCAPED_UNICODE),$time,$time]);}
             if($importedStoryMarkers||$importedPasswords){$settings=load_user_settings($db,$user['id']);$settings['storyMarkers']=array_replace(normalize_story_markers($settings['storyMarkers']??[]),$importedStoryMarkers);$settings['passwords']=normalize_password_records(array_merge(normalize_password_records($settings['passwords']??[]),$importedPasswords));store_user_settings($db,$user['id'],$settings);}
             $db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}respond(201,['id'=>$id]);
     }
@@ -609,9 +677,8 @@ try {
         $base=default_state($knightId,(string)($incoming['player']??''));foreach($incoming as $key=>$value)$base[$key]=$value;$incoming=$base;
         $encoded=json_encode($incoming,JSON_UNESCAPED_UNICODE);if($encoded===false||strlen($encoded)>20000)respond(400,['error'=>'骑士档案内容过大']);
         $replaceId=(string)($data['replaceSheetId']??'');$existing=null;$q=$db->prepare('SELECT * FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);
-        foreach($q->fetchAll() as $row){$saved=json_decode($row['state_json'],true);if(is_array($saved)&&($saved['knightId']??'')===$knightId){$existing=$row;break;}}
-        if($existing&&$replaceId!==$existing['id'])respond(409,['error'=>'已经有这名骑士的共享档案，是否覆盖？','sheetId'=>$existing['id']]);
-        $incoming['knight']=$catalog[$knightId];$title=title_value($payload['title']??'');if($title==='')$title=$catalog[$knightId];$time=stamp();
+        foreach($q->fetchAll() as $row){$saved=json_decode($row['state_json'],true);if(is_array($saved)&&($saved['knightId']??'')===$knightId&&$row['id']===$replaceId){$existing=$row;break;}}
+        $incoming['knight']=$catalog[$knightId];$title=unique_sheet_title($db,$user['id'],$payload['title']??$catalog[$knightId],$existing['id']??'');$time=stamp();
         if($existing){$q=$db->prepare('UPDATE knight_sheets SET title=?,state_json=?,field_versions_json=?,revision=revision+1,updated_at=? WHERE id=? AND user_id=?');$q->execute([$title,json_encode($incoming,JSON_UNESCAPED_UNICODE),'{}',$time,$existing['id'],$user['id']]);$id=$existing['id'];}
         else{$id=uuid4();$q=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,field_versions_json,revision,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)');$q->execute([$id,$user['id'],null,$title,json_encode($incoming,JSON_UNESCAPED_UNICODE),'{}',0,$time,$time]);}
         respond(201,['sheet'=>parsed_sheet(owned_sheet($db,$id,$user['id'])),'replaced'=>(bool)$existing]);
@@ -638,17 +705,15 @@ try {
     if ($route === 'sheets' && $method === 'POST') {
         $data=request_data();$campaignId=(string)($data['campaignId']??$defaultCampaignId);if(!owned_campaign($db,$campaignId,$user['id']))respond(404,['error'=>'战役不存在']);
         $catalog=knight_catalog();$knightId=(string)($data['knightId']??'');if(!isset($catalog[$knightId]))respond(400,['error'=>'请选择一个有效的骑士']);
-        $q=$db->prepare('SELECT state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);
-        foreach($q->fetchAll() as $existing){$existingState=json_decode($existing['state_json'],true);if(($existingState['knightId']??'')===$knightId)respond(409,['error'=>'已经有这名骑士的共享档案']);}
-        $id=uuid4();$time=stamp();$state=default_state($knightId,(string)($data['player']??''));$title=trim(text_value($data['title']??'',80));if($title==='')$title=$catalog[$knightId];
-        $q=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');$q->execute([$id,$user['id'],null,title_value($title),json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
+        $id=uuid4();$time=stamp();$state=default_state($knightId,(string)($data['player']??''));$title=unique_sheet_title($db,$user['id'],$data['title']??$catalog[$knightId]);
+        $q=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');$q->execute([$id,$user['id'],null,$title,json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
         respond(201,['sheet'=>parsed_sheet(owned_sheet($db,$id,$user['id']))]);
     }
     if (in_array($route,['export','import','game-settings'],true)) respond(410,['error'=>'旧版接口已停用，请使用新版完整存档导入导出']);
     if (preg_match('/^sheets\/([a-f0-9-]+)(?:\/(copy|trash|restore))?$/',$route,$m)) {
         $action=$m[2]??'';$row=owned_sheet($db,$m[1],$user['id'],$action==='restore');if(!$row)respond(404,['error'=>'档案不存在']);
         if($action===''&&$method==='GET')respond(200,['sheet'=>parsed_sheet($row)]);
-        if($action===''&&$method==='PATCH'){$data=request_data();$q=$db->prepare('UPDATE knight_sheets SET title=?,updated_at=? WHERE id=? AND user_id=?');$q->execute([title_value($data['title']??''),stamp(),$row['id'],$user['id']]);respond(200,['ok'=>true]);}
+        if($action===''&&$method==='PATCH'){$data=request_data();$title=unique_sheet_title($db,$user['id'],$data['title']??'', $row['id']);$q=$db->prepare('UPDATE knight_sheets SET title=?,updated_at=? WHERE id=? AND user_id=?');$q->execute([$title,stamp(),$row['id'],$user['id']]);respond(200,['ok'=>true]);}
         if($action==='copy'&&$method==='POST')respond(409,['error'=>'骑士档案跨战役共享，无需复制']);
         if($action==='trash'&&$method==='POST'){
             $time=stamp();$q=$db->prepare('UPDATE knight_sheets SET deleted_at=?,updated_at=? WHERE id=?');$q->execute([$time,$time,$row['id']]);
@@ -658,7 +723,7 @@ try {
                 if($changed)$updateCampaign->execute([json_encode($campaignState,JSON_UNESCAPED_UNICODE),$time,$campaign['id']]);
             }respond(200,['ok'=>true]);
         }
-        if($action==='restore'&&$method==='POST'){$state=json_decode($row['state_json'],true);$knightId=(string)($state['knightId']??'');$q=$db->prepare('SELECT state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll() as $existing){$existingState=json_decode($existing['state_json'],true);if(($existingState['knightId']??'')===$knightId)respond(409,['error'=>'这名骑士已有共享档案，无法恢复重复备份']);}$q=$db->prepare('UPDATE knight_sheets SET deleted_at=NULL,updated_at=?,campaign_id=NULL WHERE id=?');$q->execute([stamp(),$row['id']]);respond(200,['ok'=>true]);}
+        if($action==='restore'&&$method==='POST'){$q=$db->prepare('UPDATE knight_sheets SET deleted_at=NULL,updated_at=?,campaign_id=NULL WHERE id=?');$q->execute([stamp(),$row['id']]);respond(200,['ok'=>true]);}
     }
     if ($route === 'sync' && $method === 'POST') {
         $data=request_data();$row=owned_sheet($db,(string)($data['sheetId']??''),$user['id']);if(!$row)respond(404,['error'=>'档案不存在']);

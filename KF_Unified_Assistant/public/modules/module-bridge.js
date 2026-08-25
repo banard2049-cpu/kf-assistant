@@ -255,6 +255,8 @@
       const isKnightSheet = sheet => knightIds.has(sheet?.state?.knightId);
       let party = Array.isArray(campaignState.party) ? campaignState.party.filter(id => allSheets.some(sheet => sheet.id === id && isKnightSheet(sheet))) : [];
       if (!party.length && campaignState.leaderSheetId && allSheets.some(sheet => sheet.id === campaignState.leaderSheetId && isKnightSheet(sheet))) party = [campaignState.leaderSheetId];
+      // Party slots reference distinct sheet records; repeated identities are
+      // allowed because their sheet IDs remain different.
       party = [...new Set(party)].slice(0, 4);
       const partyKnights = party.map(id => allSheets.find(sheet => sheet.id === id)).filter(Boolean).map(sheet => ({
         id: sheet.id, sheetId: sheet.id, knightId: sheet.state?.knightId || "", type: "knight",

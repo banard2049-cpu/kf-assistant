@@ -69,8 +69,10 @@
   function rosterKnights(existing = []) {
     const roster = campaignParty().slice(0, 4);
     if (!roster.length) return [{ id: uid(), name: "骑士 1", heroId: DATA.heroes?.[0]?.id || "", roll: roll(), space: "", facing: 0, action: "", done: false }];
+    const usedPrevious = new Set();
     return roster.map((member, index) => {
-      const previous = existing.find(item => item.sheetId === member.id || (!item.sheetId && item.name === member.name));
+      const previous = existing.find(item => !usedPrevious.has(item.id) && (item.sheetId === member.id || (!item.sheetId && item.name === member.name)));
+      if (previous) usedPrevious.add(previous.id);
       const heroId = member.knightId || member.squireId || previous?.heroId || DATA.heroes?.[index % DATA.heroes.length]?.id || "";
       return {
         id: previous?.id || uid(), sheetId: member.id, memberType: member.type || "knight", name: member.name, heroId,

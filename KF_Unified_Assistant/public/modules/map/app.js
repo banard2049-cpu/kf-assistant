@@ -463,8 +463,10 @@
     if (!roster.length) return [
       { id: uid(), name: "骑士 1", clues: { martial: 0, errant: 0, historic: 0, mystic: 0 }, primary: "", secondary: "", task: "" }
     ];
+    const usedPrevious = new Set();
     return roster.map(member => {
-      const previous = existing.find(item => item.sheetId === member.id || (!item.sheetId && item.name === member.name));
+      const previous = existing.find(item => !usedPrevious.has(item.id) && (item.sheetId === member.id || (!item.sheetId && item.name === member.name)));
+      if (previous) usedPrevious.add(previous.id);
       return {
         id: previous?.id || uid(), sheetId: member.id, memberType: member.type || "knight", name: member.name,
         heroId: member.type === "squire" ? member.squireId || "" : member.knightId || "",

@@ -22,7 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/banard2049-cpu/kf-assistant/main/to
 docker compose up -d --build
 ```
 
-访问 `http://服务器IP:8789/`。本地 Compose 使用 `./data` 和 `./backups` 持久化存档与备份；直接拉取 GHCR 镜像时，更新命令为：
+访问 `http://服务器IP:8789/`。一键脚本默认将 `compose.yaml`、`data/` 和 `backups/` 放在执行命令时的当前目录；直接拉取 GHCR 镜像时，更新命令为：
 
 ```bash
 docker compose pull
