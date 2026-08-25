@@ -343,7 +343,7 @@ function renderPartyBuilder(){
   $("#partySummary").textContent=`${party.length} 名骑士 ＋ ${squires.length} 名侍从`;
   $("#partyKnights").innerHTML=knightSheets().map(sheet=>{
     const count=party.filter(id=>id===sheet.id).length,isLeader=sheet.id===leader;
-    return `<label class="party-knight ${isLeader?"leader":""}"><input type="checkbox" data-party-sheet="${sheet.id}" ${count?"checked":""} ${isLeader?"disabled":""}><span>${esc(sheet.state?.knight||sheet.title)}${isLeader?" · 主骑士":""}</span></label>`;
+    return `<label class="party-knight ${isLeader?"leader":""}"><input type="checkbox" data-party-sheet="${sheet.id}" ${count?"checked":""} ${isLeader?"disabled":""}><span>${esc(sheet.title||sheet.state?.knight||"未命名骑士")}${isLeader?" · 主骑士":""}</span></label>`;
   }).join("");
   $("#squireSlots").innerHTML=squires.length?squires.map((id,index)=>{
     const item=squireCatalog.find(entry=>entry.id===id);
@@ -363,7 +363,7 @@ function showOverview(){
   $("#overviewGrid").innerHTML=sheets.map(sheet=>{const s=sheet.state||{},story=s.story||[],done=story.reduce((n,c)=>n+(c.quest?1:0)+(c.investigations||[]).filter(i=>i.attempted).length,0);
     const virtues=Object.entries(s.virtues||{}).map(([k,v])=>`<span title="${k}">${virtueNames[k]||k} <b>${v.value??0}</b></span>`).join("");
     const valid=isKnightSheet(sheet),leader=valid&&gameSettings.leaderSheetId===sheet.id;
-    return `<article class="overview-card" data-open-sheet="${sheet.id}" tabindex="0"><header><div><small>${esc(sheet.title)}</small><h2>${leader?'<span class="leader-name-mark" aria-label="当前主游戏骑士">♜</span> ':''}${esc(s.knight||"未命名骑士")}</h2>${!valid?'<span class="leader-ribbon">此身份属于侍从，旧档案仅保留数据</span>':""}</div><span class="chapter-badge">${Math.min(5,Math.floor(done/4)+1)} 章</span></header><div class="overview-resources"><span>灾祸 <b>${s.bane??0}</b></span><span>金钱 <b>${s.gold??0}</b></span><span>旁证 <b>${s.leads??0}</b></span><span>叹息 <b>${s.sigh??0}</b></span></div><div class="overview-virtues">${virtues}</div><section class="overview-notes"><strong>笔记</strong><p>${s.notes?esc(s.notes):'<span class="subtle">暂无笔记</span>'}</p></section><footer><span>故事进度 ${done}/20</span><div class="progress"><i style="width:${done/20*100}%"></i></div><button class="button" data-edit-sheet="${sheet.id}">打开记录表</button>${valid&&!leader?`<button class="button leader-button" data-leader-sheet="${sheet.id}">设为主游戏骑士</button>`:""}</footer></article>`}).join("")||'<div class="overview-empty"><div class="crest">♜</div><h2>还没有骑士档案</h2><p>建立第一张记录表，开始你的故事。</p></div>';
+    return `<article class="overview-card" data-open-sheet="${sheet.id}" tabindex="0"><header><div><small>${esc(s.knight||"未命名身份")}</small><h2>${leader?'<span class="leader-name-mark" aria-label="当前主游戏骑士">♜</span> ':''}${esc(sheet.title||s.knight||"未命名骑士")}</h2>${!valid?'<span class="leader-ribbon">此身份属于侍从，旧档案仅保留数据</span>':""}</div><span class="chapter-badge">${Math.min(5,Math.floor(done/4)+1)} 章</span></header><div class="overview-resources"><span>灾祸 <b>${s.bane??0}</b></span><span>金钱 <b>${s.gold??0}</b></span><span>旁证 <b>${s.leads??0}</b></span><span>叹息 <b>${s.sigh??0}</b></span></div><div class="overview-virtues">${virtues}</div><section class="overview-notes"><strong>笔记</strong><p>${s.notes?esc(s.notes):'<span class="subtle">暂无笔记</span>'}</p></section><footer><span>故事进度 ${done}/20</span><div class="progress"><i style="width:${done/20*100}%"></i></div><button class="button" data-edit-sheet="${sheet.id}">打开记录表</button>${valid&&!leader?`<button class="button leader-button" data-leader-sheet="${sheet.id}">设为主游戏骑士</button>`:""}</footer></article>`}).join("")||'<div class="overview-empty"><div class="crest">♜</div><h2>还没有骑士档案</h2><p>建立第一张记录表，开始你的故事。</p></div>';
   renderEncounterBuilder();
   renderMonsterPool();
 }
@@ -407,7 +407,7 @@ function talePosition(sheet){
 }
 function renderEncounterBuilder(){
   const eligible=knightSheets(),leader=eligible.find(s=>s.id===gameSettings.leaderSheetId);
-  $("#leaderSelect").innerHTML='<option value="">请选择</option>'+eligible.map(s=>`<option value="${s.id}">${esc(s.state?.knight||s.title)}</option>`).join("");
+  $("#leaderSelect").innerHTML='<option value="">请选择</option>'+eligible.map(s=>`<option value="${s.id}">${esc(s.title||s.state?.knight||"未命名骑士")}</option>`).join("");
   $("#leaderSelect").value=leader?.id||"";$("#kingdomSelect").value=gameSettings.kingdom||"sunken";gameSettings.districts=gameSettings.kingdom==="sunken"?3:4;$("#districtCount").textContent=gameSettings.kingdom==="sunken"?"沉没王国：3":"巨石王国：4";
   if($("#devourDragonRule"))$("#devourDragonRule").checked=Boolean(gameSettings.devourDragon);
   const pos=talePosition(leader);$("#talePosition").textContent=leader?`第 ${pos.chapter} 章 · ${pos.label}${pos.empty?"（尚无标记，按起始行）":""}`:"请选择主游戏骑士";
@@ -449,7 +449,7 @@ function saveChosenMonsterPool(){
 function renderMonsterPool(pool=campaignState?.monsterPool,leader=knightSheets().find(s=>s.id===gameSettings.leaderSheetId),pos=leader?talePosition(leader):{row:0}){
   if(!pool?.cards?.length){$("#monsterPool").classList.add("hidden");return}$("#monsterPool").classList.remove("hidden");
   const dragonNotice=pool.devourDragon?.drawn?`<div class="devour-dragon-notice"><strong>贪食巨龙来了！</strong><span>${pool.devourDragon.boundMonster?`已与 ${esc(pool.devourDragon.boundMonster)} 绑定；该怪物的冲突在巨兽之腹中进行。`:"本次抽到的均为国王或巨龙，没有进行绑定。"}</span></div>`:"";
-  $("#monsterPool").innerHTML=`<strong>${esc(leader?.state?.knight||leader?.title||"主骑士")} · 比对卡第 ${pos.row+1} 行 · 牌池 ${pool.cards.length} 张</strong>${dragonNotice}<div class="pool-cards">${(pool.districts||[]).map((c,i)=>`<button class="monster-card ${c.devourDragonBound?"devour-bound":""}" type="button" data-original-encounter="${i}" title="打开 ${esc(c.name)} 遭遇">${monsterAvatarMarkup(c.name)}<span><small>区域 ${i+1}${c.devourDragonBound?" · 巨兽之腹":""}</small><strong>${esc(c.name)}</strong><b>Lv.${c.level}</b></span></button>`).join("")}</div>`;
+  $("#monsterPool").innerHTML=`<strong>${esc(leader?.title||leader?.state?.knight||"主骑士")} · 比对卡第 ${pos.row+1} 行 · 牌池 ${pool.cards.length} 张</strong>${dragonNotice}<div class="pool-cards">${(pool.districts||[]).map((c,i)=>`<button class="monster-card ${c.devourDragonBound?"devour-bound":""}" type="button" data-original-encounter="${i}" title="打开 ${esc(c.name)} 遭遇">${monsterAvatarMarkup(c.name)}<span><small>区域 ${i+1}${c.devourDragonBound?" · 巨兽之腹":""}</small><strong>${esc(c.name)}</strong><b>Lv.${c.level}</b></span></button>`).join("")}</div>`;
 }
 function renderAll(title){
   hideGameViews();$("#overview").classList.add("hidden");$("#emptyState").classList.add("hidden");$("#sheetForm").classList.remove("hidden");$("#sheetTitle").value=title;setActiveModuleNav();
@@ -567,7 +567,7 @@ $("#newKnightForm").onsubmit=async e=>{
   e.preventDefault();
   try{
     const d=await api("/api/sheets",{method:"POST",body:JSON.stringify({campaignId:activeCampaign,knightId:$("#newKnightIdentity").value,title:$("#newKnightTitle").value,player:$("#newKnightPlayer").value})});
-    $("#newKnightDialog").close();await refreshLists();await openSheet(d.sheet.id);toast(`已建立 ${d.sheet.state.knight} 的骑士档案`);
+    $("#newKnightDialog").close();await refreshLists();await openSheet(d.sheet.id);toast(`已建立 ${d.sheet.title} 的骑士档案`);
   }catch(error){toast(error.message)}
 };
 $("#sheetTitle").onchange=async e=>{if(!active)return;await api(`/api/sheets/${active}`,{method:"PATCH",body:JSON.stringify({title:e.target.value})});refreshLists()};

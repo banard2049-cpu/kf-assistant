@@ -29,6 +29,8 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,6 +41,10 @@ final class LocalSecondScreenServer {
     private final LocalApi localApi;
     private volatile ServerSocket serverSocket;
     private volatile ExecutorService executor;
+    /** Short, process-local aliases keep the LAN address easy to type without exposing a UUID. */
+    private final Map<String, String> displayAliases = new HashMap<>();
+    private final Map<String, String> campaignAliases = new HashMap<>();
+    private int nextDisplayAlias = 1;
 
     LocalSecondScreenServer(Context context, ResourceStore resources, LocalApi localApi) {
         this.context = context.getApplicationContext();
@@ -67,8 +73,21 @@ final class LocalSecondScreenServer {
         ServerSocket socket = serverSocket;
         if (socket == null || socket.isClosed()) return "";
         int port = socket.getLocalPort();
-        for (String address : lanAddresses()) return "http://" + address + ":" + port + "/modules/display/?campaignId=" + UriCompat.encode(campaignId);
+        String alias = aliasFor(campaignId);
+        for (String address : lanAddresses()) return "http://" + address + ":" + port + "/modules/display/?c=" + alias;
         return "";
+    }
+
+    private synchronized String aliasFor(String campaignId) {
+        String value = campaignId == null ? "" : campaignId;
+        if (value.isEmpty()) return "";
+        String existing = campaignAliases.get(value);
+        if (existing != null) return existing;
+        String alias;
+        do { alias = Integer.toString(nextDisplayAlias++, 36); } while (displayAliases.containsKey(alias));
+        displayAliases.put(alias, value);
+        campaignAliases.put(value, alias);
+        return alias;
     }
 
     private void acceptLoop() {
@@ -105,7 +124,7 @@ final class LocalSecondScreenServer {
     }
 
     private void serveApi(OutputStream output, String target, boolean head) throws IOException {
-        String result = localApi.request("GET", "http://127.0.0.1" + target, "");
+        String result = localApi.request("GET", "http://127.0.0.1" + resolveDisplayAlias(target), "");
         try {
             JSONObject envelope = new JSONObject(result);
             JSONObject body = envelope.optJSONObject("body");
@@ -113,6 +132,29 @@ final class LocalSecondScreenServer {
         } catch (Exception error) {
             sendText(output, 500, "application/json; charset=utf-8", "{\"error\":\"本地接口失败\"}", head);
         }
+    }
+
+    private String resolveDisplayAlias(String target) {
+        try {
+            URI uri = URI.create(target);
+            String query = uri.getRawQuery();
+            if (query == null || query.isEmpty()) return target;
+            StringBuilder rebuilt = new StringBuilder();
+            for (String part : query.split("&", -1)) {
+                if (rebuilt.length() > 0) rebuilt.append('&');
+                int split = part.indexOf('=');
+                String key = split < 0 ? part : part.substring(0, split);
+                String value = split < 0 ? "" : part.substring(split + 1);
+                if ("c".equals(key) || "campaignId".equals(key)) {
+                    String campaignId;
+                    synchronized (this) { campaignId = displayAliases.get(value); }
+                    if (campaignId != null) { key = "campaignId"; value = UriCompat.encode(campaignId); }
+                }
+                rebuilt.append(key);
+                if (split >= 0 || "campaignId".equals(key)) rebuilt.append('=').append(value);
+            }
+            return uri.getPath() + "?" + rebuilt;
+        } catch (IllegalArgumentException ignored) { return target; }
     }
 
     private void serveStatic(OutputStream output, String rawPath, boolean head) throws IOException {

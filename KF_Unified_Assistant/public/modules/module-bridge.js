@@ -260,7 +260,7 @@
       party = [...new Set(party)].slice(0, 4);
       const partyKnights = party.map(id => allSheets.find(sheet => sheet.id === id)).filter(Boolean).map(sheet => ({
         id: sheet.id, sheetId: sheet.id, knightId: sheet.state?.knightId || "", type: "knight",
-        name: sheet.state?.knight || sheet.title, title: sheet.title,
+        name: sheet.title || sheet.state?.knight || "未命名骑士", title: sheet.title,
       }));
       const needed = partyKnights.length ? Math.max(0, 4 - partyKnights.length) : 0;
       const requested = Array.isArray(campaignState.squires) ? campaignState.squires : [];

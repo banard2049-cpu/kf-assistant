@@ -4,7 +4,8 @@
   const displayHeader = document.querySelector("#displayHeader");
   const connectionText = document.querySelector("#connectionText");
   const connectionDot = document.querySelector("#connectionDot");
-  const activeCampaign = new URLSearchParams(location.search).get("campaignId") || localStorage.getItem("kfActiveCampaign") || "";
+  const query = new URLSearchParams(location.search);
+  const activeCampaign = query.get("campaignId") || query.get("c") || localStorage.getItem("kfActiveCampaign") || "";
   const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
   const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value) || 0));
   const cardinalFacing = value => {
