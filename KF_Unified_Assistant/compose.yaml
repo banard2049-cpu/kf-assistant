@@ -16,3 +16,9 @@ services:
     volumes:
       - ./data:/app/data
       - ./backups:/app/backups
+      - ./assets:/app/assets:ro
+      - ./modules/aibp/assets:/app/modules/aibp/assets:ro
+      - ./modules/conflict/assets:/app/modules/conflict/assets:ro
+      - ./modules/display/assets:/app/modules/display/assets:ro
+      - ./modules/encounter/assets:/app/modules/encounter/assets:ro
+      - ./modules/map/assets:/app/modules/map/assets:ro
