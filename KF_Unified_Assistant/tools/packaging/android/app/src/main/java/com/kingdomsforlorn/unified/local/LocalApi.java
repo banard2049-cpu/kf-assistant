@@ -261,6 +261,8 @@ final class LocalApi {
         if (importedState.length() == 0) importedState = defaultCampaignState();
         importedState.put("schemaVersion", 2);
         JSONObject sheets = sheetBucket(store, userId);
+        Set<String> usedTitles = new HashSet<>();
+        for (JSONObject existing : sortedRecords(sheets)) if (!isDeleted(existing)) usedTitles.add(existing.optString("title"));
         JSONArray sourceSheets = payload.optJSONArray("sheets");
         Map<String, String> sheetMap = new HashMap<>();
         for (int index = 0; sourceSheets != null && index < Math.min(100, sourceSheets.length()); index++) {
