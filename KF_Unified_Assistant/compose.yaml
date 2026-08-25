@@ -5,6 +5,9 @@ services:
     container_name: kf-unified-assistant
     pull_policy: missing
     restart: unless-stopped
+    # Bind-mounted data directories may be created by root on NAS hosts.
+    # Run the container as root so SQLite can always initialize the database.
+    user: "0:0"
     ports:
       - "8789:8793"
     environment:
