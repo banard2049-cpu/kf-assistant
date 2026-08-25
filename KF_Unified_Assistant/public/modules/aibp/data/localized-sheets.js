@@ -8,7 +8,7 @@
 
   palebloodWorms.sheet = {
     ...palebloodWorms.sheet,
-    face: "assets/sheets-zh/paleblood-worms-1-v1.1.jpg",
+    face: "/assets/sheets-zh/paleblood-worms-1-v1.1.jpg",
     width: 1,
     height: 1,
     index: 0,

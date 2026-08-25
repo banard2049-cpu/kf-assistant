@@ -48,8 +48,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_Ratwolves",
       mapsByKingdom: {
-        sunken: "assets/conflict-maps/ratwolves-sunken.jpg",
-        stone: "assets/conflict-maps/ratwolves-stone.jpg"
+        sunken: "/assets/conflict-maps/ratwolves-sunken.jpg",
+        stone: "/assets/conflict-maps/ratwolves-stone.jpg"
       },
       name: "鼠狼群",
       en: "Ratwolves",
@@ -69,8 +69,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_WingedNightmare",
       mapsByKingdom: {
-        sunken: "assets/conflict-maps/winged-nightmare-sunken.jpg",
-        stone: "assets/conflict-maps/winged-nightmare-stone.jpg"
+        sunken: "/assets/conflict-maps/winged-nightmare-sunken.jpg",
+        stone: "/assets/conflict-maps/winged-nightmare-stone.jpg"
       },
       name: "翼生梦魇",
       en: "Winged Nightmare",
@@ -96,8 +96,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_Pumpkinhead",
       mapsByKingdom: {
-        sunken: "assets/conflict-maps/pumpkinheads-sunken.jpg",
-        stone: "assets/conflict-maps/pumpkinheads-stone.jpg"
+        sunken: "/assets/conflict-maps/pumpkinheads-sunken.jpg",
+        stone: "/assets/conflict-maps/pumpkinheads-stone.jpg"
       },
       name: "南瓜头精怪",
       en: "Pumpkinhead Monstrosities",
@@ -124,8 +124,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_KnightFen",
       mapsByKingdom: {
-        sunken: "assets/conflict-maps/knight-fen-sunken.jpg",
-        stone: "assets/conflict-maps/knight-fen-stone.jpg"
+        sunken: "/assets/conflict-maps/knight-fen-sunken.jpg",
+        stone: "/assets/conflict-maps/knight-fen-stone.jpg"
       },
       name: "沼泽骑士",
       en: "Knight of the Fen",
@@ -143,8 +143,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_PalebloodWorms",
       mapsByKingdom: {
-        sunken: "assets/conflict-maps/paleblood-worms-sunken.jpg",
-        stone: "assets/conflict-maps/paleblood-worms-stone.jpg"
+        sunken: "/assets/conflict-maps/paleblood-worms-sunken.jpg",
+        stone: "/assets/conflict-maps/paleblood-worms-stone.jpg"
       },
       name: "苍血蠕虫",
       en: "Paleblood Worms",
@@ -164,7 +164,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_FirstmenWarriors",
-      map: "assets/conflict-maps/firstmen-warriors.jpg",
+      map: "/assets/conflict-maps/firstmen-warriors.jpg",
       name: "先民战士",
       en: "Firstmen Warriors",
       kingdom: "both",
@@ -182,7 +182,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_HauntOf",
-      map: "assets/conflict-maps/haunts-utrebant.jpg",
+      map: "/assets/conflict-maps/haunts-utrebant.jpg",
       name: "乌特雷班特鬼影",
       en: "Haunts of Utrebant",
       kingdom: "both",
@@ -199,7 +199,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_WhiteApe",
-      map: "assets/conflict-maps/white-ape-troll.jpg",
+      map: "/assets/conflict-maps/white-ape-troll.jpg",
       name: "巨白猿魔",
       en: "White Ape Troll",
       kingdom: "both",
@@ -216,7 +216,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_KingLaidLow",
-      map: "assets/conflict-maps/king-laid-low.jpg",
+      map: "/assets/conflict-maps/king-laid-low.jpg",
       name: "沉沦之王",
       en: "The King Laid Low",
       kingdom: "both",
@@ -234,8 +234,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_DevilAncientDusk",
       mapsByLevel: {
-        "1": "assets/conflict-maps/devil-ancient-dusk-l1.jpg",
-        "2+": "assets/conflict-maps/devil-ancient-dusk-l2.jpg"
+        "1": "/assets/conflict-maps/devil-ancient-dusk-l1.jpg",
+        "2+": "/assets/conflict-maps/devil-ancient-dusk-l2.jpg"
       },
       name: "远古薄暮恶魔",
       en: "Devil of the Ancient Dusk",
@@ -256,7 +256,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Toadragon",
-      map: "assets/conflict-maps/toadragon.jpg",
+      map: "/assets/conflict-maps/toadragon.jpg",
       name: "大沼泽蟾龙",
       en: "Toadragon of the Great Marsh",
       kingdom: "both",
@@ -271,7 +271,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Knighteater",
-      map: "assets/conflict-maps/knighteater.jpg",
+      map: "/assets/conflict-maps/knighteater.jpg",
       name: "食骑者",
       en: "Knighteater",
       kingdom: "both",
@@ -286,7 +286,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_YoungDevour",
-      map: "assets/conflict-maps/young-devour-dragon.jpg",
+      map: "/assets/conflict-maps/young-devour-dragon.jpg",
       name: "幼年吞噬巨龙",
       en: "Young Devour Dragon",
       kingdom: "both",
@@ -301,7 +301,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Panzergeists",
-      map: "assets/conflict-maps/panzergeists.jpg",
+      map: "/assets/conflict-maps/panzergeists.jpg",
       name: "装甲幽灵",
       en: "Panzergeists",
       kingdom: "stone",
@@ -319,7 +319,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Stonemason",
-      map: "assets/conflict-maps/stonemason-knight.jpg",
+      map: "/assets/conflict-maps/stonemason-knight.jpg",
       name: "石匠骑士",
       en: "Stonemason Knight",
       kingdom: "stone",
@@ -333,7 +333,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_FirstmenLictor",
-      map: "assets/conflict-maps/firstmen-lictor-hunters.jpg",
+      map: "/assets/conflict-maps/firstmen-lictor-hunters.jpg",
       name: "先民执政官猎手",
       en: "Firstmen Lictor Hunters",
       kingdom: "sunken",
@@ -350,7 +350,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_BogWitch",
-      map: "assets/conflict-maps/bog-witch.jpg",
+      map: "/assets/conflict-maps/bog-witch.jpg",
       name: "沼泽女巫",
       en: "Bog Witch",
       kingdom: "sunken",
@@ -365,7 +365,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Ironcast",
-      map: "assets/conflict-maps/ironcast-dead.jpg",
+      map: "/assets/conflict-maps/ironcast-dead.jpg",
       name: "铁铸亡者",
       en: "Ironcast Dead",
       kingdom: "stone",
@@ -381,7 +381,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Eggknight",
-      map: "assets/conflict-maps/eggknight.jpg",
+      map: "/assets/conflict-maps/eggknight.jpg",
       name: "蛋蛋骑士",
       en: "Eggknight",
       kingdom: "stone",
@@ -395,7 +395,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_PuppetKing",
-      map: "assets/conflict-maps/puppet-king-edelhardt.jpg",
+      map: "/assets/conflict-maps/puppet-king-edelhardt.jpg",
       name: "木偶王埃德尔哈特",
       en: "Puppet King Edelhardt",
       kingdom: "stone",
@@ -410,7 +410,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_DevilSmeltedFears",
-      map: "assets/conflict-maps/devil-smelted-fears.jpg",
+      map: "/assets/conflict-maps/devil-smelted-fears.jpg",
       name: "熔怖恶魔",
       en: "Devil of the Smelted Fears",
       kingdom: "stone",
@@ -425,7 +425,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Panzerdragon",
-      map: "assets/conflict-maps/panzerdragon-veldr.jpg",
+      map: "/assets/conflict-maps/panzerdragon-veldr.jpg",
       name: "装甲巨龙维尔德",
       en: "Panzerdragon Veldr",
       kingdom: "stone",
@@ -624,51 +624,51 @@ const KF_CONFLICT_FLAVOR_TEXT = {
 const KF_CONFLICT_ORIGINALS = {
   M_Ratwolves: {
     byKingdom: {
-      sunken: { src: "assets/conflict-originals/ratwolves-sunken.jpg", label: "沉没王国 ClearScan · PDF 23-24 页" },
-      stone: { src: "assets/conflict-originals/ratwolves-stone.jpg", label: "巨石公国 ClearScan · PDF 25-26 页" }
+      sunken: { src: "/assets/conflict-originals/ratwolves-sunken.jpg", label: "沉没王国 ClearScan · PDF 23-24 页" },
+      stone: { src: "/assets/conflict-originals/ratwolves-stone.jpg", label: "巨石公国 ClearScan · PDF 25-26 页" }
     }
   },
   M_WingedNightmare: {
     byKingdom: {
-      sunken: { src: "assets/conflict-originals/winged-nightmare-sunken.jpg", label: "沉没王国 ClearScan · PDF 25-26 页" },
-      stone: { src: "assets/conflict-originals/winged-nightmare-stone.jpg", label: "巨石公国 ClearScan · PDF 27-28 页" }
+      sunken: { src: "/assets/conflict-originals/winged-nightmare-sunken.jpg", label: "沉没王国 ClearScan · PDF 25-26 页" },
+      stone: { src: "/assets/conflict-originals/winged-nightmare-stone.jpg", label: "巨石公国 ClearScan · PDF 27-28 页" }
     }
   },
   M_Pumpkinhead: {
     byKingdom: {
-      sunken: { src: "assets/conflict-originals/pumpkinheads-sunken.jpg", label: "沉没王国 ClearScan · PDF 27-28 页" },
-      stone: { src: "assets/conflict-originals/pumpkinheads-stone.jpg", label: "巨石公国 ClearScan · PDF 29-30 页" }
+      sunken: { src: "/assets/conflict-originals/pumpkinheads-sunken.jpg", label: "沉没王国 ClearScan · PDF 27-28 页" },
+      stone: { src: "/assets/conflict-originals/pumpkinheads-stone.jpg", label: "巨石公国 ClearScan · PDF 29-30 页" }
     }
   },
   M_KnightFen: {
     byKingdom: {
-      sunken: { src: "assets/conflict-originals/knight-fen-sunken.jpg", label: "沉没王国 ClearScan · PDF 29-30 页" },
-      stone: { src: "assets/conflict-originals/knight-fen-stone.jpg", label: "巨石公国 ClearScan · PDF 31-32 页" }
+      sunken: { src: "/assets/conflict-originals/knight-fen-sunken.jpg", label: "沉没王国 ClearScan · PDF 29-30 页" },
+      stone: { src: "/assets/conflict-originals/knight-fen-stone.jpg", label: "巨石公国 ClearScan · PDF 31-32 页" }
     }
   },
   M_PalebloodWorms: {
     byKingdom: {
-      sunken: { src: "assets/conflict-originals/paleblood-worms-sunken.jpg", label: "沉没王国 ClearScan · PDF 31-32 页" },
-      stone: { src: "assets/conflict-originals/paleblood-worms-stone.jpg", label: "巨石公国 ClearScan · PDF 33-34 页" }
+      sunken: { src: "/assets/conflict-originals/paleblood-worms-sunken.jpg", label: "沉没王国 ClearScan · PDF 31-32 页" },
+      stone: { src: "/assets/conflict-originals/paleblood-worms-stone.jpg", label: "巨石公国 ClearScan · PDF 33-34 页" }
     }
   },
-  M_FirstmenWarriors: { default: { src: "assets/conflict-originals/firstmen-warriors.jpg", label: "沉没王国 ClearScan · PDF 33-34 页" } },
-  M_HauntOf: { default: { src: "assets/conflict-originals/haunts-utrebant.jpg", label: "沉没王国 ClearScan · PDF 35-36 页" } },
-  M_WhiteApe: { default: { src: "assets/conflict-originals/white-ape-troll.jpg", label: "沉没王国 ClearScan · PDF 37-38 页" } },
-  M_KingLaidLow: { default: { src: "assets/conflict-originals/king-laid-low.jpg", label: "沉没王国 ClearScan · PDF 39-40 页" } },
-  M_DevilAncientDusk: { default: { src: "assets/conflict-originals/devil-ancient-dusk.jpg", label: "沉没王国 ClearScan · PDF 41-42 页" } },
-  M_Toadragon: { default: { src: "assets/conflict-originals/toadragon.jpg", label: "沉没王国 ClearScan · PDF 43-44 页" } },
-  M_Knighteater: { default: { src: "assets/conflict-originals/knighteater.jpg", label: "万千恐惧 ClearScan · PDF 39-40 页" } },
-  M_YoungDevour: { default: { src: "assets/conflict-originals/young-devour-dragon.jpg", label: "万千恐惧 ClearScan · PDF 41-42 页" } },
-  M_Panzergeists: { default: { src: "assets/conflict-originals/panzergeists.jpg", label: "万千恐惧 ClearScan · PDF 43-44 页" } },
-  M_Stonemason: { default: { src: "assets/conflict-originals/stonemason-knight.jpg", label: "万千恐惧 ClearScan · PDF 45-46 页" } },
-  M_FirstmenLictor: { default: { src: "assets/conflict-originals/firstmen-lictor-hunters.jpg", label: "万千恐惧 ClearScan · PDF 47-48 页" } },
-  M_BogWitch: { default: { src: "assets/conflict-originals/bog-witch.jpg", label: "万千恐惧 ClearScan · PDF 49-50 页" } },
-  M_Ironcast: { default: { src: "assets/conflict-originals/ironcast-dead.jpg", label: "巨石公国 ClearScan · PDF 35-36 页" } },
-  M_Eggknight: { default: { src: "assets/conflict-originals/eggknight.jpg", label: "巨石公国 ClearScan · PDF 37-38 页" } },
-  M_PuppetKing: { default: { src: "assets/conflict-originals/puppet-king-edelhardt.jpg", label: "巨石公国 ClearScan · PDF 39-40 页" } },
-  M_DevilSmeltedFears: { default: { src: "assets/conflict-originals/devil-smelted-fears.jpg", label: "巨石公国 ClearScan · PDF 41-42 页" } },
-  M_Panzerdragon: { default: { src: "assets/conflict-originals/panzerdragon-veldr.jpg", label: "巨石公国 ClearScan · PDF 43-44 页" } }
+  M_FirstmenWarriors: { default: { src: "/assets/conflict-originals/firstmen-warriors.jpg", label: "沉没王国 ClearScan · PDF 33-34 页" } },
+  M_HauntOf: { default: { src: "/assets/conflict-originals/haunts-utrebant.jpg", label: "沉没王国 ClearScan · PDF 35-36 页" } },
+  M_WhiteApe: { default: { src: "/assets/conflict-originals/white-ape-troll.jpg", label: "沉没王国 ClearScan · PDF 37-38 页" } },
+  M_KingLaidLow: { default: { src: "/assets/conflict-originals/king-laid-low.jpg", label: "沉没王国 ClearScan · PDF 39-40 页" } },
+  M_DevilAncientDusk: { default: { src: "/assets/conflict-originals/devil-ancient-dusk.jpg", label: "沉没王国 ClearScan · PDF 41-42 页" } },
+  M_Toadragon: { default: { src: "/assets/conflict-originals/toadragon.jpg", label: "沉没王国 ClearScan · PDF 43-44 页" } },
+  M_Knighteater: { default: { src: "/assets/conflict-originals/knighteater.jpg", label: "万千恐惧 ClearScan · PDF 39-40 页" } },
+  M_YoungDevour: { default: { src: "/assets/conflict-originals/young-devour-dragon.jpg", label: "万千恐惧 ClearScan · PDF 41-42 页" } },
+  M_Panzergeists: { default: { src: "/assets/conflict-originals/panzergeists.jpg", label: "万千恐惧 ClearScan · PDF 43-44 页" } },
+  M_Stonemason: { default: { src: "/assets/conflict-originals/stonemason-knight.jpg", label: "万千恐惧 ClearScan · PDF 45-46 页" } },
+  M_FirstmenLictor: { default: { src: "/assets/conflict-originals/firstmen-lictor-hunters.jpg", label: "万千恐惧 ClearScan · PDF 47-48 页" } },
+  M_BogWitch: { default: { src: "/assets/conflict-originals/bog-witch.jpg", label: "万千恐惧 ClearScan · PDF 49-50 页" } },
+  M_Ironcast: { default: { src: "/assets/conflict-originals/ironcast-dead.jpg", label: "巨石公国 ClearScan · PDF 35-36 页" } },
+  M_Eggknight: { default: { src: "/assets/conflict-originals/eggknight.jpg", label: "巨石公国 ClearScan · PDF 37-38 页" } },
+  M_PuppetKing: { default: { src: "/assets/conflict-originals/puppet-king-edelhardt.jpg", label: "巨石公国 ClearScan · PDF 39-40 页" } },
+  M_DevilSmeltedFears: { default: { src: "/assets/conflict-originals/devil-smelted-fears.jpg", label: "巨石公国 ClearScan · PDF 41-42 页" } },
+  M_Panzerdragon: { default: { src: "/assets/conflict-originals/panzerdragon-veldr.jpg", label: "巨石公国 ClearScan · PDF 43-44 页" } }
 };
 
 for (const monster of window.KF_CONFLICT_SETUPS.monsters) {

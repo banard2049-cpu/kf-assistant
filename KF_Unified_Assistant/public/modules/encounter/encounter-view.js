@@ -44,6 +44,7 @@
     return Number(level?.stats?.monsterSize) || (tier === "mob" ? 1 : tier === "dragon" ? 3 : 2);
   }
 
+
   function avatarCrop(image, alt, assetBase) {
     if (!image?.face) return "";
     const width = Math.max(1, Number(image.width) || 1);
@@ -138,9 +139,9 @@
         : `<span class="space read-only ${inactive ? "inactive" : ""} ${unavailable ? "unavailable" : ""} ${matchClass} ${targetClass} ${piece ? "piece-anchor" : ""}" aria-label="${esc(title)}">${content}</span>`;
     }).join("");
     return `<div class="board-wrap ${interactive ? "" : "read-only"}" style="--board-aspect:${Number(board.width) || 1}/${Number(board.height) || 1}">
-      ${board.src ? `<img src="${esc(asset(board.src, options.assetBase))}" alt="TTS 遭遇战版图">` : ""}
+      ${board.src ? `<img src="${esc(asset(board.src, options.assetBase))}" alt="TTS 遭遇战版图" style="transform:scaleY(${Number(board.mapScaleY) || 1});">` : ""}
       ${interactive ? '<button type="button" id="boardRemoveZone" class="board-remove-zone" title="将当前选中的棋子移出版图">移出区</button><button type="button" id="peekBoardIcons" class="board-icon-peek" aria-pressed="false" title="按住查看地图图标">查看图标</button>' : ""}
-      <div class="board-grid" style="--cols:${board.cols};--rows:${board.rows};left:${inset[0]}%;top:${inset[1]}%;right:${inset[2]}%;bottom:${inset[3]}%">${spaces}</div>
+      <div class="board-grid" style="--cols:${board.cols};--rows:${board.rows};left:${inset[0]}%;top:${inset[1]}%;right:${inset[2]}%;bottom:${inset[3]}%;${board.mirror ? "direction:rtl;" : ""}">${spaces}</div>
     </div>`;
   }
 

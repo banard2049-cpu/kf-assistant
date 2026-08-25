@@ -54,10 +54,10 @@
   });
   const THREAT_HUNT = Object.freeze({ 3: 1, 4: 2, 7: 1, 8: 1, 9: 2 });
   const CLUES = [
-    ["martial", "武艺", "assets/tokens/红-token.png?v=1"],
-    ["errant", "游侠", "assets/tokens/绿-token.png?v=1"],
-    ["historic", "历史", "assets/tokens/黄-token.png?v=1"],
-    ["mystic", "神秘", "assets/tokens/蓝-token.png?v=1"]
+    ["martial", "武艺", "/assets/tokens/红-token.png?v=1"],
+    ["errant", "游侠", "/assets/tokens/绿-token.png?v=1"],
+    ["historic", "历史", "/assets/tokens/黄-token.png?v=1"],
+    ["mystic", "神秘", "/assets/tokens/蓝-token.png?v=1"]
   ];
   const DIRECTIONS = [
     ["north", "北"],
@@ -212,7 +212,7 @@
   }
 
   function markerToken(type) {
-    if (type === "fog") return "assets/tokens/fog.png";
+    if (type === "fog") return "/assets/tokens/fog.png";
     const clue = CLUES.find(([id]) => id === type);
     if (clue) return clue[2];
     const tokens = DATA.tokens?.markers || {};

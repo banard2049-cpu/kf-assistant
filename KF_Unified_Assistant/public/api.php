@@ -426,7 +426,16 @@ function create_backup(PDO $db, string $backupDir, string $label='manual'): stri
     $safe = preg_replace('/[^a-z0-9_-]/i','-',$label);
     $target = $backupDir . DIRECTORY_SEPARATOR . gmdate('Y-m-d\TH-i-s-v\Z') . '-' . $safe . '.db';
     $quoted = str_replace("'", "''", $target);
+    // A backup is a current-state snapshot. Operation/undo logs are deliberately
+    // omitted because they can contain huge historical AIBP payloads.
     $db->exec("VACUUM INTO '$quoted'");
+    $snapshot = new PDO('sqlite:' . $target, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $snapshot->exec('DELETE FROM sessions');
+    $snapshot->exec('DELETE FROM sync_operations');
+    $snapshot->exec('DELETE FROM campaign_operations');
+    if ($snapshot->inTransaction()) $snapshot->commit();
+    $snapshot->exec('VACUUM');
+    $snapshot = null;
     return $target;
 }
 function migrate_global_knights(PDO $db, string $backupDir): void {
@@ -457,11 +466,7 @@ function backup_source_signature(PDO $db): string {
         'SELECT id,user_id,title,version,state_json,field_versions_json,revision,created_at,updated_at,deleted_at,campaign_id FROM knight_sheets ORDER BY id',
         'SELECT id,user_id,name,state_json,field_versions_json,revision,created_at,updated_at,deleted_at FROM campaigns ORDER BY id',
         'SELECT user_id,settings_json,updated_at FROM user_settings ORDER BY user_id',
-        'SELECT seq,operation_id,sheet_id,user_id,client_id,field_path,value_json,base_revision,created_at FROM sync_operations ORDER BY seq',
-        // campaign_operations is an append-only undo/audit log and can contain
-        // very large AIBP snapshots.  It is deliberately excluded from the
-        // per-request backup signature; current campaign state is stored in
-        // campaigns.state_json and remains covered by this signature.
+        // sync_operations and campaign_operations are history, not current state.
         'SELECT meta_key,meta_value,updated_at FROM app_meta ORDER BY meta_key',
     ];
     $hash=hash_init('sha256');

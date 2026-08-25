@@ -58,7 +58,13 @@ cd KF_Unified_Assistant
 
 ## 图片资源
 
-Git 仓库忽略 `png/jpg/jpeg/gif/webp/bmp/ico/svg` 等图片。完整资源应放回 `KF_Unified_Assistant/public/assets/` 和 `public/modules/*/assets/`，保持原目录结构。可在已有完整资源的副本中运行：
+Git 仓库忽略 `png/jpg/jpeg/gif/webp/bmp/ico/svg` 等图片。现在所有模块共用同一个资源目录：`KF_Unified_Assistant/public/assets/`；模块目录下不再需要单独的 `assets/` 副本。
+
+如果只是给已有安装包补齐或更新图片，压缩并分发 `public/assets/` 即可。推荐使用下方脚本生成 ZIP，它会保留 `KF_Unified_Assistant/public/assets/...` 路径，Web 解压可直接覆盖，Android 的“导入资源 ZIP”也能识别。不要把它当成完整程序包。
+
+如果要分发可运行的 Web/PHP 应用，仍需分发 Release 生成的完整压缩包（其中包含 HTML、JS、CSS、data、API 和 `public/assets`）。Android 直接分发 APK；Docker 分发镜像或完整 Docker 部署目录。Docker 的独立部署目录还需另行提供图片资源，并放在部署目录的 `assets/`（Compose 会挂载该目录）。
+
+在拥有完整图片资源的副本中，也可以用下面的脚本生成带仓库相对路径的资源 ZIP：
 
 ```powershell
 cd KF_Unified_Assistant\tools

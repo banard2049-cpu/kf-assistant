@@ -3,9 +3,9 @@
   将仓库中被 .gitignore 排除的图片打包成单个 zip，便于分发。
 
 .DESCRIPTION
-  用 git 自身的忽略规则枚举「未跟踪且被忽略」的图片文件，按仓库相对路径
-  原样打包。接收方在仓库根目录解压覆盖即可恢复全部美术资源，无需手工
-  对照目录。
+  用 git 自身的忽略规则枚举 public/assets/ 下「未跟踪且被忽略」的图片文件，
+  按仓库相对路径原样打包。接收方在仓库根目录解压覆盖即可恢复全部美术资源，
+  无需手工对照目录。
 
   为避免泄漏，脚本始终强制排除 .env、data/、backups/、logs/ 等敏感路径，
   即使通过 -Extension 传入了自定义扩展名也不会被打包。
@@ -83,6 +83,9 @@ $generatedPatterns = @(
   '(^|/)KF_Unified_Assistant/runtime/'
 )
 
+# 资源已经统一到这里；工具截图和其他构建目录中的图片不属于资源包。
+$assetRootPrefix = 'KF_Unified_Assistant/public/assets/'
+
 function Format-Size {
   param([double]$Bytes)
   if ($Bytes -ge 1GB) { return ('{0:N2} GB' -f ($Bytes / 1GB)) }
@@ -135,6 +138,9 @@ $skippedGenerated = 0
 $selected = [System.Collections.Generic.List[object]]::new()
 
 foreach ($relative in $candidates) {
+  if (-not $relative.StartsWith($assetRootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+    continue
+  }
   $ext = [IO.Path]::GetExtension($relative).TrimStart('.')
   if (-not $extensionSet.Contains($ext)) { continue }
 

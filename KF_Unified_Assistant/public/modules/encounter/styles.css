@@ -188,20 +188,12 @@ h3 { font-size: .94rem; color: var(--gold); margin-bottom: .5rem; }
 .space.target { background: #bd594c66; border-color: #ff8979; }
 .space.inactive { background: #050505a8; border-color: transparent; }
 .space.unavailable {
-  background: rgba(49, 17, 17, .78);
-  border: 2px dashed #c46d65;
+  background: transparent;
+  border-color: transparent;
   opacity: 1;
 }
 .space.unavailable::after {
-  content: "×";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #ffaaa0;
-  font-size: clamp(18px, 3vw, 34px);
-  font-weight: 800;
-  text-shadow: 0 2px 4px #000;
+  display: none;
 }
 .space.piece-anchor { z-index: 5; overflow: visible; }
 .space-number { position: absolute; top: 2px; left: 4px; font-size: .62rem; text-shadow: 0 1px 3px #000; }

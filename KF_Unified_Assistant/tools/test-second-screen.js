@@ -69,15 +69,15 @@ assert.match(aibp, /data-terrain-card=/);
 assert.match(aibp, /showTerrainCardPreview/);
 assert.ok(aibp.includes('value.includes("/") ? value.replace'), "地形卡整图路径必须可以直接解析");
 const conflictAssetSrcSource = aibp.match(/function conflictAssetSrc[\s\S]*?\n  \}/)?.[0] || "";
-const conflictAssetContext = {window:{KF_CONFLICT_BOARD_DATA:{assets:{Column:"assets/conflict/terrain/column.png"}}}};
+const conflictAssetContext = {window:{KF_CONFLICT_BOARD_DATA:{assets:{Column:"/assets/conflict/terrain/column.png"}}}};
 vm.runInNewContext(`${conflictAssetSrcSource}; result = {
   mapped: conflictAssetSrc("Column"),
   sheet: conflictAssetSrc("assets/conflict/terrain-card-sheet.jpg"),
   unknown: conflictAssetSrc("Missing")
 };`, conflictAssetContext);
 assert.deepStrictEqual(JSON.parse(JSON.stringify(conflictAssetContext.result)), {
-  mapped:"../display/assets/conflict/terrain/column.png",
-  sheet:"../display/assets/conflict/terrain-card-sheet.jpg",
+  mapped:"/assets/conflict/terrain/column.png",
+  sheet:"/assets/conflict/terrain-card-sheet.jpg",
   unknown:""
 });
 assert.match(aibp, /\["knight", "monster", "number"\]\.includes\(item\.kind\) \|\| item\.asset === "LictorDecoy"/);
@@ -132,7 +132,7 @@ assert.match(displayStyles, /\.display-body \.track-time \.delve-track-cells\{gr
 assert.match(displayStyles, /@media\(min-width:3000px\) and \(min-height:1700px\)/);
 assert.match(displayStyles, /\.map-scene\{grid-template-columns:minmax\(0,1fr\) clamp\(960px,27vw,1160px\)\}/);
 assert.match(displayStyles, /\.sidebar-clue-panel \.display-clue-list\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:8px;overflow:hidden\}/);
-assert.match(index, /styles\.css\?v=44/);
+assert.match(index, /styles\.css\?v=45/);
 assert.match(index, /app\.js\?v=38/);
 assert.match(index, /map-view\.js\?v=8/);
 assert.doesNotMatch(mapView, /<figcaption>激活效果<\/figcaption>/,

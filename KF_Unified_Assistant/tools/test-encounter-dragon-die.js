@@ -65,7 +65,7 @@ assert.equal(context.exactDragonMatch, true);
 assert.equal(context.insufficientDragonMatch, false);
 
 for (const face of dragonFaces) {
-  assert.ok(fs.existsSync(`public/modules/encounter/${face.src}`), `missing white die face asset: ${face.src}`);
+  assert.ok(fs.existsSync(`public/${face.src.replace(/^\//, "")}`), `missing white die face asset: ${face.src}`);
 }
 
 assert.match(appSource, /怪物放置骰（白骰）/, "dragon monster die is identified in the UI");

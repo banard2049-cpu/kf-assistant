@@ -33,7 +33,7 @@
     ["token-blood", "血液", "httpssteamusercontentaakamaihdnetugc121471199374279135890AFE0D6E4BBFE4427554C0AF999D31C14D91B1E7.png"],
     ["token-knighteater-berserk", "首要目标", "httpssteamusercontentaakamaihdnetugc10792521070176964E460F00E6C698AFEB4F862A2B09A8B61D30EB2CD.png"],
     ["token-armor", "盔甲", "httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png", "square"]
-  ].map(([id, name, file, shape = "round"]) => ({ id, name, file, shape, src: `assets/tokens/${file}` }));
+  ].map(([id, name, file, shape = "round"]) => ({ id, name, file, shape, src: `/assets/tokens/${file}` }));
   const TOKEN_ASSET_IDS = new Set(TOKEN_ASSETS.map(asset => asset.id));
   const DEFAULT_MOB_MARKER_ASSET_IDS = { M_PalebloodWorms: "token-blood" };
   const MOB_TACTICS = {
@@ -65,7 +65,7 @@
   const WINGED_WIDE_WINGS_ID = "M_WingedNightmare:BPS:1";
   const WINGED_BLOODY_DEFIANCE_ID = "M_WingedNightmare:BPX:2";
   const WINGED_BLOODY_DEFIANCE_THRESHOLD = 6;
-  const BOG_WITCH_MARKER_SRC = "assets/tokens/bog-witch-encounter.png";
+  const BOG_WITCH_MARKER_SRC = "/assets/images/httpssteamusercontentaakamaihdnetugc102276672612288011771BFEEDE9B444465A77830BDC2F8E79E37A0B9056.png";
   const BOG_WITCH_POSITIONS = [
     { label: "沼泽", x: 6.95, y: 59.05 },
     { label: "泥地鬼火", x: 13.85, y: 59.05 },
@@ -4283,7 +4283,7 @@
             <span class="guardian-track-number ${mobNumberClass(index + 1)}">${index + 1}</span>
             <div class="guardian-track-body">
               ${carrier ? cardHtml(cardById(monster, rule.cards.guardian), "guardian-track-card track-card", "face", false) : occupied ? `<div class="guardian-track-figure">
-                <img src="assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫 ${index + 1}">
+                <img src="/assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫 ${index + 1}">
               </div>` : `<div class="guardian-track-placeholder">
                 <strong>${locked ? "等级未开放" : occupied ? `先民护卫 ${index + 1}` : "空位"}</strong>
                 <span>${occupied ? "共享属性加成" : locked ? `护卫上限 ${cap}` : "等待特殊生成"}</span>
@@ -4515,7 +4515,7 @@
     const value = String(asset || "");
     const source = window.KF_CONFLICT_BOARD_DATA?.assets?.[value]
       || (value.includes("/") ? value.replace(/^\/+/, "") : "");
-    return source ? `../display/${source}` : "";
+    return source ? (/^(?:[a-z]+:|\/)/i.test(source) ? source : `/assets/${source.replace(/^assets\//, "")}`) : "";
   }
 
   function conflictBoardCropStyle() {
@@ -4759,7 +4759,7 @@
       const rotation = boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0;
       const knight = knightAssignments.get(item.id);
       const arrow = ["knight", "monster"].includes(item.kind) ? `<span class="terrain-start-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>` : "";
-      const avatar = knight ? `<img src="../../assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt="">${arrow}` : "";
+      const avatar = knight ? `<img src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt="">${arrow}` : "";
       const assignedNumber = mobAssignments.get(item.id);
       const label = knight ? "" : `${item.kind === "monster" ? conflictTerrainLabel(item.asset) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}${assignedNumber ? `<b class="${mobNumberClass(assignedNumber)}">${assignedNumber}</b>` : ""}`;
       const numberImage = item.kind === "number"
@@ -5032,7 +5032,7 @@
                 ${sheetTokenLayer(b)}
               </div>
               ${b.conflictLocation === "巨兽之腹" ? `<figure class="devour-dragon-trait">
-                <img src="assets/traits-zh/devour-dragon-belly.png" alt="巨兽之腹特质">
+                <img src="/assets/traits-zh/devour-dragon-belly.png" alt="巨兽之腹特质">
               </figure>` : ""}
             </div>
             ${mob ? (winged ? "" : mobTrackHtml(monster, b)) : doppelgangerTrackHtml(monster, b)}

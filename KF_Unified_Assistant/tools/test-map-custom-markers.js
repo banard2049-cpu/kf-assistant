@@ -47,15 +47,15 @@ assert.doesNotMatch(appSource, /token-palette/, "the all-marker preview must not
 assert.doesNotMatch(styleSource, /token-palette/, "the removed all-marker preview must not keep dead styles");
 assert.doesNotMatch(appSource, /tokenShapeClass|token-flood/, "marker silhouettes must come from image alpha");
 assert.doesNotMatch(styleSource, /token-flood/, "marker silhouettes must not be approximated with CSS clipping");
-assert.match(appSource, /type === "fog"\) return "assets\/tokens\/fog\.png";/, "fog must use its transparent PNG");
+assert.match(appSource, /type === "fog"\) return "\/assets\/tokens\/fog\.png";/, "fog must use its transparent PNG");
 
 for (const marker of ["surge", "flood", "generic", "quest"]) {
   assert.match(markerAssets[marker], /assets\/tokens\/[a-z-]+\.png$/, `${marker} must use a PNG asset`);
-  const png = fs.readFileSync(`public/modules/map/${markerAssets[marker]}`);
+  const png = fs.readFileSync(`public/${markerAssets[marker].replace(/^\//, "")}`);
   assert.equal(png.subarray(1, 4).toString("ascii"), "PNG", `${marker} must reference a valid PNG file`);
   assert.equal(png[25], 6, `${marker} PNG must include an alpha channel`);
 }
-const fogPng = fs.readFileSync("public/modules/map/assets/tokens/fog.png");
+const fogPng = fs.readFileSync("public/assets/tokens/fog.png");
 assert.equal(fogPng.subarray(1, 4).toString("ascii"), "PNG", "fog must reference a valid PNG file");
 assert.equal(fogPng[25], 6, "fog PNG must include an alpha channel");
 

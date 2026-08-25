@@ -16,13 +16,13 @@
       value: 3,
       faces: {
         A: {
-          image: "assets/mercenaries/rogue-1-a.jpg",
+          image: "/assets/mercenaries/rogue-1-a.jpg",
           conflict: "查看 BP 卡组顶端卡牌。你可将其放置到底端。如果和杂兵怪物冲突，改为选择并查看杂兵轨上的任意一张 BP。",
           delve: "在你抽取一张探索卡后，忽略它，并再抽取一张。",
           action: "redraw"
         },
         B: {
-          image: "assets/mercenaries/rogue-1-b.jpg",
+          image: "/assets/mercenaries/rogue-1-b.jpg",
           conflict: "一名骑士立即 Hide 隐藏，即使它在怪物的前方。只要该骑士仍处于此次隐藏，下一次它将要成为攻击目标时，可跳过那一行目标选择指示。",
           delve: "忽略一场遭遇战，将对应的遭遇战怪物指示物放置到当前王国板块，并立即走回头路到上一个王国板块。",
           action: "skip-and-backtrack"
@@ -38,13 +38,13 @@
       value: 5,
       faces: {
         A: {
-          image: "assets/mercenaries/rogue-2-a.jpg",
+          image: "/assets/mercenaries/rogue-2-a.jpg",
           conflict: "当你造成损伤失败时，不要弃置攻击的 BP，改为将其放回 BP 卡组顶端。如果和杂兵怪物冲突，改为在结算完 Fail 响应后，将攻击的 BP 翻至面朝下。",
           delve: "当你即将抽取一张探索卡时，改为抽取 2 张。选择一张结算，弃置其余的。",
           action: "choose-two"
         },
         B: {
-          image: "assets/mercenaries/rogue-2-b.jpg",
+          image: "/assets/mercenaries/rogue-2-b.jpg",
           conflict: "一名骑士立即 Hide 隐藏，即使它在怪物的前方。只要该骑士仍处于此次隐藏，它不能成为攻击的目标。",
           delve: "忽略一场遭遇战或伏击，将对应的遭遇战怪物指示物放置到当前王国板块，并立即走回头路到上一个王国板块。",
           action: "skip-and-backtrack"
@@ -60,13 +60,13 @@
       value: 9,
       faces: {
         A: {
-          image: "assets/mercenaries/rogue-3-a.jpg",
+          image: "/assets/mercenaries/rogue-3-a.jpg",
           conflict: "在确定 BP 卡步骤中，选择一种 BP 等级，将 BP 弃牌堆洗回卡组，随机找出一张你选择等级的 BP，然后重新混洗 BP 卡组。如果和杂兵怪物冲突，改为将杂兵轨上的所有 BP 翻至面朝下。",
           delve: "当你即将抽取一张探索卡时，改为抽取 3 张。选择一张结算，弃置另一张，将其余卡牌放回卡组顶端。",
           action: "choose-three"
         },
         B: {
-          image: "assets/mercenaries/rogue-3-b.jpg",
+          image: "/assets/mercenaries/rogue-3-b.jpg",
           conflict: "当一名骑士即将成为一次攻击的目标时，立即 Hide 隐藏，即使它在怪物的前方，并选择另一名处于攻击范围内的骑士，改为该骑士成为攻击的目标。",
           delve: "忽略一场遭遇战或伏击。",
           action: "skip"
@@ -85,13 +85,13 @@
       value: 3,
       faces: {
         A: {
-          image: "assets/mercenaries/mage-1-a.jpg",
+          image: "/assets/mercenaries/mage-1-a.jpg",
           conflict: "将一名骑士放置到距离其当前位置至多 2 格远的空格子上。",
           delve: "将队伍指示物放置到一块相邻的已探索王国板块上。",
           action: "place-adjacent"
         },
         B: {
-          image: "assets/mercenaries/mage-1-b.jpg",
+          image: "/assets/mercenaries/mage-1-b.jpg",
           conflict: "将一名骑士放置到距离其当前位置至多 2 格远的空格子上。",
           delve: "将队伍指示物放置到一块相邻的已探索王国板块上。",
           action: "place-adjacent"
@@ -107,13 +107,13 @@
       value: 5,
       faces: {
         A: {
-          image: "assets/mercenaries/mage-2-a.jpg",
+          image: "/assets/mercenaries/mage-2-a.jpg",
           conflict: "两名在冲突版图上的骑士交换它们的位置。",
           delve: "将队伍指示物放置到当前地区的任意已探索王国板块上。",
           action: "place-district"
         },
         B: {
-          image: "assets/mercenaries/mage-2-b.jpg",
+          image: "/assets/mercenaries/mage-2-b.jpg",
           conflict: "两名在冲突版图上的骑士交换它们的位置。",
           delve: "将队伍指示物放置到当前地区的任意已探索王国板块上。",
           action: "place-district"
@@ -129,13 +129,13 @@
       value: 9,
       faces: {
         A: {
-          image: "assets/mercenaries/mage-3-a.jpg",
+          image: "/assets/mercenaries/mage-3-a.jpg",
           conflict: "将一名骑士放置到冲突版图上的任意空格子上。",
           delve: "将队伍指示物放置到有兴趣点的任意已探索王国板块上。",
           action: "place-poi"
         },
         B: {
-          image: "assets/mercenaries/mage-3-b.jpg",
+          image: "/assets/mercenaries/mage-3-b.jpg",
           conflict: "将一名骑士放置到离冲突版图中心最近的空格子上。",
           delve: "将队伍指示物放置到有兴趣点的任意已探索王国板块上。",
           action: "place-poi"

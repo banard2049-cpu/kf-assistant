@@ -13,7 +13,7 @@ if(!extension_loaded('pdo_sqlite')){fwrite(STDERR,"pdo_sqlite is required.\n");e
 $dbPath=$dataDir.DIRECTORY_SEPARATOR.'kf-knights.db';
 if(!is_file($dbPath)){fwrite(STDERR,"Database does not exist. Start the website once first.\n");exit(1);}
 $db=new PDO('sqlite:'.$dbPath,null,null,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
-function backup(PDO $db,string $dir,string $label):string{$target=$dir.DIRECTORY_SEPARATOR.gmdate('Y-m-d\TH-i-s-v\Z').'-'.$label.'.db';$db->exec("VACUUM INTO '".str_replace("'","''",$target)."'");return $target;}
+function backup(PDO $db,string $dir,string $label):string{$target=$dir.DIRECTORY_SEPARATOR.gmdate('Y-m-d\TH-i-s-v\Z').'-'.$label.'.db';$db->exec("VACUUM INTO '".str_replace("'","''",$target)."'");$snapshot=new PDO('sqlite:'.$target,null,null,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);$snapshot->exec('DELETE FROM sessions');$snapshot->exec('DELETE FROM sync_operations');$snapshot->exec('DELETE FROM campaign_operations');if($snapshot->inTransaction())$snapshot->commit();$snapshot->exec('VACUUM');$snapshot=null;return $target;}
 function prune_backups(string $dir,int $limit=50):void{$files=glob($dir.DIRECTORY_SEPARATOR.'*.db')?:[];usort($files,fn($a,$b)=>(filemtime($b)<=>filemtime($a))?:strcmp(basename($b),basename($a)));foreach(array_slice($files,$limit)as$file)@unlink($file);}
 $command=$argv[1]??'help';
 if($command==='backup'){$target=backup($db,$backupDir,'manual');prune_backups($backupDir);echo $target.PHP_EOL;}

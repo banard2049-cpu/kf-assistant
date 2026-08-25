@@ -107,7 +107,7 @@
             <div class="panel-head"><h3>原版图示</h3><span class="progress">点击放大</span></div>
             <div class="reference-pages">${monster.pages.map((page, index) => `
               <button class="reference-thumb" type="button" data-reference-index="${index}" aria-label="打开 PDF 第 ${page} 页">
-                <img loading="lazy" src="assets/pages/page-${page}.jpg" alt="${esc(monster.name)}原版参考第 ${page} 页">
+                <img loading="lazy" src="/assets/pages/page-${page}.jpg" alt="${esc(monster.name)}原版参考第 ${page} 页">
                 <span>PDF ${page}</span>
               </button>`).join("")}</div>
             <p class="source-note">中文步骤依据 PDF 对应页翻译；版图坐标、朝向和图块摆法以原图为准。</p>
@@ -132,7 +132,7 @@
     const page = monster.pages[state.dialogIndex];
     $("#dialogTitle").textContent = `${monster.name} · ${monster.en}`;
     $("#dialogPage").textContent = `PDF 第 ${page} 页`;
-    $("#dialogImage").src = `assets/pages/page-${page}.jpg`;
+    $("#dialogImage").src = `/assets/pages/page-${page}.jpg`;
     $("#dialogImage").alt = `${monster.name}原版参考第 ${page} 页`;
     $("#previousPage").disabled = state.dialogIndex === 0;
     $("#nextPage").disabled = state.dialogIndex === monster.pages.length - 1;

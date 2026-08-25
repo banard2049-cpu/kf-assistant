@@ -1,6 +1,6 @@
 // KF 地形卡关键词与占格数据（逐张核对卡面，不从 ATO 移植）。
-// 卡面来源：public/modules/display/assets/conflict/terrain-card-sheet.jpg（10 列 x 2 行，共 15 张，单卡 730x1040）。
-// 占格遮罩来源：public/modules/display/assets/conflict/terrain/*.png 的 alpha 通道统计（单格边长约 395.5px）。
+// 卡面来源：public/assets/conflict/terrain-card-sheet.jpg（10 列 x 2 行，共 15 张，单卡 730x1040）。
+// 占格遮罩来源：public/assets/conflict/terrain/*.png 的 alpha 通道统计（单格边长约 395.5px）。
 //
 // 规则依据（KF 中规 1.06 P83 术语表，原文）：
 //   Obscuring 遮蔽：此板块会遮挡视线。
@@ -225,4 +225,3 @@ window.KF_TERRAIN_KEYWORDS = (() => {
 })();
 
 if (typeof module === "object" && module.exports) module.exports = window.KF_TERRAIN_KEYWORDS;
-

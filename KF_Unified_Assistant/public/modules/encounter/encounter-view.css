@@ -8,8 +8,8 @@
 .space.match-both { border-color: #a3ffc1; background: #54d68180; box-shadow: inset 0 0 20px #54d681, 0 0 9px #54d681; }
 .space.target { border-color: #ff8979; background: #bd594c66; }
 .space.inactive { border-color: transparent; background: #050505a8; }
-.space.unavailable { border: 2px dashed #c46d65; opacity: 1; background: rgba(49, 17, 17, .78); }
-.space.unavailable::after { content: "×"; position: absolute; inset: 0; display: grid; place-items: center; color: #ffaaa0; font-size: clamp(18px, 3vw, 34px); font-weight: 800; text-shadow: 0 2px 4px #000; }
+.space.unavailable { border-color: transparent; opacity: 1; background: transparent; }
+.space.unavailable::after { display: none; }
 .space.piece-anchor { z-index: 5; overflow: visible; }
 .space-number { position: absolute; top: 2px; left: 4px; font-size: .62rem; text-shadow: 0 1px 3px #000; }
 .piece { position: absolute; inset: 7%; display: grid; place-items: center; border: 2px solid #9fd6ef; border-radius: 50%; color: white; background: #16242b; box-shadow: 0 2px 8px #000; pointer-events: none; }

@@ -16,6 +16,6 @@ assert.match(styles, /\.topbar \.button \{[\s\S]*?min-height: 28px;/,
   "AI/BP header actions must use compact button heights");
 assert.match(styles, /\.topbar \{\s+min-height: 40px;/,
   "the themed AI/BP header must not restore the former 64px height");
-assert.match(index, /styles\.css\?v=61/);
+assert.match(index, /styles\.css\?v=66/);
 
 console.log("aibp host layout: compact title and action bar verified");

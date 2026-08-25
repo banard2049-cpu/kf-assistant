@@ -9,10 +9,10 @@
     [37.5, 37.5], [62.5, 37.5], [37.5, 62.5], [62.5, 62.5]
   ];
   const CLUES = Object.freeze([
-    ["martial", "武艺", "assets/tokens/红-token.png?v=1"],
-    ["errant", "游侠", "assets/tokens/绿-token.png?v=1"],
-    ["historic", "历史", "assets/tokens/黄-token.png?v=1"],
-    ["mystic", "神秘", "assets/tokens/蓝-token.png?v=1"]
+    ["martial", "武艺", "/assets/tokens/红-token.png?v=1"],
+    ["errant", "游侠", "/assets/tokens/绿-token.png?v=1"],
+    ["historic", "历史", "/assets/tokens/黄-token.png?v=1"],
+    ["mystic", "神秘", "/assets/tokens/蓝-token.png?v=1"]
   ]);
   const HERO_IDS = Object.freeze([
     "stoneface", "fleischritter", "renholder", "ser-sonch", "paracelsa", "ser-ubar", "kara",
@@ -91,7 +91,7 @@
   }
 
   function markerSource(type, data) {
-    if (type === "fog") return "assets/tokens/fog.png";
+    if (type === "fog") return "/assets/tokens/fog.png";
     const clue = CLUES.find(([id]) => id === type);
     return clue?.[2] || data.tokens?.markers?.[type] || data.tokens?.markers?.generic || "";
   }

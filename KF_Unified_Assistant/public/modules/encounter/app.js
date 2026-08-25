@@ -3,12 +3,12 @@
   const DATA = window.KF_ENCOUNTER_DATA;
   const RED_DIE_FACES = DATA.dice.faces;
   const DRAGON_DIE_FACES = [
-    { id: "dragon-double-sword-double-cup", label: "双剑＋双杯", match: { sword: 2, cup: 2 }, src: "assets/dice/faces/dragon-double-sword-double-cup.png" },
-    { id: "dragon-double-sword", label: "双剑", match: { sword: 2 }, src: "assets/dice/faces/dragon-double-sword.png" },
-    { id: "dragon-sword-cup", label: "单剑＋杯", match: { sword: 1, cup: 1 }, src: "assets/dice/faces/dragon-sword-cup.png" },
-    { id: "dragon-sword", label: "单剑", match: { sword: 1 }, src: "assets/dice/faces/dragon-sword.png" },
-    { id: "dragon-sword-double-cup", label: "单剑＋双杯", match: { sword: 1, cup: 2 }, src: "assets/dice/faces/dragon-sword-double-cup.png" },
-    { id: "dragon-double-sword-cup", label: "双剑＋杯", match: { sword: 2, cup: 1 }, src: "assets/dice/faces/dragon-double-sword-cup.png" },
+    { id: "dragon-double-sword-double-cup", label: "双剑＋双杯", match: { sword: 2, cup: 2 }, src: "/assets/dice/faces/dragon-double-sword-double-cup.png" },
+    { id: "dragon-double-sword", label: "双剑", match: { sword: 2 }, src: "/assets/dice/faces/dragon-double-sword.png" },
+    { id: "dragon-sword-cup", label: "单剑＋杯", match: { sword: 1, cup: 1 }, src: "/assets/dice/faces/dragon-sword-cup.png" },
+    { id: "dragon-sword", label: "单剑", match: { sword: 1 }, src: "/assets/dice/faces/dragon-sword.png" },
+    { id: "dragon-sword-double-cup", label: "单剑＋双杯", match: { sword: 1, cup: 2 }, src: "/assets/dice/faces/dragon-sword-double-cup.png" },
+    { id: "dragon-double-sword-cup", label: "双剑＋杯", match: { sword: 2, cup: 1 }, src: "/assets/dice/faces/dragon-double-sword-cup.png" },
   ];
   const ALL_DIE_FACES = [...RED_DIE_FACES, ...DRAGON_DIE_FACES];
   const KEY = "kf-encounter-assistant-v1";

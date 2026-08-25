@@ -73,7 +73,7 @@
       card.name = localized[0];
       card.image = {
         ...card.image,
-        face: `assets/traits-zh/${localized[1]}`,
+        face: `/assets/traits-zh/${localized[1]}`,
         width: 1,
         height: 1,
         index: 0,

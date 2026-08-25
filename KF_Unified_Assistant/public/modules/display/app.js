@@ -43,7 +43,7 @@
     const tracks = state && window.KFMapView?.renderDelveTracks({
       state,
       data: window.KF_MOD_DATA,
-      assetBase: "/modules/map/",
+      assetBase: "",
       interactive: false,
     });
     displayHeader.innerHTML = tracks || "";
@@ -69,7 +69,7 @@
   function mapAsset(source) {
     const value = String(source || "");
     if (!value || /^(?:[a-z]+:|\/)/i.test(value)) return value;
-    return `/modules/map/${value}`;
+    return `/assets/${value}`;
   }
 
   function mapTileAngle(tile) {
@@ -106,7 +106,7 @@
       ${entries.map((item, index) => {
         const card = cardById(item.cardId);
         if (!card) return "";
-        const markup = window.KFMapView.renderExplorationCard({ state, data:window.KF_MOD_DATA, card, side:"face", assetBase:"/modules/map/" });
+        const markup = window.KFMapView.renderExplorationCard({ state, data:window.KF_MOD_DATA, card, side:"face", assetBase:"" });
         return `<div class="display-fog-preview-card" style="grid-column:${index + 1};grid-row:1">${markup}</div>`;
       }).join("")}
     </div>`;
@@ -133,13 +133,13 @@
     const mapStage = window.KFMapView?.renderMapStage({
       state,
       data: window.KF_MOD_DATA,
-      assetBase: "/modules/map/",
+      assetBase: "",
       interactive: false
     });
     if (!mapStage) return stateView("探索地图为空", "主屏放置地图板块后会自动显示。", "MAP");
-    const kingdomBoard = window.KFMapView.renderKingdomBoard({ state, data: window.KF_MOD_DATA, assetBase: "/modules/map/" });
-    const districtEffects = window.KFMapView.renderDistrictExplorationCards({ state, data: window.KF_MOD_DATA, assetBase: "/modules/map/" });
-    const clueTracking = window.KFMapView.renderClueTracking({ state, assetBase: "/modules/map/" });
+    const kingdomBoard = window.KFMapView.renderKingdomBoard({ state, data: window.KF_MOD_DATA, assetBase: "" });
+    const districtEffects = window.KFMapView.renderDistrictExplorationCards({ state, data: window.KF_MOD_DATA, assetBase: "" });
+    const clueTracking = window.KFMapView.renderClueTracking({ state, assetBase: "" });
     const scale = clamp(payload.presentation?.settings?.mapScale || 100,50,200);
     root.innerHTML = `<section class="map-scene">
       <div class="map-primary">
@@ -167,16 +167,19 @@
       data: window.KF_ENCOUNTER_DATA,
       monster,
       level,
-      assetBase: "/modules/encounter/",
+      assetBase: "",
       interactive: false
     });
     if (!board) return stateView("遭遇版图资源缺失", "请重新运行资源导入或检查部署文件。", "!");
-    const encounterCard = window.KFEncounterView.renderCard(level, level?.side || "face", "/modules/encounter/");
+    const encounterCard = window.KFEncounterView.renderCard(level, level?.side || "face", "");
     const phaseLabels = {setup:"设置",position:"放置",monster:"怪物轮",knight:"骑士轮",resolution:"结算"};
     root.innerHTML = `<section class="encounter-scene"><div class="encounter-board-area">${board}</div><aside class="map-side encounter-side"><p class="side-subtitle">ENCOUNTER</p><h2 class="side-title">${esc(monster?.name || state.monsterId)}</h2>${encounterCard}<dl class="fact-list"><dt>等级</dt><dd>${esc(state.level)}</dd><dt>类型</dt><dd>${esc(state.encounterType === "ambush" ? "伏击" : state.encounterType === "special" ? "特殊" : "普通")}</dd><dt>阶段</dt><dd>${esc(phaseLabels[state.phase] || state.phase)}</dd><dt>怪物</dt><dd>${esc(state.monsters?.length || 0)}</dd><dt>队伍</dt><dd>${esc(state.knights?.length || 0)}</dd><dt>机会</dt><dd>${esc(state.pool?.opportunity || 0)}</dd><dt>破甲</dt><dd>${esc(state.pool?.break || 0)}</dd><dt>擦伤</dt><dd>${esc(state.scrapes || 0)}</dd></dl></aside></section>`;
   }
 
-  function displayAsset(value) { return value ? `/modules/display/${String(value).replace(/^\/+/, "")}` : ""; }
+  function displayAsset(value) {
+    const source = String(value || "");
+    return !source ? "" : (/^(?:[a-z]+:|\/)/i.test(source) ? source : `/assets/${source}`);
+  }
   function terrainCardsFor(terrain) {
     const cardData = window.KF_CONFLICT_BOARD_DATA?.terrainCards;
     if (!cardData?.sheet || !cardData.byAsset) return [];
@@ -197,7 +200,10 @@
     const card = entry?.terrainCard;
     return card ? `<figure class="display-track-terrain" aria-label="地形 · ${esc(card.label)}" title="${esc(card.label)}">${terrainCardFace(card)}</figure>` : "";
   }
-  function aibpAsset(value) { return value ? `/modules/aibp/${String(value).replace(/^\/+/, "")}` : ""; }
+  function aibpAsset(value) {
+    const source = String(value || "");
+    return !source ? "" : (/^(?:[a-z]+:|\/)/i.test(source) ? source : `/assets/${source}`);
+  }
   function cardById(monster, id) { return monster?.cards?.find(card => card.id === id); }
   function cardArt(card, side = "face") {
     if (!card?.image?.face) return "";
@@ -255,8 +261,9 @@
     "token-armor":"httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png"
   };
   function tokenSrc(id) {
-    if (id === "bog-witch-encounter") return "/modules/aibp/assets/tokens/bog-witch-encounter.png";
-    return TOKEN_FILES[id] ? `/modules/aibp/assets/tokens/${TOKEN_FILES[id]}` : "";
+    if (id === "bog-witch-encounter") return "/assets/tokens/httpssteamusercontentaakamaihdnetugc102276672612288011771BFEEDE9B444465A77830BDC2F8E79E37A0B9056.png";
+    if (id === "token-01") return `/assets/images/${TOKEN_FILES[id]}`;
+    return TOKEN_FILES[id] ? `/assets/tokens/${TOKEN_FILES[id]}` : "";
   }
   function tokenShapeClass(id) { return id === "token-armor" ? "token-square" : ""; }
   function publicTokenStacks(tokens) {
@@ -295,7 +302,7 @@
         cardContent=`<div class="display-track-stack">${stackCards.map((stackCard,depth)=>`<div class="display-track-card" style="--stack-depth:${depth};${cardArt(stackCard,knownCards.length?"face":"back")}"></div>`).join("")}</div><b class="display-track-count">×${esc(slot.cardCount||stackCards.length)}</b>`;
       }else if(trackType==="guardian"&&occupied){
         const guardianCard=slot.carrier?cardById(monster,"M_WhiteApe:Trait:38"):null;
-        cardContent=guardianCard?`<div class="display-track-card" style="${cardArt(guardianCard)}"></div>`:`<img class="display-guardian-figure" src="/modules/aibp/assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫">`;
+        cardContent=guardianCard?`<div class="display-track-card" style="${cardArt(guardianCard)}"></div>`:`<img class="display-guardian-figure" src="/assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫">`;
       }
       const activations=trackType==="standard"?(battle.mobActivations||[]).filter(token=>token.position===index).map(token=>`<span class="display-activation ${token.used?"used":""} ${token.id===battle.activeMobActivationId?"active":""}">${esc(token.type)}</span>`).join(""):"";
       const markers=trackType==="standard"?markerStacks(slot.markerTokens):"";

@@ -53,4 +53,4 @@ php tools/admin.php list
 php tools/admin.php reset-password 用户名 新密码
 ```
 
-图片资源不在 Git 仓库中，应恢复到 `public/assets/` 和 `public/modules/*/assets/`。存档导入仅支持 `kf-unified-campaign` v2。
+图片资源不在 Git 仓库中，统一恢复到 `public/assets/`；模块目录下不再需要单独的 `assets/` 副本。只更新图片时可单独分发 `public/assets/` 的压缩包，并覆盖到同名目录。可运行的 Web/PHP 应用仍需完整 Release 压缩包；Android 请直接分发 APK，Docker 请分发镜像或完整部署目录，并另行把资源放到部署目录的 `assets/`。存档导入仅支持 `kf-unified-campaign` v2。
