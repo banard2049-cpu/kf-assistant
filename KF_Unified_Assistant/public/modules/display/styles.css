@@ -3,7 +3,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#11100e;color:var(--ink);font-family:Inter,"Segoe UI","Microsoft YaHei",sans-serif;letter-spacing:0}
 body{height:100vh;overflow:hidden}
-.display-body{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh;overflow:hidden}.display-body .display-header{display:block;height:auto;min-height:0;padding:8px;border-bottom:1px solid var(--line);background:#111714}.display-body .display-header[hidden]{display:none}.display-body .display-root{height:auto;min-height:0;overflow:auto}.display-body .map-scene,.display-body .encounter-scene,.display-body .conflict-scene{min-height:100%}
+.display-body{display:grid;grid-template-rows:auto minmax(0,1fr);height:100vh;overflow:hidden}.display-body .display-header{display:block;height:auto;min-height:0;padding:8px;border-bottom:1px solid var(--line);background:#111714}.display-body .display-header[hidden]{display:none}.display-body .display-root{height:auto;min-height:0;overflow:auto}.display-body .map-scene,.display-body .encounter-scene,.display-body .conflict-scene,.display-body .rogue-display-scene{min-height:100%}
 .display-header{height:64px;display:grid;grid-template-columns:minmax(200px,1fr) auto minmax(160px,1fr);align-items:center;gap:20px;padding:8px 22px;border-bottom:1px solid var(--line);background:#181715}
 .display-brand{display:flex;flex-direction:column;min-width:0}.display-brand span{font-size:10px;color:var(--gold)}.display-brand strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:18px}
 .campaign-stats{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}.stat-chip{padding:4px 8px;border-left:2px solid var(--gold);background:#27241f;font-size:12px;white-space:nowrap}.stat-chip b{color:var(--gold);font-weight:650}
@@ -17,13 +17,16 @@ body{height:100vh;overflow:hidden}
 .map-auto-preview{min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);padding-top:6px;border-top:1px solid var(--line)}.map-auto-preview>.display-section-heading{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}.map-auto-preview>.display-section-heading strong{font-size:14px}.map-auto-preview-body{container-type:size;display:grid;min-height:0;place-items:center;overflow:hidden;border:1px solid #454b43;background:#0d100e}.map-auto-tile-frame{position:relative;width:min(96cqw,calc(96cqh * var(--preview-aspect)));height:min(96cqh,calc(96cqw / var(--preview-aspect)));filter:drop-shadow(0 4px 8px rgba(0,0,0,.72))}.map-auto-tile-frame img{position:absolute;left:50%;top:50%;display:block;width:100%;height:100%;object-fit:fill;transform:translate(-50%,-50%) rotate(var(--preview-angle));transform-origin:center}.map-auto-tile-frame.quarter-turn img{width:calc(100% / var(--preview-aspect));height:calc(100% * var(--preview-aspect))}.display-fog-preview{display:grid;grid-template-columns:repeat(var(--fog-columns),minmax(0,1fr));grid-template-rows:minmax(0,1fr);grid-auto-flow:column;gap:4px;width:min(96cqw,calc(96cqh * var(--fog-aspect)));height:min(96cqh,calc(96cqw / var(--fog-aspect)));overflow:hidden}.display-fog-preview-card{display:grid;min-width:0;min-height:0;place-items:center;overflow:hidden}.display-fog-preview-card .display-exploration-card{width:auto;height:100%;max-width:100%;max-height:100%;box-shadow:none}
 .encounter-scene{height:100%;display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,24vw,380px);gap:0}.encounter-board-area{display:grid;place-items:center;padding:16px;overflow:auto;background:#0d0d0c}.encounter-board-area>.board-wrap{width:min(100%,calc((100vh - 96px)*var(--board-aspect)));filter:drop-shadow(0 10px 22px #000)}.encounter-side .crop-card{margin:12px 0 16px}
 .conflict-scene{--board-track:calc((100vh - 28px)*1.4);height:100%;display:grid;grid-template-columns:minmax(0,var(--board-track)) minmax(0,1fr)}.conflict-scene.swapped{grid-template-columns:minmax(0,1fr) minmax(0,var(--board-track))}.conflict-scene.swapped .conflict-board-area{order:2}.conflict-scene.swapped .conflict-side{order:1;border-left:0;border-right:1px solid var(--line)}.conflict-scene.board-hidden{grid-template-columns:1fr}.conflict-scene.board-hidden .conflict-board-area{display:none}.conflict-board-area{display:grid;place-items:center;padding:14px;overflow:auto;background:#0d0d0c}.conflict-board-shell{width:min(100%,calc((100vh - 28px)*1.4));transform:scale(var(--board-scale,1));transform-origin:center;transition:transform .2s}.conflict-board{position:relative;width:100%;aspect-ratio:14/10;overflow:hidden;background:#302d29;box-shadow:0 8px 28px #000}.conflict-board-source{position:absolute;width:var(--board-image-width,100%);height:var(--board-image-height,100%);left:var(--board-image-left,0);top:var(--board-image-top,0);max-width:none}.conflict-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(14,1fr);grid-template-rows:repeat(10,1fr);pointer-events:none}.conflict-grid span{border-right:1px solid var(--cell);border-bottom:1px solid var(--cell)}.conflict-placement{position:absolute;z-index:var(--layer);pointer-events:none}.terrain-art{position:absolute;left:50%;top:50%;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.7))}.board-marker{position:absolute;inset:12%;display:grid;place-items:center;border:2px solid #f3dfb2;border-radius:50%;background:#6e2428;color:#fff;text-align:center;font-size:clamp(8px,1vw,15px);font-weight:800;line-height:1.05;box-shadow:0 2px 5px #000}.board-marker.monster{background:#151515;border-color:#d04042}.board-marker.special{border-radius:4px;background:#504329}.marker-arrow{position:absolute;display:grid;width:18px;height:18px;place-items:center;color:#fff;font-size:13px;line-height:1}.marker-arrow.facing-0{left:50%;top:0;transform:translate(-50%,-72%)}.marker-arrow.facing-90{right:0;top:50%;transform:translate(72%,-50%) rotate(90deg)}.marker-arrow.facing-180{left:50%;bottom:0;transform:translate(-50%,72%) rotate(180deg)}.marker-arrow.facing-270{left:0;top:50%;transform:translate(-72%,-50%) rotate(270deg)}.marker-number{position:absolute;right:-4%;bottom:-4%;width:24px;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;background:#e2c46f;color:#17130d;border:2px solid #fff;font-size:12px}.conflict-side{min-width:0;min-height:0;border-left:1px solid var(--line)}.summary-block{padding:12px 0;border-bottom:1px solid var(--line)}.summary-block h3{margin:0 0 10px;color:var(--gold);font-size:12px;text-transform:uppercase}.public-card-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.public-card{min-width:0}.public-card-art{width:100%;aspect-ratio:.7;background-repeat:no-repeat;background-color:#24211d;border:1px solid #585044}.public-card strong{display:block;margin-top:5px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.track-row{display:flex;gap:5px;flex-wrap:wrap}.track-slot{min-width:30px;padding:6px;border:1px solid #585044;text-align:center;background:#24211d}.track-slot.revealed{border-color:var(--gold)}.failure{color:#ff8c83}.asset-warning{position:absolute;left:12px;bottom:12px;padding:7px 10px;background:#7d2828;color:#fff;font-size:12px;z-index:100}
-@media(max-width:900px),(orientation:portrait){body{overflow:auto;height:auto}.display-header{height:auto;min-height:64px;grid-template-columns:1fr auto}.campaign-stats{grid-column:1/-1;grid-row:2;justify-content:flex-start}.display-root{height:auto;min-height:calc(100vh - 96px);overflow:visible}.map-scene,.encounter-scene,.conflict-scene,.conflict-scene.swapped{height:auto;min-height:calc(100vh - 96px);grid-template-columns:1fr}.map-primary{display:block}.map-viewport,.encounter-board-area,.conflict-board-area{min-height:56vh}.map-side,.conflict-side,.conflict-scene.swapped .conflict-side{border:0;border-top:1px solid var(--line);max-height:none}.map-side-scroll{display:block;overflow:visible}.map-auto-preview{margin-top:8px}.map-auto-preview-body{height:clamp(150px,24vh,260px)}.conflict-scene.swapped .conflict-board-area,.conflict-scene.swapped .conflict-side{order:initial}.conflict-board-shell{width:min(100%,90vh)}.map-canvas{min-width:620px}.display-clue-list{grid-auto-columns:minmax(300px,82vw)}.public-card-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.conflict-scene .conflict-placement[data-kind="number"] .terrain-art{left:auto;top:auto;right:4%;bottom:4%;width:20%!important;height:20%!important;opacity:.5;transform:none!important}
+@media(max-width:900px),(orientation:portrait){body{overflow:auto;height:auto}.display-header{height:auto;min-height:64px;grid-template-columns:1fr auto}.campaign-stats{grid-column:1/-1;grid-row:2;justify-content:flex-start}.display-root{height:auto;min-height:calc(100vh - 96px);overflow:visible}.map-scene,.encounter-scene,.conflict-scene,.conflict-scene.swapped{height:auto;min-height:calc(100vh - 96px);grid-template-columns:1fr}.rogue-display-scene{height:auto;min-height:calc(100vh - 96px);grid-template-columns:1fr}.rogue-display-map-area{min-height:56vh}.rogue-display-side{border:0;border-top:1px solid var(--line)}.map-primary{display:block}.map-viewport,.encounter-board-area,.conflict-board-area{min-height:56vh}.map-side,.conflict-side,.conflict-scene.swapped .conflict-side{border:0;border-top:1px solid var(--line);max-height:none}.map-side-scroll{display:block;overflow:visible}.map-auto-preview{margin-top:8px}.map-auto-preview-body{height:clamp(150px,24vh,260px)}.conflict-scene.swapped .conflict-board-area,.conflict-scene.swapped .conflict-side{order:initial}.conflict-board-shell{width:min(100%,90vh)}.map-canvas{min-width:620px}.display-clue-list{grid-auto-columns:minmax(300px,82vw)}.public-card-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
-.conflict-side{position:relative;overflow:hidden;background:#171614}
+.conflict-side{position:relative;overflow:auto;background:#171614}
+.conflict-side{z-index:10}
 .conflict-side-content{position:absolute;left:50%;top:50%;width:var(--sidebar-content-width,100%);height:var(--sidebar-content-height,100%);transform:translate(-50%,-50%) rotate(var(--sidebar-rotation,0deg));transform-origin:center;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:14px;padding:14px;overflow:auto;background:#171614;container-type:inline-size}
 .conflict-scene.board-hidden{width:100%;height:100vh;min-height:100vh}
 .conflict-scene.board-hidden .conflict-side{width:100%;height:100%;min-height:100%;border:0}
 .conflict-scene.board-hidden .conflict-side-content.aibp-mirror{inset:0;left:0;top:0;width:100%!important;height:100%!important;transform:none}
+.rogue-display-scene{height:100%;display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,24vw,390px);background:#211c19;color:#f4eadb}.rogue-display-map-area{min-width:0;min-height:0;display:grid;place-items:center;overflow:auto;padding:16px;background:#0d0d0c}.rogue-display-map-frame{position:relative;width:min(100%,calc((100vh - 32px) * 1.416));min-width:620px;line-height:0;filter:drop-shadow(0 8px 18px #000b);container-type:inline-size}.rogue-display-map-frame>img{display:block;width:100%;height:auto}.display-rogue-node-layer{position:absolute;inset:0}.display-rogue-node{position:absolute;transform:translate(-50%,-50%);display:block;width:clamp(10px,2.7cqw,42px);height:clamp(10px,2.7cqw,42px);border-radius:50%;border:2px solid #f7ead2cc;background:#443a3355;box-shadow:0 1px 4px #160d0b99;z-index:2}.display-rogue-node.available{background:#f7d56acc;border-color:#92241f;box-shadow:0 0 0 2px #fff8,0 0 0 4px #b52c2866,0 1px 4px #160d0b66}.display-rogue-node.cleared{background:#7e1822cc;border-color:#f7ead2dd}.display-rogue-node.locked{opacity:.72}.rogue-display-side{min-width:0;overflow:auto;padding:18px;background:#1a1917;border-left:1px solid var(--line)}.rogue-display-side .side-title{font-size:26px;margin:0 0 16px}.rogue-display-pending{display:grid;gap:5px;margin-top:18px;padding:12px;border-left:4px solid var(--gold);background:#29231f}.rogue-display-pending small{color:var(--muted)}.rogue-display-party{margin-top:20px}.rogue-display-party h2{font-size:13px;color:var(--gold);letter-spacing:.08em;border-bottom:1px solid var(--line);padding-bottom:8px}.rogue-party-row{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #35322d}.rogue-party-row small{color:var(--muted)}
 .conflict-side-primary,.conflict-side-secondary{display:flex;min-width:0;min-height:0;flex-direction:column;gap:14px}
 .conflict-side-content.quarter-turn,.conflict-side-content.aibp-mirror{grid-template-columns:minmax(0,2.05fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);align-content:stretch;gap:10px;padding:10px;overflow:hidden}
 .conflict-side-content.quarter-turn .conflict-side-head,.conflict-side-content.aibp-mirror .conflict-side-head{grid-column:1/-1;grid-row:1}
@@ -37,7 +40,8 @@ body{height:100vh;overflow:hidden}
 .boss-sheet-stage{position:relative;width:100%;aspect-ratio:2.916/1;overflow:hidden;border:1px solid #5f5545;background:#0d0d0c;box-shadow:0 6px 18px #000;container-type:inline-size}
 .boss-sheet-spread{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.boss-sheet-spread img{display:block;width:100%;height:100%;object-fit:contain}
 .boss-sheet-token-layer{position:absolute;inset:0;pointer-events:none}.boss-sheet-token{position:absolute;z-index:3;width:clamp(34px,5cqi,58px);aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 2px #000)}.boss-sheet-token.auto-token{width:clamp(18px,5cqi,58px)}.boss-sheet-token img{width:100%;height:100%;border-radius:50%;object-fit:contain}.boss-sheet-token img.token-square,.display-bp-marker img.token-square{border-radius:6%}.boss-sheet-token b{position:absolute;right:-5px;bottom:-4px;display:grid;min-width:18px;height:18px;place-items:center;padding:0 3px;border-radius:9px;background:#efe2bd;color:#17130d;font-size:10px}
-.display-mob-track{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:clamp(2px,.35cqi,5px);width:100%;overflow:visible;padding:0}.display-mob-slot{position:relative;min-width:0;min-height:0;aspect-ratio:.7;padding:2px;border:1px dashed #5a544b;background:#201e1a;overflow:hidden;container-type:inline-size}.display-mob-slot.revealed{border-style:solid;border-color:var(--gold)}.display-mob-slot.feature{border-style:solid;border-color:#706244}.display-mob-slot.active{box-shadow:0 0 0 2px #e4bd63}.display-mob-slot.decoy{border-color:#d5983d}.display-slot-number{position:absolute;left:2px;top:2px;z-index:5;display:grid;width:clamp(12px,4cqi,20px);aspect-ratio:1;place-items:center;border-radius:50%;background:var(--gold);color:#16120d;font-size:8px;font-weight:900}.display-track-card,.display-track-terrain{position:absolute;inset:2px;background-repeat:no-repeat;background-color:#12110f;border:1px solid #504a40}.display-track-terrain{display:grid;margin:0;place-items:stretch;background:#e4dbc9}.display-track-terrain .terrain-card-face{width:100%;height:100%;aspect-ratio:auto}.display-empty-slot{display:grid;height:100%;place-items:center;overflow:hidden;color:#69635a;font-size:8px}.display-bp-markers{position:absolute;top:3%;right:3%;left:18%;z-index:6;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:1.5%;pointer-events:none}.display-bp-marker{position:relative;display:block;width:16%;aspect-ratio:1;filter:drop-shadow(0 1px 2px #000)}.display-bp-marker img{width:100%;height:100%;border-radius:50%;object-fit:contain}.display-bp-marker b{position:absolute;right:-20%;bottom:-14%;padding:0 12%;border-radius:8px;background:#f1e2b5;color:#17130d;font-size:max(7px,9cqi)}.display-activation{position:relative;z-index:7;display:block;max-width:100%;margin:2px 0 0;padding:1px;overflow:hidden;border:1px solid #7f7159;background:rgba(18,17,15,.86);color:#ead9af;font-size:7px;text-align:center;text-overflow:ellipsis;white-space:nowrap}.display-activation.used{opacity:.4}.display-activation.active{border-color:#fff;background:#8e3131}.display-decoy{position:absolute;left:2px;bottom:2px;z-index:7;padding:1px 2px;background:#d39a34;color:#17130d;font-size:7px}
+.display-mob-track{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:clamp(2px,.35cqi,5px);width:100%;overflow:visible;padding:0}.display-mob-slot{position:relative;min-width:0;min-height:0;aspect-ratio:.7;padding:2px;border:1px dashed #5a544b;background:#201e1a;overflow:hidden;container-type:inline-size}.display-mob-slot.revealed{border-style:solid;border-color:var(--gold)}.display-mob-slot.feature{border-style:solid;border-color:#706244}.display-mob-slot.active{box-shadow:0 0 0 2px #e4bd63}.display-mob-slot.decoy{border-color:#d5983d}.display-extra-slot{border-style:solid;border-color:#706244}.display-slot-number{position:absolute;left:2px;top:2px;z-index:5;display:grid;width:clamp(12px,4cqi,20px);aspect-ratio:1;place-items:center;border-radius:50%;background:var(--gold);color:#16120d;font-size:8px;font-weight:900}.display-track-card,.display-track-terrain{position:absolute;inset:2px;background-repeat:no-repeat;background-color:#12110f;border:1px solid #504a40}.display-track-terrain{display:grid;margin:0;place-items:stretch;background:#e4dbc9}.display-track-terrain .terrain-card-face{width:100%;height:100%;aspect-ratio:auto}.display-empty-slot{display:grid;height:100%;place-items:center;overflow:hidden;color:#69635a;font-size:8px}.display-bp-markers{position:absolute;top:3%;right:3%;left:18%;z-index:6;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:1.5%;pointer-events:none}.display-bp-marker{position:relative;display:block;width:16%;aspect-ratio:1;filter:drop-shadow(0 1px 2px #000)}.display-bp-marker img{width:100%;height:100%;border-radius:50%;object-fit:contain}.display-bp-marker b{position:absolute;right:-20%;bottom:-14%;padding:0 12%;border-radius:8px;background:#f1e2b5;color:#17130d;font-size:max(7px,9cqi)}.display-slot-activations{position:absolute;left:2px;right:2px;bottom:2px;z-index:7;display:flex;flex-wrap:wrap;justify-content:center;gap:2px;pointer-events:none}.display-activation{display:block;max-width:100%;padding:1px 3px;overflow:hidden;border:1px solid #7f7159;border-radius:3px;background:rgba(18,17,15,.9);color:#ead9af;font-size:7px;line-height:1.3;text-align:center;text-overflow:ellipsis;white-space:nowrap}.display-activation.used{opacity:.4}.display-activation.active{border-color:#fff;background:#8e3131}.display-decoy{position:absolute;left:2px;bottom:2px;z-index:7;padding:1px 2px;background:#d39a34;color:#17130d;font-size:7px}
+.display-mob-track-block.no-mob-track .display-mob-track{grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:minmax(0,1fr)}
 /* 杂兵轨编号底色（1-10：黑、白、红、蓝、绿、黄、紫、棕、橙、粉）。 */
 .display-slot-number.mob-number-1,.marker-number.mob-number-1{background:#000!important;color:#fff!important}.display-slot-number.mob-number-2,.marker-number.mob-number-2{background:#fff!important;color:#111!important}.display-slot-number.mob-number-3,.marker-number.mob-number-3{background:#f00!important;color:#fff!important}.display-slot-number.mob-number-4,.marker-number.mob-number-4{background:#00f!important;color:#fff!important}.display-slot-number.mob-number-5,.marker-number.mob-number-5{background:#008000!important;color:#fff!important}.display-slot-number.mob-number-6,.marker-number.mob-number-6{background:#ff0!important;color:#111!important}.display-slot-number.mob-number-7,.marker-number.mob-number-7{background:#800080!important;color:#fff!important}.display-slot-number.mob-number-8,.marker-number.mob-number-8{background:#a52a2a!important;color:#fff!important}.display-slot-number.mob-number-9,.marker-number.mob-number-9{background:#ffa500!important;color:#111!important}.display-slot-number.mob-number-10,.marker-number.mob-number-10{background:#ffc0cb!important;color:#111!important}
 .display-bp-marker b{background:#f1e2b5!important;color:#17130d!important}
@@ -61,6 +65,12 @@ body{height:100vh;overflow:hidden}
 .conflict-side-content.quarter-turn .conflict-side-secondary,.conflict-side-content.aibp-mirror .conflict-side-secondary{grid-row:1}
 .conflict-side-content.quarter-turn .conflict-landscape-extras,.conflict-side-content.aibp-mirror .conflict-landscape-extras{display:none}
 .conflict-side-content.quarter-turn .conflict-side-primary,.conflict-side-content.aibp-mirror .conflict-side-primary{overflow:hidden}
+.conflict-side-content.quarter-turn .conflict-side-primary .conflict-resolving-block{flex:0 0 auto;min-height:0;height:auto;overflow:visible}
+.conflict-side-content.quarter-turn .conflict-side-primary .active-public-cards{height:auto;min-height:0;overflow:visible}
+.conflict-side-content.quarter-turn .conflict-side-primary .active-public-cards .public-card-art{width:100%;height:auto;max-height:none}
+.conflict-side-content.aibp-mirror .conflict-side-primary .conflict-resolving-block{flex:0 0 auto;min-height:0;height:auto;overflow:visible}
+.conflict-side-content.aibp-mirror .conflict-side-primary .active-public-cards{height:auto;min-height:0;overflow:visible}
+.conflict-side-content.aibp-mirror .conflict-side-primary .active-public-cards .public-card-art{width:100%;height:auto;max-height:none}
 .conflict-side-content.quarter-turn .boss-sheet-block,.conflict-side-content.aibp-mirror .boss-sheet-block{display:grid;grid-template-rows:minmax(0,1fr);flex:1 1 0;min-height:0;padding-bottom:0;overflow:hidden}
 .conflict-side-content.quarter-turn .boss-sheet-stage,.conflict-side-content.aibp-mirror .boss-sheet-stage{width:100%;height:100%;min-height:0;max-width:none;aspect-ratio:auto}
 .conflict-side-content.quarter-turn .boss-sheet-spread,.conflict-side-content.aibp-mirror .boss-sheet-spread{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr);align-items:center}
@@ -72,6 +82,7 @@ body{height:100vh;overflow:hidden}
 .conflict-side-content.quarter-turn .conflict-resolving-block>.conflict-block-title,.conflict-side-content.aibp-mirror .conflict-resolving-block>.conflict-block-title{display:none}
 .conflict-side-content.quarter-turn .active-public-cards,.conflict-side-content.aibp-mirror .active-public-cards{grid-template-columns:minmax(0,1fr);align-items:stretch;gap:8px;min-height:0;height:100%;max-width:none;overflow:hidden}
 .conflict-side-content.quarter-turn .active-public-cards:has(>.public-card:nth-child(2)),.conflict-side-content.aibp-mirror .active-public-cards:has(>.public-card:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
+.conflict-side-content.quarter-turn .active-public-cards:has(>.public-card:nth-child(3)),.conflict-side-content.aibp-mirror .active-public-cards:has(>.public-card:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))}
 .conflict-side-content.quarter-turn .active-public-cards .public-card,.conflict-side-content.aibp-mirror .active-public-cards .public-card{display:grid;grid-template-rows:minmax(0,1fr) auto;justify-items:center;min-height:0;height:100%;overflow:hidden}
 .conflict-side-content.quarter-turn .active-public-cards .public-card-art,.conflict-side-content.aibp-mirror .active-public-cards .public-card-art{width:auto;height:100%;max-width:100%;max-height:100%;aspect-ratio:var(--card-aspect,.7)}
 .conflict-side-content.quarter-turn .active-public-cards .conflict-empty-state,.conflict-side-content.aibp-mirror .active-public-cards .conflict-empty-state{display:grid;height:100%;place-items:center}
@@ -103,15 +114,40 @@ body{height:100vh;overflow:hidden}
 .conflict-side-content.aibp-mirror .conflict-resolving-block{grid-column:1;grid-row:1}
 .conflict-side-content.aibp-mirror .active-public-cards{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr);align-content:stretch;overflow:hidden}
 .conflict-side-content.aibp-mirror .active-public-cards:has(>.public-card:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
+.conflict-side-content.aibp-mirror .active-public-cards:has(>.public-card:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))}
 .conflict-side-content.aibp-mirror .active-public-cards>.active-ai-card{grid-column:1;grid-row:1}
 .conflict-side-content.aibp-mirror .active-public-cards>.active-bp-card{grid-column:2;grid-row:1}
+.conflict-side-content.aibp-mirror .active-public-cards>.active-rule-card{grid-column:3;grid-row:1}
 .conflict-side-content.aibp-mirror .active-public-cards:not(:has(>.active-ai-card))>.active-bp-card{grid-column:1}
+.conflict-side-content.aibp-mirror .active-public-cards:not(:has(>.active-ai-card))>.active-rule-card{grid-column:2;grid-row:1}
+.conflict-side-content.aibp-mirror .active-public-cards:not(:has(>.active-ai-card)):not(:has(>.active-bp-card))>.active-rule-card{grid-column:1}
 .conflict-side-content.aibp-mirror .active-public-cards .public-card{align-self:stretch;height:100%;container-type:size}
 .conflict-side-content.aibp-mirror .active-public-cards .public-card figcaption{display:none}
-.conflict-side-content.aibp-mirror .active-public-cards .public-card-art{align-self:center;width:min(100cqw,calc(100cqh * var(--card-aspect,.7)));height:auto;max-width:100%;max-height:100%;aspect-ratio:var(--card-aspect,.7)}
+.conflict-side-content.aibp-mirror .active-public-cards .public-card-art{align-self:center;width:auto;height:100%;max-width:100%;max-height:100%;aspect-ratio:var(--card-aspect,.7)}
 .conflict-side-content.quarter-turn .active-public-cards .public-card{align-self:stretch;height:100%;container-type:size}
 .conflict-side-content.quarter-turn .active-public-cards .public-card figcaption{display:none}
-.conflict-side-content.quarter-turn .active-public-cards .public-card-art{align-self:center;width:min(100cqw,calc(100cqh * var(--card-aspect,.7)));height:auto;max-width:100%;max-height:100%;aspect-ratio:var(--card-aspect,.7)}
+.conflict-side-content.quarter-turn .active-public-cards .public-card-art{align-self:center;width:auto;height:100%;max-width:100%;max-height:100%;aspect-ratio:var(--card-aspect,.7)}
+
+/* The showcase group owns the whole second-screen canvas. Resolving cards are
+   an overlay in the leftover visual area and must never reserve a grid column
+   that would shrink the big card or minion track. */
+.conflict-side-content.quarter-turn,.conflict-side-content.aibp-mirror{position:relative;grid-template-columns:minmax(0,1fr)}
+.conflict-side-content.quarter-turn .conflict-side-primary,.conflict-side-content.aibp-mirror .conflict-side-primary{grid-column:1;grid-row:1;width:100%;height:100%}
+.conflict-side-content.quarter-turn .conflict-side-secondary,.conflict-side-content.aibp-mirror .conflict-side-secondary{position:absolute;z-index:20;right:0;top:0;bottom:0;width:min(32%,360px);grid-column:auto;grid-row:auto;pointer-events:none;background:linear-gradient(90deg,transparent,#171614e8 24%,#171614f5)}
+.conflict-side-content.quarter-turn .conflict-side-secondary .conflict-resolving-block,.conflict-side-content.aibp-mirror .conflict-side-secondary .conflict-resolving-block{pointer-events:auto}
+
+/* The boss-card showcase is a horizontal two-panel strip in its own
+   coordinate space. Keep the strip's two panels together in every card
+   presentation and let the stage fill the available width instead of falling
+   back to the narrow portrait card rules. */
+.conflict-side-content.quarter-turn .boss-sheet-display-bar,.conflict-side-content.aibp-mirror .boss-sheet-display-bar{display:block;min-width:0;min-height:0;flex:none;padding-bottom:0;overflow:hidden}
+.conflict-side-content.quarter-turn .boss-sheet-display-bar .boss-sheet-stage,.conflict-side-content.aibp-mirror .boss-sheet-display-bar .boss-sheet-stage{width:100%;height:auto;max-width:none;aspect-ratio:2.916/1}
+.conflict-side-content.quarter-turn .boss-sheet-display-bar .boss-sheet-spread,.conflict-side-content.aibp-mirror .boss-sheet-display-bar .boss-sheet-spread{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(0,1fr);align-items:center}
+.conflict-side-content.quarter-turn .boss-sheet-display-bar .boss-sheet-spread:has(>img:only-child),.conflict-side-content.aibp-mirror .boss-sheet-display-bar .boss-sheet-spread:has(>img:only-child){grid-template-columns:minmax(0,1fr)}
+.conflict-side-content.quarter-turn .boss-sheet-display-bar .boss-sheet-spread img,.conflict-side-content.aibp-mirror .boss-sheet-display-bar .boss-sheet-spread img{object-fit:contain}
+.conflict-board-card-group{display:flex;flex-direction:column;gap:8px;min-width:0;transform-origin:top left}
+.conflict-side-content.quarter-turn .conflict-board-card-group{flex:0 0 auto}
+
 
 @container(max-width:420px){
   .conflict-side-content{gap:10px;padding:9px}
@@ -261,3 +297,152 @@ body{height:100vh;overflow:hidden}
 .sidebar-clue-panel .display-clue-value strong{font-size:13px}
 .sidebar-clue-panel .clue-token-icon,.sidebar-clue-panel .clue-token-placeholder{width:16px;height:16px}
 .sidebar-clue-panel .display-clue-list:has(>.display-clue-knight:nth-child(3)):not(:has(>.display-clue-knight:nth-child(4))){grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* Keep the conflict board at the outer edge while the card panel owns remaining width. */
+.conflict-scene{--board-track:calc((100vh - 28px)*1.4*var(--board-scale,1))}
+.conflict-board-area{place-items:center start;align-items:center;justify-items:start;padding:0;overflow:visible}
+.conflict-board-shell{width:calc((100vh - 28px)*1.4*var(--board-scale,1));max-width:none;justify-self:start;transform:none;transform-origin:left center}
+.conflict-scene.swapped .conflict-board-area{justify-items:end}
+.conflict-scene.swapped .conflict-board-shell{justify-self:end;transform-origin:right center}
+
+/* The card panel owns the full second-screen height independently of the board. */
+.conflict-scene:not(.board-hidden),
+.conflict-scene:not(.board-hidden) .conflict-side{min-height:100vh}
+.conflict-scene:not(.board-hidden) .conflict-side-content{min-height:100vh}
+
+/* The resolving column should be a compact card rail, not a full-width
+   empty panel. Let the primary track consume the remaining space and cap the
+   secondary rail to a useful card width. */
+.conflict-side-content.quarter-turn{grid-template-columns:minmax(0,1fr) minmax(220px,30%)}
+.conflict-side-content.quarter-turn .conflict-side-secondary{min-width:0}
+
+/* Match the printed node circles on the source map. The size and border are
+   container-relative so both remain proportional when the map is resized. */
+.rogue-display-map-frame .display-rogue-node{width:4cqw;height:4cqw;border-width:max(1px,.12cqw);box-shadow:0 .12cqw .3cqw #160d0b99}
+.rogue-display-map-frame .display-rogue-node.available{box-shadow:0 0 0 .1cqw #fff8,0 0 0 .2cqw #b52c2866,0 .12cqw .3cqw #160d0b66}
+.rogue-display-map-frame .display-rogue-node{background:#443a3328;border-color:#f7ead288}
+.rogue-display-map-frame .display-rogue-node.available{background:#f7d56a66;border-color:#92241f99}
+.rogue-display-map-frame .display-rogue-node.cleared{background:#7e182255;border-color:#f7ead299}
+.rogue-display-map-frame .display-rogue-node.locked{opacity:.58}
+
+/* Final conflict presentation override: maximize the boss/minion showcase
+   against the canvas edge; resolving cards use the row left underneath. */
+.conflict-side-content.quarter-turn,.conflict-side-content.aibp-mirror{position:relative;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr)!important;align-content:stretch}
+.conflict-side-content.quarter-turn .conflict-side-primary,.conflict-side-content.aibp-mirror .conflict-side-primary{grid-column:1!important;grid-row:1!important;width:100%;height:auto;overflow:hidden}
+.conflict-side-content.quarter-turn .conflict-board-card-group,.conflict-side-content.aibp-mirror .conflict-board-card-group{width:100%;max-width:100%;min-width:0;overflow:hidden;transform-origin:top left}
+.conflict-side-content.quarter-turn .boss-sheet-stage,.conflict-side-content.aibp-mirror .boss-sheet-stage{max-width:100%;min-width:0}
+.conflict-side-content.quarter-turn,.conflict-side-content.aibp-mirror{overflow:hidden;contain:strict;clip-path:inset(0)}
+.conflict-side-content.quarter-turn .conflict-side-secondary,.conflict-side-content.aibp-mirror .conflict-side-secondary{position:static;z-index:auto;width:100%;height:auto;min-height:0;grid-column:1!important;grid-row:2!important;pointer-events:auto;background:none;overflow:hidden}
+.conflict-side-content.quarter-turn .conflict-resolving-block,.conflict-side-content.aibp-mirror .conflict-resolving-block{grid-template-columns:minmax(0,1fr) minmax(180px,.62fr);grid-template-rows:minmax(0,1fr);align-items:stretch}
+.conflict-side-content.quarter-turn .active-public-cards,.conflict-side-content.aibp-mirror .active-public-cards{grid-column:1;grid-row:1;min-width:0}
+.conflict-side-content.quarter-turn .conflict-resolving-summary,.conflict-side-content.aibp-mirror .conflict-resolving-summary{grid-column:2;grid-row:1;align-content:center;margin:0;padding:8px 0 8px 12px;border-top:0;border-left:1px solid var(--line)}
+.conflict-side-content.quarter-turn .conflict-resolving-summary,.conflict-side-content.aibp-mirror .conflict-resolving-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.conflict-side-content.quarter-turn .conflict-resolving-summary .resolving-damage,.conflict-side-content.aibp-mirror .conflict-resolving-summary .resolving-damage{grid-column:1/-1}
+
+/* Aspect-ratio driven card layout. Stack is the default for a wide canvas;
+   side-by-side is used when the canvas is narrow; popup is used near square. */
+.conflict-side-content.layout-side{grid-template-columns:minmax(0,1fr) minmax(220px,.72fr)!important;grid-template-rows:minmax(0,1fr)!important}
+.conflict-side-content.layout-side .conflict-side-primary{grid-column:1!important;grid-row:1!important;height:100%}
+.conflict-side-content.layout-side .conflict-side-primary{overflow:auto}
+.conflict-side-content.layout-side .conflict-side-secondary{grid-column:2!important;grid-row:1!important;height:100%}
+.conflict-side-content.layout-side .conflict-resolving-block{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+.conflict-side-content.layout-side .conflict-resolving-summary{grid-column:1;grid-row:2;border-top:1px solid var(--line);border-left:0;padding:8px 0}
+
+@media(max-width:1100px),(orientation:portrait){
+  .conflict-board-area{place-items:center;padding:14px;overflow:auto}
+  .conflict-board-shell{width:min(100%,90vh);max-width:none;justify-self:center;transform-origin:center}
+}
+
+/* ==========================================================================
+   Quarter-turn showcase (board visible, second screen possibly rotated).
+   The content box is already sized to the logical (pre-rotation) canvas and
+   rotated by JS. Here it is a plain flex container: the hero group (boss card
+   + BP rail) is fitted inside its own cell with container-query units so it
+   never needs a transform: scale() and can never be clipped, and the resolving
+   rail always stays in normal flow beside/under it. JS only feeds two hints:
+   --hero-aspect (measured group aspect) and the layout-side/layout-stack class.
+   These rules deliberately override the older grid-based quarter-turn block.
+   ========================================================================== */
+.conflict-side-content.quarter-turn{
+  display:flex!important;gap:12px;padding:12px;align-items:stretch;
+  grid-template-columns:none!important;grid-template-rows:none!important;
+  min-height:0!important;
+  overflow:hidden;contain:strict;clip-path:inset(0)
+}
+/* The rotated showcase must keep its true logical footprint (sidebar w/h
+   swapped). The earlier min-height:100vh rule would force it to a viewport
+   square that overflows and clips the big card. */
+.conflict-scene:not(.board-hidden) .conflict-side-content.quarter-turn{min-height:0!important}
+/* transform: rotate() does not shrink the layout box, so on a quarter turn the
+   1080px-wide (pre-rotation) content overflows the ~447px sidebar and the
+   sidebar's overflow:auto shows a phantom scrollbar — the overflow lands back
+   inside the sidebar once rotated. The showcase always fits its canvas, so the
+   sidebar never needs to scroll: clip it instead. */
+.conflict-scene:not(.board-hidden) .conflict-side{overflow:hidden}
+.conflict-side-content.quarter-turn.layout-stack{flex-direction:column}
+.conflict-side-content.quarter-turn.layout-side{flex-direction:row}
+/* The hero cell owns the lion's share of the canvas and is the query context
+   the group measures itself against. */
+.conflict-side-content.quarter-turn .conflict-side-primary{
+  display:flex!important;flex-direction:column;gap:8px;
+  grid-column:auto!important;grid-row:auto!important;
+  flex:1 1 auto;min-width:0;min-height:0;width:auto;height:auto;overflow:hidden
+}
+/* The hero group is fitted against THIS wrapper's box (not the whole primary),
+   so reserving space for the party strip below simply shrinks the hero to fit —
+   the container-query units the group uses resolve against this element. */
+.conflict-side-content.quarter-turn .conflict-hero-fit{
+  flex:1 1 auto;min-width:0;min-height:0;display:flex;overflow:hidden;container-type:size
+}
+/* The resolving rail is a fixed slice: a bottom band when stacked, a right
+   rail when side-by-side. Always in flow, never an overlay. */
+.conflict-side-content.quarter-turn .conflict-side-secondary{
+  position:static!important;z-index:auto!important;background:none!important;
+  grid-column:auto!important;grid-row:auto!important;pointer-events:auto;
+  min-width:0;min-height:0;overflow:hidden;display:grid;
+  grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)
+}
+.conflict-side-content.quarter-turn.layout-stack .conflict-side-secondary{
+  flex:0 0 26%;width:100%;height:auto
+}
+.conflict-side-content.quarter-turn.layout-side .conflict-side-secondary{
+  flex:0 0 clamp(220px,28%,360px);width:auto;height:100%
+}
+/* Fit the boss+rail group inside the hero cell using the cell's own size.
+   Width is capped by whichever axis binds first: the cell width, or the width
+   whose resulting stacked height (width / --hero-aspect + the flex gap) still
+   fits the cell height. No JS transform involved, so nothing overflows. */
+.conflict-side-content.quarter-turn .conflict-board-card-group{
+  flex:0 0 auto;align-self:center;margin:auto;
+  width:min(100cqw,calc((100cqh - var(--hero-gap,8px)) * var(--hero-aspect,1.43)));
+  max-width:100cqw;min-width:0;overflow:visible;transform:none!important;height:auto!important
+}
+.conflict-side-content.quarter-turn .boss-sheet-block{display:block;flex:none;min-height:0;padding-bottom:0;overflow:hidden}
+.conflict-side-content.quarter-turn .boss-sheet-stage{width:100%;height:auto;max-width:none;min-width:0;aspect-ratio:2.916/1}
+.conflict-side-content.quarter-turn .display-mob-track-block{flex:none;padding-bottom:0}
+/* Party attributes live inside the resolving summary (grouped with AI/BP order
+   + damage): one full-width row per member. Knights show six virtues with full
+   中文+English names; squires show primary+secondary clues with the matching
+   clue-token icon. Rows span both summary columns and let their chips wrap. */
+.conflict-resolving-summary .conflict-party-row{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:3px 8px;margin:0;padding-top:4px;border-top:1px dashed #3a352b}
+.conflict-resolving-summary .conflict-party-row>b{display:flex;align-items:center;gap:5px;min-width:0;color:var(--gold)}
+.conflict-resolving-summary .conflict-party-row.is-squire>b{color:#9cc3e6}
+.conflict-party-avatar{width:20px;height:20px;border-radius:50%;object-fit:cover;flex:none}
+.conflict-party-name{overflow:hidden;max-width:100px;text-overflow:ellipsis;white-space:nowrap}
+.conflict-attr-chips{display:flex;flex-wrap:wrap;gap:3px;min-width:0}
+.conflict-attr-chip{display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border-radius:4px;background:#161512;line-height:1.3}
+.conflict-attr-chip small{color:var(--muted);font-size:9px;font-weight:400;white-space:nowrap}
+.conflict-attr-chip b{color:#f4eadb!important;font-size:12px}
+.conflict-clue-icon{width:14px;height:14px;object-fit:contain;flex:none}
+.conflict-attr-chip.virtue{background:#2a2318}
+.conflict-attr-chip.clue-martial{background:#3a1f1f}
+.conflict-attr-chip.clue-errant{background:#1f3325}
+.conflict-attr-chip.clue-historic{background:#332c18}
+.conflict-attr-chip.clue-mystic{background:#1e2c38}
+/* Resolving cards: card row fills the slice, summary tucks below/beside. */
+.conflict-side-content.quarter-turn.layout-stack .conflict-resolving-block{grid-template-columns:minmax(0,1fr) minmax(180px,.62fr);grid-template-rows:minmax(0,1fr)}
+.conflict-side-content.quarter-turn.layout-stack .active-public-cards{grid-column:1;grid-row:1}
+.conflict-side-content.quarter-turn.layout-stack .conflict-resolving-summary{grid-column:2;grid-row:1;align-content:center;margin:0;padding:8px 0 8px 12px;border-top:0;border-left:1px solid var(--line)}
+.conflict-side-content.quarter-turn.layout-side .conflict-resolving-block{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
+.conflict-side-content.quarter-turn.layout-side .active-public-cards{grid-column:1;grid-row:1}
+.conflict-side-content.quarter-turn.layout-side .conflict-resolving-summary{grid-column:1;grid-row:2;border-top:1px solid var(--line);border-left:0;padding:8px 0;margin:0}

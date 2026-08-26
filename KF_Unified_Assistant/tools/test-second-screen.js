@@ -23,7 +23,7 @@ const mainApp = read("public/app.js");
 
 assert.match(api, /function default_presentation_state/);
 assert.match(api, /'conflictRotation'=>90/);
-assert.match(api, /in_array\(\$conflictRotation,\[90,270\],true\)\?\$conflictRotation:90/);
+assert.match(api, /in_array\(\$conflictRotation,\[0,90,180,270\],true\)\?\$conflictRotation:90/);
 assert.match(api, /\$route === 'display-state' && \$method === 'GET'/);
 assert.match(api, /HTTP_IF_NONE_MATCH/);
 assert.match(api, /http_response_code\(304\)/);
@@ -31,6 +31,8 @@ assert.match(api, /public_aibp_display_state/);
 assert.match(api, /unset\(\$public\['conflictBoard'\]\['foolDeckOrder'\]\)/);
 assert.match(api, /'aiDeckCount'/);
 assert.match(api, /'bpDeckCount'/);
+assert.match(api, /'activeRuleCard'/);
+assert.match(api, /'activeRuleCardReason'/);
 assert.match(api, /function public_aibp_auto_sheet_tokens/);
 assert.match(api, /\$public\['sheetAutoTokens'\]=public_aibp_auto_sheet_tokens/);
 assert.match(api, /\$public\['aiDeckLevels'\]/);
@@ -38,11 +40,19 @@ assert.match(api, /\$public\['bpDeckLevels'\]/);
 assert.doesNotMatch(api.match(/function public_aibp_display_state[\s\S]*?\n\}/)?.[0] || "", /'aiDeck','bpDeck'/);
 assert.match(api, /\$revealed\?text_value\(\$slot\['id'\]/);
 assert.match(api, /'occupied'=>text_value\(\$slot\['id'\]/);
-assert.doesNotMatch(api.match(/function public_aibp_display_state[\s\S]*?\n\}/)?.[0] || "", /patient|aiChoiceIds/);
+assert.doesNotMatch(api.match(/function public_aibp_display_state[\s\S]*?\n\}/)?.[0] || "", /patient/);
 assert.match(api, /\$monsterId==='M_KnightFen'/);
 assert.match(api, /\$monsterId==='M_WhiteApe'/);
 assert.match(api, /'cardIds'=>\$revealed\?\$cards:\[\]/);
 assert.match(api, /\$public\['bossMobTrack'\]/);
+// Second-screen party attributes: virtues are enriched into the map module for
+// knights, and the ETag folds in the knight-sheet signature so virtue edits
+// refresh the display even without a campaign revision bump.
+assert.match(api, /function public_map_with_virtues/);
+assert.match(api, /function knight_sheets_signature/);
+assert.match(api, /'map'=>public_map_with_virtues\(\$db,\$user\['id'\],\$modules\['map'\]\?\?null\)/);
+assert.match(api, /knight_sheets_signature\(\$db,\$user\['id'\]\)/);
+assert.match(api, /\['bravery','tenacity','sagacity','fortitude','might','insight'\]/);
 
 assert.match(bridge, /new BroadcastChannel\("kf-presentation"\)/);
 assert.match(bridge, /operationQueue/);
@@ -80,7 +90,11 @@ assert.deepStrictEqual(JSON.parse(JSON.stringify(conflictAssetContext.result)), 
   sheet:"/assets/conflict/terrain-card-sheet.jpg",
   unknown:""
 });
-assert.match(aibp, /\["knight", "monster", "number"\]\.includes\(item\.kind\) \|\| item\.asset === "LictorDecoy"/);
+assert.match(aibp, /<img class="terrain-control-board-source" src="\$\{esc\(conflictAssetSrc\(boardAsset\)\)\}"/,
+  "AIBP 底部冲突版图必须使用统一资源解析，不能拼接 ../display/ 前缀");
+assert.doesNotMatch(aibp, /<img class="terrain-control-board-source" src="\.\.\/display\//,
+  "AIBP 底部冲突版图不能生成无效的 ../display/ 资源路径");
+assert.match(aibp, /\["knight", "monster", "number"\]\.includes\(item\.kind\) \|\| \["LictorDecoy", "Armor"\]\.includes\(item\.asset\)/);
 assert.match(aibp, /function rotateConflictTerrain/);
 assert.match(aibp, /placement => rotateConflictTerrain\(placement, delta\)/);
 assert.match(aibp, /transform:translate\(-50%,-50%\) rotate\(\$\{placement\.rotation\}deg\)/);
@@ -90,6 +104,8 @@ assert.match(terrainBindingSource, /\[data-terrain-board\][\s\S]*?if \(selectedT
 assert.doesNotMatch(terrainBindingSource, /event\.target\.closest\('\[data-terrain-id\]'\)/);
 const renderAibpSource = aibp.match(/function renderApp\(\)[\s\S]*?\n  function bindEvents/)?.[0] || "";
 assert.ok(renderAibpSource.indexOf("操作日志") < renderAibpSource.indexOf("conflictBoardEditorHtml(monster, b)"), "冲突版图必须位于 AIBP 最底部");
+assert.ok(renderAibpSource.indexOf('id="undo"') < renderAibpSource.indexOf('data-scry="ai"'), "AI 观星按钮必须位于 AI 操作按钮末尾");
+assert.ok(renderAibpSource.indexOf('data-wound="double"') < renderAibpSource.indexOf('data-scry="bp"'), "BP 观星按钮必须位于 BP 操作按钮末尾");
 
 assert.match(index, /id="displayRoot"/);
 assert.match(index, /\.\.\/map\/map-view\.js/);
@@ -106,7 +122,7 @@ assert.match(display, /activeFoolCardId/);
 assert.match(display, /showCoordinates/);
 assert.match(displayStyles, /\.conflict-grid span\.fool-highlight/);
 assert.match(display, /conflict-terrain-card-list/);
-assert.match(display, /\["knight","monster","number"\]\.includes\(item\.kind\) \|\| item\.asset === "LictorDecoy"/);
+assert.match(display, /\["knight","monster","number"\]\.includes\(item\.kind\) \|\| \["LictorDecoy","Armor"\]\.includes\(item\.asset\)/);
 assert.match(display, /KFMapView\.renderKingdomBoard/);
 assert.match(display, /KFMapView\.renderDistrictExplorationCards/);
 assert.match(display, /KFMapView\.renderClueTracking/);
@@ -132,9 +148,19 @@ assert.match(displayStyles, /\.display-body \.track-time \.delve-track-cells\{gr
 assert.match(displayStyles, /@media\(min-width:3000px\) and \(min-height:1700px\)/);
 assert.match(displayStyles, /\.map-scene\{grid-template-columns:minmax\(0,1fr\) clamp\(960px,27vw,1160px\)\}/);
 assert.match(displayStyles, /\.sidebar-clue-panel \.display-clue-list\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:8px;overflow:hidden\}/);
-assert.match(index, /styles\.css\?v=45/);
-assert.match(index, /app\.js\?v=38/);
+assert.match(index, /styles\.css\?v=57/);
+assert.match(index, /app\.js\?v=50/);
 assert.match(index, /map-view\.js\?v=8/);
+// Board-visible conflict showcase renders the idle-area party strip: knights
+// show six virtues, squires show clues; the hero group is fitted in its own
+// container so reserving the strip space never clips the big card.
+assert.match(display, /function conflictPartyAttributes/);
+assert.match(display, /conflict-party-attributes/);
+assert.match(display, /VIRTUE_LABELS/);
+assert.match(display, /hero\.memberType==="squire"/);
+assert.match(display, /conflict-hero-fit/);
+assert.match(displayStyles, /\.conflict-side-content\.quarter-turn \.conflict-hero-fit\{[^}]*container-type:size/);
+assert.match(displayStyles, /\.conflict-side-content\.quarter-turn \.conflict-party-attributes\{/);
 assert.doesNotMatch(mapView, /<figcaption>激活效果<\/figcaption>/,
   "active effect cards must not show the removed corner label");
 assert.strictEqual((mapView.match(/active: \{ x: 72\.5, y: 50, width: 31 \}/g) || []).length, 2);
@@ -236,23 +262,33 @@ assert.match(display, /function applyConflictSidebarLayout/);
 assert.match(display, /quarterTurn \? sideHeight : sideWidth/);
 assert.match(display, /quarterTurn \? sideWidth : sideHeight/);
 assert.match(display, /--sidebar-rotation", `\$\{-effectiveRotation\}deg`/);
-assert.match(display, /content\.classList\.toggle\("quarter-turn", quarterTurn\)/);
-assert.match(display, /const normalized = Number\(rotation\) === 270 \? 270 : 90/);
-assert.match(display, /const rotation=Number\(settings\.conflictRotation\)===270\?270:90/);
-assert.match(display, /content\.classList\.toggle\("aibp-mirror", boardVisible === false\)/);
+// Rewritten layout function: logical (pre-rotation) canvas drives every
+// decision; the hero group is fitted purely in CSS (no transform: scale()).
+assert.match(display, /const mirror = boardVisible === false/);
+assert.match(display, /const showcase = !mirror/);
+assert.match(display, /const logicalWidth = quarterTurn \? sideHeight : sideWidth/);
+assert.match(display, /const logicalHeight = quarterTurn \? sideWidth : sideHeight/);
+assert.match(display, /content\.classList\.toggle\("quarter-turn", showcase\)/);
+assert.match(display, /const rawRotation = \(\(Number\(rotation\) % 360\) \+ 360\) % 360/);
+assert.match(display, /const rawRotation=\(\(Number\(settings\.conflictRotation\)%360\)\+360\)%360/);
+assert.match(display, /content\.classList\.toggle\("aibp-mirror", mirror\)/);
+// The hero group must never be scaled with a transform (that was the source of
+// the quarter-turn clipping); it is fitted with container-query units instead.
+assert.doesNotMatch(display, /group\.style\.transform=`scale/);
+assert.match(display, /group\.style\.width = "1000px"/);
+assert.match(display, /content\.style\.setProperty\("--hero-aspect"/);
+assert.match(display, /const layoutMode = logicalAspect >= heroAspect \* 1\.3 \? "side" : "stack"/);
 assert.match(display, /content\.style\.removeProperty\("--mirror-primary-width"\)/);
 assert.match(display, /content\.style\.removeProperty\("--quarter-primary-width"\)/);
 assert.match(display, /content\.style\.removeProperty\("--mirror-mob-card-height"\)/);
-assert.match(display, /--mirror-mob-card-height",`\$\{mobCard\.offsetHeight\}px`/);
-assert.match(display, /const primaryWidth=primary\.clientWidth/);
-assert.match(display, /const scalableHeight=boss\.offsetHeight\+mob\.offsetHeight/);
-assert.match(display, /const fixedHeight=fixedRows\.reduce\(\(sum,row\)=>sum\+row\.offsetHeight,0\)/);
+// Board-hidden mirror keeps its measured grid-column fit (never rotated).
+assert.match(display, /if \(mobCard\) content\.style\.setProperty\("--mirror-mob-card-height", `\$\{mobCard\.offsetHeight\}px`\)/);
+assert.match(display, /const scalableHeight = Math\.max\(1, boss\.offsetHeight \+ mob\.offsetHeight\)/);
+assert.match(display, /const fixedHeight = fixedRows\.reduce\(\(sum, row\) => sum \+ row\.offsetHeight, 0\)/);
 assert.doesNotMatch(display, /primary\.getBoundingClientRect\(\)\.width|boss\.getBoundingClientRect\(\)\.height|mob\.getBoundingClientRect\(\)\.height/);
-assert.match(display, /const fixedRows=boardVisible===false\?\[primary\?\.querySelector\("\.conflict-hero-clues"\),primary\?\.querySelector\("\.conflict-mirror-primary-cards"\)\]\.filter\(Boolean\):\[\]/);
-assert.match(display, /const targetWidth=primaryWidth\*Math\.max\(1,availableHeight-fixedHeight-gapHeight\)\/Math\.max\(1,scalableHeight\)/);
-assert.match(display, /const reservedWidth=boardVisible===false\?64:24/);
-assert.match(display, /const property=boardVisible===false\?"--mirror-primary-width":"--quarter-primary-width"/);
-assert.match(display, /content\.style\.setProperty\(property,`\$\{Math\.min\(targetWidth,maxWidth\)\}px`\)/);
+assert.match(display, /primary\?\.querySelector\("\.conflict-hero-clues"\)/);
+assert.match(display, /primary\?\.querySelector\("\.conflict-mirror-primary-cards"\)/);
+assert.match(display, /content\.style\.setProperty\("--mirror-primary-width", `\$\{Math\.min\(targetWidth, maxWidth\)\}px`\)/);
 assert.match(display, /--board-scale:\$\{scale\/100\}/);
 assert.doesNotMatch(display, /--board-scale:\$\{scale\/100\};--rotation/);
 assert.doesNotMatch(display, /board-quarter-turn/);
@@ -260,6 +296,9 @@ assert.doesNotMatch(display, /conflict-board-shell" style="width:\$\{scale\}%/);
 assert.match(display, /boardState\.knightAssignments/);
 assert.match(display, /bossSheetHtml\(monster,battle\)/);
 assert.match(display, /aria-label="Boss 大卡"/);
+assert.match(display, /boss-sheet-display-bar/);
+assert.match(display, /content\.dataset\.layout = showcase \? "quarter-turn" : "standard"/);
+assert.match(displayStyles, /\.conflict-side-content\.quarter-turn \.boss-sheet-display-bar/);
 assert.match(display, /sheetAutoTokens/);
 assert.match(display, /bog-witch-encounter/);
 assert.match(display, /function tokenShapeClass\(id\) \{ return id === "token-armor" \? "token-square" : ""; \}/);
@@ -268,6 +307,10 @@ assert.match(display, /publicMobTrack\(monster,battle,trackFillers\)/);
 assert.match(display, /const referenceLabel=card=>card\.kind==="BPX"\?"BPX":"特质"/);
 assert.match(display, /const signatureCard=\(monster\?\.cards\|\|\[\]\)\.find\(card=>card\.kind==="SIG"\)/);
 assert.match(display, /\["Trait",kingdomTrait,"BPX"\]\.includes\(card\.kind\)/);
+assert.match(display, /const isTacticCard=card=>tacticIds\.has\(card\.id\)/);
+assert.match(display, /!isTacticCard\(card\)/);
+assert.match(display, /const tacticCard=cardById\(monster,battle\.mobTacticCard\)/,
+  "第二屏只应读取当前选中的战术卡");
 assert.match(display, /label:"惯常",side:"face",key:`\$\{signatureCard\.id\}:routine`/);
 assert.match(display, /label:"标志",side:"back",key:`\$\{signatureCard\.id\}:signature`/);
 assert.match(display, /aria-label="杂兵 BP 轨"/);
@@ -286,9 +329,10 @@ assert.match(display, /publicDeckSummary\(battle\)/);
 assert.match(display, /battle\.aiDeckLevels/);
 assert.match(display, /battle\.bpDeckLevels/);
 assert.match(display, /AI、BP 等级顺序和损伤量/);
-assert.match(display, /Array\.from\(\{length:10\}/);
-assert.match(display, /data-track-slot-count="10"/);
-assert.match(displayStyles, /\.display-mob-track\{display:grid;grid-template-columns:repeat\(10,minmax\(0,1fr\)\)/);
+assert.match(display, /Array\.from\(\{length:16\}/);
+assert.match(display, /index<10\?sourceSlots\[index\]:null/);
+assert.match(display, /data-track-slot-count="\$\{slotCount\}"/);
+assert.match(displayStyles, /\.display-mob-track\{display:grid;grid-template-columns:repeat\(8,minmax\(0,1fr\)\);grid-template-rows:repeat\(2,minmax\(0,1fr\)\)/);
 assert.match(displayStyles, /\.display-mob-slot\{[^}]*min-height:0;aspect-ratio:\.7/);
 assert.match(displayStyles, /\.display-mob-slot\{[^}]*container-type:inline-size/);
 assert.match(displayStyles, /\.display-bp-markers\{[^}]*flex-wrap:wrap/);
@@ -352,7 +396,7 @@ assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.conflict-sid
 assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.conflict-resolving-block\{grid-column:1;grid-row:1\}/);
 assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.active-public-cards \.public-card\{align-self:stretch;height:100%;container-type:size\}/);
 assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.active-public-cards \.public-card figcaption\{display:none\}/);
-assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.active-public-cards \.public-card-art\{align-self:center;width:min\(100cqw,calc\(100cqh \* var\(--card-aspect,\.7\)\)\);height:auto;[^}]*aspect-ratio:var\(--card-aspect,\.7\)\}/);
+assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.active-public-cards \.public-card-art\{align-self:center;width:auto;height:100%;[^}]*aspect-ratio:var\(--card-aspect,\.7\)\}/);
 assert.match(displayStyles, /\.conflict-side-content\.aibp-mirror \.conflict-hero-clues\{display:grid;grid-template-columns:repeat\(auto-fit,minmax\(96px,1fr\)\)/);
 assert.match(displayStyles, /\.conflict-hero-clue\.clue-martial\{border-left-color:#b94747\}/);
 assert.match(displayStyles, /\.active-public-cards:not\(:has\(>\.active-ai-card\)\)>\.active-bp-card\{grid-column:1\}/);
@@ -378,11 +422,11 @@ assert.doesNotMatch(display, /battle\.aiDeck(?!Count|Levels)/);
 assert.doesNotMatch(display, /battle\.bpDeck(?!Count|Levels)/);
 assert.match(main, /id="openDisplay"/);
 assert.match(main, /id="toggleConflictBoard"/);
-assert.match(main, /id="rotateConflict"[^>]*旋转第二屏 AI\/BP 区域 180 度/);
-assert.match(main, /app\.js\?v=28/);
-assert.match(mainApp, /function portraitConflictRotation\(value\)\{return Number\(value\)===270\?270:90\}/);
-assert.match(mainApp, /portraitConflictRotation\(settings\.conflictRotation\)\+180/);
-assert.match(index, /app\.js\?v=38/);
+assert.match(main, /id="rotateConflict"[^>]*旋转第二屏 AI\/BP 区域 90 度/);
+assert.match(main, /app\.js\?v=29/);
+assert.match(mainApp, /function portraitConflictRotation\(value\)\{const normalized=\(\(Number\(value\)%360\)\+360\)%360;return \[0,90,180,270\]\.includes\(normalized\)\?normalized:90\}/);
+assert.match(mainApp, /portraitConflictRotation\(settings\.conflictRotation\)\+90/);
+assert.match(index, /app\.js\?v=50/);
 
 const trackContext = vm.createContext({ window: {} });
 vm.runInContext(mapView, trackContext);

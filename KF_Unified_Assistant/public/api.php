@@ -167,7 +167,7 @@ function default_campaign_state(): array {
         ]],
         'encounter'=>['active'=>false,'monster'=>'','level'=>1,'type'=>'normal','phase'=>'setup','board'=>(object)[],'result'=>''],
         'aibp'=>['monster'=>'','level'=>1,'ai'=>[],'bp'=>[],'discard'=>[],'wounds'=>[],'promotion'=>0,'history'=>[]],
-        'modules'=>['map'=>null,'encounter'=>null,'aibp'=>null],
+        'modules'=>['map'=>null,'encounter'=>null,'aibp'=>null,'roguePath'=>null],
         'presentation'=>default_presentation_state(),
     ];
 }
@@ -175,7 +175,7 @@ function default_campaign_state(): array {
 function normalized_presentation_state(mixed $value): array {
     $base=default_presentation_state();
     if(!is_array($value))return $base;
-    $scene=in_array($value['scene']??'', ['map','encounter','conflict'], true)?$value['scene']:'map';
+    $scene=in_array($value['scene']??'', ['map','encounter','conflict','rogue'], true)?$value['scene']:'map';
     $settings=is_array($value['settings']??null)?$value['settings']:[];
     $conflictRotation=((int)($settings['conflictRotation']??90)%360+360)%360;
     return [
@@ -185,7 +185,7 @@ function normalized_presentation_state(mixed $value): array {
         'settings'=>[
             'mapScale'=>max(50,min(200,(int)($settings['mapScale']??100))),
             'conflictScale'=>max(50,min(200,(int)($settings['conflictScale']??100))),
-            'conflictRotation'=>in_array($conflictRotation,[90,270],true)?$conflictRotation:90,
+            'conflictRotation'=>in_array($conflictRotation,[0,90,180,270],true)?$conflictRotation:90,
             'conflictSwapped'=>($settings['conflictSwapped']??false)===true,
             'conflictBoardVisible'=>($settings['conflictBoardVisible']??true)!==false,
         ],
@@ -289,6 +289,9 @@ function public_aibp_display_state(mixed $module): ?array {
     ];
     $public['aiDeckCount']=is_array($battle['aiDeck']??null)?count($battle['aiDeck']):0;
     $public['bpDeckCount']=is_array($battle['bpDeck']??null)?count($battle['bpDeck']):0;
+    $public['deckOrderVisible']=($battle['deckOrderVisible']??true)!==false;
+    $public['activeRuleCard']=text_value($rule['ruleCard']??'',120);
+    $public['activeRuleCardReason']=text_value($rule['ruleCardReason']??'',200);
     $deckLevels=function(mixed $ids,string $prefix): array {
         if(!is_array($ids))return [];
         $levels=[];
@@ -300,6 +303,52 @@ function public_aibp_display_state(mixed $module): ?array {
     $public['aiDeckLevels']=$deckLevels($battle['aiDeck']??[],'AI');
     $public['bpDeckLevels']=$deckLevels($battle['bpDeck']??[],'BP');
     return ['version'=>$module['version']??null,'selectedMonsterId'=>$module['selectedMonsterId']??($battle['monsterId']??''),'battle'=>$public,'updatedAt'=>$module['updatedAt']??null];
+}
+// Second-screen enrichment: the map module state carries each party member's
+// clues but not their virtues (those live in knight_sheets, keyed by sheetId).
+// Attach a compact {virtues:{key:value}} map to every knight-type member so the
+// conflict showcase can display the six virtues; squires are left untouched and
+// keep showing clues. Returns the map module unchanged when nothing to enrich.
+function public_map_with_virtues(PDO $db, string $userId, mixed $mapModule): mixed {
+    if(!is_array($mapModule))return $mapModule;
+    $knights=is_array($mapModule['knights']??null)?$mapModule['knights']:null;
+    if(!$knights)return $mapModule;
+    $virtueKeys=['bravery','tenacity','sagacity','fortitude','might','insight'];
+    $sheetIds=[];
+    foreach($knights as $knight){
+        if(!is_array($knight)||($knight['memberType']??'')==='squire')continue;
+        $sheetId=text_value($knight['sheetId']??'',80);
+        if($sheetId!=='')$sheetIds[$sheetId]=true;
+    }
+    if(!$sheetIds)return $mapModule;
+    $ids=array_keys($sheetIds);
+    $placeholders=implode(',',array_fill(0,count($ids),'?'));
+    $q=$db->prepare("SELECT id,state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL AND id IN ($placeholders)");
+    $q->execute(array_merge([$userId],$ids));
+    $virtuesBySheet=[];
+    foreach($q->fetchAll() as $sheetRow){
+        $sheetState=json_decode($sheetRow['state_json'],true);
+        $sheetVirtues=is_array($sheetState['virtues']??null)?$sheetState['virtues']:[];
+        $compact=[];
+        foreach($virtueKeys as $key)$compact[$key]=(int)($sheetVirtues[$key]['value']??0);
+        $virtuesBySheet[$sheetRow['id']]=$compact;
+    }
+    foreach($knights as &$knight){
+        if(!is_array($knight)||($knight['memberType']??'')==='squire')continue;
+        $sheetId=text_value($knight['sheetId']??'',80);
+        if($sheetId!==''&&isset($virtuesBySheet[$sheetId]))$knight['virtues']=$virtuesBySheet[$sheetId];
+    }
+    unset($knight);
+    $mapModule['knights']=$knights;
+    return $mapModule;
+}
+// Signature of the user's knight sheets so the display-state ETag changes when
+// a virtue (or any sheet field) is edited even though the campaign revision has
+// not moved. Cheap: one aggregate query.
+function knight_sheets_signature(PDO $db, string $userId): string {
+    $q=$db->prepare("SELECT COALESCE(MAX(updated_at),'')||':'||COUNT(*) FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL");
+    $q->execute([$userId]);
+    return (string)$q->fetchColumn();
 }
 function ensure_default_campaign(PDO $db,string $userId): string {
     $q=$db->prepare('SELECT id FROM campaigns WHERE user_id=? AND deleted_at IS NULL ORDER BY created_at LIMIT 1');$q->execute([$userId]);
@@ -597,7 +646,9 @@ try {
     }
     if ($route === 'display-state' && $method === 'GET') {
         $id=(string)($_GET['campaignId']??$defaultCampaignId);$row=owned_campaign($db,$id,$user['id']);if(!$row)respond(404,['error'=>'战役不存在']);
-        $etag='"'.hash('sha256',$row['id'].':'.$row['revision'].':'.$row['updated_at']).'"';
+        // Fold the knight-sheet signature into the ETag so virtue edits (which
+        // do not bump the campaign revision) still refresh the second screen.
+        $etag='"'.hash('sha256',$row['id'].':'.$row['revision'].':'.$row['updated_at'].':'.knight_sheets_signature($db,$user['id'])).'"';
         header('Cache-Control: private, no-cache');header('ETag: '.$etag);
         if(trim((string)($_SERVER['HTTP_IF_NONE_MATCH']??''))===$etag){http_response_code(304);exit;}
         $state=json_decode($row['state_json'],true);if(!is_array($state))$state=[];
@@ -605,7 +656,7 @@ try {
         respond(200,[
             'campaign'=>['id'=>$row['id'],'name'=>$row['name'],'revision'=>(int)$row['revision'],'updatedAt'=>$row['updated_at'],'kingdom'=>$state['monsterPool']['kingdom']??$state['kingdom']??'sunken'],
             'presentation'=>normalized_presentation_state($state['presentation']??null),
-            'modules'=>['map'=>$modules['map']??null,'encounter'=>$modules['encounter']??null,'aibp'=>public_aibp_display_state($modules['aibp']??null)],
+            'modules'=>['map'=>public_map_with_virtues($db,$user['id'],$modules['map']??null),'encounter'=>$modules['encounter']??null,'aibp'=>public_aibp_display_state($modules['aibp']??null),'roguePath'=>$modules['roguePath']??null],
         ],['ETag'=>$etag,'Cache-Control'=>'private, no-cache']);
     }
     if (preg_match('/^campaigns\/([a-f0-9-]+)(?:\/(copy|trash|restore))?$/',$route,$m)) {

@@ -3,6 +3,7 @@
 
   const body = document.body;
   const moduleName = body.dataset.kfModule;
+  const stateModuleName = moduleName === "rogue" ? "roguePath" : moduleName;
   const storageKey = body.dataset.storageKey;
   const originalApp = body.dataset.originalApp || "app.js";
   const activeCampaign = localStorage.getItem("kfActiveCampaign") || "";
@@ -52,6 +53,7 @@
     ["/modules/map/", "地图"],
     ["/modules/encounter/", "遭遇"],
     ["/modules/aibp/", "AI / BP"],
+    ["/modules/rogue/", "肉鸽之路"],
     ["/modules/display/", "第二屏"],
   ];
   bar.innerHTML = `<strong>KF 一体化战役</strong>${links.map(([href, label]) =>
@@ -110,7 +112,7 @@
   }
   const operationId = () => compatibleUuid().replace(/-/g, "");
   const clientId = localStorage.kfClientId || (localStorage.kfClientId = operationId());
-  const sceneName = { map: "map", encounter: "encounter", aibp: "conflict" }[moduleName] || "map";
+  const sceneName = { map: "map", encounter: "encounter", aibp: "conflict", rogue: "rogue" }[moduleName] || "map";
   const presentationChannel = "BroadcastChannel" in window ? new BroadcastChannel("kf-presentation") : null;
   let campaignRevision = 0;
   let lastValue = "";
@@ -120,12 +122,12 @@
   let lastScenePublish = 0;
 
   function applyAuthoritativeConflict(result) {
-    const path = `modules.${moduleName}`;
+    const path = `modules.${stateModuleName}`;
     const serverWon = result.conflicts?.some(conflict =>
       conflict.path === path && conflict.resolution === "existing"
     );
     if (!serverWon) return false;
-    const selected = result.state?.modules?.[moduleName];
+    const selected = result.state?.modules?.[stateModuleName];
     if (!selected || typeof selected !== "object") return false;
     const serialized = JSON.stringify(selected);
     localStorage.setItem(storageKey, serialized);
@@ -137,8 +139,12 @@
 
   function readHandoff() {
     try {
-      const value = JSON.parse(localStorage.getItem("kfEncounterHandoff") || "null");
-      return value?.campaignId === activeCampaign ? value : null;
+      const keys = moduleName === "aibp" ? ["kfRogueHandoff", "kfEncounterHandoff"] : ["kfEncounterHandoff"];
+      for (const key of keys) {
+        const value = JSON.parse(localStorage.getItem(key) || "null");
+        if (value?.campaignId === activeCampaign) return value;
+      }
+      return null;
     } catch { return null; }
   }
 
@@ -170,7 +176,7 @@
     if (level) { level.value = String(handoff.level); level.dispatchEvent(new Event("input", { bubbles: true })); }
     document.querySelector("#setupBattle")?.click();
     handoff.appliedAibp = true;
-    localStorage.setItem("kfEncounterHandoff", JSON.stringify(handoff));
+    localStorage.setItem(handoff.roguePath ? "kfRogueHandoff" : "kfEncounterHandoff", JSON.stringify(handoff));
     window.dispatchEvent(new CustomEvent("kf:aibp-handoff", { detail: handoff }));
   }
 
@@ -218,7 +224,7 @@
 
   async function pushValue(value) {
     if (!activeCampaign) return;
-    queueOperation(`modules.${moduleName}`, JSON.parse(value));
+    queueOperation(`modules.${stateModuleName}`, JSON.parse(value));
     publishScene();
     await drainQueue();
   }
@@ -227,7 +233,7 @@
     const current = localStorage.getItem(storageKey);
     if (current) {
       lastValue = current;
-      queueOperation(`modules.${moduleName}`, JSON.parse(current));
+      queueOperation(`modules.${stateModuleName}`, JSON.parse(current));
     }
     publishScene(true);
     const deadline = Date.now() + 1600;
@@ -274,13 +280,21 @@
       window.KF_CAMPAIGN_KNIGHTS = partyKnights;
       window.KF_CAMPAIGN_SQUIRES = squires;
       window.KF_CAMPAIGN_PARTY = [...partyKnights, ...squires];
+      try {
+        const rogueHandoff = JSON.parse(localStorage.getItem("kfRogueHandoff") || "null");
+        if (moduleName === "aibp" && rogueHandoff?.roguePath && rogueHandoff.campaignId === activeCampaign && Array.isArray(rogueHandoff.rogueRoster)) {
+          window.KF_CAMPAIGN_KNIGHTS = rogueHandoff.rogueRoster;
+          window.KF_CAMPAIGN_SQUIRES = [];
+          window.KF_CAMPAIGN_PARTY = rogueHandoff.rogueRoster;
+        }
+      } catch { /* malformed handoff is ignored */ }
       window.KF_CAMPAIGN_KINGDOM = campaignState.monsterPool?.kingdom || campaignState.kingdom || campaignState.map?.activeKingdom || "";
       window.KF_CLASH_PHASE = phaseFromMapTime(campaignState.modules?.map?.trackers?.time);
       localStorage.setItem(rosterKey, JSON.stringify(window.KF_CAMPAIGN_PARTY));
       localStorage.setItem(kingdomKey, window.KF_CAMPAIGN_KINGDOM);
       exposeMapUpstream(campaignState);
       campaignRevision = detail.campaign.revision;
-      const value = detail.campaign.state?.modules?.[moduleName] || null;
+      const value = detail.campaign.state?.modules?.[stateModuleName] || null;
       prepareStorage(value);
       const handoff = readHandoff();
       if (handoff && ((moduleName === "encounter" && !handoff.appliedEncounter) || (moduleName === "aibp" && !handoff.appliedAibp))) {

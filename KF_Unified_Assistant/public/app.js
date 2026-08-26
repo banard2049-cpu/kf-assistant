@@ -273,15 +273,15 @@ async function syncCampaign(){
 }
 function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon)};renderPresentationControls()}
 function presentationSettings(){return {mapScale:100,conflictScale:100,conflictRotation:90,conflictSwapped:false,conflictBoardVisible:true,...(campaignState?.presentation?.settings||{})}}
-function portraitConflictRotation(value){return Number(value)===270?270:90}
+function portraitConflictRotation(value){const normalized=((Number(value)%360)+360)%360;return [0,90,180,270].includes(normalized)?normalized:90}
 function renderPresentationControls(){
   const settings=presentationSettings();if(!$("#mapScale"))return;
   $("#mapScale").value=String(settings.mapScale);$("#mapScaleValue").textContent=`${settings.mapScale}%`;
   $("#conflictScale").value=String(settings.conflictScale);$("#conflictScaleValue").textContent=`${settings.conflictScale}%`;
   const conflictRotation=portraitConflictRotation(settings.conflictRotation);
   $("#rotateConflict").dataset.rotation=String(conflictRotation);
-  $("#rotateConflict").title=`AI/BP 区域当前 ${conflictRotation}°，点击旋转 180°`;
-  $("#rotateConflict").setAttribute("aria-label",`旋转第二屏 AI/BP 区域 180 度，当前 ${conflictRotation} 度`);
+  $("#rotateConflict").title=`AI/BP 区域当前 ${conflictRotation}°，点击旋转 90°（含大牌展示栏）`;
+  $("#rotateConflict").setAttribute("aria-label",`旋转第二屏 AI/BP 区域 90 度（含大牌展示栏），当前 ${conflictRotation} 度`);
   $("#swapConflict").classList.toggle("active",Boolean(settings.conflictSwapped));
   $("#toggleConflictBoard").classList.toggle("active",settings.conflictBoardVisible!==false);
   $("#toggleConflictBoard").textContent=settings.conflictBoardVisible===false?"○":"◉";
@@ -526,7 +526,7 @@ $("#mapScale").oninput=e=>{$("#mapScaleValue").textContent=`${e.target.value}%`}
 $("#mapScale").onchange=e=>campaignOp("presentation.settings.mapScale",Math.max(50,Math.min(200,Number(e.target.value)||100)));
 $("#conflictScale").oninput=e=>{$("#conflictScaleValue").textContent=`${e.target.value}%`};
 $("#conflictScale").onchange=e=>campaignOp("presentation.settings.conflictScale",Math.max(50,Math.min(200,Number(e.target.value)||100)));
-$("#rotateConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictRotation",(portraitConflictRotation(settings.conflictRotation)+180)%360);renderPresentationControls()};
+$("#rotateConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictRotation",(portraitConflictRotation(settings.conflictRotation)+90)%360);renderPresentationControls()};
 $("#swapConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictSwapped",!settings.conflictSwapped);renderPresentationControls()};
 $("#toggleConflictBoard").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictBoardVisible",settings.conflictBoardVisible===false);renderPresentationControls()};
 $("#leaderSelect").onchange=e=>{gameSettings.leaderSheetId=e.target.value;campaignOp("leaderSheetId",gameSettings.leaderSheetId);commitParty(campaignState.party||[]);renderEncounterBuilder()};
