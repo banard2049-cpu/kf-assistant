@@ -46,6 +46,7 @@
         <a class="button wide" href="/modules/map/">地图深入</a>
         <a class="button wide" href="/modules/encounter/">遭遇战</a>
         <a class="button wide" href="/modules/aibp/">AI / BP</a>
+        <a class="button wide" href="/modules/rogue/">肉鸽之路</a>
         <a class="button wide" href="/modules/display/" target="_blank" rel="noopener">第二屏</a>
       </nav>
       <details id="permanentStoryMarkers" class="permanent-story-markers">
@@ -68,7 +69,7 @@
         <small id="displayUrlHint" class="display-url-hint"></small>
         <label>地图缩放 <output id="mapScaleValue">100%</output><input id="mapScale" type="range" min="50" max="200" step="5" value="100"></label>
         <label>冲突版图缩放 <output id="conflictScaleValue">100%</output><input id="conflictScale" type="range" min="50" max="200" step="5" value="100"></label>
-        <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 180 度" aria-label="旋转第二屏 AI/BP 区域 180 度">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button></div>
+        <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）" aria-label="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button></div>
       </details>
       <details class="trash-panel"><summary>回收站</summary><div id="trashList" class="sheet-list"></div></details>
       <div class="sidebar-tools">
@@ -266,6 +267,6 @@
   <script src="/data/level-config.js?v=1"></script>
   <script src="/data/encounter-data.js?v=1"></script>
   <script src="/modules/map/data/map-data.js?v=2"></script>
-  <script type="module" src="/app.js?v=28"></script>
+  <script type="module" src="/app.js?v=29"></script>
 </body>
 </html>

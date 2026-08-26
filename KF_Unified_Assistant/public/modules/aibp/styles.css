@@ -769,8 +769,6 @@ h3 { font-size: 19px; }
   line-height: 1.2;
 }
 .aibp-pending { display: grid; gap: 7px; align-content: start; text-align: center; }
-.scry-bottom-actions { display: flex; justify-content: center; margin-top: 12px; }
-.scry-bottom-actions .button { min-width: 140px; }
 .aibp-pending .battle-card { width: min(100%, 270px); margin-inline: auto; }
 .puppet-ai-choice-pending { min-width: 0; }
 .puppet-ai-choice-grid {

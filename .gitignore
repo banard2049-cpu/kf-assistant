@@ -19,6 +19,10 @@ KF_Unified_Assistant/logs/
 # Image resources are intentionally not published
 KF_Unified_Assistant/public/assets/
 KF_Unified_Assistant/public/modules/*/assets/
+!KF_Unified_Assistant/public/assets/
+KF_Unified_Assistant/public/assets/*
+!KF_Unified_Assistant/public/assets/rogue/
+!KF_Unified_Assistant/public/assets/rogue/rosegraal-tree.jpg
 KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/
 *.png
 *.jpg
@@ -36,6 +40,7 @@ KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/
 *.heif
 *.psd
 *.xcf
+!KF_Unified_Assistant/public/assets/rogue/rosegraal-tree.jpg
 
 # The application launcher icon is code-owned release artwork, not a game resource.
 !KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/

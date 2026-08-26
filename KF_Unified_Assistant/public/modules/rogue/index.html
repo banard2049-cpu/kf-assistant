@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KF 肉鸽之路</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="../module-bridge.css?v=13">
+  <style>.counter-controls{display:flex;align-items:center;gap:8px}.counter-button{width:26px;height:26px;padding:0;border:1px solid #b88b52;background:#2b211e;color:#f5d27a;font-size:18px;line-height:1;cursor:pointer}.file-button input{display:none}</style>
+</head>
+<body data-kf-module="rogue" data-storage-key="kf-rogue-path-v2" data-original-app="app.js?v=10">
+  <main id="app" class="rogue-shell">
+    <header class="rogue-head">
+      <div><p class="eyebrow">ROSEGRAAL · ROGUE'S PATH</p><h1>肉鸽之路</h1><p class="muted">连续冲突闯关 · 独立骑士与成长</p></div>
+      <div class="rogue-actions"><a class="button hidden" href="/tools/rogue-labels/index.html">核对节点标签</a><label class="button file-button hidden">导入标签修正<input id="importRogueLabels" type="file" accept="application/json,.json"></label><span id="saveStatus">已保存</span><label class="save-slot-control">存档<select id="rogueSaveSelect" aria-label="切换肉鸽存档"></select></label><button id="newRun" class="danger">新建肉鸽战役</button></div>
+    </header>
+    <section id="setupPanel" class="panel setup-panel">
+      <div class="panel-title"><div><h2>创建肉鸽骑士</h2><p class="muted">选择 1–4 名独立骑士；不会读取或修改主战役骑士表。</p></div><span class="badge">初始复活次数：5</span></div>
+      <div id="knightChoices" class="knight-choices"></div>
+      <div class="setup-fields"><label>玩家/队伍名称<input id="roguePartyName" maxlength="80" placeholder="可选"></label><button id="startRun" class="primary">开始肉鸽之路</button></div>
+    </section>
+    <section id="runPanel" class="run-layout hidden">
+      <aside class="run-sidebar">
+        <section class="panel status-panel"><div class="panel-title"><h2>战役状态</h2><span id="runStatus" class="badge"></span></div><div id="partyStats"></div><div class="revive-count"><span>共享复活</span><strong id="reviveCount">0</strong></div><div class="revive-count sigh-count"><span>圣杯叹息</span><span class="counter-controls"><button id="sighDecrease" class="counter-button" type="button" aria-label="减少圣杯叹息">−</button><strong id="sighCount">0</strong><button id="sighIncrease" class="counter-button" type="button" aria-label="增加圣杯叹息">＋</button></span></div><div id="pendingNotice"></div></section>
+        <section id="resolutionPanel" class="panel resolution-panel hidden"><h2>结算当前冲突</h2><p id="battleSummary"></p><fieldset class="casualty-picker"><legend>本场死亡骑士（可多选）</legend><div id="casualtySelect"></div></fieldset><div class="resolution-actions"><button id="resolveVictory" class="primary">胜利并领取奖励</button><button id="resolveDefeat" class="danger">失败</button></div></section>
+        <section class="panel reward-panel"><h2>最近奖励</h2><div id="rewardLog"></div></section>
+      </aside>
+      <section class="panel map-panel"><div class="panel-title"><div><h2>玫瑰圣杯路径</h2><p class="muted">点击与已划掉节点相邻的节点开始冲突；失败节点可再次选择。</p></div><div class="map-controls"><button id="toggleLinkEditor" class="button hidden">编辑节点连线</button><button id="zoomOut" class="button">−</button><output id="zoomValue">100%</output><button id="zoomIn" class="button">＋</button></div></div><div class="map-legend" aria-label="节点状态说明"><span><i class="legend-swatch available"></i>可选</span><span><i class="legend-swatch cleared"></i>已完成</span><span><i class="legend-swatch locked"></i>未解锁</span></div><div id="linkEditor" class="link-editor hidden"><strong>连线编辑模式</strong><span id="linkEditorHint">先点击一个节点，再点击另一个节点来添加或取消连线。</span><span id="linkEditorLinks" class="muted">未选择节点</span><button id="resetLinks" class="danger" type="button">恢复默认连线</button></div><div id="mapViewport" class="map-viewport"><div id="mapCanvas" class="map-canvas"><img src="/assets/rogue/rosegraal-tree.jpg" alt="玫瑰圣杯路径图"><div id="nodeLayer"></div></div></div><div id="nodeInfo" class="node-info muted">选择一个可用节点查看等级和奖励。</div></section>
+    </section>
+    <section id="knightSheet" class="sheet-modal hidden" aria-modal="true" role="dialog" aria-labelledby="sheetTitle"><div class="sheet-card"><div class="panel-title"><div><h2 id="sheetTitle">骑士记录表</h2><p id="sheetSubtitle" class="muted"></p></div><button id="closeSheet" class="button" type="button">关闭</button></div><div id="sheetBody"></div></div></section>
+    <section id="rewardChoiceModal" class="sheet-modal hidden" aria-modal="true" role="dialog" aria-labelledby="rewardChoiceTitle"><div class="sheet-card"><div class="panel-title"><div><h2 id="rewardChoiceTitle">选择奖励</h2><p class="muted">节点类型固定按地图图标结算；仅当奖励表该格有多个勾选项时，在此为每名骑士选择一项。</p></div></div><div id="rewardChoiceBody"></div><div class="resolution-actions"><button id="confirmRewardChoices" class="primary" type="button">确认奖励选择</button></div></div></section>
+    <section id="emptyPanel" class="panel empty-panel"><h2>尚未开始肉鸽战役</h2><p class="muted">先在上方创建肉鸽骑士。</p></section>
+  </main>
+  <script src="data.js?v=9"></script>
+  <script src="../encounter/data/encounter-data.js"></script>
+  <script src="../module-bridge.js?v=14"></script>
+</body>
+</html>

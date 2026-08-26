@@ -247,10 +247,29 @@ final class LocalApi {
                 : monsterPool.optString("kingdom", state.optString("kingdom", "sunken"));
         JSONObject summary = new JSONObject().put("id", campaign.getString("id")).put("name", campaign.getString("name"))
                 .put("revision", campaign.optInt("revision")).put("updatedAt", campaign.optString("updatedAt")).put("kingdom", kingdom);
+        JSONObject aibp = publicAibpDisplayState(modules.optJSONObject("aibp"));
         JSONObject publicModules = new JSONObject().put("map", valueOrNull(modules.opt("map")))
-                .put("encounter", valueOrNull(modules.opt("encounter"))).put("aibp", valueOrNull(modules.opt("aibp")));
+                .put("encounter", valueOrNull(modules.opt("encounter"))).put("aibp", aibp == null ? JSONObject.NULL : aibp)
+                .put("roguePath", valueOrNull(modules.opt("roguePath")));
         return ok(new JSONObject().put("campaign", summary).put("presentation", normalizedPresentation(state.optJSONObject("presentation")))
                 .put("modules", publicModules));
+    }
+
+    /** Keep the Android display payload compatible with public/api.php. */
+    private JSONObject publicAibpDisplayState(JSONObject module) throws JSONException {
+        if (module == null) return null;
+        JSONObject source = module.optJSONObject("battle");
+        if (source == null) source = module;
+        JSONObject battle = copyObject(source);
+        JSONObject rule = source.optJSONObject("ruleState");
+        if (rule == null) rule = new JSONObject();
+        battle.put("activeRuleCard", rule.optString("ruleCard", ""));
+        battle.put("activeRuleCardReason", rule.optString("ruleCardReason", ""));
+        JSONArray choices = rule.optJSONArray("aiChoiceIds");
+        battle.put("aiChoiceIds", choices == null ? new JSONArray() : new JSONArray(choices.toString()));
+        battle.put("aiChoiceMode", rule.optString("aiChoiceMode", ""));
+        battle.put("deckOrderVisible", source.optBoolean("deckOrderVisible", true));
+        return battle;
     }
 
     private JSONObject campaignImport(JSONObject store, String userId, JSONObject data) throws JSONException {
@@ -462,7 +481,7 @@ final class LocalApi {
                         .put("phase", "setup").put("board", new JSONObject()).put("result", ""))
                 .put("aibp", new JSONObject().put("monster", "").put("level", 1).put("ai", new JSONArray()).put("bp", new JSONArray())
                         .put("discard", new JSONArray()).put("wounds", new JSONArray()).put("promotion", 0).put("history", new JSONArray()))
-                .put("modules", new JSONObject().put("map", JSONObject.NULL).put("encounter", JSONObject.NULL).put("aibp", JSONObject.NULL))
+                .put("modules", new JSONObject().put("map", JSONObject.NULL).put("encounter", JSONObject.NULL).put("aibp", JSONObject.NULL).put("roguePath", JSONObject.NULL))
                 .put("presentation", defaultPresentation());
     }
 
@@ -476,7 +495,7 @@ final class LocalApi {
         JSONObject result = defaultPresentation();
         if (source == null) return result;
         String scene = source.optString("scene", "map");
-        if (!"encounter".equals(scene) && !"conflict".equals(scene)) scene = "map";
+        if (!"encounter".equals(scene) && !"conflict".equals(scene) && !"rogue".equals(scene)) scene = "map";
         JSONObject settings = source.optJSONObject("settings");
         if (settings == null) settings = new JSONObject();
         int rotation = ((settings.optInt("conflictRotation", 90) % 360) + 360) % 360;
@@ -485,7 +504,7 @@ final class LocalApi {
                 .put("settings", new JSONObject()
                         .put("mapScale", Math.max(50, Math.min(200, settings.optInt("mapScale", 100))))
                         .put("conflictScale", Math.max(50, Math.min(200, settings.optInt("conflictScale", 100))))
-                        .put("conflictRotation", rotation == 270 ? 270 : 90)
+                        .put("conflictRotation", rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270 ? rotation : 90)
                         .put("conflictSwapped", settings.optBoolean("conflictSwapped"))
                         .put("conflictBoardVisible", !settings.has("conflictBoardVisible") || settings.optBoolean("conflictBoardVisible")));
         return result;

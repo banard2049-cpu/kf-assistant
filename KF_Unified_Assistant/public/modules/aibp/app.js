@@ -13,7 +13,7 @@
   const MAX_SHEET_TOKENS_PER_TYPE = 20;
   const MAX_BP_MARKERS = 4;
   const TOKEN_ASSETS = [
-    ["token-01", "Generic", "httpssteamusercontentaakamaihdnetugc10792521070177147F375BA9D7F1EF7C2ABAA9D04F55839FA6FC24A94.jpg"],
+    ["token-01", "Generic", "generic.png"],
     ["token-04", "Bane", "httpssteamusercontentaakamaihdnetugc107925210701772985157F1FFBF1B6B3122574EAC077DF071EEAECD0A.jpg"],
     ["token-06", "Charge", "httpssteamusercontentaakamaihdnetugc107925210701773816D94D0D9F92199789B87B059762037FBCDB3002F.jpg"],
     ["token-08", "Fog Gate", "httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.jpg"],
@@ -837,6 +837,7 @@
       conflictStatus: "active", failureReason: "",
       conflictLocation: "",
       conflictBoard: buildConflictBoard(monster, 1),
+      deckOrderVisible: true,
       aiView: "discard", bpView: "damage", galleryKind: "ALL",
       log: []
     };
@@ -960,6 +961,7 @@
       conflictStatus: raw?.conflictStatus === "failed" ? "failed" : "active",
       failureReason: String(raw?.failureReason || ""),
       conflictLocation: String(raw?.conflictLocation || ""),
+      deckOrderVisible: raw?.deckOrderVisible !== false,
       log: Array.isArray(raw?.log) ? raw.log.slice(-100) : []
     };
     normalized.conflictBoard = normalizeConflictBoard(raw?.conflictBoard, monster, level, normalized);
@@ -1051,7 +1053,12 @@
   function load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return defaultState();
+      if (!raw) {
+        const fresh = defaultState();
+        const legacy = localStorage.getItem(DECK_ORDER_VIEW_KEY);
+        if (legacy !== null) fresh.battle.deckOrderVisible = legacy !== "0";
+        return fresh;
+      }
       const value = JSON.parse(raw);
       if (Number(value?.version || 0) !== VERSION) {
         const monster = monsterById(value?.battle?.monsterId) || DATA.monsters[0];
@@ -1061,7 +1068,15 @@
         toast("旧版存档不兼容，已建立新冲突");
         return next;
       }
-      return validateState(value);
+      const next = validateState(value);
+      // Older local snapshots did not carry this preference. Migrate their
+      // legacy localStorage value once; synchronized snapshots take priority
+      // thereafter, including on a second-screen device.
+      if (!Object.prototype.hasOwnProperty.call(value?.battle || {}, "deckOrderVisible")) {
+        const legacy = localStorage.getItem(DECK_ORDER_VIEW_KEY);
+        if (legacy !== null) next.battle.deckOrderVisible = legacy !== "0";
+      }
+      return next;
     } catch (error) {
       console.warn(error);
       toast(`本地存档无法读取，已使用新存档：${error.message}`);
@@ -1077,7 +1092,9 @@
   let sheetTokenToolsOpen = false;
   let selectedTerrainId = "";
   let overlayPlacementMode = "";
-  let deckOrderVisible = localStorage.getItem(DECK_ORDER_VIEW_KEY) !== "0";
+  // Keep the legacy local preference as the initial value, then persist it in
+  // the synchronized battle snapshot so the second screen can mirror it.
+  let deckOrderVisible = state.battle.deckOrderVisible !== false;
   let activeScry = null;
 
   function syncCurrentEncounter() {
@@ -1296,6 +1313,7 @@
       state.history = Array.isArray(saved.history) ? clone(saved.history) : [];
     } else {
       state.battle = emptyBattle(monster);
+      state.battle.deckOrderVisible = deckOrderVisible;
       state.history = [];
       initializeBattle(monster);
     }
@@ -4753,7 +4771,7 @@
     const knightAssignments = new Map((boardState.knightAssignments || []).map(item => [item.placementId, item]));
     const mobAssignments = new Map((boardState.mobAssignments || []).map(item => [item.placementId, item.number]));
     const starts = (layout.placements || []).filter(item => item.kind !== "terrain")
-      .filter(item => boardState.showStarts !== false || !(["knight", "monster", "number"].includes(item.kind) || item.asset === "LictorDecoy")).map(item => {
+      .filter(item => boardState.showStarts !== false || !(["knight", "monster", "number"].includes(item.kind) || ["LictorDecoy", "Armor"].includes(item.asset))).map(item => {
       const rowSpan = item.rowEnd - item.rowStart + 1;
       const columnSpan = item.columnEnd - item.columnStart + 1;
       const rotation = boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0;
@@ -4789,7 +4807,7 @@
       </div></div>
       <div class="terrain-control-workspace">
         <div class="terrain-control-board" data-terrain-board style="${conflictBoardCropStyle()}">
-          <img class="terrain-control-board-source" src="../display/${esc(boardAsset)}" alt="TTS 高清冲突版图">
+          <img class="terrain-control-board-source" src="${esc(conflictAssetSrc(boardAsset))}" alt="TTS 高清冲突版图">
           <div class="terrain-control-grid">${conflictGridHtml(boardState, overlay)}</div>
           ${conflictOverlayMarkersHtml(overlay)}
           ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId, Boolean(overlay?.settings?.path || overlayPlacementMode))).join("")}${starts}
@@ -5052,6 +5070,7 @@
                         <button class="button secondary" data-settle="ai:bottom" title="将当前 AI 置于牌组底部" ${activeAI ? "" : "disabled"}>置底</button>`}
                     <button class="button secondary" data-promote="ai" title="AI 晋升">晋升</button>
                     <button class="button ${mob ? "secondary" : ""}" id="undo" title="撤销上一步" ${state.history.length ? "" : "disabled"}>撤销</button>
+                    <button class="button secondary" data-scry="ai" title="查看并调整 AI 牌顶顺序">观星 AI</button>
                   </div>
                   <div class="${puppetAiChoices.length ? "aibp-pending puppet-ai-choice-pending" : "aibp-pending"}">
                     ${puppetAiChoices.length ? `
@@ -5067,7 +5086,6 @@
                 </div>
                 ${tabs("ai", b.aiView)}
                 <div class="card-gallery aibp-pile-grid">${pileGridForView("ai", b.aiView, monster)}</div>
-                <div class="scry-bottom-actions"><button class="button secondary" data-scry="ai" title="查看并调整 AI 牌顶顺序">观星 AI</button></div>
               </div>
               <div class="aibp-column">
                 <div class="panel-header"><div><span class="eyebrow">${winged ? "PERMANENT BP" : mob ? "MOB BP TRACK" : "BP DECK"}</span><div class="deck-title-row"><h3>BP</h3>${mob ? "" : deckLevelOrderHtml(b.bpDeck, monster, "BP")}</div></div><span class="badge gold">总损伤 ${totalDamage} / 单重 ${b.singleWounds} / 双重 ${b.doubleWounds}</span></div>
@@ -5093,6 +5111,7 @@
                       <button class="button secondary" data-promote="bp" title="BP 晋升" ${thickSkinActive ? "disabled" : ""}>晋升</button>`}
                     <button class="button secondary" data-wound="single" title="添加单重损伤" ${thickSkinActive ? "disabled" : ""}>+单重</button>
                     <button class="button secondary" data-wound="double" title="添加双重损伤" ${thickSkinActive ? "disabled" : ""}>+双重</button>
+                    ${!mob ? '<button class="button secondary" data-scry="bp" title="查看并调整 BP 牌顶顺序">观星 BP</button>' : ""}
                   </div>
                   <div class="aibp-pending">${winged
                     ? cardHtml(wingedAttackTarget, "battle-card", "face")
@@ -5100,7 +5119,6 @@
                 </div>
                 ${mob ? `<div class="card-gallery aibp-pile-grid">${pileGrid(b.bpDamage, monster)}</div>` :
                   `${tabs("bp", b.bpView)}<div class="card-gallery aibp-pile-grid">${pileGridForView("bp", b.bpView, monster)}</div>`}
-                ${!mob ? '<div class="scry-bottom-actions"><button class="button secondary" data-scry="bp" title="查看并调整 BP 牌顶顺序">观星 BP</button></div>' : ""}
               </div>
             </div>
           </section>
@@ -5541,6 +5559,7 @@
         const monster = monsterById(state.battle.monsterId);
         state = defaultState();
         state.battle = emptyBattle(monster);
+        state.battle.deckOrderVisible = deckOrderVisible;
         state.selectedMonsterId = monster.id;
         initializeBattle(monster);
         syncCurrentEncounter();
@@ -5549,7 +5568,12 @@
         return renderApp();
       }
       const next = validateState(raw);
+      if (!Object.prototype.hasOwnProperty.call(raw?.battle || {}, "deckOrderVisible")) {
+        next.battle.deckOrderVisible = deckOrderVisible;
+      }
       state = next;
+      deckOrderVisible = state.battle.deckOrderVisible !== false;
+      localStorage.setItem(DECK_ORDER_VIEW_KEY, deckOrderVisible ? "1" : "0");
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       toast("存档导入成功");
       renderApp();
@@ -5562,6 +5586,7 @@
     if (!confirm("为当前怪物开始新冲突并清空它的现有进度？")) return;
     const monster = monsterById(state.battle.monsterId);
     state.battle = emptyBattle(monster);
+    state.battle.deckOrderVisible = deckOrderVisible;
     state.history = [];
     initializeBattle(monster);
     save();
@@ -5571,6 +5596,7 @@
     const monster = monsterById(state.battle.monsterId);
     delete state.encounters?.[monster.id];
     state.battle = emptyBattle(monster);
+    state.battle.deckOrderVisible = deckOrderVisible;
     state.history = [];
     initializeBattle(monster);
     save();
@@ -5590,8 +5616,9 @@
     deckOrderToggle.checked = deckOrderVisible;
     deckOrderToggle.addEventListener("change", () => {
       deckOrderVisible = deckOrderToggle.checked;
+      state.battle.deckOrderVisible = deckOrderVisible;
       localStorage.setItem(DECK_ORDER_VIEW_KEY, deckOrderVisible ? "1" : "0");
-      renderApp();
+      save();
     });
   }
 
