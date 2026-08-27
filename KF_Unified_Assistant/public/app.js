@@ -252,7 +252,12 @@ async function sync(){
   const batch=pending.filter(item=>item.sheetId===active).slice(0,200);if(!batch.length)return;
   const batchIds=new Set(batch.map(item=>item.id));for(let i=pending.length-1;i>=0;i--)if(batchIds.has(pending[i].id))pending.splice(i,1);
   syncing=true;
-  try{const data=await api("/api/sync",{method:"POST",body:JSON.stringify({sheetId:active,operations:batch})});state=data.state;revision=data.revision;const summary=sheets.find(s=>s.id===active);if(summary)summary.state=structuredClone(state);cacheSheet();if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项跨设备修改`);setSave("已保存");renderValues()}
+  try{const data=await api("/api/sync",{method:"POST",body:JSON.stringify({sheetId:active,operations:batch})});
+    // Edits made while the request was in flight are still queued in
+    // `pending`; replay them onto the server state so they are not
+    // visibly reverted for one frame.  Mirrors syncCampaign().
+    const mergedState=data.state;pending.filter(item=>item.sheetId===active).forEach(item=>pathSet(mergedState,item.path,item.value));
+    state=mergedState;revision=data.revision;const summary=sheets.find(s=>s.id===active);if(summary)summary.state=structuredClone(state);cacheSheet();if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项跨设备修改`);setSave("已保存");renderValues()}
   catch(e){pending.unshift(...batch);setSave("等待网络",true)}
   finally{persistPending();syncing=false;if(pending.length)setTimeout(sync,600)}
 }
