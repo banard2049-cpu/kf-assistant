@@ -25,6 +25,9 @@ function resolve_dir(string $root, string $value): string {
     return $root . DIRECTORY_SEPARATOR . trim($value, './\\');
 }
 
+// Minimum seconds between maintenance() sweeps; see that function.
+const MAINTENANCE_INTERVAL = 60;
+
 $dataDir = resolve_dir($root, env_value('DATA_DIR', 'data'));
 $backupDir = resolve_dir($root, env_value('BACKUP_DIR', 'backups'));
 $allowRegistration = strtolower(env_value('ALLOW_REGISTRATION', 'true')) === 'true';
@@ -544,7 +547,22 @@ function prune_backups(string $backupDir, int $limit=50): void {
     usort($files,fn($a,$b)=>(filemtime($b)<=>filemtime($a))?:strcmp(basename($b),basename($a)));
     foreach(array_slice($files,$limit) as $file)@unlink($file);
 }
+/**
+ * Housekeeping runs on every request, but nothing here is time critical:
+ * expired sessions are already filtered out by user_from_session(), and the
+ * trash cutoff is 30 days.  backup_source_signature() rescans every sheet and
+ * campaign, so on a busy screen (the second display polls once a second) this
+ * was a full table scan per second for no benefit.  Run it at most once a
+ * minute, tracked by the mtime of a marker file next to the backups.
+ */
 function maintenance(PDO $db, string $backupDir): void {
+    $tick = $backupDir.DIRECTORY_SEPARATOR.'.maintenance-tick';
+    $last = is_file($tick) ? (int)@filemtime($tick) : 0;
+    if ($last !== 0 && time()-$last < MAINTENANCE_INTERVAL) return;
+    // Claim the slot before doing the work so concurrent requests bail out.
+    // If the marker cannot be written we simply fall through every time,
+    // which is the previous behaviour.
+    @touch($tick);
     $cutoff = gmdate('Y-m-d\TH:i:s.v\Z', time()-30*86400);
     $q=$db->prepare('DELETE FROM knight_sheets WHERE deleted_at IS NOT NULL AND deleted_at<?');$q->execute([$cutoff]);
     $q=$db->prepare('DELETE FROM campaigns WHERE deleted_at IS NOT NULL AND deleted_at<?');$q->execute([$cutoff]);
@@ -684,10 +702,13 @@ try {
                 $exists->execute([$op['id']]);if($exists->fetch())continue;$path=(string)($op['path']??'');$incoming=$op['value']??null;validate_value($path,$incoming);$base=is_int($op['baseRevision']??null)?$op['baseRevision']:0;$selected=$incoming;
                 if(($versions[$path]??0)>$base){$previous=get_path($state,$path);$choice=resolve_campaign_sync_conflict($path,$previous,$incoming);$selected=$choice['value'];$conflict=['path'=>$path,'previous'=>$previous,'resolution'=>$choice['resolution']];if(isset($choice['previousRound'])){$conflict['previousRound']=$choice['previousRound'];$conflict['incomingRound']=$choice['incomingRound'];}$conflicts[]=$conflict;}
                 $revision++;set_path($state,$path,$selected);$versions[$path]=$revision;
-                // The authoritative current AIBP state (including its undo
-                // steps) is already stored in campaigns.state_json.  Do not
-                // duplicate the full snapshot in the append-only audit log.
-                $loggedValue = $path === 'modules.aibp'
+                // The authoritative current module state is already stored in
+                // campaigns.state_json.  The operations log is only ever read
+                // back for operation_id de-duplication, so storing the full
+                // payload here duplicates the whole module state on every
+                // keystroke-sized edit.  Log a placeholder for all module
+                // paths; small scalar paths keep their value for debugging.
+                $loggedValue = str_starts_with($path,'modules.')
                     ? '{"snapshot":true}'
                     : json_encode($incoming,JSON_UNESCAPED_UNICODE);
                 $insert->execute([$op['id'],$row['id'],$user['id'],$op['clientId'],$path,$loggedValue,$base,stamp()]);
