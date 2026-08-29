@@ -314,5 +314,5 @@
 .presentation-controls>summary{display:flex;align-items:center;justify-content:space-between;padding:10px;cursor:pointer;list-style:none}
 .presentation-controls>summary::-webkit-details-marker{display:none}.presentation-controls>summary span{font-size:10px;color:var(--muted)}
 .presentation-controls>label{display:grid;grid-template-columns:1fr auto;gap:4px 8px;padding:7px 10px;font-size:12px}.presentation-controls>label input{grid-column:1/-1;width:100%}
-.presentation-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:7px 10px}.presentation-actions.icon-actions{grid-template-columns:repeat(3,1fr)}
+.presentation-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:7px 10px}.presentation-actions.icon-actions{grid-template-columns:repeat(4,1fr)}
 .presentation-actions.icon-actions button{min-height:36px;font-size:20px}.presentation-actions button.active{border-color:var(--red);background:#efe0d3;color:var(--red)}

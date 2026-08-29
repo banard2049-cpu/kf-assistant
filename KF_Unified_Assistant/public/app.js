@@ -277,7 +277,7 @@ async function syncCampaign(){
   finally{persistCampaignPending();campaignSyncing=false;if(campaignPending.length)setTimeout(syncCampaign,600)}
 }
 function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon)};renderPresentationControls()}
-function presentationSettings(){return {mapScale:100,conflictScale:100,conflictRotation:90,conflictSwapped:false,conflictBoardVisible:true,...(campaignState?.presentation?.settings||{})}}
+function presentationSettings(){return {mapScale:100,conflictScale:100,conflictRotation:90,conflictSwapped:false,conflictBoardVisible:true,conflictBoardAlign:"center",...(campaignState?.presentation?.settings||{})}}
 function portraitConflictRotation(value){const normalized=((Number(value)%360)+360)%360;return [0,90,180,270].includes(normalized)?normalized:90}
 function renderPresentationControls(){
   const settings=presentationSettings();if(!$("#mapScale"))return;
@@ -290,6 +290,11 @@ function renderPresentationControls(){
   $("#swapConflict").classList.toggle("active",Boolean(settings.conflictSwapped));
   $("#toggleConflictBoard").classList.toggle("active",settings.conflictBoardVisible!==false);
   $("#toggleConflictBoard").textContent=settings.conflictBoardVisible===false?"○":"◉";
+  const alignButton=$("#alignConflictBottom");
+  const boardAlign=["top","center","bottom"].includes(settings.conflictBoardAlign)?settings.conflictBoardAlign:"center";
+  const boardAlignLabel={top:"靠上",center:"居中",bottom:"靠下"}[boardAlign];
+  alignButton?.classList.toggle("active",boardAlign!=="center");
+  if(alignButton){alignButton.textContent={top:"↑",center:"↕",bottom:"↓"}[boardAlign];alignButton.title=`第二屏冲突地图当前${boardAlignLabel}，点击切换`;alignButton.setAttribute("aria-label",`第二屏冲突地图当前${boardAlignLabel}，点击切换对齐方式`)}
 }
 async function loadCampaigns(preferred){
   const data=await api("/api/campaigns");campaigns=data.campaigns;
@@ -534,6 +539,7 @@ $("#conflictScale").onchange=e=>campaignOp("presentation.settings.conflictScale"
 $("#rotateConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictRotation",(portraitConflictRotation(settings.conflictRotation)+90)%360);renderPresentationControls()};
 $("#swapConflict").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictSwapped",!settings.conflictSwapped);renderPresentationControls()};
 $("#toggleConflictBoard").onclick=()=>{const settings=presentationSettings();campaignOp("presentation.settings.conflictBoardVisible",settings.conflictBoardVisible===false);renderPresentationControls()};
+$("#alignConflictBottom").onclick=()=>{const settings=presentationSettings();const current=["top","center","bottom"].includes(settings.conflictBoardAlign)?settings.conflictBoardAlign:"center";const next={center:"bottom",bottom:"top",top:"center"}[current];campaignOp("presentation.settings.conflictBoardAlign",next);renderPresentationControls()};
 $("#leaderSelect").onchange=e=>{gameSettings.leaderSheetId=e.target.value;campaignOp("leaderSheetId",gameSettings.leaderSheetId);commitParty(campaignState.party||[]);renderEncounterBuilder()};
 $("#kingdomSelect").onchange=e=>{gameSettings.kingdom=e.target.value;renderEncounterBuilder()};
 $("#devourDragonRule").onchange=e=>{gameSettings.devourDragon=e.target.checked};

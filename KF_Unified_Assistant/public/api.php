@@ -156,7 +156,7 @@ function default_presentation_state(): array {
         'scene'=>'map','updatedAt'=>stamp(),'sourceClientId'=>'',
         'settings'=>[
             'mapScale'=>100,'conflictScale'=>100,'conflictRotation'=>90,
-            'conflictSwapped'=>false,'conflictBoardVisible'=>true,
+            'conflictSwapped'=>false,'conflictBoardVisible'=>true,'conflictBoardAlign'=>'center',
         ],
     ];
 }
@@ -181,6 +181,8 @@ function normalized_presentation_state(mixed $value): array {
     $scene=in_array($value['scene']??'', ['map','encounter','conflict','rogue'], true)?$value['scene']:'map';
     $settings=is_array($value['settings']??null)?$value['settings']:[];
     $conflictRotation=((int)($settings['conflictRotation']??90)%360+360)%360;
+    $conflictBoardAlign=in_array($settings['conflictBoardAlign']??'', ['top','center','bottom'], true)
+        ? $settings['conflictBoardAlign'] : 'center';
     return [
         'scene'=>$scene,
         'updatedAt'=>text_value($value['updatedAt']??$base['updatedAt'],64),
@@ -191,6 +193,7 @@ function normalized_presentation_state(mixed $value): array {
             'conflictRotation'=>in_array($conflictRotation,[0,90,180,270],true)?$conflictRotation:90,
             'conflictSwapped'=>($settings['conflictSwapped']??false)===true,
             'conflictBoardVisible'=>($settings['conflictBoardVisible']??true)!==false,
+            'conflictBoardAlign'=>$conflictBoardAlign,
         ],
     ];
 }
