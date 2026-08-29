@@ -696,7 +696,8 @@
       ? `<div class="conflict-hero-fit">${boardCardGroup}</div>${featureSection}`
       : `${boardCardGroup}${primaryFollowup}`;
     applyBoardCrop(window.KF_CONFLICT_BOARD_DATA.board);
-    const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"}`;
+    const boardAlign=["top","center","bottom"].includes(settings.conflictBoardAlign)?settings.conflictBoardAlign:"center";
+    const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"} board-align-${boardAlign}`;
     root.innerHTML=`<section class="${sceneClass}" style="--board-scale:${scale/100}">
       <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(window.KF_CONFLICT_BOARD_DATA.board.asset))}" alt="TTS 高清冲突版图"><div class="conflict-grid">${grid}</div>${conflictOverlayMarkersHtml(overlay)}${placements}</div></div></div>
       <aside class="conflict-side"><div class="conflict-side-content"><header class="conflict-side-head"><div><p class="side-subtitle">CLASH · ${esc(kingdomLabel(layout.kingdom))}</p><h2 class="side-title">${esc(monster?.name || battle.monsterId)}</h2></div><dl class="conflict-quick-facts"><div><dt>等级</dt><dd>${esc(battle.level)}</dd></div><div><dt>AI</dt><dd>${esc(battle.aiDeckCount||0)}</dd></div><div><dt>BP</dt><dd>${esc(battle.bpDeckCount||0)}</dd></div><div><dt>损伤</dt><dd>${esc((battle.singleWounds||0)+(battle.doubleWounds||0)*2)}</dd></div></dl></header>

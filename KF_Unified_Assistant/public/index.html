@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#761923">
   <title>KF 一体化战役管理</title>
-  <link rel="stylesheet" href="/styles.css?v=18">
+  <link rel="stylesheet" href="/styles.css?v=19">
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -69,7 +69,7 @@
         <small id="displayUrlHint" class="display-url-hint"></small>
         <label>地图缩放 <output id="mapScaleValue">100%</output><input id="mapScale" type="range" min="50" max="200" step="5" value="100"></label>
         <label>冲突版图缩放 <output id="conflictScaleValue">100%</output><input id="conflictScale" type="range" min="50" max="200" step="5" value="100"></label>
-        <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）" aria-label="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button></div>
+        <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）" aria-label="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button><button id="alignConflictBottom" type="button" class="button" title="第二屏冲突地图当前居中，点击切换" aria-label="第二屏冲突地图当前居中，点击切换对齐方式">↕</button></div>
       </details>
       <details class="trash-panel"><summary>回收站</summary><div id="trashList" class="sheet-list"></div></details>
       <div class="sidebar-tools">
@@ -267,6 +267,6 @@
   <script src="/modules/aibp/data/level-config.js?v=2"></script>
   <script src="/modules/encounter/data/encounter-data.js?v=2"></script>
   <script src="/modules/map/data/map-data.js?v=6"></script>
-  <script type="module" src="/app.js?v=29"></script>
+  <script type="module" src="/app.js?v=30"></script>
 </body>
 </html>
