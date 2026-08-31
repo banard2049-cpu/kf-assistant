@@ -5,7 +5,7 @@
   const moduleName = body.dataset.kfModule;
   const stateModuleName = moduleName === "rogue" ? "roguePath" : moduleName;
   const storageKey = body.dataset.storageKey;
-  const originalApp = body.dataset.originalApp || "app.js";
+  const originalApp = body.dataset.originalApp || "app.js?v=115";
   const activeCampaign = localStorage.getItem("kfActiveCampaign") || "";
   const rosterKey = `kfCampaignRoster:${activeCampaign}`;
   const mapUpstreamKey = `kfMapUpstream:${activeCampaign}`;

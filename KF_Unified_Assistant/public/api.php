@@ -246,7 +246,7 @@ function public_aibp_auto_sheet_tokens(array $battle,array $rule): array {
 function public_aibp_display_state(mixed $module): ?array {
     if(!is_array($module))return null;
     $battle=is_array($module['battle']??null)?$module['battle']:[];
-    $publicKeys=['monsterId','level','clashPhase','mobCount','aiDiscard','aiRemoved','bpDiscard','bpDamage','bpRemoved','activeAI','activeBP','mobTacticCard','lastMobWoundRank','mobActivations','activeMobActivationId','sheetTokens','singleWounds','doubleWounds','conflictStatus','failureReason','conflictLocation','conflictBoard'];
+    $publicKeys=['monsterId','level','clashPhase','mobCount','aiDiscard','aiRemoved','bpDiscard','bpDamage','bpRemoved','activeAI','activeBP','mobTacticCard','lastMobWoundRank','mobActivations','activeMobActivationId','sheetTokens','singleWounds','doubleWounds','conflictStatus','failureReason','conflictLocation','conflictType','conflictBoard'];
     $public=[];
     foreach($publicKeys as $key)if(array_key_exists($key,$battle))$public[$key]=$battle[$key];
     if(is_array($public['conflictBoard']??null))unset($public['conflictBoard']['foolDeckOrder']);

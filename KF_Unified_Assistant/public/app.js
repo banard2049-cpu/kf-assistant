@@ -454,12 +454,40 @@ function saveChosenMonsterPool(){
   if(new Set(choices).size!==choices.length)return toast("每个区域需要选择不同的怪物");
   const selected=choices.map(index=>source.find(card=>card.index===index));if(selected.some(card=>!card))return toast("怪物选项已变化，请重新选择");
   if(campaignState.monsterPool?.cards?.length&&!confirm("自选结果会替换当前区域怪物。继续吗？"))return;
-  saveMonsterPool(source,selected,pos);$("#monsterPoolDialog").close();toast("自选怪物池已保存");
+  const previousRule=campaignState.monsterPool?.devourDragon||{};
+  const previousBoundName=previousRule.boundMonster||"";
+  const preservedIndex=previousBoundName?selected.findIndex(card=>card.name===previousBoundName):-1;
+  const rule=gameSettings.devourDragon&&previousRule.drawn&&preservedIndex>=0
+    ? {...previousRule,boundIndex:preservedIndex,boundMonster:selected[preservedIndex].name,conflictLocation:"巨兽之腹"}
+    : {enabled:gameSettings.devourDragon,drawn:false,boundIndex:null,boundMonster:"",conflictLocation:""};
+  const finalSelected=selected.map((card,index)=>({...card,devourDragonBound:index===preservedIndex,conflictLocation:index===preservedIndex?"巨兽之腹":""}));
+  saveMonsterPool(source,finalSelected,pos,rule);$("#monsterPoolDialog").close();toast("自选怪物池已保存");
+}
+function setDevourDragonBinding(){
+  const pool=campaignState.monsterPool;
+  if(!pool?.districts?.length)return toast("请先生成怪物池");
+  if(!pool.devourDragon?.drawn&&!gameSettings.devourDragon)return toast("请先启用“贪食巨龙来了！”可选规则");
+  const eligible=pool.districts.map((card,index)=>({card,index})).filter(({card})=>!["king","dragon"].includes(card.tier||monsterTier(card.name,card.level)));
+  if(!eligible.length)return toast("当前怪物池没有可附着的非国王、非巨龙怪物");
+  const promptText=eligible.map((item,index)=>`${index+1}. 区域${item.card.district||item.index+1} · ${item.card.name} Lv.${item.card.level}`).join("\n");
+  const answer=prompt(`选择要与贪食巨龙绑定的怪物（输入序号）：\n${promptText}`,String(Math.max(1,eligible.findIndex(item=>item.card.devourDragonBound)+1)));
+  if(answer===null)return;
+  const choice=Number(answer)-1;
+  if(!Number.isInteger(choice)||!eligible[choice])return toast("请输入有效序号");
+  const boundIndex=eligible[choice].index;
+  const districts=pool.districts.map((card,index)=>({...card,devourDragonBound:index===boundIndex,conflictLocation:index===boundIndex?"巨兽之腹":""}));
+  const rule={...(pool.devourDragon||{}),enabled:true,drawn:true,boundIndex,boundMonster:districts[boundIndex].name,conflictLocation:"巨兽之腹"};
+  campaignOp("monsterPool",{...pool,districts,devourDragon:rule});
+  renderMonsterPool({...pool,districts,devourDragon:rule});
+  renderMap();
+  toast(`已将贪食巨龙绑定到${districts[boundIndex].name}`);
 }
 function renderMonsterPool(pool=campaignState?.monsterPool,leader=knightSheets().find(s=>s.id===gameSettings.leaderSheetId),pos=leader?talePosition(leader):{row:0}){
   if(!pool?.cards?.length){$("#monsterPool").classList.add("hidden");return}$("#monsterPool").classList.remove("hidden");
   const dragonNotice=pool.devourDragon?.drawn?`<div class="devour-dragon-notice"><strong>贪食巨龙来了！</strong><span>${pool.devourDragon.boundMonster?`已与 ${esc(pool.devourDragon.boundMonster)} 绑定；该怪物的冲突在巨兽之腹中进行。`:"本次抽到的均为国王或巨龙，没有进行绑定。"}</span></div>`:"";
-  $("#monsterPool").innerHTML=`<strong>${esc(leader?.title||leader?.state?.knight||"主骑士")} · 比对卡第 ${pos.row+1} 行 · 牌池 ${pool.cards.length} 张</strong>${dragonNotice}<div class="pool-cards">${(pool.districts||[]).map((c,i)=>`<button class="monster-card ${c.devourDragonBound?"devour-bound":""}" type="button" data-original-encounter="${i}" title="打开 ${esc(c.name)} 遭遇">${monsterAvatarMarkup(c.name)}<span><small>区域 ${i+1}${c.devourDragonBound?" · 巨兽之腹":""}</small><strong>${esc(c.name)}</strong><b>Lv.${c.level}</b></span></button>`).join("")}</div>`;
+  const bindButton=(pool.devourDragon?.drawn||gameSettings.devourDragon)?`<button type="button" class="button secondary" id="setDevourBinding">手动设置附着怪物</button>`:"";
+  $("#monsterPool").innerHTML=`<strong>${esc(leader?.title||leader?.state?.knight||"主骑士")} · 比对卡第 ${pos.row+1} 行 · 牌池 ${pool.cards.length} 张</strong>${dragonNotice}${bindButton}<div class="pool-cards">${(pool.districts||[]).map((c,i)=>`<button class="monster-card ${c.devourDragonBound?"devour-bound":""}" type="button" data-original-encounter="${i}" title="打开 ${esc(c.name)} 遭遇">${monsterAvatarMarkup(c.name)}<span><small>区域 ${i+1}${c.devourDragonBound?" · 巨兽之腹":""}</small><strong>${esc(c.name)}</strong><b>Lv.${c.level}</b></span></button>`).join("")}</div>`;
+  $("#setDevourBinding")?.addEventListener("click",setDevourDragonBinding);
 }
 function renderAll(title){
   hideGameViews();$("#overview").classList.add("hidden");$("#emptyState").classList.add("hidden");$("#sheetForm").classList.remove("hidden");$("#sheetTitle").value=title;setActiveModuleNav();

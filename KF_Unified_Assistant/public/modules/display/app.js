@@ -17,6 +17,16 @@
     const number = Number(value);
     return Number.isInteger(number) && number >= 1 && number <= 10 ? `mob-number-${number}` : "";
   };
+  const BELLY_BOARD = window.KF_BELLY_BOARD_DATA || {};
+  const DIGESTIVE_TRACK_POSITIONS = [37.1, 52.3, 67.4, 81.7];
+  const isBellyConflict = battle => battle?.monsterId !== "M_YoungDevour" && (battle?.conflictBoard?.boardId === "belly_of_beast" || battle?.conflictType === "belly_of_beast" || battle?.conflictLocation === "巨兽之腹");
+  const bellyLayout = monster => {
+    const layouts = Array.isArray(BELLY_BOARD.layouts) ? BELLY_BOARD.layouts : [];
+    const source = layouts.find(layout => layout.monsterId === monster?.id)
+      || (typeof BELLY_BOARD.findLayout === "function" ? BELLY_BOARD.findLayout(monster?.id) : null)
+      || (BELLY_BOARD.layout || {});
+    return { ...source, monsterId: monster?.id || source.monsterId, placements: (source.placements || []).map(item => ({ ...item })) };
+  };
   let etag = "";
   let lastPayload = null;
   let lastSuccess = 0;
@@ -602,7 +612,10 @@
     if (!battle?.monsterId) return stateView("冲突尚未建立", "在主屏建立 AI / BP 后会自动显示。", "CL");
     const monster = window.KF_MONSTER_DATA?.monsters?.find(item => item.id === battle.monsterId);
     const boardState = battle.conflictBoard;
-    const layout = window.KF_CONFLICT_BOARD_DATA?.layouts?.find(item => item.id === boardState?.layoutId);
+    const belly = isBellyConflict(battle);
+    const layout = belly
+      ? bellyLayout(monster)
+      : window.KF_CONFLICT_BOARD_DATA?.layouts?.find(item => item.id === boardState?.layoutId);
     if (!layout) return stateView("高清冲突布局缺失", "当前怪物没有可用的 TTS 布置数据。", "!");
     const assignment = new Map((boardState.mobAssignments || []).map(item => [item.placementId,item.number]));
     const knightAssignment = new Map((boardState.knightAssignments || []).map(item => [item.placementId,item]));
@@ -633,7 +646,7 @@
         const knight = knightAssignment.get(item.id);
         content=`<span class="board-marker knight" aria-label="${esc(knight.name)}" title="${esc(knight.name)}"><img class="knight-avatar" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt=""><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span></span>`;
       } else {
-        const label=item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
+        const label=belly && item.kind === "monster" ? (monster?.name || "附着怪物") : item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
         content=`<span class="board-marker ${item.kind}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
       }
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
@@ -695,11 +708,21 @@
     const primaryInner=boardVisible
       ? `<div class="conflict-hero-fit">${boardCardGroup}</div>${featureSection}`
       : `${boardCardGroup}${primaryFollowup}`;
-    applyBoardCrop(window.KF_CONFLICT_BOARD_DATA.board);
+    const boardDefinition = belly ? BELLY_BOARD.board : window.KF_CONFLICT_BOARD_DATA.board;
+    applyBoardCrop(boardDefinition);
+    const digestiveTrack = boardState.digestiveTrack || {};
+    const digestiveMax = Math.max(1, Number(BELLY_BOARD.digestiveTrack?.max) || 4);
+    const digestivePosition = Math.min(digestiveMax, Math.max(1, Number(digestiveTrack.position) || 1));
+    const digestiveMarkup = belly
+      ? `<div class="display-digestive-track" aria-label="消化轨"><span>消化轨</span><span class="display-digestive-track-steps">${Array.from({ length: digestiveMax }, (_, index) => `<i class="${index + 1 === digestivePosition ? "active" : ""}">${index + 1}</i>`).join("")}</span><b>${digestivePosition} / ${digestiveMax}</b></div>`
+      : "";
+    const digestiveMarkerMarkup = belly
+      ? `<div class="display-digestive-marker" aria-label="消化轨通用标记位置 ${digestivePosition}" style="left:91.1%;top:${DIGESTIVE_TRACK_POSITIONS[digestivePosition - 1]}%"><img src="/assets/tokens/generic.png" alt="通用标记"></div>`
+      : "";
     const boardAlign=["top","center","bottom"].includes(settings.conflictBoardAlign)?settings.conflictBoardAlign:"center";
     const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"} board-align-${boardAlign}`;
     root.innerHTML=`<section class="${sceneClass}" style="--board-scale:${scale/100}">
-      <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(window.KF_CONFLICT_BOARD_DATA.board.asset))}" alt="TTS 高清冲突版图"><div class="conflict-grid">${grid}</div>${conflictOverlayMarkersHtml(overlay)}${placements}</div></div></div>
+      <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(boardDefinition.asset))}" alt="${belly ? "巨兽之腹版图" : "TTS 高清冲突版图"}"><div class="conflict-grid">${grid}</div>${conflictOverlayMarkersHtml(overlay)}${placements}${digestiveMarkerMarkup}${digestiveMarkup}</div></div></div>
       <aside class="conflict-side"><div class="conflict-side-content"><header class="conflict-side-head"><div><p class="side-subtitle">CLASH · ${esc(kingdomLabel(layout.kingdom))}</p><h2 class="side-title">${esc(monster?.name || battle.monsterId)}</h2></div><dl class="conflict-quick-facts"><div><dt>等级</dt><dd>${esc(battle.level)}</dd></div><div><dt>AI</dt><dd>${esc(battle.aiDeckCount||0)}</dd></div><div><dt>BP</dt><dd>${esc(battle.bpDeckCount||0)}</dd></div><div><dt>损伤</dt><dd>${esc((battle.singleWounds||0)+(battle.doubleWounds||0)*2)}</dd></div></dl></header>
         <div class="conflict-side-primary">${primaryInner}</div>
         <div class="conflict-side-secondary">
