@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "source": {
     "saveFile": "(Don)KF 1.8.json",
     "imageCache": "Images"
@@ -39,6 +39,15 @@
       "width": 7994,
       "bytes": 1161919,
       "sha256": "d4ac8fbebeb23e002e44597ffdf33e97a77b0301c412db0897df9aa14f832696"
+    },
+    {
+      "id": "belly-of-beast",
+      "kind": "board",
+      "sourceUrl": "local://belly-of-beast.jpg",
+      "cacheFile": "belly-of-beast.jpg",
+      "publicPath": "/assets/conflict/belly-of-beast.jpg",
+      "width": 4516,
+      "height": 2833
     },
     {
       "id": "Campfire",

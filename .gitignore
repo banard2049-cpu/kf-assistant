@@ -38,6 +38,8 @@ KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/
 *.heif
 *.psd
 *.xcf
+!KF_Unified_Assistant/public/assets/conflict/
+!KF_Unified_Assistant/public/assets/conflict/belly-of-beast.jpg
 
 # The application launcher icon is code-owned release artwork, not a game resource.
 !KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/

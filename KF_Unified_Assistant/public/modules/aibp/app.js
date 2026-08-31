@@ -6,6 +6,12 @@
   const MOB_ACTIVATIONS = window.KF_MOB_ACTIVATIONS || {};
   const BOSS_RULES = window.KF_BOSS_RULE_CONFIG || {};
   const CONFLICT_SETUPS = window.KF_CONFLICT_SETUPS || { standard: [], aftermath: [], monsters: [] };
+  const BELLY_BOARD = window.KF_BELLY_BOARD_DATA || {
+    board: { asset: "/assets/conflict/belly-of-beast.jpg", width: 4516, height: 2833, crop: { x: -595, y: -411, width: 5284, height: 3764 } },
+    grid: { rows: 10, columns: 14 },
+    digestiveTrack: { min: 1, max: 4, step: 1, positions: ["N1", "N2", "N3", "N4"] },
+    layout: { id: "belly_of_beast:default", label: "Belly of the Beast", monsterId: "__attached_monster__", kingdom: "both", levelVariant: "all", placements: [] }
+  };
   const STORAGE_KEY = "kf-aibp-assistant-v1";
   const DECK_ORDER_VIEW_KEY = "kf-aibp-view-deck-order-v1";
   const VERSION = 10;
@@ -637,6 +643,20 @@
     return String(window.KF_CAMPAIGN_KINGDOM || "").toLowerCase().includes("stone") ? "stone" : "sunken";
   }
 
+  function isBellyConflict(battle = state?.battle) {
+    if (battle?.monsterId === "M_YoungDevour") return false;
+    return battle?.conflictType === "belly_of_beast"
+      || battle?.conflictLocation === "巨兽之腹";
+  }
+
+  function bellyLayout(monster) {
+    const layouts = Array.isArray(BELLY_BOARD.layouts) ? BELLY_BOARD.layouts : [];
+    const source = layouts.find(layout => layout.monsterId === monster?.id)
+      || (typeof BELLY_BOARD.findLayout === "function" ? BELLY_BOARD.findLayout(monster?.id) : null)
+      || (BELLY_BOARD.layout || {});
+    return { ...source, monsterId: monster?.id || source.monsterId, placements: (source.placements || []).map(item => ({ ...item })) };
+  }
+
   function conflictLayout(monster, level, kingdom = conflictKingdom()) {
     const layouts = window.KF_CONFLICT_BOARD_DATA?.layouts || [];
     const candidates = layouts.filter(layout => layout.monsterId === monster?.id);
@@ -687,7 +707,7 @@
       columnStart: placement.columnStart,
       columnEnd: placement.columnEnd,
       rotation: resolvedOrientations[placement.id] ?? placement.rotation ?? 0,
-      flipped: false,
+      flipped: Boolean(placement.flipped),
       layer: placement.layer ?? 10,
     }));
   }
@@ -716,7 +736,8 @@
 
   function buildConflictBoard(monster, level, battle = null) {
     const requestedKingdom = conflictKingdom();
-    const layout = conflictLayout(monster, level, requestedKingdom);
+    const belly = isBellyConflict(battle);
+    const layout = belly ? bellyLayout(monster) : conflictLayout(monster, level, requestedKingdom);
     if (!layout) return null;
     const randomOrientations = window.KF_CONFLICT_BOARD_DATA?.randomOrientations || {};
     const resolvedOrientations = {};
@@ -730,9 +751,21 @@
     const occupiedTrackNumbers = Array.isArray(battle?.bpTrack)
       ? battle.bpTrack.map((slot, index) => slot?.id ? index + 1 : 0).filter(Boolean)
       : [];
-    const numbers = occupiedTrackNumbers.length ? occupiedTrackNumbers : Array.from({ length: numberable.length }, (_, index) => index + 1);
+    // 巨兽之腹使用固定的附着怪物位（PDF 布局），数量即实际出现的杂兵数量，
+    // 直接按布局中的怪物位 1..N 编号；标准冲突才沿用杂兵轨已占用的槽位号。
+    const numbers = belly
+      ? Array.from({ length: numberable.length }, (_, index) => index + 1)
+      : (occupiedTrackNumbers.length ? occupiedTrackNumbers : Array.from({ length: numberable.length }, (_, index) => index + 1));
+    const digestiveTrack = belly ? {
+      position: Number(BELLY_BOARD.digestiveTrack?.min) || 1,
+      min: Number(BELLY_BOARD.digestiveTrack?.min) || 1,
+      max: Number(BELLY_BOARD.digestiveTrack?.max) || 4,
+      step: Number(BELLY_BOARD.digestiveTrack?.step) || 1
+    } : null;
     return {
       layoutId: layout.id,
+      boardId: belly ? "belly_of_beast" : "standard",
+      conflictType: belly ? "belly_of_beast" : "normal",
       monsterId: monster?.id || "",
       kingdom: layout.kingdom,
       requestedKingdom,
@@ -747,10 +780,26 @@
       foolDeckOrder: [],
       activeFoolCardId: null,
       createdAt: new Date().toISOString(),
+      ...(digestiveTrack ? { digestiveTrack } : {}),
     };
   }
 
   function normalizeConflictBoard(raw, monster, level, battle) {
+    if (isBellyConflict(battle)) {
+      const layout = bellyLayout(monster);
+      const base = buildConflictBoard(monster, level, { ...battle, conflictType: "belly_of_beast", conflictLocation: "巨兽之腹" });
+      const rawTrack = raw?.digestiveTrack || {};
+      const min = Number(BELLY_BOARD.digestiveTrack?.min) || 1;
+      const max = Number(BELLY_BOARD.digestiveTrack?.max) || 4;
+      base.digestiveTrack = {
+        position: clamp(rawTrack.position ?? min, min, max),
+        min, max, step: Number(BELLY_BOARD.digestiveTrack?.step) || 1
+      };
+      base.layoutId = layout.id;
+      base.boardId = "belly_of_beast";
+      base.conflictType = "belly_of_beast";
+      return base;
+    }
     const layouts = window.KF_CONFLICT_BOARD_DATA?.layouts || [];
     const layout = layouts.find(item => item.id === raw?.layoutId && item.monsterId === monster?.id);
     if (!layout) return buildConflictBoard(monster, level, battle);
@@ -801,6 +850,8 @@
     const normalizedActiveFoolCardId = foolCardIds.has(activeFoolCardId) ? activeFoolCardId : null;
     return {
       layoutId: layout.id,
+      boardId: "standard",
+      conflictType: "normal",
       monsterId: monster.id,
       kingdom: layout.kingdom,
       requestedKingdom: raw?.requestedKingdom === "stone" ? "stone" : "sunken",
@@ -836,6 +887,7 @@
       ruleState: defaultRuleState(monster, 1, suggestedClashPhase()),
       conflictStatus: "active", failureReason: "",
       conflictLocation: "",
+      conflictType: "normal",
       conflictBoard: buildConflictBoard(monster, 1),
       deckOrderVisible: true,
       aiView: "discard", bpView: "damage", galleryKind: "ALL",
@@ -960,7 +1012,8 @@
         ? raw.activeMobActivationId : "",
       conflictStatus: raw?.conflictStatus === "failed" ? "failed" : "active",
       failureReason: String(raw?.failureReason || ""),
-      conflictLocation: String(raw?.conflictLocation || ""),
+      conflictLocation: monster.id === "M_YoungDevour" ? "" : String(raw?.conflictLocation || ""),
+      conflictType: monster.id === "M_YoungDevour" ? "normal" : (raw?.conflictLocation === "巨兽之腹" || raw?.conflictType === "belly_of_beast" ? "belly_of_beast" : "normal"),
       deckOrderVisible: raw?.deckOrderVisible !== false,
       log: Array.isArray(raw?.log) ? raw.log.slice(-100) : []
     };
@@ -1172,8 +1225,10 @@
     return clamp(state.battle.setupCounts[kind], 0, Number(monster.pools[kind] || 0));
   }
 
-  function buildInitialMobTrack(monster, setupResult) {
-    const { setup, counts, fixedCards, total } = setupResult;
+  function buildInitialMobTrack(monster, setupResult, maxSlots = Infinity) {
+    const { setup, counts, fixedCards } = setupResult;
+    // 巨兽之腹按版图附着怪物位数量封顶初始杂兵，超过上限的不放入杂兵轨。
+    const total = Math.min(setupResult.total, maxSlots);
     const fixedIds = new Set(fixedCards.map(item => item.id));
     const remainingIds = shuffle(Object.entries(counts).flatMap(([kind, count]) => {
       const fixedCount = fixedCards.filter(item => cardById(monster, item.id)?.kind === kind).length;
@@ -4526,7 +4581,12 @@
   }
 
   function conflictBoardLayout(battle = state.battle) {
+    if (isBellyConflict(battle)) return bellyLayout(monsterById(battle.monsterId));
     return (window.KF_CONFLICT_BOARD_DATA?.layouts || []).find(layout => layout.id === battle.conflictBoard?.layoutId) || null;
+  }
+
+  function conflictBoardDefinition(battle = state.battle) {
+    return isBellyConflict(battle) ? BELLY_BOARD.board : window.KF_CONFLICT_BOARD_DATA?.board;
   }
 
   function conflictAssetSrc(asset) {
@@ -4537,7 +4597,7 @@
   }
 
   function conflictBoardCropStyle() {
-    const board = window.KF_CONFLICT_BOARD_DATA?.board;
+    const board = conflictBoardDefinition();
     const crop = board?.crop;
     if (!board || !crop) return "";
     return `--board-image-width:${board.width / crop.width * 100}%;--board-image-height:${board.height / crop.height * 100}%;--board-image-left:${-crop.x / crop.width * 100}%;--board-image-top:${-crop.y / crop.height * 100}%`;
@@ -4761,6 +4821,13 @@
     </button>`;
   }
 
+  // Four printed track numerals on the belly artwork, measured in board %.
+  const DIGESTIVE_TRACK_POSITIONS = [37.1, 52.3, 67.4, 81.7];
+  function digestiveTrackMarkerHtml(boardState) {
+    const position = clamp(Number(boardState?.digestiveTrack?.position) || 1, 1, DIGESTIVE_TRACK_POSITIONS.length);
+    return `<button type="button" class="digestive-track-marker" data-digestive-marker aria-label="消化轨位置 ${position}" style="left:91.1%;top:${DIGESTIVE_TRACK_POSITIONS[position - 1]}%"><img src="/assets/tokens/generic.png" alt="通用标记"><b>${position}</b></button>`;
+  }
+
   function conflictBoardEditorHtml(monster, battle) {
     const boardState = battle.conflictBoard;
     const layout = conflictBoardLayout(battle);
@@ -4788,7 +4855,7 @@
     const catalog = conflictTerrainCatalog();
     const usedAssets = [...new Set(terrain.map(item => item.asset))];
     const terrainCards = conflictTerrainCards(terrain);
-    const boardAsset = window.KF_CONFLICT_BOARD_DATA?.board?.asset;
+    const boardAsset = conflictBoardDefinition(battle)?.asset;
     const activeFoolCard = foolCardById(boardState.activeFoolCardId);
     const foolDeckExhausted = activeFoolCard && !boardState.foolDeckOrder.length;
     const foolDeckButtonLabel = activeFoolCard
@@ -4797,12 +4864,19 @@
     const selection = selected
       ? `<strong>${esc(conflictTerrainLabel(selected.asset))}</strong><span>第 ${selected.columnStart} 列 · ${String.fromCharCode(75 - selected.rowStart)} 行 · ${selected.rotation}°${selected.flipped ? " · 反面" : ""}</span>`
       : "未选择地形";
+    const digestiveTrack = boardState.digestiveTrack || {};
+    const digestiveMax = Math.max(1, Number(BELLY_BOARD.digestiveTrack?.max) || 4);
+    const digestivePosition = Math.min(digestiveMax, Math.max(1, Number(digestiveTrack.position) || 1));
+    const digestiveTrackMarkup = isBellyConflict(battle)
+      ? `<span class="digestive-track-status"><span>拖动版图上的通用标记</span><span class="digestive-track-steps">${Array.from({ length: digestiveMax }, (_, index) => `<i class="${index + 1 === digestivePosition ? "active" : ""}">${index + 1}</i>`).join("")}</span><b>${digestivePosition} / ${digestiveMax}</b></span>`
+      : "";
     const overlay = conflictOverlay(battle);
     return `<section class="panel terrain-control-panel" aria-label="冲突版图地形控制">
-      <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>冲突版图与地形</h3></div><div class="inline-actions">
+      <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>${isBellyConflict(battle) ? "巨兽之腹版图" : "冲突版图与地形"}</h3></div><div class="inline-actions">
         <button type="button" class="button secondary small ${boardState.showCoordinates ? "active" : ""}" data-grid-coordinates>${boardState.showCoordinates ? "隐藏格子位置" : "显示格子位置"}</button>
         <button type="button" class="button small ${activeFoolCard ? "danger" : ""}" data-fool-deck>${foolDeckButtonLabel}</button>
         <label class="terrain-start-toggle"><input type="checkbox" data-terrain-starts ${boardState.showStarts !== false ? "checked" : ""}>显示初始位置</label>
+        ${digestiveTrackMarkup}
         <button type="button" class="button secondary small" data-terrain-reset>重置版图</button>
       </div></div>
       <div class="terrain-control-workspace">
@@ -4810,7 +4884,7 @@
           <img class="terrain-control-board-source" src="${esc(conflictAssetSrc(boardAsset))}" alt="TTS 高清冲突版图">
           <div class="terrain-control-grid">${conflictGridHtml(boardState, overlay)}</div>
           ${conflictOverlayMarkersHtml(overlay)}
-          ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId, Boolean(overlay?.settings?.path || overlayPlacementMode))).join("")}${starts}
+          ${terrain.map(item => conflictTerrainPlacementHtml(item, item.id === selectedTerrainId, Boolean(overlay?.settings?.path || overlayPlacementMode))).join("")}${starts}${isBellyConflict(battle) ? digestiveTrackMarkerHtml(boardState) : ""}
         </div>
         <aside class="terrain-control-tools">
           ${foolDeckPreviewHtml(boardState)}
@@ -4907,13 +4981,75 @@
     node.addEventListener("pointercancel", finish);
   }
 
+  function startDigestiveTrackDrag(event) {
+    const node = event.currentTarget;
+    const boardNode = node.closest("[data-terrain-board]");
+    if (!boardNode || !isBellyConflict()) return;
+    const startPosition = clamp(Number(state.battle.conflictBoard?.digestiveTrack?.position) || 1, 1, DIGESTIVE_TRACK_POSITIONS.length);
+    let nextPosition = startPosition;
+    const move = pointerEvent => {
+      const rect = boardNode.getBoundingClientRect();
+      if (!rect.height) return;
+      const y = (pointerEvent.clientY - rect.top) / rect.height * 100;
+      nextPosition = DIGESTIVE_TRACK_POSITIONS.reduce((best, value, index) => Math.abs(value - y) < Math.abs(DIGESTIVE_TRACK_POSITIONS[best - 1] - y) ? index + 1 : best, 1);
+      node.style.top = `${DIGESTIVE_TRACK_POSITIONS[nextPosition - 1]}%`;
+      node.querySelector("b")?.replaceChildren(String(nextPosition));
+      node.setAttribute("aria-label", `消化轨位置 ${nextPosition}`);
+      pointerEvent.preventDefault();
+    };
+    const finish = pointerEvent => {
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", finish);
+      node.removeEventListener("pointercancel", finish);
+      node.classList.remove("dragging");
+      if (node.hasPointerCapture?.(pointerEvent.pointerId)) node.releasePointerCapture(pointerEvent.pointerId);
+      if (nextPosition === startPosition) return;
+      remember();
+      state.battle.conflictBoard.digestiveTrack = { ...(state.battle.conflictBoard.digestiveTrack || {}), position: nextPosition, min: 1, max: 4, step: 1 };
+      save();
+    };
+    event.preventDefault();
+    event.stopPropagation();
+    node.classList.add("dragging");
+    node.setPointerCapture?.(event.pointerId);
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", finish);
+    node.addEventListener("pointercancel", finish);
+  }
+
   function resetConflictTerrain() {
     const layout = conflictBoardLayout();
     if (!layout) return false;
     remember();
     state.battle.conflictBoard.terrain = defaultConflictTerrain(layout, state.battle.conflictBoard.resolvedOrientations);
     state.battle.conflictBoard.showStarts = true;
+    if (isBellyConflict()) {
+      const track = state.battle.conflictBoard.digestiveTrack || {};
+      track.position = Number(BELLY_BOARD.digestiveTrack?.min) || 1;
+      track.min = Number(BELLY_BOARD.digestiveTrack?.min) || 1;
+      track.max = Number(BELLY_BOARD.digestiveTrack?.max) || 4;
+      track.step = Number(BELLY_BOARD.digestiveTrack?.step) || 1;
+      state.battle.conflictBoard.digestiveTrack = track;
+    }
     selectedTerrainId = "";
+    save();
+    return true;
+  }
+
+  function advanceDigestiveTrack() {
+    const battle = state.battle;
+    if (!isBellyConflict(battle) || !battle.conflictBoard) return toast("当前冲突不是巨兽之腹");
+    const track = battle.conflictBoard.digestiveTrack || {};
+    const min = Number(track.min) || Number(BELLY_BOARD.digestiveTrack?.min) || 1;
+    const max = Number(BELLY_BOARD.digestiveTrack?.max) || 4;
+    const step = Number(track.step) || Number(BELLY_BOARD.digestiveTrack?.step) || 1;
+    const current = clamp(track.position ?? min, min, max);
+    if (current >= max) return toast("消化轨已到达终点");
+    remember();
+    track.position = clamp(current + step, min, max);
+    track.min = min; track.max = max; track.step = step;
+    battle.conflictBoard.digestiveTrack = track;
+    log(`消化轨推进至 ${track.position}`);
     save();
     return true;
   }
@@ -5062,14 +5198,14 @@
                 <div class="panel-header"><div><span class="eyebrow">AI DECK</span><div class="deck-title-row"><h3>AI</h3>${deckLevelOrderHtml(b.aiDeck, monster, "AI")}</div></div><span class="badge">${b.aiDeck.length} 当前 / ${b.aiDiscard.length} 弃牌</span></div>
                 <div class="aibp-draw-box">
                   <div class="aibp-actions">
-                    <button class="button ${mob ? "secondary" : ""}" data-draw="ai" title="${mob ? "手动抽取 AI（非指示物效果）" : "抽取 AI"}">抽 AI</button>
+                    <button class="button" data-draw="ai" title="${mob ? "手动抽取 AI（非指示物效果）" : "抽取 AI"}">抽 AI</button>
                     ${activeAiZero
                       ? '<button class="button" data-settle="ai:removed" title="AI0 首次结算后必须移出游戏">结算并移出游戏</button>'
                       : `<button class="button secondary" data-settle="ai:discard" title="弃置当前 AI" ${activeAI ? "" : "disabled"}>弃置</button>
                         <button class="button secondary" data-settle="ai:removed" title="移除当前 AI" ${activeAI ? "" : "disabled"}>移除</button>
                         <button class="button secondary" data-settle="ai:bottom" title="将当前 AI 置于牌组底部" ${activeAI ? "" : "disabled"}>置底</button>`}
                     <button class="button secondary" data-promote="ai" title="AI 晋升">晋升</button>
-                    <button class="button ${mob ? "secondary" : ""}" id="undo" title="撤销上一步" ${state.history.length ? "" : "disabled"}>撤销</button>
+                    <button class="button" id="undo" title="撤销上一步" ${state.history.length ? "" : "disabled"}>撤销</button>
                     <button class="button secondary" data-scry="ai" title="查看并调整 AI 牌顶顺序">观星 AI</button>
                   </div>
                   <div class="${puppetAiChoices.length ? "aibp-pending puppet-ai-choice-pending" : "aibp-pending"}">
@@ -5438,6 +5574,8 @@
     $$("[data-settle]").forEach(button => button.addEventListener("click", () => {
       const [type, action] = button.dataset.settle.split(":"); settle(type, action);
     }));
+    $$('[data-digestive-marker]').forEach(button => button.addEventListener("pointerdown", startDigestiveTrackDrag));
+    $$('[data-digestive-marker]').forEach(button => button.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); }));
     $$("[data-winged-attack]").forEach(button => button.addEventListener("click", () => {
       resolveWingedNightmareAttack(button.dataset.wingedAttack === "success");
     }));
@@ -5624,8 +5762,25 @@
 
   window.addEventListener?.("kf:aibp-handoff", event => {
     const location = String(event.detail?.mapWheel?.conflictLocation || "");
+    const currentMonster = monsterById(state.battle.monsterId);
+    const bellyLocation = location === "巨兽之腹" && currentMonster?.id !== "M_YoungDevour";
     state.battle.conflictLocation = location;
-    if (location) log(`特殊冲突地点：${location}（贪食巨龙来了！）`);
+    state.battle.conflictType = bellyLocation ? "belly_of_beast" : "normal";
+    if (bellyLocation) {
+      // 杂兵轨也按巨兽之腹布局的附着怪物位数量重建，实际杂兵超过布局位数时封顶。
+      if (isMob(currentMonster) && !isWingedNightmare(currentMonster)) {
+        const bellySetup = mobSetupResult(currentMonster);
+        if (!bellySetup.error) {
+          const bellyMobSlots = bellyLayout(currentMonster).placements.filter(placement =>
+            placement.kind === "monster" || ["RedSapling", "LictorDecoy"].includes(placement.asset)
+          ).length;
+          state.battle.bpTrack = buildInitialMobTrack(currentMonster, bellySetup, bellyMobSlots);
+          state.battle.mobCount = state.battle.bpTrack.filter(slot => slot.id).length;
+        }
+      }
+      state.battle.conflictBoard = buildConflictBoard(currentMonster, state.battle.level, state.battle);
+      log(`特殊冲突地点：${location}（贪食巨龙来了！）`);
+    }
     save();
   });
 
@@ -5641,7 +5796,7 @@
       rebuild: preserveHistory => initializeBattle(
         monsterById(state.battle.monsterId), { preserveHistory: Boolean(preserveHistory) }
       ),
-      draw, settle, moveAibpCard, undo, advanceDevourStage, openScry, startScry, finishScry, cancelScry,
+      draw, settle, moveAibpCard, undo, advanceDevourStage, advanceDigestiveTrack, openScry, startScry, finishScry, cancelScry,
       startWhiteApeRound, spawnWhiteGuardian, passGuardianBp, resolveGuardianAttack, defeatGuardian,
       recordWhiteReinforcement, changeWhiteReinforcementCounter, resolveWhiteReinforcement,
       changeWhiteVengeanceCounter, resolveWhiteVengeance, whiteVengeanceThreshold, recordBossWoundCounters,
