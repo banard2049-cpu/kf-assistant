@@ -1769,8 +1769,12 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 .terrain-control-placement.selected { z-index: 30; outline: 3px solid var(--gold-bright); outline-offset: -2px; background: rgba(198, 154, 75, .14); }
 .terrain-control-start { position: absolute; z-index: 40; display: grid; place-items: center; padding: 5px; pointer-events: none; }
 .terrain-control-start i { position: relative; display: grid; width: min(88%, 52px); aspect-ratio: 1; place-items: center; border: 2px solid #e8d9b5; border-radius: 50%; background: #141514; color: #fff; font-size: 9px; font-style: normal; text-align: center; line-height: 1.05; box-shadow: 0 2px 5px #000; }
+.terrain-control-start.knight i { border: 0; background: transparent; box-shadow: none; }
 .terrain-control-start.monster i { border-color: #d95c54; background: #421d1d; }
 .terrain-control-start i img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.terrain-control-start.monster i { border: 0; background: transparent; box-shadow: none; }
+.terrain-control-start.monster i img.monster-start-token { border-radius: 0; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,.8)); }
+.terrain-control-start.knight i img.knight-start-marker { object-fit: contain; }
 .terrain-control-start i b { position: absolute; right: -5px; bottom: -5px; display: grid; width: 21px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--gold-bright); color: #17140e; font-size: 11px; }
 .terrain-start-arrow { position: absolute; z-index: 2; display: grid; width: 16px; height: 16px; place-items: center; color: #fff; font-size: 12px; line-height: 1; text-shadow: 0 1px 3px #000; }
 .terrain-start-arrow.facing-0 { left: 50%; top: 0; transform: translate(-50%, -72%); }

@@ -215,6 +215,9 @@
     const source = String(value || "");
     return !source ? "" : (/^(?:[a-z]+:|\/)/i.test(source) ? source : `/assets/${source}`);
   }
+  function monsterTokenSrc(monsterId) {
+    return displayAsset(window.KF_MOD_DATA?.tokens?.monsters?.[monsterId] || "");
+  }
   function terrainCardsFor(terrain) {
     const cardData = window.KF_CONFLICT_BOARD_DATA?.terrainCards;
     if (!cardData?.sheet || !cardData.byAsset) return [];
@@ -623,8 +626,11 @@
       ? boardState.terrain.map(item => ({...item,kind:"terrain"}))
       : layout.placements.filter(item => item.kind === "terrain");
     const terrainCards = terrainCardsFor(terrain);
+    // Number 标记是版图计数信息，即使隐藏起始模型也要保留。
     const fixed = layout.placements.filter(item => item.kind !== "terrain")
-      .filter(item => boardState.showStarts !== false || !(["knight","monster","number"].includes(item.kind) || ["LictorDecoy","Armor"].includes(item.asset)));
+      .filter(item => boardState.showStarts !== false
+        || item.kind === "number"
+        || !(["knight","monster"].includes(item.kind) || ["LictorDecoy","Armor"].includes(item.asset)));
     const placements = [...terrain,...fixed].map(item => {
       let left=(item.columnStart-1)/14*100,top=(item.rowStart-1)/10*100,width=(item.columnEnd-item.columnStart+1)/14*100,height=(item.rowEnd-item.rowStart+1)/10*100;
       const rotation = item.kind === "terrain" ? item.rotation ?? 0 : boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0;
@@ -645,6 +651,11 @@
       } else if (item.kind === "knight" && knightAssignment.has(item.id)) {
         const knight = knightAssignment.get(item.id);
         content=`<span class="board-marker knight" aria-label="${esc(knight.name)}" title="${esc(knight.name)}"><img class="knight-avatar" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt=""><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span></span>`;
+      } else if (item.kind === "monster") {
+        const token = monsterTokenSrc(battle.monsterId);
+        const label = belly ? (monster?.name || "附着怪物") : (monster?.name || item.asset.replace(/([a-z])([A-Z])/g,"$1 $2"));
+        const tokenImage = token ? `<img class="monster-board-token" src="${esc(token)}" alt="${esc(label)}">` : "";
+        content=`<span class="board-marker monster" aria-label="${esc(label)}" title="${esc(label)}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${tokenImage || esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
       } else {
         const label=belly && item.kind === "monster" ? (monster?.name || "附着怪物") : item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
         content=`<span class="board-marker ${item.kind}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;

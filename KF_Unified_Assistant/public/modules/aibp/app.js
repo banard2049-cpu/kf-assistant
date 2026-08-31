@@ -4596,6 +4596,12 @@
     return source ? (/^(?:[a-z]+:|\/)/i.test(source) ? source : `/assets/${source.replace(/^assets\//, "")}`) : "";
   }
 
+  // Conflict monster placements use the same printed token artwork as the map.
+  function monsterTokenSrc(monsterId) {
+    const source = window.KF_MOD_DATA?.tokens?.monsters?.[monsterId] || "";
+    return source ? (/^(?:[a-z]+:|\/)/i.test(source) ? source : `/assets/${String(source).replace(/^assets\//, "")}`) : "";
+  }
+
   function conflictBoardCropStyle() {
     const board = conflictBoardDefinition();
     const crop = board?.crop;
@@ -4837,20 +4843,32 @@
     const selected = terrain.find(item => item.id === selectedTerrainId);
     const knightAssignments = new Map((boardState.knightAssignments || []).map(item => [item.placementId, item]));
     const mobAssignments = new Map((boardState.mobAssignments || []).map(item => [item.placementId, item.number]));
+    // Number 标记是版图计数信息，不属于可隐藏的起始模型。
     const starts = (layout.placements || []).filter(item => item.kind !== "terrain")
-      .filter(item => boardState.showStarts !== false || !(["knight", "monster", "number"].includes(item.kind) || ["LictorDecoy", "Armor"].includes(item.asset))).map(item => {
+      .filter(item => boardState.showStarts !== false
+        || item.kind === "number"
+        || !(["knight", "monster"].includes(item.kind) || ["LictorDecoy", "Armor"].includes(item.asset))).map(item => {
       const rowSpan = item.rowEnd - item.rowStart + 1;
       const columnSpan = item.columnEnd - item.columnStart + 1;
       const rotation = boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0;
       const knight = knightAssignments.get(item.id);
-      const arrow = ["knight", "monster"].includes(item.kind) ? `<span class="terrain-start-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>` : "";
-      const avatar = knight ? `<img src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt="">${arrow}` : "";
+      const arrow = item.kind === "monster" ? `<span class="terrain-start-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>` : "";
+      const monsterToken = item.kind === "monster" ? monsterTokenSrc(monster?.id || battle?.monsterId) : "";
+      const monsterImage = monsterToken
+        ? `<img class="monster-start-token" src="${esc(monsterToken)}" alt="${esc(monster?.name || "怪物 token")}">`
+        : "";
+      const knightStart = item.kind === "knight"
+        ? `<img class="knight-start-marker" src="${esc(conflictAssetSrc(item.asset || "KnightStart"))}" alt="骑士起始位置">`
+        : "";
+      const avatar = knight ? knightStart : "";
       const assignedNumber = mobAssignments.get(item.id);
-      const label = knight ? "" : `${item.kind === "monster" ? conflictTerrainLabel(item.asset) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}${assignedNumber ? `<b class="${mobNumberClass(assignedNumber)}">${assignedNumber}</b>` : ""}`;
+      const label = knight || item.kind === "knight" ? "" : `${item.kind === "monster" ? (monsterImage ? "" : conflictTerrainLabel(item.asset)) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}`;
+      const numberBadge = assignedNumber ? `<b class="${mobNumberClass(assignedNumber)}">${assignedNumber}</b>` : "";
       const numberImage = item.kind === "number"
         ? `<img class="terrain-control-number-image" src="${esc(conflictAssetSrc(item.asset))}" alt="${esc(item.asset)}">`
         : "";
-      return `<span class="terrain-control-start ${item.kind} ${knight ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i>${avatar || numberImage || `${arrow}${label}`}</i></span>`;
+      const content = item.kind === "knight" ? knightStart : (avatar || numberImage || `${arrow}${monsterImage || label}${numberBadge}`);
+      return `<span class="terrain-control-start ${item.kind} ${item.kind === "knight" ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i>${content}</i></span>`;
     }).join("");
     const catalog = conflictTerrainCatalog();
     const usedAssets = [...new Set(terrain.map(item => item.asset))];
