@@ -412,7 +412,7 @@ function renderAIBP(){
 const investigationHasNumber=value=>value!==""&&value!==null&&value!==undefined&&value!==false;
 function talePosition(sheet){
   const story=sheet?.state?.story||[];let deepest=-1;
-  story.forEach((c,ci)=>{if(c.quest)deepest=Math.max(deepest,ci*4);(c.investigations||[]).forEach((v,ii)=>{if(investigationHasNumber(v.success))deepest=Math.max(deepest,ci*4+ii+1)})});
+  story.forEach((c,ci)=>{if(c.quest)deepest=Math.max(deepest,ci*4);(c.investigations||[]).forEach((v,ii)=>{if(v.attempted||investigationHasNumber(v.success))deepest=Math.max(deepest,ci*4+ii+1)})});
   const row=deepest<0?0:deepest;return {row,chapter:Math.floor(row/4)+1,label:row%4===0?"任务":`调查 ${row%4}`,empty:deepest<0};
 }
 function renderEncounterBuilder(){
