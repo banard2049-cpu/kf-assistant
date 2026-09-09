@@ -38,10 +38,9 @@ vm.runInNewContext(`
 assert.deepEqual(Array.from(context.normalized), ["", 1, "", "", 0, 3, 99, 7, ""]);
 assert.deepEqual(JSON.parse(JSON.stringify(context.emptyPosition)), { row: 0, chapter: 1, label: "任务", empty: true });
 assert.deepEqual(JSON.parse(JSON.stringify(context.zeroPosition)), { row: 2, chapter: 1, label: "调查 2", empty: false });
-assert.deepEqual(JSON.parse(JSON.stringify(context.attemptedOnlyPosition)), { row: 2, chapter: 1, label: "调查 2", empty: false });
-assert.deepEqual(JSON.parse(JSON.stringify(context.numericPosition)), { row: 5, chapter: 2, label: "调查 1", empty: false });
-assert.match(appSource, /investigationHasNumber\(v\.success\)/);
-assert.doesNotMatch(appSource, /if\(v\.attempted\)/);
+assert.deepEqual(JSON.parse(JSON.stringify(context.attemptedOnlyPosition)), { row: 7, chapter: 2, label: "调查 3", empty: false });
+assert.deepEqual(JSON.parse(JSON.stringify(context.numericPosition)), { row: 7, chapter: 2, label: "调查 3", empty: false });
+assert.match(appSource, /v\.attempted\|\|investigationHasNumber\(v\.success\)/);
 assert.match(appSource, /class="investigation-number"[^>]+data-investigation-success[^>]+type="number"[^>]+min="0"[^>]+max="99"/);
 assert.doesNotMatch(appSource, /check\(`story\.\$\{ci\}\.investigations\.\$\{ii\}\.success`/);
 assert.match(appSource, /hasAttribute\("data-investigation-success"\)\?investigationSuccessValue\(v\)/);
@@ -52,7 +51,7 @@ assert.match(styleSource, /\.investigation\{grid-template-columns:minmax\(0,1fr\
 assert.match(apiSource, /\['attempted'=>false,'success'=>''\]/);
 assert.ok(apiSource.includes("preg_match('/^story\\.\\d+\\.investigations\\.\\d+\\.success$/',$path)"));
 assert.ok(apiSource.includes("$value!=='' && (!is_int($value) || $value<0 || $value>99)"));
-assert.match(indexSource, /\/styles\.css\?v=17/);
-assert.match(indexSource, /\/app\.js\?v=27/);
+assert.match(indexSource, /\/styles\.css\?v=19/);
+assert.match(indexSource, /\/app\.js\?v=31/);
 
 console.log("knight sheet investigations: first cell stores a bounded number");
