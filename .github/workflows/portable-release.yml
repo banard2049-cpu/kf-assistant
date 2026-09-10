@@ -50,6 +50,8 @@ jobs:
 
   build-macos:
     strategy:
+      # One leg failing must not cancel the other architecture.
+      fail-fast: false
       matrix:
         include:
           - runner: macos-15-intel
@@ -57,16 +59,53 @@ jobs:
           - runner: macos-15
             arch: arm64
     runs-on: ${{ matrix.runner }}
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      HOMEBREW_NO_ENV_HINTS: '1'
+      PHP_FORMULA: php@8.4
     steps:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Set up PHP
+      # homebrew-core publishes prebuilt bottles for php@8.4 on both macOS 15
+      # architectures. The shivammathur/php tap has no reliable bottle for the
+      # x86_64 image, so setup-php fell back to compiling PHP from source and
+      # failed after ~27 minutes on macos-15-intel.
+      - name: Set up PHP (Homebrew bottle)
+        id: php_brew
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          brew install "$PHP_FORMULA" || brew reinstall "$PHP_FORMULA"
+          php_prefix="$(brew --prefix "$PHP_FORMULA")"
+          echo "$php_prefix/bin" >> "$GITHUB_PATH"
+          "$php_prefix/bin/php" -v
+
+      - name: Set up PHP (setup-php fallback)
+        if: steps.php_brew.outcome == 'failure'
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: mbstring, pdo_sqlite, sqlite3
           coverage: none
+
+      - name: Verify PHP runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -v
+          php -r 'exit(version_compare(PHP_VERSION, "8.2.0", ">=") ? 0 : 1);' || {
+            echo "PHP 8.2+ is required (found $(php -r 'echo PHP_VERSION;'))." >&2
+            exit 1
+          }
+          for extension in pdo_sqlite sqlite3 mbstring; do
+            php -r "exit(extension_loaded('$extension') ? 0 : 1);" || {
+              echo "PHP extension '$extension' is missing." >&2
+              exit 1
+            }
+          done
 
       - name: Build macOS package
         shell: bash
