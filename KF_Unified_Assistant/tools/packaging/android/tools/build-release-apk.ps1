@@ -40,8 +40,17 @@ if (!(Test-Path -LiteralPath $gradleExe)) {
 & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Root "android\sync-web-assets.ps1") -Source $Source
 if ($LASTEXITCODE -ge 8) { throw "Web asset sync failed." }
 
-$versionDigits = ($Version -replace '[^0-9]', '')
-$versionCode = if ($versionDigits) { [Math]::Min([int64]$versionDigits, 2100000000) } else { 1 }
+# Reserve three digits for minor/patch so a prerelease suffix cannot make
+# the preceding version sort above a later stable release (1161 > 117).
+$versionMatch = [regex]::Match($Version, '^(\d+)\.(\d+)\.(\d+)(?:[-.][0-9A-Za-z.-]+)?$')
+if (!$versionMatch.Success) { throw "Invalid release version: $Version" }
+$major = [int64]$versionMatch.Groups[1].Value
+$minor = [int64]$versionMatch.Groups[2].Value
+$patch = [int64]$versionMatch.Groups[3].Value
+$versionCode = $major * 1000000 + $minor * 1000 + $patch
+if ($minor -gt 999 -or $patch -gt 999 -or $versionCode -lt 1 -or $versionCode -gt 2100000000) {
+  throw "Release version is outside the Android versionCode range: $Version"
+}
 $env:ANDROID_HOME = if ($env:ANDROID_HOME) { $env:ANDROID_HOME } else { $env:ANDROID_SDK_ROOT }
 if (!$env:ANDROID_HOME) { throw "ANDROID_HOME or ANDROID_SDK_ROOT is required." }
 $buildTools = Get-ChildItem -LiteralPath (Join-Path $env:ANDROID_HOME "build-tools") -Directory | Sort-Object Name -Descending | Select-Object -First 1
