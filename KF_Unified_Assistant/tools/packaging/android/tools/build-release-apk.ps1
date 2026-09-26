@@ -74,6 +74,5 @@ Invoke-Checked $apkSigner @("sign", "--ks", $KeystorePath, "--ks-key-alias", $Ke
 Invoke-Checked $apkSigner @("verify", "--verbose", $output)
 Remove-Item -LiteralPath $aligned -Force -ErrorAction SilentlyContinue
 $hash = (Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
-Set-Content -LiteralPath "$output.sha256" -Value "$hash  $([IO.Path]::GetFileName($output))" -Encoding ascii
 Write-Host "APK: $output"
 Write-Host "SHA-256: $hash"
