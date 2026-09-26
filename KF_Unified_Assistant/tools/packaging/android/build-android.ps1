@@ -81,11 +81,7 @@ $env:ANDROID_SDK_ROOT = $Sdk
 $env:GRADLE_USER_HOME = Join-Path $Toolchain "gradle-home"
 New-Item -ItemType Directory -Path $Dist,$PrivateTools -Force | Out-Null
 if (!(Test-Path -LiteralPath $Keystore)) {
-  Invoke-Checked $KeyTool @(
-    "-genkeypair", "-v", "-keystore", $Keystore, "-storepass", $StorePassword,
-    "-keypass", $StorePassword, "-alias", $Alias, "-keyalg", "RSA", "-keysize", "2048",
-    "-validity", "10000", "-dname", "CN=KF Unified Assistant Local, O=Kingdoms Forlorn, C=CN"
-  )
+  throw "Fixed release keystore not found: $Keystore. Restore the existing release key from backup before building."
 }
 
 Write-Host "[3/6] Building release APK..."
