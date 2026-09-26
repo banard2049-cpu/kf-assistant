@@ -3675,6 +3675,7 @@
         <button class="button small" data-scry-card-action="${index}:top">置顶</button>
         <button class="button small secondary" data-scry-card-action="${index}:bottom">置底</button>
         <button class="button small secondary" data-scry-card-action="${index}:shuffle">洗回</button>
+        <button class="button small danger" data-scry-card-action="${index}:discard">弃牌</button>
         <button class="button small danger" data-scry-card-action="${index}:remove">移除</button>
       </div>
     </div>`;
@@ -3707,6 +3708,7 @@
         <button class="button" data-scry-finish="top">全部盖回牌顶</button>
         <button class="button secondary" data-scry-finish="bottom">全部放到底部</button>
         <button class="button secondary" data-scry-finish="shuffle">全部洗回牌堆</button>
+        <button class="button danger" data-scry-finish="discard">全部弃牌</button>
         <button class="button danger" data-scry-finish="remove">全部移除</button>
         <button class="button ghost" data-scry-cancel>取消并恢复</button>
       </div>
@@ -3766,13 +3768,14 @@
 
   function applyScryCardAction(index, action) {
     if (!activeScry) return;
-    const destination = action === "top" ? "top" : action === "bottom" ? "bottom" : action === "shuffle" ? "shuffle" : "remove";
-    if (!activeScry.cards[index] || !["top", "bottom", "shuffle", "remove"].includes(destination)) return;
+    const destination = action;
+    if (!activeScry.cards[index] || !["top", "bottom", "shuffle", "discard", "remove"].includes(destination)) return;
     const card = activeScry.cards.splice(index, 1)[0];
     const deck = state.battle[`${activeScry.type}Deck`];
     if (destination === "top") deck.unshift(card);
     else if (destination === "bottom") deck.push(card);
     else if (destination === "shuffle") insertRandom(deck, card);
+    else if (destination === "discard") state.battle[`${activeScry.type}Discard`].push(card);
     else state.battle[`${activeScry.type}Removed`].push(card);
     if (!activeScry.cards.length) return finishScry(null);
     renderScryModal();
@@ -3785,6 +3788,7 @@
     if (mode === "top") deck.unshift(...session.cards);
     else if (mode === "bottom") deck.push(...session.cards);
     else if (mode === "shuffle") session.cards.forEach(card => insertRandom(deck, card));
+    else if (mode === "discard") state.battle[`${session.type}Discard`].push(...session.cards);
     else if (mode === "remove") state.battle[`${session.type}Removed`].push(...session.cards);
     else if (mode !== null) return;
     activeScry = null;
