@@ -24,6 +24,29 @@ build-apk.bat
 powershell -ExecutionPolicy Bypass -File .\build-android.ps1 -Toolchain "D:\path\to\.build-tools"
 ```
 
+## 固定发布签名
+
+本地构建使用 `.build-tools/kf-unified-local-release.jks` 中已有的发布密钥（别名 `kf-unified-local`）。请备份该文件并在更换构建电脑时恢复同一份密钥；文件缺失时构建会报错，不会自动生成新密钥。
+
+GitHub Actions 发布必须配置以下仓库 Actions Secrets：
+
+| Secret | 内容 |
+| --- | --- |
+| `KF_ANDROID_KEYSTORE_BASE64` | 固定发布 keystore 文件的 Base64 编码 |
+| `KF_ANDROID_STORE_PASSWORD` | keystore 密码 |
+| `KF_ANDROID_KEY_ALIAS` | 发布密钥别名 |
+| `KF_ANDROID_KEY_PASSWORD` | 发布密钥密码 |
+
+如需与本地 APK 保持相同签名，请使用上述本地 keystore。可在本目录执行以下命令，将编码复制到剪贴板后填写 Secret：
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $PWD '.build-tools/kf-unified-local-release.jks'))) | Set-Clipboard
+```
+
+缺少任一 Secret 时，发布流程直接失败，不会回退到 debug 签名或临时密钥。密钥文件及密码不得提交到仓库。
+
+已安装的 APK 如果使用不同的 debug 或临时签名，不能直接覆盖升级到固定签名版本；请先导出存档，再卸载旧版、安装新版并导入存档。之后的版本持续使用同一密钥即可覆盖升级。
+
 ## 安装
 
 开启手机 USB 调试并连接电脑，构建完成后运行：
