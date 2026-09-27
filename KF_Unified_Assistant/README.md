@@ -4,6 +4,10 @@ PHP 8.2+ / SQLite 的《Kingdoms Forlorn》本地 Web 助手，包含骑士档�
 
 完整使用说明请看仓库根目录的 [README.md](../README.md)。下面只保留应用目录内的常用入口。
 
+## 许可证：禁止商用
+
+本项目原创代码、文档及项目自有图标采用 [PolyForm Noncommercial License 1.0.0](public/LICENSE.txt)，仅允许许可证规定的非商业用途，商业使用未获授权。修改和再分发必须遵守许可证，并保留完整许可证及 `Required Notice:` 版权声明；商业用途须另行获得相关版权所有者的书面授权。游戏素材、第三方组件和运行时仍归各自版权所有者所有，并遵循其自身许可证。
+
 ## 从 Release 运行（推荐）
 
 Windows/macOS portable 包和 Android APK 位于仓库的 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
