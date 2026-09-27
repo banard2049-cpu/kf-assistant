@@ -107,14 +107,14 @@ function exhaust(kind) {
 
 // Immediate damage and replacement are one transaction; supply and mangrove rotation must agree.
 for (const id of ["M_FirstmenWarriors", "M_FirstmenLictor"]) {
-  for (const rank of [1, 2]) {
+  for (const rank of [1, 2, 3]) {
     const index = prepare(id, rank);
     const count = occupied();
     api.selectMob(index);
     const before = JSON.stringify(state());
     api.settle("bp", "defeat");
     assert.equal(occupied(), count);
-    assert.equal(rankOf(state().bpTrack[index].id), rank + 1);
+    assert.equal(rankOf(state().bpTrack[index].id), Math.min(3, rank + 1));
     assert.equal(state().bpTrack[index].revealed, false);
     assert.equal(state().mobSpawn.nextMangrove, 2);
     assert.match(state().mobSpawn.notices.at(-1), /1 号大红树/);
@@ -130,10 +130,11 @@ for (const id of ["M_FirstmenWarriors", "M_FirstmenLictor"]) {
   assert.equal(state().mobSpawn.nextMangrove, 2, "tree rotation is 1, 2, 3, 1");
   assert.equal(api.validateState(plain(api.state())).battle.mobSpawn.nextMangrove, 2);
   const index = prepare(id, 3);
+  exhaust("BP3");
   const count = occupied();
   defeat(index);
   assert.equal(occupied(), count - 1);
-  assert.match(state().mobSpawn.notices.at(-1), /BP3.*取消/);
+  assert.match(state().mobSpawn.notices.at(-1), /BP3.*耗尽/);
   prepare(id);
   exhaust("BP2");
   const countBefore = occupied();
@@ -225,6 +226,22 @@ defeat(0);
 api.completeMobAction();
 assert.equal(state().bpTrack[0].markerTokens["token-blood"], 1);
 
+// Deferred immediate spawning at the BP3 cap keeps BP3 and the original action timing.
+for (const id of ["M_Ratwolves", "M_PalebloodWorms"]) {
+  const index = prepare(id, 3, 3);
+  const count = occupied();
+  defeat(index);
+  assert.equal(occupied(), count - 1);
+  assert.deepEqual(plain(state().mobSpawn.pending), [3]);
+  const before = cardsAndWounds();
+  api.completeMobAction();
+  assert.equal(occupied(), count, "deferred BP3 spawning restores the defeated mob");
+  assert.equal(rankOf(state().bpTrack[index].id), 3, "BP3 respawns as BP3 at the rank cap");
+  assert.equal(cardsAndWounds(), before, "BP3 spawning does not add another wound");
+  if (id === "M_PalebloodWorms") assert.equal(state().bpTrack[index].markerTokens["token-blood"], 1);
+  else api.completeRatwolfSignature();
+}
+
 // Ghost removals caused by effects count once; ready thresholds still wait for action completion.
 prepare("M_HauntOf");
 const ghost = state().bpTrack[0].id;
@@ -284,6 +301,25 @@ for (const kind of ["BP1", "BP2", "BP3"]) exhaust(kind);
 api.completeMobAction();
 assert.equal(state().ruleState.ironcast.necrofusion, 0);
 assert.match(state().mobSpawn.notices.at(-1), /供应不足/);
+
+// Interval spawning still uses BP3 when no lower-rank supply remains.
+for (const id of ["M_HauntOf", "M_Ironcast"]) {
+  prepare(id, 0, 3);
+  if (id === "M_HauntOf") {
+    defeat(0);
+    defeat(1);
+    defeat(2);
+  } else {
+    api.changeIroncastNecrofusionCounter(3);
+  }
+  exhaust("BP1");
+  exhaust("BP2");
+  const count = occupied();
+  api.completeMobAction();
+  const spawned = state().bpTrack.filter(slot => slot.id && rankOf(slot.id) === 3);
+  assert.equal(occupied(), count + (id === "M_HauntOf" ? 3 : 1));
+  assert.ok(spawned.length >= (id === "M_HauntOf" ? 3 : 1), "interval spawning uses remaining BP3 supply");
+}
 
 // Only valid monsters expose completion; incompatible/manual spawning and failed clashes do nothing.
 for (const id of ["M_Pumpkinhead", "M_Panzergeists", "M_WingedNightmare", "M_BogWitch"]) {

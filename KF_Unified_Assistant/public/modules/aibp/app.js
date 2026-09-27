@@ -3324,11 +3324,7 @@
   }
 
   function generateImmediateMob(monster, defeatedRank) {
-    if (defeatedRank === 3) {
-      noteMobSpawn("被击败的是 BP3，没有更高一阶的 BP，本次立即生成取消。");
-      return;
-    }
-    const spawned = generateMob(monster, [defeatedRank + 1], "立即生成");
+    const spawned = generateMob(monster, [Math.min(3, defeatedRank + 1)], "立即生成");
     if (!spawned) return;
     const b = state.battle;
     if (["M_FirstmenWarriors", "M_FirstmenLictor"].includes(monster.id)) {
