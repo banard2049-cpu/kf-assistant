@@ -489,7 +489,7 @@ assert.strictEqual(battle().bpTrack[0].markers, 1);
 api.renderApp();
 mobTrackHtml = element("#app").innerHTML;
 assert.ok(mobTrackHtml.includes("mob-bp-marker"), "杂兵 BP 标记必须覆盖显示在卡面上");
-assert.ok(mobTrackHtml.includes("httpssteamusercontentaakamaihdnetugc10792521070177147F375BA9D7F1EF7C2ABAA9D04F55839FA6FC24A94.jpg"));
+assert.ok(mobTrackHtml.includes("/assets/tokens/generic.png"), "通用标记应显示当前共用资源图片");
 assert.ok(mobTrackHtml.includes("httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png"), "卡面必须同时显示不同类型的 BP 标记");
 api.undo();
 assert.strictEqual(battle().bpTrack[0].markers, 0, "杂兵 BP 标记变化必须可撤销");

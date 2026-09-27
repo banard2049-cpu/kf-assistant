@@ -2553,4 +2553,15 @@ label,
   .conflict-original-panel > summary { align-items: flex-start; flex-direction: column; }
   .aftermath-grid { grid-template-columns: 1fr; }
 }
-:root {
+
+.aibp-actions .button.secondary.mob-action-required:not(:disabled) {
+  border: 2px solid #ff8585;
+  background: #b32626;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 0 0 2px rgba(255, 70, 70, .22), 0 0 14px rgba(220, 40, 40, .3);
+}
+
+.aibp-actions .button.secondary.mob-action-required:not(:disabled):hover {
+  background: #cf3030;
+}
