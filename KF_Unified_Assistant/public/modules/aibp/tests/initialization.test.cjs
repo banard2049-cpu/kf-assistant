@@ -129,8 +129,8 @@ assert.equal(new Set(state().conflictBoard.foolDeckOrder).size, 15,
 assert.doesNotMatch(api.renderBossRules(), /BOSS RULES|当前 Boss 专用操作/,
   "所有 Boss 专用面板都不应显示共用标题文字");
 
-assert.ok(fs.existsSync(path.join(root, "assets/traits-zh/devour-dragon-belly.png")),
-  "巨兽之腹特质图必须位于 AIBP 本地资源目录");
+assert.ok(fs.existsSync(path.join(root, "../../assets/traits-zh/devour-dragon-belly.png")),
+  "巨兽之腹特质图必须位于共用资源目录");
 state().conflictLocation = "巨兽之腹";
 api.renderApp();
 let devourDragonHtml = nodes.get("#app").innerHTML;
@@ -314,7 +314,7 @@ const aibpStyles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 assert.match(aibpStyles,
   /\.guardian-mob-track\s*\{[\s\S]*?grid-auto-columns:\s*clamp\(170px,\s*15vw,\s*220px\)/,
   "先民护卫轨道列宽应与标准杂兵 BP 轨道一致");
-assert.ok(fs.existsSync(path.join(root, "assets/guardians/firstman-guardian-placeholder.png")),
+assert.ok(fs.existsSync(path.join(root, "../../assets/guardians/firstman-guardian-placeholder.png")),
   "未持有共享 BP 的先民护卫占位图必须位于 AIBP 本地资源目录");
 assert.equal((whiteApeRules.match(/assets\/guardians\/firstman-guardian-placeholder\.png/g) || []).length, 1,
   "初始时只有未持卡的护卫 2 应显示先民护卫占位图");
@@ -1241,7 +1241,7 @@ rebuild("full", 1);
 api.renderApp();
 const palebloodMarkerHtml = nodes.get("#app").innerHTML;
 const bloodTokenFile = "httpssteamusercontentaakamaihdnetugc121471199374279135890AFE0D6E4BBFE4427554C0AF999D31C14D91B1E7.png";
-assert.ok(fs.existsSync(path.join(root, "assets", "tokens", bloodTokenFile)),
+assert.ok(fs.existsSync(path.join(root, "../../assets", "tokens", bloodTokenFile)),
   "血液指示物图片必须位于 AIBP Token 资产目录");
 assert.match(palebloodMarkerHtml, /<option value="token-blood" selected>血液<\/option>/,
   "苍血蠕虫 BP 应默认选中血液指示物");
@@ -1301,7 +1301,7 @@ assert.match(nodes.get("#app").innerHTML, /血痂护甲.*每枚血液使该 BP �
 const defeatedScabArmorIndex = state().bpTrack.findIndex(slot => slot.id);
 api.selectMob(defeatedScabArmorIndex);
 api.settleMob("defeat");
-api.spawnMob("interval");
+api.completeMobAction();
 assert.equal(state().bpTrack[defeatedScabArmorIndex].markerTokens["token-blood"], 1,
   "三级以上冲突中生成的苍血蠕虫 BP 应自动获得 1 枚血液指示物");
 api.renderApp();
@@ -1351,6 +1351,7 @@ const ratwolves = context.window.KF_MONSTER_DATA.monsters.find(item => item.id =
 const ratWoundsBeforeRebirth = state().singleWounds;
 api.selectMob(0);
 api.settleMob("defeat");
+api.completeMobAction();
 assert.equal(ratwolves.cards.find(card => card.id === state().bpTrack[0].id)?.kind, "BP2",
   "BP1 狼鼠死亡并完成当前行动后应优先生成高一阶 BP2");
 assert.equal(state().singleWounds, ratWoundsBeforeRebirth + 1,
@@ -1373,6 +1374,7 @@ api.rebuild();
 for (const card of ratwolves.cards.filter(card => card.kind === "BP2")) api.moveAibpCard(card.id, "removed");
 api.selectMob(0);
 api.settleMob("defeat");
+api.completeMobAction();
 assert.equal(ratwolves.cards.find(card => card.id === state().bpTrack[0].id)?.kind, "BP1",
   "高一阶供应耗尽时应优先生成同阶狼鼠");
 assert.equal(state().ruleState.ratwolves.rankSource, "同阶");
@@ -1383,6 +1385,7 @@ api.rebuild();
 for (const card of ratwolves.cards.filter(card => card.kind === "BP3")) api.moveAibpCard(card.id, "removed");
 api.selectMob(0);
 api.settleMob("defeat");
+api.completeMobAction();
 assert.equal(ratwolves.cards.find(card => card.id === state().bpTrack[0].id)?.kind, "BP1",
   "高一阶和同阶供应均耗尽时应生成低一阶狼鼠");
 assert.equal(state().ruleState.ratwolves.rankSource, "低一阶");
@@ -1541,12 +1544,13 @@ api.spawnMob("interval");
 const ironcastBp1 = state().bpTrack.filter(slot =>
   ironcast.cards.find(card => card.id === slot.id)?.kind === "BP1"
 ).length;
-assert.equal(ironcastBp1, 5, "间隔生成必须优先使用剩余 BP1");
+assert.equal(ironcastBp1, 4, "等级 1 没有亡骸融合条件，不应额外生成 BP");
 assert.equal(state().bpTrack.filter(slot => slot.markerTokens["token-armor"] === 1).length, 0,
   "等级 1 的铁铸亡者生成 BP 时不应获得盔甲指示物");
 
 rebuild("full", 3);
-api.spawnMob("interval");
+state().ruleState.ironcast.necrofusion = 3;
+api.completeMobAction();
 assert.equal(state().bpTrack.filter(slot => slot.markerTokens["token-armor"] === 1).length, 1,
   "等级 3 的铁铸亡者生成 BP 时应自动获得 1 枚盔甲指示物");
 const manualIroncastBp = ironcast.cards.find(card => /^BP[1-3]$/.test(card.kind)
