@@ -2,6 +2,12 @@
 
 《Kingdoms Forlorn》的非官方战役管理工具，整合骑士档案、战役、地图深入、遭遇战和 AI/BP。项目不包含游戏图片等受版权保护的素材；请从你合法持有的本地副本补齐资源。
 
+## 许可证：禁止商用
+
+本项目原创代码、文档及项目自有图标采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，仅允许许可证规定的非商业用途，商业使用未获授权。允许在许可证范围内使用、修改和再分发；再分发必须保留完整许可证及 `Required Notice:` 版权声明。商业用途须另行获得相关版权所有者的书面授权。
+
+游戏名称、图片、规则文本、字体及其他第三方素材的权利归各自版权所有者所有，第三方组件和运行时仍遵循其自身许可证。本许可证不授予这些第三方内容的额外权利。应用内附带相同许可证：[public/LICENSE.txt](KF_Unified_Assistant/public/LICENSE.txt)。
+
 ## 从 Release 运行（推荐）
 
 版本标签会自动构建 Windows/macOS portable 包和 Android APK，文件位于 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
