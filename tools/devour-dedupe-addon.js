@@ -1,0 +1,1 @@
+(function(){let last='';function run(){const s=document.querySelector('#layoutSelect');if(!s||s.dataset.dedup==='1')return;const seen=new Set();[...s.options].forEach(o=>{if(seen.has(o.textContent))o.remove();else seen.add(o.textContent)});s.dataset.dedup='1'}setInterval(run,300)})();

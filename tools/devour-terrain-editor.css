@@ -1,0 +1,152 @@
+/* 巨兽之腹 · 起始位置打标工具
+   编辑交互完全对齐 aibp 的“编辑地形模式”（terrain-control-*）。 */
+:root {
+  --surface: #171b19;
+  --surface-2: #1e2421;
+  --ink: #f0eadc;
+  --muted: #9ba79f;
+  --line: #354039;
+  --gold: #c69a4b;
+  --gold-bright: #e2bd72;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  color: var(--ink);
+  background: #10130f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; }
+header {
+  display: flex; justify-content: space-between; gap: 24px; align-items: center;
+  padding: 18px 26px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+}
+h1 { margin: 4px 0; font-size: 22px; }
+.eyebrow { font-size: 11px; letter-spacing: .16em; color: var(--gold); }
+p { margin: 4px 0; color: var(--muted); }
+.actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+button, select, textarea, input {
+  font: inherit; color: inherit; background: var(--surface); border: 1px solid #56503f;
+  border-radius: 5px; padding: 7px 10px;
+}
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--gold); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.primary { background: #74562d; border-color: var(--gold); }
+button.wide { width: 100%; margin-top: 8px; }
+button.danger { border-color: #a55850; background: #5b2826; }
+.button.active { box-shadow: inset 0 0 0 2px var(--gold-bright); }
+main { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 96px); }
+aside { padding: 18px; border-right: 1px solid var(--line); background: var(--surface-2); }
+label.field { display: grid; gap: 6px; color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+label.inline { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 13px; margin: 10px 0; }
+select { width: 100%; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+h2 { font-size: 13px; color: var(--gold); margin: 0 0 10px; letter-spacing: .04em; }
+.meta, .hint { font-size: 12px; line-height: 1.55; color: var(--muted); }
+.hint { margin-top: 6px; }
+.workspace { padding: 22px; display: grid; grid-template-rows: minmax(0, 1fr) 150px; gap: 16px; min-width: 0; }
+
+/* ===== 版图与网格（对齐 aibp terrain-control-board） ===== */
+.terrain-control-board {
+  position: relative; width: min(100%, 1000px); aspect-ratio: 14 / 10; margin: auto; overflow: hidden;
+  border: 1px solid #625844; background: #282622; box-shadow: inset 0 0 0 1px #000, 0 12px 30px #0008;
+  cursor: crosshair;
+}
+.terrain-control-board-source {
+  position: absolute; left: var(--board-image-left, 0); top: var(--board-image-top, 0);
+  width: var(--board-image-width, 100%); height: var(--board-image-height, 100%); max-width: none;
+  pointer-events: none;
+}
+.terrain-control-grid {
+  position: absolute; inset: 0; z-index: 60; display: grid;
+  grid-template-columns: repeat(14, 1fr); grid-template-rows: repeat(10, 1fr); pointer-events: none;
+}
+.terrain-control-grid span {
+  position: relative; display: grid; place-items: center;
+  border-right: 1px solid rgba(244, 228, 194, .18); border-bottom: 1px solid rgba(244, 228, 194, .18);
+}
+.terrain-control-grid span b {
+  padding: 2px 3px; border-radius: 2px; background: rgba(8, 8, 7, .72);
+  color: #fff1ca; font-size: 10px; line-height: 1; text-shadow: 0 1px 2px #000;
+}
+
+/* ===== 地形对象（对齐 aibp terrain-control-placement） ===== */
+.terrain-control-placement {
+  position: absolute; z-index: var(--terrain-layer, 10); padding: 0; border: 0;
+  background: transparent; cursor: grab; transform-origin: center;
+}
+.terrain-control-placement.dragging { z-index: 50; cursor: grabbing; filter: drop-shadow(0 0 6px var(--gold-bright)); }
+.terrain-control-placement img {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  filter: drop-shadow(0 2px 2px #000); pointer-events: none;
+}
+.terrain-control-placement.selected {
+  z-index: 30; outline: 3px solid var(--gold-bright); outline-offset: -2px; background: rgba(198, 154, 75, .14);
+}
+
+/* ===== 初始位置 token（对齐 aibp terrain-control-start），但改为可编辑 ===== */
+.terrain-control-start {
+  position: absolute; z-index: 40; display: grid; place-items: center; padding: 5px;
+  cursor: grab; border: 0; background: transparent;
+}
+.terrain-control-start.dragging { cursor: grabbing; }
+.terrain-control-start i {
+  position: relative; display: grid; width: min(88%, 52px); aspect-ratio: 1; place-items: center;
+  border: 2px solid #e8d9b5; border-radius: 50%; background: #141514; color: #fff; font-size: 9px;
+  font-style: normal; text-align: center; line-height: 1.05; box-shadow: 0 2px 5px #000;
+}
+.terrain-control-start.monster i { border-color: #d95c54; background: #421d1d; }
+.terrain-control-start.number i { border-color: #9bc48c; background: #23331f; }
+.terrain-control-start i img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.terrain-control-start.selected i { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+.terrain-control-number-image { border-radius: 6px !important; }
+.terrain-start-arrow {
+  position: absolute; z-index: 2; display: grid; width: 16px; height: 16px; place-items: center;
+  color: #fff; font-size: 12px; line-height: 1; text-shadow: 0 1px 3px #000; pointer-events: none;
+}
+.terrain-start-arrow.facing-0 { left: 50%; top: 0; transform: translate(-50%, -72%); }
+.terrain-start-arrow.facing-90 { right: 0; top: 50%; transform: translate(72%, -50%) rotate(90deg); }
+.terrain-start-arrow.facing-180 { left: 50%; bottom: 0; transform: translate(-50%, 72%) rotate(180deg); }
+.terrain-start-arrow.facing-270 { left: 0; top: 50%; transform: translate(-72%, -50%) rotate(270deg); }
+
+/* ===== 工具栏（对齐 aibp terrain-control-tools） ===== */
+.terrain-control-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; }
+.terrain-control-tools {
+  display: grid; align-content: start; gap: 12px; min-width: 0; padding: 12px;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.terrain-tool-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+.terrain-add-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; }
+.terrain-selection {
+  display: grid; gap: 4px; min-height: 54px; padding: 10px;
+  border-left: 3px solid var(--gold); background: #111513; color: var(--muted); font-size: 12px;
+}
+.terrain-selection strong { color: var(--ink); font-size: 14px; }
+.terrain-selection .row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
+.terrain-selection label { display: grid; gap: 4px; font-size: 11px; }
+.terrain-selection input { padding: 5px 7px; }
+.terrain-control-tools .muted { font-size: 11px; line-height: 1.5; color: var(--muted); }
+.empty { color: var(--muted); font-size: 12px; }
+
+textarea {
+  width: 100%; height: 150px; resize: vertical; font: 12px Consolas, monospace;
+  color: #d8ccb3; background: #0d0f0c;
+}
+
+/* mob 编号配色（对齐 aibp mob-number-*） */
+.terrain-control-start i.mob-1 { background: #000 !important; color: #fff !important; }
+.terrain-control-start i.mob-2 { background: #fff !important; color: #111 !important; }
+.terrain-control-start i.mob-3 { background: #f00 !important; color: #fff !important; }
+.terrain-control-start i.mob-4 { background: #00f !important; color: #fff !important; }
+.terrain-control-start i.mob-5 { background: #008000 !important; color: #fff !important; }
+.terrain-control-start i.mob-6 { background: #ff0 !important; color: #111 !important; }
+.terrain-control-start i.mob-7 { background: #800080 !important; color: #fff !important; }
+.terrain-control-start i.mob-8 { background: #a52a2a !important; color: #fff !important; }
+.terrain-control-start i.mob-9 { background: #ffa500 !important; color: #111 !important; }
+.terrain-control-start i.mob-10 { background: #ffc0cb !important; color: #111 !important; }
+
+@media (max-width: 880px) {
+  header { display: block; }
+  main { grid-template-columns: 1fr; }
+  aside { border-right: 0; border-bottom: 1px solid var(--line); }
+  .terrain-control-workspace { grid-template-columns: 1fr; }
+  .workspace { padding: 12px; }
+}

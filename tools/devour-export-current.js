@@ -1,0 +1,1 @@
+(function(){const b=document.querySelector('#exportBtn');if(!b)return;b.addEventListener('click',()=>{setTimeout(()=>{const raw=document.querySelector('#jsonPreview')?.value;if(!raw)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([raw],{type:'application/json'}));a.download='belly-board-custom.json';a.click()},20)},true)})();
