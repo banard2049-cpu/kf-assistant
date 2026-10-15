@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>巨兽之腹 · 起始位置打标工具</title>
+  <link rel="stylesheet" href="devour-terrain-editor.css">
+</head>
+<body>
+  <header>
+    <div>
+      <span class="eyebrow">TTS CLASH BOARD · 起始位置打标</span>
+      <h1>巨兽之腹起始位置打标工具</h1>
+      <p>编辑交互与 aibp「编辑地形模式」完全一致：拖动移动、按中心吸附、旋转翻面。</p>
+    </div>
+    <div class="actions">
+      <button id="importBtn">导入 JSON</button>
+      <button id="exportBtn" class="primary">导出 JSON</button>
+      <button id="resetBtn">恢复默认</button>
+      <input id="fileInput" type="file" accept="application/json" hidden>
+    </div>
+  </header>
+  <main>
+    <aside>
+      <label class="field">布局
+        <select id="layoutSelect"></select>
+      </label>
+      <div id="layoutMeta" class="meta"></div>
+      <hr>
+      <h2>新增对象</h2>
+      <div class="terrain-add-row">
+        <select id="assetSelect" aria-label="新增对象"></select>
+        <button id="addTerrain" class="primary">＋ 新增</button>
+      </div>
+      <p class="hint">选择对象后点击版图格位移动，或直接拖动；结束行/列可调整占用大小。骑士 / 怪物 / 编号初始位可旋转朝向。</p>
+    </aside>
+    <section class="workspace">
+      <div class="terrain-control-workspace">
+        <div id="board" class="terrain-control-board" data-terrain-board>
+          <img id="boardImage" class="terrain-control-board-source" src="" alt="巨兽之腹版图">
+          <div id="grid" class="terrain-control-grid"></div>
+          <div id="placements"></div>
+        </div>
+        <aside class="terrain-control-tools">
+          <div class="terrain-tool-row">
+            <button id="rotLeft" class="button" disabled title="逆时针旋转 90°">↶ 左转</button>
+            <button id="rotRight" class="button" disabled title="顺时针旋转 90°">↷ 右转</button>
+            <button id="flip" class="button" disabled>⇅ 翻面</button>
+            <button id="del" class="button danger" disabled>× 删除</button>
+          </div>
+          <button id="toggleCoords" class="button wide">显示格子位置</button>
+          <button id="rerollAll" class="button wide" title="模拟重置地图：重掷所有随机朝向对象">🎲 重掷随机朝向（模拟重置地图）</button>
+          <div id="selection" class="terrain-selection"><span class="empty">点击版图上的对象进行编辑。</span></div>
+          <p class="muted">所有修改实时写入 JSON 预览并缓存到本地。</p>
+        </aside>
+      </div>
+      <textarea id="jsonPreview" spellcheck="false"></textarea>
+    </section>
+  </main>
+  <script src="../KF_Unified_Assistant/public/modules/display/data/conflict-board-data.js"></script>
+  <script src="../KF_Unified_Assistant/public/modules/display/data/belly-board-data.js"></script>
+  <script src="devour-terrain-editor.js"></script>
+</body>
+</html>
