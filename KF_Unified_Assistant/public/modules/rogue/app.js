@@ -23,6 +23,7 @@
   let zoom = 1;
   let linkEditorOpen = false;
   let linkAnchorId = null;
+  let selectedNodeId = null;
 
   function load() {
     try {
@@ -102,6 +103,7 @@
     const activeSlot = slots.find(slot => slot.id === activeSlotId);
     state = RULES.normalizeState(activeSlot.state);
     linkEditorOpen = false; linkAnchorId = null;
+    selectedNodeId = null;
     renderSaveSlots(); render();
   }
   function createNewSlot() {
@@ -109,6 +111,7 @@
     const fresh = freshRunState();
     const slot = { id: `rogue-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, title: "新肉鸽战役", state: fresh };
     slots.push(slot); activeSlotId = slot.id; state = fresh;
+    selectedNodeId = null;
     save(); render();
   }
   function toast(message) {
@@ -205,6 +208,7 @@
     state.partyName = partyName;
     state.roster = ids.map((id, index) => ({ id: `rogue-${index + 1}`, knightId: id, name: knightName(id), player: "", gold: 10, alive: true, rewards: [], notes: "", attributes: Object.fromEntries(RULES.ATTRIBUTE_KEYS.map(key => [key, 0])) }));
     state.status = "active";
+    selectedNodeId = null;
     save(); render();
   }
   async function openNode(node) {
@@ -212,6 +216,7 @@
     const result = RULES.randomResult(node.level, node.kingdom);
     state.pendingBattle = { nodeId: node.id, kingdom: node.kingdom, nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId), level: result.level, startedAt: Date.now() };
     state.currentNodeId = node.id;
+    selectedNodeId = null;
     state.history.push({ at: Date.now(), type: "battle-start", nodeId: node.id, ...result });
     save();
     const roster = state.roster.filter(member => member.alive).slice(0, 4).map(member => ({ id: member.id, sheetId: member.id, knightId: member.knightId, type: "knight", name: member.name, title: member.name }));
@@ -220,8 +225,36 @@
       nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId),
       level: result.level, rogueRoster: roster, returnUrl: "/modules/rogue/"
     }));
+    renderMap();
     await window.KF_MODULE_BRIDGE?.flush?.();
     location.href = "/modules/aibp/";
+  }
+  function updateNodeSelection() {
+    document.querySelectorAll("[data-node]").forEach(button => {
+      const selected = button.dataset.node === selectedNodeId;
+      button.classList.toggle("node-selected", selected);
+      button.setAttribute("aria-pressed", String(selected));
+    });
+  }
+  function renderNodeInfo() {
+    const panel = $("#nodeInfo");
+    const node = nodeById(selectedNodeId);
+    if (!node) {
+      panel.textContent = "单击节点查看等级和奖励；再次单击选中节点或双击可选节点进入 Boss 战。";
+      return;
+    }
+    const hint = isAvailable(node) ? "已选中 · 再次单击此节点进入 Boss 战"
+      : node.cleared ? "已完成"
+      : state.pendingBattle ? "请先结算当前 Boss 战"
+      : state.pendingRewardChoice ? "请先完成奖励选择"
+      : state.status !== "active" ? "战役已结束" : "未解锁 · 需先完成相邻节点";
+    const rewards = node.reward === "sigh" ? '<p class="node-reward-summary">队伍获得 1 次圣杯叹息。</p>'
+      : `<div class="node-reward-preview">${state.roster.map(member => {
+        const options = RULES.rewardOptions(node.level, member.knightId, node.reward);
+        const choice = options.length > 1 ? (GRANT_ALL.has(node.reward) ? "（全部获得）" : "（选择一项）") : "";
+        return `<div><strong>${esc(member.name)}：</strong><span>${options.map(esc).join(" / ")}${choice}</span></div>`;
+      }).join("")}</div>`;
+    panel.innerHTML = `<div class="node-info-heading"><strong>等级 ${node.level} · ${node.kingdom === "stone" ? "巨石公国" : "沉没王国"}</strong><span class="node-info-hint">${hint}</span></div><p class="node-reward-summary">复活 ${node.resurrection} · 奖励：${esc(rewardName(node.reward))}</p>${rewards}`;
   }
   function renderMap() {
     const canvas = $("#mapCanvas");
@@ -238,15 +271,20 @@
       const classes = ["rogue-node", node.cleared ? "cleared" : available ? "available" : "locked", state.pendingBattle?.nodeId === node.id ? "pending" : "", linkAnchorId === node.id ? "link-selected" : ""].join(" ");
       const label = node.id === "S" ? "S" : "";
       const rewardNames = { heroic:"Heroic Arc 英勇曲线", class:"Class 职业", peril:"Peril Arc 危险曲线", technique:"Technique 招数", gear:"Gear 装备", virtue:"Virtue 美德", wild:"Wild Card 万能", sigh:"Sigh of the Graal 圣杯叹息", start:"起点" };
-      return `<button type="button" class="${classes}" data-node="${esc(node.id)}" style="left:${(node.page * 50 + node.x * 50)}%;top:${node.y * 100}%" aria-label="${esc(node.id === "S" ? "起点 S" : `等级 ${node.level}，复活 ${node.resurrection}，${rewardNames[node.reward] || node.reward}`)}" title="${esc(node.id === "S" ? "起点 S" : `等级 ${node.level} · 复活 ${node.resurrection} · ${rewardNames[node.reward] || node.reward}`)}" ${linkEditorOpen || available ? "" : "disabled"}>${label}</button>`;
+      return `<button type="button" class="${classes}" data-node="${esc(node.id)}" style="left:${(node.page * 50 + node.x * 50)}%;top:${node.y * 100}%" aria-label="${esc(`${node.id}，等级 ${node.level}，复活 ${node.resurrection}，${rewardNames[node.reward] || node.reward}，${node.cleared ? "已完成" : available ? "可选" : "未解锁"}`)}" aria-pressed="false" aria-describedby="nodeInfo" title="${esc(`等级 ${node.level} · 复活 ${node.resurrection} · ${rewardNames[node.reward] || node.reward}`)}">${label}</button>`;
     }).join("");
     document.querySelectorAll("[data-node]").forEach(button => button.addEventListener("click", () => {
       const node = nodeById(button.dataset.node); if (!node) return;
       if (linkEditorOpen) return handleLinkNode(node);
-      const rewardNames = { heroic:"Heroic Arc（英勇曲线）", class:"Class（职业）", peril:"Peril Arc（危险曲线）", technique:"Technique（招数）", gear:"Gear（装备）", virtue:"Virtue（美德）", wild:"Wild Card（万能）", sigh:"Sigh of the Graal（圣杯叹息）", start:"起点" };
-      $("#nodeInfo").innerHTML = `<strong>${node.id === "S" ? "起点 S" : `等级 ${node.level} · ${node.kingdom === "stone" ? "巨石公国" : "沉没王国"}`}</strong>　复活 ${node.resurrection}　奖励：${esc(rewardNames[node.reward] || node.reward)}`;
-      if (isAvailable(node)) openNode(node);
+      if (selectedNodeId === node.id && isAvailable(node)) return openNode(node);
+      selectedNodeId = node.id;
+      // Keep the button in place so a native double-click reaches the same
+      // target: its first click previews, and its second starts the battle.
+      updateNodeSelection();
+      renderNodeInfo();
     }));
+    updateNodeSelection();
+    if (!linkEditorOpen) renderNodeInfo();
   }
   function renderParty() {
     $("#partyStats").innerHTML = state.roster.map(member => `<button type="button" class="party-row" data-sheet-member="${esc(member.id)}"><span><strong>${esc(member.name)}</strong><small>${member.alive ? "存活" : "死亡"} · 金币 ${member.gold}</small></span><span>${member.rewards?.length || 0} 项奖励<br><small>打开记录表</small></span></button>`).join("");
@@ -331,6 +369,7 @@
   }
   function finalizeVictory(pending, choices) {
     const node = nodeById(pending.nodeId); if (!node) return;
+    selectedNodeId = null;
     const rewardText = [];
     if (node.reward === "sigh") {
       state.graalSighs += 1;
@@ -372,6 +411,7 @@
   function resolve(result) {
     const pending = state.pendingBattle; if (!pending) return;
     const node = nodeById(pending.nodeId); if (!node) return;
+    selectedNodeId = null;
     const casualties = [...document.querySelectorAll("#casualtySelect input[type=checkbox]:checked")].map(input => input.value);
     const dead = new Set(casualties);
     const deadCount = casualties.length;
@@ -441,6 +481,7 @@
   $("#toggleLinkEditor").addEventListener("click", () => {
     linkEditorOpen = !linkEditorOpen;
     linkAnchorId = null;
+    selectedNodeId = null;
     $("#toggleLinkEditor").textContent = linkEditorOpen ? "完成连线编辑" : "编辑节点连线";
     renderLinkEditor();
     renderMap();
