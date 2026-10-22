@@ -114,6 +114,15 @@ assert.equal(battle().accursed.side, "dormant", "翻面可以撤销");
 // Saved data keeps the trait BP; undo above already reloaded the battle through the normalizer.
 assert.deepEqual(plain(api.state()).battle.accursed, { side: "dormant", lastKnight: false }, "存档数据包含执念当前的一面");
 
+// A clash saved before five-player mode existed gets the trait BP when it is loaded.
+const legacy = plain(api.state());
+const legacyId = legacy.selectedMonsterId || legacy.battle.monsterId;
+delete legacy.battle.accursed;
+if (legacy.encounters?.[legacyId]) delete legacy.encounters[legacyId].battle.accursed;
+const restored = api.validateState(legacy);
+assert.deepEqual(plain(restored.battle.accursed), { side: "active", lastKnight: false },
+  "五人模式下载入旧冲突会补上被诅咒的执念");
+
 // The fifth knight starts on a free square beside another knight.
 const board = battle().conflictBoard;
 assert.equal(board.extraPlacements.length, 1, "五人模式在版图上补一个骑士起始位");

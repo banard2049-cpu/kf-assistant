@@ -1257,7 +1257,8 @@
       conflictLocation: monster.id === "M_YoungDevour" ? "" : String(raw?.conflictLocation || ""),
       conflictType: monster.id === "M_YoungDevour" ? "normal" : (raw?.conflictLocation === "巨兽之腹" || raw?.conflictType === "belly_of_beast" ? "belly_of_beast" : "normal"),
       deckOrderVisible: raw?.deckOrderVisible !== false,
-      accursed: normalizeAccursed(raw?.accursed),
+      accursed: normalizeAccursed(raw?.accursed)
+        || (fivePlayerMode() ? { side: "active", lastKnight: false } : null),
       log: Array.isArray(raw?.log) ? raw.log.slice(-100) : []
     };
     normalized.conflictBoard = normalizeConflictBoard(raw?.conflictBoard, monster, level, normalized);
