@@ -105,7 +105,7 @@ assert.match(styleSource, /button\.delve-track-cell \{[\s\S]*?width: 40px;[\s\S]
   "track cells must keep their fixed width without overlapping");
 assert.match(styleSource, /\.delve-tracks-sticky \.delve-tracks \{\s+grid-template-columns: 1fr;/,
   "narrow screens must stack the tracks instead of scrolling them");
-assert.match(indexSource, /styles\.css\?v=70/);
+assert.match(indexSource, /styles\.css\?v=71/);
 assert.match(indexSource, /map-view\.js\?v=11/);
 assert.match(indexSource, /app\.js\?v=112/);
 
