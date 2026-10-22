@@ -89,8 +89,7 @@
     ["surge", "涌水标记"],
     ["flood", "洪水标记"],
     ["rubble", "瓦砾"],
-    ["generic", "通用标记"],
-    ["quest", "任务标记"]
+    ["generic", "通用标记"]
   ];
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
