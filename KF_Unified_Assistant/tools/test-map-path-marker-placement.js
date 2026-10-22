@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const appSource = fs.readFileSync("public/modules/map/app.js", "utf8").replace(/\r\n/g, "\n");
+const styleSource = fs.readFileSync("public/modules/map/styles.css", "utf8");
 const helperStart = appSource.indexOf("  function pathKey(");
 const helperEnd = appSource.indexOf("\n\n  function linkedIds(", helperStart);
 assert.ok(helperStart >= 0 && helperEnd > helperStart, "path marker helpers not found");
@@ -81,5 +82,13 @@ assert.match(appSource, /current\.pathMarkers\.push\(\{ id: uid\(\), from: curre
 assert.match(appSource, /item\.to \? ` ↔ /, "the marker list shows the bound path");
 assert.match(appSource, /revealMapTile\(current, pending\.tileId\);\s+placePrintedDoors\(current, pending\.tileId\);/,
   "printed doors are placed when the tile is flipped in its kingdom tile step");
+assert.match(appSource, /class="marker-palette-trash"[\s\S]*?<span>放在这里删除<\/span>/,
+  "the palette shows a trash icon and a drop-to-delete hint");
+assert.match(appSource, /if \(drag\.existingId\) palette\.classList\.add\("delete-ready"\)/,
+  "dragging a placed marker marks the palette as a delete target for the whole drag");
+assert.match(styleSource, /\.marker-palette\.delete-ready,[\s\S]*?border-color: var\(--red\);/,
+  "the deletion target turns red");
+assert.match(styleSource, /\.marker-palette\.delete-ready \.marker-palette-trash \{ display: flex; \}/,
+  "the trash overlay appears while dragging a placed marker");
 
 console.log("map path markers: passage snapping, door rule, palette removal and printed doors verified");

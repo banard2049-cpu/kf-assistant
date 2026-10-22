@@ -24,7 +24,7 @@ assert.match(bridgeSource, /new CustomEvent\("kf:module-state", \{ detail: selec
 assert.match(mapSource, /addEventListener\("kf:module-state"/);
 assert.match(mapSource, /state = replacement/);
 assert.match(mapSource, /checkLimits\(\);\s*render\(\);/);
-assert.match(indexSource, /app\.js\?v=112/);
+assert.match(indexSource, /app\.js\?v=114/);
 assert.match(indexSource, /module-bridge\.js\?v=15/);
 
 console.log("map sync conflict regression checks passed");

@@ -2083,12 +2083,18 @@
 
   function markerPalette() {
     const item = ([type, label]) => `<button type="button" class="marker-palette-item" data-palette-marker="${type}" title="${esc(label)}：拖到地图上放置" aria-label="${esc(label)}">${tokenImage(markerToken(type), label)}</button>`;
-    return `<aside class="marker-palette" aria-label="地图标记栏：拖到地图放置，拖回这里删除">
+    return `<aside class="marker-palette" aria-label="地图标记栏：拖到地图放置；拖动地图上的标记到此删除">
       <p class="marker-palette-heading">通道</p>
       ${PATH_MARKERS.filter(([id]) => PASSAGE_MARKER_TYPES.includes(id)).map(item).join("")}
       <p class="marker-palette-heading">板块</p>
       ${TILE_MARKERS.map(item).join("")}
       <p class="marker-palette-hint">拖到地图放置<br>拖回这里删除</p>
+      <div class="marker-palette-trash" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+          <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v5M14 11v5"/>
+        </svg>
+        <span>放在这里删除</span>
+      </div>
     </aside>`;
   }
 
@@ -2982,12 +2988,16 @@
     const clearHints = () => {
       board.querySelectorAll(".map-passage-hint").forEach(node => node.remove());
       board.querySelectorAll(".marker-drop-target").forEach(node => node.classList.remove("marker-drop-target"));
-      palette.classList.remove("delete-target");
+      palette.classList.remove("delete-ready", "delete-target");
       drag?.ghost.classList.remove("will-delete");
     };
 
     const showHints = target => {
       clearHints();
+      // A marker that is already on the map can be dragged back onto the palette to delete it, so
+      // the palette turns into a red trash target for the whole drag (not only once the pointer is
+      // over it).
+      if (drag.existingId) palette.classList.add("delete-ready");
       if (target.palette) {
         if (drag.existingId) {
           palette.classList.add("delete-target");
@@ -4344,7 +4354,8 @@
       addLog(`清除${label}轨道 ${markedPositions.join("、")} 标记`);
       save(true);
     }));
-    $$("[data-track-cell]").forEach(button => button.addEventListener("click", () => {
+    let trackCellClickTimer = 0;
+    const setTrackValue = button => {
       const key = button.dataset.trackCell;
       const before = Number(state.trackers[key]) || 0;
       const after = Math.max(0, Number(button.dataset.trackValue) || 0);
@@ -4352,7 +4363,57 @@
       else state.trackers[key] = after;
       checkLimits();
       save(true);
-    }));
+    };
+    // A single click pre-selects that value in the track's note editor and focuses its text input,
+    // so the note can be typed immediately. Only a double click moves the track marker.
+    const editTrackNote = button => {
+      const key = button.dataset.trackCell;
+      const position = Math.max(0, Math.trunc(Number(button.dataset.trackValue) || 0));
+      const form = button.closest(".delve-track")?.querySelector("[data-track-note-form]");
+      if (!form) return;
+      $$(".delve-track-cell.note-target").forEach(node => node.classList.remove("note-target"));
+      $$(".track-note-editor.note-target").forEach(node => node.classList.remove("note-target"));
+      form.querySelectorAll(`[data-track-note-value="${key}"]`).forEach(input => {
+        input.checked = Number(input.value) === position;
+      });
+      const summary = form.querySelector(`[data-track-note-summary="${key}"]`);
+      const input = form.querySelector(`[data-track-note-text="${key}"]`);
+      const clearButton = form.querySelector(`[data-track-note-clear="${key}"]`);
+      const existing = state.trackNotes[key]?.[String(position)] || "";
+      if (summary) {
+        summary.textContent = String(position);
+        summary.title = `已选数值 ${position}`;
+      }
+      if (input) {
+        delete form.dataset.noteDirty;
+        input.value = existing;
+        input.focus({ preventScroll: true });
+        input.select();
+      }
+      if (clearButton) clearButton.disabled = !existing;
+      form.classList.add("note-target");
+      button.classList.add("note-target");
+    };
+    $$("[data-track-cell]").forEach(button => {
+      button.addEventListener("click", event => {
+        // Keyboard activation (detail 0) keeps the original one-step value switch.
+        if (event.detail === 0) {
+          setTrackValue(button);
+          return;
+        }
+        if (event.detail > 1) {
+          clearTimeout(trackCellClickTimer);
+          return;
+        }
+        clearTimeout(trackCellClickTimer);
+        trackCellClickTimer = setTimeout(() => editTrackNote(button), 260);
+      });
+      button.addEventListener("dblclick", event => {
+        event.preventDefault();
+        clearTimeout(trackCellClickTimer);
+        setTrackValue(button);
+      });
+    });
     $("#nextStep")?.addEventListener("click", () => {
       if (state.step === 2 && current.exploration.resolvedRound === state.round) {
         enterStep(3);
