@@ -619,7 +619,7 @@
   ) || null;
   const clueAssignmentKnights = () => state.knights.filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId);
   // Five-player mode with nobody on a quest: the leader takes one random clue as their target
-  // clue and needs five of it; the other four draw clue cards as usual (rulebook p.77). The
+  // clue and needs four of it; the other four draw clue cards as usual (rulebook p.77). The
   // digital version only records which clue the leader needs — no token is handed out.
   function fivePlayerClueLeader(recipients = clueAssignmentKnights()) {
     if (!fivePlayerMode() || state.mainKnightId || recipients.length < 5) return null;
@@ -2509,7 +2509,7 @@
       ${lastClue ? `<div class="alert"><strong>最近自动线索：</strong>${directionName(lastClue.direction)}向 · ${clueName(lastClue.clueType)} · ${lastClue.recipients.length ? `${lastClue.recipients.map(esc).join("、")}各获得 1 枚` : "无人需求匹配"}</div>` : ""}
       ${pendingCluePanel()}
       ${clueKnights.map(knight => `<div class="clue-row">
-        <div><span class="badge ${knight.memberType === "squire" ? "gold" : ""}">${knight.memberType === "squire" ? "侍从" : "骑士"}</span><select data-knight-name="${knight.id}">${memberOptions(knight)}</select>${knight.fivePlayerTarget && knight.primary ? `<span class="badge gold" title="五人模式：队长的目标线索，远征结束时需至少 5 枚">队长目标${esc(clueName(knight.primary))} ${Math.max(0, Number(knight.clues[knight.primary]) || 0)}/5</span>` : ""}</div>
+        <div><span class="badge ${knight.memberType === "squire" ? "gold" : ""}">${knight.memberType === "squire" ? "侍从" : "骑士"}</span><select data-knight-name="${knight.id}">${memberOptions(knight)}</select>${knight.fivePlayerTarget && knight.primary ? `<span class="badge gold" title="五人模式：队长的目标线索，远征结束时需至少 4 枚">队长目标${esc(clueName(knight.primary))} ${Math.max(0, Number(knight.clues[knight.primary]) || 0)}/4</span>` : ""}</div>
         <div class="legend clue-records">${CLUES.map(([id, name, icon]) => `<span class="badge clue-record" title="${esc(name)}线索"><img class="clue-token-icon" src="${esc(icon)}" alt="${esc(name)}线索"><strong>${knight.clues[id]}</strong><button class="inline-step" data-clue="${knight.id}|${id}|-1">−</button><button class="inline-step" data-clue="${knight.id}|${id}|1">＋</button></span>`).join("")}</div>
         <div class="fields three">
           <label>主要需求<select data-requirement="${knight.id}|primary"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.primary === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
@@ -4243,7 +4243,7 @@
       if (!recipients.length) return toast("没有可分配线索需求的队伍成员");
       const result = assignClueRequirements(recipients);
       if (!result.ok) return toast(result.reason);
-      addLog(`自动分配主次线索：${result.drawing.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}${result.leader ? `；五人模式队长 ${result.leader.name} 随机目标线索${clueName(result.leader.primary)}（需 5 枚）` : ""}`);
+      addLog(`自动分配主次线索：${result.drawing.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}${result.leader ? `；五人模式队长 ${result.leader.name} 随机目标线索${clueName(result.leader.primary)}（需 4 枚）` : ""}`);
       save(true);
     });
     $$("[data-clue]").forEach(button => button.addEventListener("click", () => {

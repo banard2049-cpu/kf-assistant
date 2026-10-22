@@ -96,8 +96,8 @@ assert.equal(view.nearestPassage(passages, { x: passage.x + 3, y: passage.y + 3 
 // Adjacency rules in the map app use the same aligned geometry.
 assert.match(appSource, /function alignedTileLayout\(item\)[\s\S]*?KF_MAP_LAYOUT\?\.tiles/);
 assert.match(appSource, /const centerX = aligned \? aligned\.x : item\.x;/);
-assert.match(mapIndex, /data\/map-layout\.js\?v=1"><\/script>\s*<script src="map-view\.js\?v=9">/);
-assert.match(displayIndex, /\.\.\/map\/data\/map-layout\.js\?v=1"><\/script>\s*<script src="\.\.\/map\/map-view\.js\?v=9">/);
+assert.match(mapIndex, /data\/map-layout\.js\?v=1"><\/script>\s*<script src="map-view\.js\?v=10">/);
+assert.match(displayIndex, /\.\.\/map\/data\/map-layout\.js\?v=1"><\/script>\s*<script src="\.\.\/map\/map-view\.js\?v=10">/);
 
 // Printed panzergates recorded on the tile faces.
 const printed = tiles.flatMap(tile => (tile.rules?.front?.armoredDoors || []).map(door => ({ tile, door })));

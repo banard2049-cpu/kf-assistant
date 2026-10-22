@@ -92,7 +92,7 @@ assert.ok(drawing.every(item => item.secondary && item.secondary !== item.primar
 assert.equal(clues.fourLeader, null, "four members never trigger the leader rule");
 assert.equal(clues.questLeader, null, "someone on the main quest means the normal clue rules apply");
 assert.equal(clues.offResult.ok, false, "five members without the rule still cannot share four clue colours");
-assert.match(mapApp, /队长目标\$\{esc\(clueName\(knight\.primary\)\)\} \$\{Math\.max\(0, Number\(knight\.clues\[knight\.primary\]\) \|\| 0\)\}\/5/,
-  "the clue panel shows the leader's progress towards five");
+assert.match(mapApp, /队长目标\$\{esc\(clueName\(knight\.primary\)\)\} \$\{Math\.max\(0, Number\(knight\.clues\[knight\.primary\]\) \|\| 0\)\}\/4/,
+  "the clue panel shows the leader's progress towards four");
 
 console.log("five-player mode: party of five, squire fill, leader target clue and module options verified");
