@@ -2,6 +2,7 @@ package com.kingdomsforlorn.unified.local;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,6 +37,8 @@ public final class MainActivity extends Activity {
     private ResourceStore resourceStore;
     private LocalApi localApi;
     private LocalSecondScreenServer secondScreenServer;
+    private ProgressDialog resourceImportDialog;
+    private boolean resourceImporting;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -138,6 +141,10 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (resourceImportDialog != null) {
+            try { resourceImportDialog.dismiss(); } catch (Exception ignored) {}
+            resourceImportDialog = null;
+        }
         if (secondScreenServer != null) secondScreenServer.stop();
         super.onDestroy();
     }
@@ -217,19 +224,64 @@ public final class MainActivity extends Activity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void importResourceZip(Uri source) {
-        Toast.makeText(this, "正在导入资源，请稍候…", Toast.LENGTH_SHORT).show();
+        if (resourceImporting) {
+            Toast.makeText(this, "正在导入资源，请稍候…", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        resourceImporting = true;
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setTitle("导入资源");
+        dialog.setMessage("正在读取资源包…");
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        resourceImportDialog = dialog;
+
         new Thread(() -> {
             try {
-                ResourceStore.ImportResult result = resourceStore.importZip(source);
+                ResourceStore.ImportResult result = resourceStore.importZip(source,
+                        (extractedBytes, compressedBytes, totalBytes, fileCount) -> runOnUiThread(() ->
+                                updateResourceImportProgress(dialog, extractedBytes, compressedBytes, totalBytes, fileCount)));
                 runOnUiThread(() -> {
-                    Toast.makeText(MainActivity.this, "已导入 " + result.fileCount + " 个图片资源", Toast.LENGTH_LONG).show();
+                    finishResourceImport(dialog);
+                    Toast.makeText(MainActivity.this,
+                            "已导入 " + result.fileCount + " 个图片资源（" + ResourceStore.formatSize(result.byteCount) + "）",
+                            Toast.LENGTH_LONG).show();
                     webView.reload();
                 });
             } catch (Exception error) {
                 String detail = error.getMessage() == null ? error.getClass().getSimpleName() : error.getMessage();
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "资源导入失败：" + detail, Toast.LENGTH_LONG).show());
+                runOnUiThread(() -> {
+                    finishResourceImport(dialog);
+                    Toast.makeText(MainActivity.this, "资源导入失败：" + detail, Toast.LENGTH_LONG).show();
+                });
             }
         }, "kf-resource-import").start();
+    }
+
+    private void updateResourceImportProgress(ProgressDialog dialog, long extractedBytes, long compressedBytes,
+                                              long totalBytes, int fileCount) {
+        if (dialog != resourceImportDialog || !dialog.isShowing()) return;
+        if (totalBytes > 0 && compressedBytes > 0) {
+            int percent = (int) Math.min(100L, compressedBytes * 100L / totalBytes);
+            dialog.setIndeterminate(false);
+            dialog.setProgress(percent);
+            dialog.setMessage("已解压 " + ResourceStore.formatSize(extractedBytes) + " · " + fileCount + " 个文件 · " + percent + "%");
+        } else {
+            dialog.setMessage("已解压 " + ResourceStore.formatSize(extractedBytes) + " · " + fileCount + " 个文件");
+        }
+    }
+
+    private void finishResourceImport(ProgressDialog dialog) {
+        resourceImporting = false;
+        if (resourceImportDialog == dialog) resourceImportDialog = null;
+        try {
+            if (dialog.isShowing()) dialog.dismiss();
+        } catch (Exception ignored) {
+        }
     }
 }
