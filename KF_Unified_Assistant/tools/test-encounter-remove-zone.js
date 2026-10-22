@@ -45,6 +45,6 @@ assert.match(appSource, /\$\("#boardRemoveZone"\)\?\.addEventListener\("click", 
 assert.match(stylesSource, /\.board-remove-zone \{[\s\S]*?top: \.55rem;[\s\S]*?left: \.55rem;/,
   "the remove zone is anchored in the board's top-left corner");
 assert.match(indexSource, /styles\.css\?v=14/);
-assert.match(indexSource, /app\.js\?v=24/);
+assert.match(indexSource, /app\.js\?v=25/);
 
 console.log("encounter remove zone: selected pieces leave the board and monster range updates");

@@ -98,13 +98,17 @@
           </div>
           <section class="party-builder">
             <div class="party-heading">
-              <div><strong>本次出征队伍</strong><small>规则默认 4 席；主游戏骑士固定出战，其余骑士由你选择。</small></div>
+              <div><strong>本次出征队伍</strong><small>规则默认 4 席，五人模式为 5 席；主游戏骑士固定出战，其余骑士由你选择。</small></div>
               <span id="partySummary" class="party-summary"></span>
             </div>
             <div id="partyKnights" class="party-knights"></div>
             <div id="squireSlots" class="squire-slots"></div>
           </section>
           <p class="rule-note">自动读取主骑士“你的故事”中最低标记行，并按 TTS 比对卡同一横行生成怪物与等级。</p>
+          <details class="optional-rule-card">
+            <summary><label><input id="fivePlayerRule" type="checkbox"> 启用五人模式可选规则（规则书 P77）</label></summary>
+            <p>出征队伍扩到 5 席（骑士不足时由侍从补满）。每场冲突加入特殊 BP「被诅咒的执念」；冲突设置时第五名骑士放在任一骑士旁边；五人都不做任务时，队长随机拿 1 枚线索作为目标线索（算已收集 1 枚），远征结束时需至少 5 枚才算完成调查或漫游。</p>
+          </details>
           <details class="optional-rule-card">
             <summary><label><input id="devourDragonRule" type="checkbox"> 启用“贪食巨龙来了！”可选规则</label></summary>
             <p>随机抽取时将特殊卡洗入遭遇战怪物卡组。若抽到，立刻补抽一张怪物；抽足区域怪物后，随机绑定其中一只非国王、非巨龙怪物。与该怪物冲突时改在“巨兽之腹”中进行。</p>
@@ -267,6 +271,6 @@
   <script src="/modules/aibp/data/level-config.js?v=2"></script>
   <script src="/modules/encounter/data/encounter-data.js?v=2"></script>
   <script src="/modules/map/data/map-data.js?v=6"></script>
-  <script type="module" src="/app.js?v=31"></script>
+  <script type="module" src="/app.js?v=32"></script>
 </body>
 </html>

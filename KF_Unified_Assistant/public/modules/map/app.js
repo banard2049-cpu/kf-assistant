@@ -78,6 +78,12 @@
     ["blocked", "其他阻挡"],
     ["shortcut", "已解锁捷径"]
   ];
+  // Path markers placed by dragging onto a passage between two tiles; shortcuts link distant
+  // tiles and keep the "add to the selected tile" button.
+  const PASSAGE_MARKER_TYPES = PATH_MARKERS.map(([id]) => id).filter(id => id !== "shortcut");
+  const DOOR_MARKER_TYPES = ["armored", "triple-armored"];
+  // How far (map units) from a passage a dropped path marker still snaps onto it.
+  const PASSAGE_SNAP_UNITS = .9;
   const TILE_MARKERS = [
     ...CLUES.map(([id, name]) => [id, `${name}线索`]),
     ["surge", "涌水标记"],
@@ -92,6 +98,9 @@
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[ch]);
   const campaignParty = () => Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY : [];
+  // Five-player mode (rulebook p.77): a fifth member joins; set by the module bridge.
+  const fivePlayerMode = () => window.KF_CAMPAIGN_OPTIONS?.fivePlayer === true;
+  const partyLimit = () => fivePlayerMode() ? 5 : 4;
   const memberOptions = member => {
     const groups = [
       ["骑士", Array.isArray(window.KF_CAMPAIGN_KNIGHTS) ? window.KF_CAMPAIGN_KNIGHTS : []],
@@ -459,7 +468,7 @@
   }
 
   function rosterKnights(existing = []) {
-    const roster = campaignParty().slice(0, 4);
+    const roster = campaignParty().slice(0, partyLimit());
     if (!roster.length) return [
       { id: uid(), name: "骑士 1", clues: { martial: 0, errant: 0, historic: 0, mystic: 0 }, primary: "", secondary: "", task: "" }
     ];
@@ -472,7 +481,8 @@
         heroId: member.type === "squire" ? member.squireId || "" : member.knightId || "",
         knightId: member.knightId || "", squireId: member.squireId || "",
         clues: { martial: 0, errant: 0, historic: 0, mystic: 0, ...(previous?.clues || {}) },
-        primary: previous?.primary || "", secondary: previous?.secondary || "", task: previous?.task || ""
+        primary: previous?.primary || "", secondary: previous?.secondary || "", task: previous?.task || "",
+        fivePlayerTarget: previous?.fivePlayerTarget === true
       };
     });
   }
@@ -601,11 +611,47 @@
   let kingdomPanelExpanded = true;
   let kingdomPanelDialogOpen = false;
   let mapFocusFrame = 0;
+  // Marker drops re-render the map; keep the player's view instead of re-centring on the party.
+  let keepMapViewOnce = false;
   const mapState = () => state.maps[state.kingdom];
   const mainlineKnight = () => state.knights.find(knight =>
     knight.id === state.mainKnightId && knight.memberType !== "squire"
   ) || null;
   const clueAssignmentKnights = () => state.knights.filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId);
+  // Five-player mode with nobody on a quest: the leader takes one random clue token as their
+  // target clue (already counting as one collected) and needs five of it; the other four draw
+  // clue cards as usual (rulebook p.77).
+  function fivePlayerClueLeader(recipients = clueAssignmentKnights()) {
+    if (!fivePlayerMode() || state.mainKnightId || recipients.length < 5) return null;
+    const leaderSheetId = window.KF_CAMPAIGN_OPTIONS?.leaderSheetId || "";
+    return recipients.find(knight => leaderSheetId && knight.sheetId === leaderSheetId)
+      || recipients.find(knight => knight.memberType !== "squire")
+      || recipients[0];
+  }
+
+  // Distinct primary clues for the members drawing clue cards (each one's secondary is the next
+  // member's primary); in five-player mode the leader gets the random target clue instead.
+  function assignClueRequirements(recipients) {
+    const leader = fivePlayerClueLeader(recipients);
+    const drawing = recipients.filter(knight => knight !== leader);
+    if (drawing.length > CLUES.length) return { ok: false, reason: "队伍成员超过四种线索颜色，无法保证主线索不重复" };
+    const primaryClues = shuffle(CLUES.map(([id]) => id)).slice(0, drawing.length);
+    drawing.forEach((knight, index) => {
+      knight.primary = primaryClues[index];
+      knight.fivePlayerTarget = false;
+    });
+    drawing.forEach((knight, index) => {
+      knight.secondary = drawing[(index + 1) % drawing.length].primary;
+    });
+    if (leader) {
+      const target = shuffle(CLUES.map(([id]) => id))[0];
+      leader.primary = target;
+      leader.secondary = "";
+      leader.fivePlayerTarget = true;
+      leader.clues[target] = Math.max(1, Number(leader.clues[target]) || 0);
+    }
+    return { ok: true, leader, drawing };
+  }
   const activeMercenary = cardId => state.mercenaries.active.find(item => item.cardId === cardId) || null;
   const activeRogues = face => state.mercenaries.active.filter(item =>
     item.face === face && MERCENARY_RULES.CATALOG[item.cardId]?.role === "rogue"
@@ -1194,8 +1240,18 @@
   }
 
   function tileSize(item) {
+    const aligned = alignedTileLayout(item);
+    if (aligned) return { width: aligned.width, height: aligned.height };
     const height = TTS_CARD_HEIGHT * (Number(item.scale) || 1);
     return { width: height * (Number(item.image?.aspect) || .6657), height };
+  }
+
+  // Aligned layout (data/map-layout.js), solved from the printed path exits; without it the raw
+  // TTS transform is used, so adjacency rules always match what the map shows.
+  function alignedTileLayout(item) {
+    const aligned = globalThis.KF_MAP_LAYOUT?.tiles?.[item?.id];
+    return aligned && Number.isFinite(aligned.x) && Number.isFinite(aligned.y) && aligned.width > 0 && aligned.height > 0
+      ? aligned : null;
   }
 
   function ttsAngle(item) {
@@ -1205,6 +1261,9 @@
 
   function kingdomTileBounds(item) {
     if (!item || !Number.isFinite(item.x) || !Number.isFinite(item.y)) return null;
+    const aligned = alignedTileLayout(item);
+    const centerX = aligned ? aligned.x : item.x;
+    const centerY = aligned ? aligned.y : item.y;
     const size = tileSize(item);
     const radians = ttsAngle(item) * Math.PI / 180;
     const halfWidth = Math.abs(Math.cos(radians)) * size.width / 2
@@ -1212,10 +1271,10 @@
     const halfHeight = Math.abs(Math.sin(radians)) * size.width / 2
       + Math.abs(Math.cos(radians)) * size.height / 2;
     return {
-      left: item.x - halfWidth,
-      right: item.x + halfWidth,
-      top: item.y - halfHeight,
-      bottom: item.y + halfHeight
+      left: centerX - halfWidth,
+      right: centerX + halfWidth,
+      top: centerY - halfHeight,
+      bottom: centerY + halfHeight
     };
   }
 
@@ -1406,6 +1465,10 @@
 
   function scheduleMapFocus() {
     cancelAnimationFrame(mapFocusFrame);
+    if (keepMapViewOnce) {
+      keepMapViewOnce = false;
+      return;
+    }
     if (!mapState().autoFocus || mapState().showAll) return;
     mapFocusFrame = requestAnimationFrame(() => {
       mapFocusFrame = 0;
@@ -1559,6 +1622,7 @@
 
       if (["resolve", "flip"].includes(startingStage)) {
         revealMapTile(current, pending.tileId);
+        placePrintedDoors(current, pending.tileId);
         setCurrentTile(current, pending.tileId);
       }
       if (startingStage === "spawn") placeConnectedTiles(current, pending.tileId);
@@ -1951,16 +2015,92 @@
     </section>`;
   }
 
+  // Map-marker drop rules, shared by the palette and by moving markers that are already placed.
+  function passageHasDoor(current, from, to, ignoreId = "") {
+    return current.pathMarkers.some(marker => marker.id !== ignoreId && marker.to
+      && DOOR_MARKER_TYPES.includes(marker.type)
+      && pathKey(marker.from, marker.to) === pathKey(from, to));
+  }
+
+  // Panzergates printed on a tile (rules.front.armoredDoors) take effect in its kingdom tile step:
+  // a door of the printed type goes on that path; a path already blocked by a door discards the
+  // new one (Principality of Stone special rules).
+  function placePrintedDoors(current, tileId) {
+    const placed = [];
+    for (const door of tile(tileId)?.rules?.front?.armoredDoors || []) {
+      if (!DOOR_MARKER_TYPES.includes(door?.type) || !door.target) continue;
+      const label = PATH_MARKERS.find(([id]) => id === door.type)?.[1] || door.type;
+      const where = `${tileLabel(tile(tileId))} ↔ ${tileLabel(tile(door.target))}`;
+      if (passageHasDoor(current, tileId, door.target)) {
+        addLog(`印刷的${label}：${where} 已被装甲门拦阻，按规则弃置`);
+        continue;
+      }
+      const marker = { id: uid(), from: tileId, to: door.target, type: door.type, printed: true };
+      current.pathMarkers.push(marker);
+      placed.push(marker);
+      addLog(`印刷的${label}：放在 ${where}`);
+    }
+    return placed;
+  }
+
+  function placePathMarker(current, type, passage, existingId = "") {
+    if (!PASSAGE_MARKER_TYPES.includes(type)) return { ok: false, reason: "这种标记不吸附到通道" };
+    if (!passage) return { ok: false, reason: "请把门、弥雾或阻挡拖到两张板块之间的通道上" };
+    if (DOOR_MARKER_TYPES.includes(type) && passageHasDoor(current, passage.a, passage.b, existingId)) {
+      return { ok: false, reason: "这条路径已被装甲门拦阻，按规则新的装甲门直接弃置" };
+    }
+    const existing = existingId ? current.pathMarkers.find(marker => marker.id === existingId) : null;
+    if (existing) {
+      existing.from = passage.a;
+      existing.to = passage.b;
+      delete existing.positions;
+      return { ok: true, marker: existing };
+    }
+    const marker = { id: uid(), from: passage.a, to: passage.b, type };
+    current.pathMarkers.push(marker);
+    return { ok: true, marker };
+  }
+
+  function placeTileMarker(current, type, tileId, position, existingId = "", text = "") {
+    if (!tileId) return { ok: false, reason: "请把标记拖到地图板块上" };
+    const existing = existingId ? current.tileMarkers.find(marker => marker.id === existingId) : null;
+    if (existing) {
+      existing.tileId = tileId;
+      existing.position = position;
+      return { ok: true, marker: existing };
+    }
+    const marker = { id: uid(), tileId, type, position };
+    if (type === "custom") marker.text = text;
+    current.tileMarkers.push(marker);
+    return { ok: true, marker };
+  }
+
+  function removeMapMarker(current, kind, id) {
+    const key = kind === "path" ? "pathMarkers" : "tileMarkers";
+    const marker = current[key].find(item => item.id === id);
+    if (!marker) return null;
+    current[key] = current[key].filter(item => item.id !== id);
+    return marker;
+  }
+
+  function markerPalette() {
+    const item = ([type, label]) => `<button type="button" class="marker-palette-item" data-palette-marker="${type}" title="${esc(label)}：拖到地图上放置" aria-label="${esc(label)}">${tokenImage(markerToken(type), label)}</button>`;
+    return `<aside class="marker-palette" aria-label="地图标记栏：拖到地图放置，拖回这里删除">
+      <p class="marker-palette-heading">通道</p>
+      ${PATH_MARKERS.filter(([id]) => PASSAGE_MARKER_TYPES.includes(id)).map(item).join("")}
+      <p class="marker-palette-heading">板块</p>
+      ${TILE_MARKERS.map(item).join("")}
+      <p class="marker-palette-hint">拖到地图放置<br>拖回这里删除</p>
+    </aside>`;
+  }
+
   function markerPanel() {
     const current = mapState();
-    const selected = tile(current.selected);
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">MARKERS</div><h3>阻挡、捷径与板块标记</h3></div></div>
+      <p class="muted tiny">从地图右侧标记栏把标记拖到地图上：装甲门、弥雾和其他阻挡会吸附到两张板块之间的通道，线索等板块标记可随意摆放。地图上的标记拖回标记栏即删除。</p>
       <div class="fields">
-        <label>路径标记<select id="pathMarkerType">${PATH_MARKERS.map(([id, name]) => `<option value="${id}">${name}</option>`).join("")}</select></label>
-        <button id="addPathMarker" class="secondary">添加到当前板块</button>
-        <label>板块标记<select id="tileMarkerType">${TILE_MARKERS.map(([id, name]) => `<option value="${id}">${name}</option>`).join("")}</select></label>
-        <button id="addTileMarker" class="secondary">添加板块标记</button>
+        <button id="addShortcutMarker" class="secondary">在当前板块添加已解锁捷径</button>
         <label>自定义标记文字<input id="customMarkerText" maxlength="${CUSTOM_MARKER_MAX_LENGTH}" placeholder="例如：宝箱"></label>
         <button id="addCustomTileMarker" class="secondary">添加文字标记</button>
       </div>
@@ -2370,7 +2510,7 @@
       ${lastClue ? `<div class="alert"><strong>最近自动线索：</strong>${directionName(lastClue.direction)}向 · ${clueName(lastClue.clueType)} · ${lastClue.recipients.length ? `${lastClue.recipients.map(esc).join("、")}各获得 1 枚` : "无人需求匹配"}</div>` : ""}
       ${pendingCluePanel()}
       ${clueKnights.map(knight => `<div class="clue-row">
-        <div><span class="badge ${knight.memberType === "squire" ? "gold" : ""}">${knight.memberType === "squire" ? "侍从" : "骑士"}</span><select data-knight-name="${knight.id}">${memberOptions(knight)}</select></div>
+        <div><span class="badge ${knight.memberType === "squire" ? "gold" : ""}">${knight.memberType === "squire" ? "侍从" : "骑士"}</span><select data-knight-name="${knight.id}">${memberOptions(knight)}</select>${knight.fivePlayerTarget && knight.primary ? `<span class="badge gold" title="五人模式：队长的目标线索，远征结束时需至少 5 枚">队长目标${esc(clueName(knight.primary))} ${Math.max(0, Number(knight.clues[knight.primary]) || 0)}/5</span>` : ""}</div>
         <div class="legend clue-records">${CLUES.map(([id, name, icon]) => `<span class="badge clue-record" title="${esc(name)}线索"><img class="clue-token-icon" src="${esc(icon)}" alt="${esc(name)}线索"><strong>${knight.clues[id]}</strong><button class="inline-step" data-clue="${knight.id}|${id}|-1">−</button><button class="inline-step" data-clue="${knight.id}|${id}|1">＋</button></span>`).join("")}</div>
         <div class="fields three">
           <label>主要需求<select data-requirement="${knight.id}|primary"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.primary === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
@@ -2663,8 +2803,9 @@
               <button id="openKingdomPanelToolbar" class="small secondary">查看王国面板</button>
             </div>
           </div>
-          <div class="map-workspace">
+          <div class="map-workspace has-marker-palette">
             <section class="map-board" aria-label="王国地图"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
+            ${markerPalette()}
           </div>
         </section>
         ${partyOverviewPanel()}
@@ -2813,6 +2954,188 @@
     save(true);
   }
 
+  // Drag a marker from the palette onto the map, move a placed marker anywhere on the map, or
+  // drop it back on the palette to remove it. Passage markers snap to the nearest passage between
+  // two tiles; tile markers land on the tile under the pointer.
+  function bindMarkerDrag(board, current) {
+    const palette = $(".marker-palette");
+    const view = window.KFMapView;
+    if (!board || !palette || !view?.stageGeometry) return;
+    let drag = null;
+    const pathLabel = type => PATH_MARKERS.find(([id]) => id === type)?.[1] || type;
+    const inside = (rect, x, y) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+
+    const dropTarget = (spec, clientX, clientY) => {
+      if (inside(palette.getBoundingClientRect(), clientX, clientY)) return { palette: true };
+      const stage = board.querySelector(".map-stage");
+      const geometry = view.stageGeometry(state, DATA);
+      if (!stage || !geometry || !inside(board.getBoundingClientRect(), clientX, clientY)) return {};
+      const rect = stage.getBoundingClientRect();
+      const point = {
+        x: geometry.minX + (clientX - rect.left) / rect.width * geometry.worldWidth,
+        y: geometry.minY + (clientY - rect.top) / rect.height * geometry.worldHeight
+      };
+      if (spec.kind === "path") {
+        return { geometry, stage, point, passage: view.nearestPassage(view.mapPassages(state, DATA, geometry), point, PASSAGE_SNAP_UNITS) };
+      }
+      return { geometry, stage, point, box: view.tileAtWorld(geometry, point) };
+    };
+
+    const clearHints = () => {
+      board.querySelectorAll(".map-passage-hint").forEach(node => node.remove());
+      board.querySelectorAll(".marker-drop-target").forEach(node => node.classList.remove("marker-drop-target"));
+      palette.classList.remove("delete-target");
+      drag?.ghost.classList.remove("will-delete");
+    };
+
+    const showHints = target => {
+      clearHints();
+      if (target.palette) {
+        if (drag.existingId) {
+          palette.classList.add("delete-target");
+          drag.ghost.classList.add("will-delete");
+        }
+        return;
+      }
+      if (target.passage) {
+        const hint = document.createElement("span");
+        hint.className = "map-passage-hint";
+        hint.style.left = `${(target.passage.x - target.geometry.minX) / target.geometry.worldWidth * 100}%`;
+        hint.style.top = `${(target.passage.y - target.geometry.minY) / target.geometry.worldHeight * 100}%`;
+        hint.style.setProperty("--marker-size", `${view.MARKER_TOKEN_UNITS / target.geometry.worldWidth * 100}%`);
+        target.stage.querySelector(".map-marker-layer")?.append(hint);
+      }
+      if (target.box) {
+        [...board.querySelectorAll("[data-tile]")].find(node => node.dataset.tile === target.box.item.id)
+          ?.classList.add("marker-drop-target");
+      }
+    };
+
+    const autoScroll = (clientX, clientY) => {
+      const rect = board.getBoundingClientRect();
+      const edge = 28;
+      if (!inside(rect, clientX, clientY)) return;
+      if (clientX < rect.left + edge) board.scrollLeft -= 14;
+      else if (clientX > rect.right - edge) board.scrollLeft += 14;
+      if (clientY < rect.top + edge) board.scrollTop -= 14;
+      else if (clientY > rect.bottom - edge) board.scrollTop += 14;
+    };
+
+    const begin = (event, handle, spec) => {
+      if (event.button !== 0 || drag) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const ghost = document.createElement(spec.type === "custom" ? "span" : "img");
+      ghost.className = `marker-drag-ghost${spec.type === "custom" ? " custom-marker-token" : ""}`;
+      if (spec.type === "custom") ghost.textContent = customMarkerText(spec.text) || "自定义标记";
+      else {
+        ghost.src = markerToken(spec.type);
+        ghost.alt = "";
+      }
+      ghost.hidden = true;
+      document.body.append(ghost);
+      handle.setPointerCapture(event.pointerId);
+      drag = { ...spec, handle, ghost, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+    };
+
+    const move = event => {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      event.preventDefault();
+      if (!drag.moved && Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 4) return;
+      drag.moved = true;
+      drag.source?.classList.add("drag-source");
+      drag.ghost.hidden = false;
+      drag.ghost.style.left = `${event.clientX}px`;
+      drag.ghost.style.top = `${event.clientY}px`;
+      autoScroll(event.clientX, event.clientY);
+      showHints(dropTarget(drag, event.clientX, event.clientY));
+    };
+
+    const applyDrop = (spec, target) => {
+      const label = spec.kind === "path" || spec.kind === "free-path"
+        ? pathLabel(spec.type)
+        : tileMarkerLabel({ type: spec.type, text: spec.text });
+      if (target.palette) {
+        if (!spec.existingId) return;
+        snapshot(`删除标记：${label}`);
+        removeMapMarker(current, spec.kind === "tile" ? "tile" : "path", spec.existingId);
+        addLog(`删除地图标记：${label}`);
+        keepMapViewOnce = true;
+        return save(true);
+      }
+      if (spec.kind === "path") {
+        const passage = target.passage;
+        if (!passage) return toast(target.geometry ? "请把门、弥雾或阻挡拖到两张板块之间的通道上" : "请拖到地图上放置");
+        const existing = spec.existingId ? current.pathMarkers.find(item => item.id === spec.existingId) : null;
+        if (existing?.to && pathKey(existing.from, existing.to) === pathKey(passage.a, passage.b)) return;
+        if (DOOR_MARKER_TYPES.includes(spec.type) && passageHasDoor(current, passage.a, passage.b, spec.existingId)) {
+          return toast("这条路径已被装甲门拦阻，按规则新的装甲门直接弃置");
+        }
+        snapshot(`${spec.existingId ? "移动" : "放置"}${label}`);
+        placePathMarker(current, spec.type, passage, spec.existingId);
+        addLog(`${spec.existingId ? "移动" : "放置"}${label}：${tileLabel(tile(passage.a))} ↔ ${tileLabel(tile(passage.b))}`);
+        keepMapViewOnce = true;
+        return save(true);
+      }
+      if (!target.box) return toast(target.geometry ? "请把标记拖到地图板块上" : "请拖到地图上放置");
+      const tileId = target.box.item.id;
+      const position = view.worldToTileLocal(target.box, target.point);
+      snapshot(`${spec.existingId ? "移动" : "放置"}${label}`);
+      if (spec.kind === "free-path") {
+        const marker = current.pathMarkers.find(item => item.id === spec.existingId);
+        if (marker && !marker.to) {
+          marker.from = tileId;
+          marker.positions = { [tileId]: position };
+        }
+      } else {
+        placeTileMarker(current, spec.type, tileId, position, spec.existingId, spec.text);
+        if (!spec.existingId) addLog(`放置${label}：${tileLabel(tile(tileId))}`);
+      }
+      keepMapViewOnce = true;
+      return save(true);
+    };
+
+    const finish = (event, cancelled = false) => {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const finished = drag;
+      clearHints();
+      drag = null;
+      finished.ghost.remove();
+      finished.source?.classList.remove("drag-source");
+      if (finished.handle.hasPointerCapture?.(event.pointerId)) finished.handle.releasePointerCapture(event.pointerId);
+      if (cancelled) return;
+      if (!finished.moved) {
+        if (!finished.existingId) toast("按住标记拖到地图上放置");
+        return;
+      }
+      applyDrop(finished, dropTarget(finished, event.clientX, event.clientY));
+    };
+
+    palette.addEventListener("pointerdown", event => {
+      const item = event.target.closest("[data-palette-marker]");
+      if (!item) return;
+      const type = item.dataset.paletteMarker;
+      begin(event, item, { type, kind: PASSAGE_MARKER_TYPES.includes(type) ? "path" : "tile", existingId: "" });
+    });
+    board.addEventListener("pointerdown", event => {
+      const node = event.target.closest("[data-map-marker]");
+      if (!node) return;
+      const kind = node.dataset.markerKind;
+      const id = node.dataset.mapMarker;
+      const marker = (kind === "path" ? current.pathMarkers : current.tileMarkers).find(item => item.id === id);
+      if (!marker) return;
+      const dragKind = kind === "tile" ? "tile" : PASSAGE_MARKER_TYPES.includes(marker.type) ? "path" : "free-path";
+      begin(event, node, { type: marker.type, text: marker.text, kind: dragKind, existingId: id, source: node });
+    });
+    for (const target of [board, palette]) {
+      target.addEventListener("pointermove", move);
+      target.addEventListener("pointerup", event => finish(event));
+      target.addEventListener("pointercancel", event => finish(event, true));
+    }
+  }
+
   function bind() {
     const current = mapState();
     const board = $(".map-board");
@@ -2908,6 +3231,7 @@
     };
     board.addEventListener("pointerup", finishTokenDrag);
     board.addEventListener("pointercancel", finishTokenDrag);
+    bindMarkerDrag(board, current);
     board.addEventListener("click", event => {
       if (event.target.closest("[data-map-token]")) return;
       const node = event.target.closest("[data-tile]");
@@ -3098,14 +3422,10 @@
     $("#cancelTileButton")?.addEventListener("click", undo);
     $("#skipTravelButton")?.addEventListener("click", skipTravelStep);
 
-    $("#addPathMarker")?.addEventListener("click", () => {
-      const type = $("#pathMarkerType").value;
-      current.pathMarkers.push({ id: uid(), from: current.selected, type });
-      addLog(`添加路径标记：${PATH_MARKERS.find(([id]) => id === type)?.[1]}`);
-      save(true);
-    });
-    $("#addTileMarker")?.addEventListener("click", () => {
-      current.tileMarkers.push({ id: uid(), tileId: current.selected, type: $("#tileMarkerType").value });
+    $("#addShortcutMarker")?.addEventListener("click", () => {
+      snapshot("添加已解锁捷径");
+      current.pathMarkers.push({ id: uid(), from: current.selected, type: "shortcut" });
+      addLog(`添加已解锁捷径：${tileLabel(tile(current.selected))}`);
       save(true);
     });
     const addCustomTileMarker = () => {
@@ -3922,16 +4242,9 @@
     $("#autoAssignClueRequirements")?.addEventListener("click", () => {
       const recipients = clueAssignmentKnights();
       if (!recipients.length) return toast("没有可分配线索需求的队伍成员");
-      if (recipients.length > CLUES.length) return toast("队伍成员超过四种线索颜色，无法保证主线索不重复");
-
-      const primaryClues = shuffle(CLUES.map(([id]) => id)).slice(0, recipients.length);
-      recipients.forEach((knight, index) => {
-        knight.primary = primaryClues[index];
-      });
-      recipients.forEach((knight, index) => {
-        knight.secondary = recipients[(index + 1) % recipients.length].primary;
-      });
-      addLog(`自动分配主次线索：${recipients.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}`);
+      const result = assignClueRequirements(recipients);
+      if (!result.ok) return toast(result.reason);
+      addLog(`自动分配主次线索：${result.drawing.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}${result.leader ? `；五人模式队长 ${result.leader.name} 随机目标线索${clueName(result.leader.primary)}（已计 1 枚，需 5 枚）` : ""}`);
       save(true);
     });
     $$("[data-clue]").forEach(button => button.addEventListener("click", () => {

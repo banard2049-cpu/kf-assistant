@@ -8,6 +8,10 @@
     [12.5, 37.5], [12.5, 62.5], [87.5, 37.5], [87.5, 62.5],
     [37.5, 37.5], [62.5, 37.5], [37.5, 62.5], [62.5, 62.5]
   ];
+  // Overlay marker diameter in map units (a tile edge is 2–8 units).
+  const MARKER_TOKEN_UNITS = .62;
+  // Path markers that snap onto a passage between two tiles; shortcuts link distant tiles instead.
+  const PASSAGE_MARKER_TYPES = Object.freeze(["armored", "triple-armored", "fog", "blocked"]);
   const CLUES = Object.freeze([
     ["martial", "武艺", "/assets/tokens/红-token.png?v=1"],
     ["errant", "游侠", "/assets/tokens/绿-token.png?v=1"],
@@ -70,6 +74,21 @@
     return { width: height * (Number(item.image?.aspect) || .6657), height };
   };
   const ttsAngle = item => (((Number(item.rotation) || 180) - 180 + 540) % 360) - 180;
+  const pathKey = (left, right) => [left, right].sort().join("|");
+  // Aligned layout (data/map-layout.js): tile centres and sizes solved from the printed path exits.
+  const mapLayout = () => globalThis.KF_MAP_LAYOUT || null;
+  const alignedTile = item => {
+    const aligned = mapLayout()?.tiles?.[item?.id];
+    return aligned && Number.isFinite(aligned.x) && Number.isFinite(aligned.y) && aligned.width > 0 && aligned.height > 0
+      ? aligned : null;
+  };
+  // Centre and unrotated size in map units; the aligned layout wins over the raw TTS transform.
+  const tileGeometry = item => {
+    const aligned = alignedTile(item);
+    if (aligned) return { x: aligned.x, y: aligned.y, width: aligned.width, height: aligned.height };
+    const size = tileSize(item);
+    return { x: item.x, y: item.y, width: size.width, height: size.height };
+  };
 
   function legalTileIds(state, data) {
     const current = record(state.maps?.[state.kingdom]);
@@ -81,7 +100,6 @@
       if (marker.from === current.current) linked.add(marker.to);
       if (marker.to === current.current) linked.add(marker.from);
     }
-    const pathKey = (left, right) => [left, right].sort().join("|");
     const blocked = tileId => list(current.pathMarkers).some(marker =>
       marker.to && pathKey(marker.from, marker.to) === pathKey(current.current, tileId) && marker.type !== "shortcut"
     );
@@ -165,69 +183,222 @@
     </span>`;
   }
 
-  function renderMapStage(options = {}) {
-    const state = record(options.state);
-    const data = record(options.data);
+  // World geometry of the visible map: every tile's centre, size and rotated half extents in map
+  // units, plus the stage window. Rendering and marker hit-testing share it so they always agree.
+  function stageGeometry(state, data) {
     const current = record(state.maps?.[state.kingdom]);
     const kingdom = record(data.maps?.[state.kingdom]);
     const all = list(kingdom.tiles).filter(item => Number.isFinite(item.x) && Number.isFinite(item.y));
     const placed = new Set(list(current.placed));
     const shown = all.filter(item => current.showAll || placed.has(item.id));
     const geometrySource = current.showAll ? all : shown;
-    if (!geometrySource.length) return "";
-    const geometry = geometrySource.map(item => {
-      const size = tileSize(item);
-      const radians = ttsAngle(item) * Math.PI / 180;
-      return {
-        item,
-        bx: Math.abs(Math.cos(radians)) * size.width / 2 + Math.abs(Math.sin(radians)) * size.height / 2,
-        by: Math.abs(Math.sin(radians)) * size.width / 2 + Math.abs(Math.cos(radians)) * size.height / 2
-      };
-    });
+    if (!geometrySource.length) return null;
+    const boxes = new Map(all.map(item => {
+      const geometry = tileGeometry(item);
+      const angle = ttsAngle(item);
+      const radians = angle * Math.PI / 180;
+      return [item.id, {
+        item, ...geometry, angle,
+        halfWidth: Math.abs(Math.cos(radians)) * geometry.width / 2 + Math.abs(Math.sin(radians)) * geometry.height / 2,
+        halfHeight: Math.abs(Math.sin(radians)) * geometry.width / 2 + Math.abs(Math.cos(radians)) * geometry.height / 2
+      }];
+    }));
+    const extent = geometrySource.map(item => boxes.get(item.id));
     const pad = 1.2;
-    const minX = Math.min(...geometry.map(row => row.item.x - row.bx)) - pad;
-    const maxX = Math.max(...geometry.map(row => row.item.x + row.bx)) + pad;
-    const minY = Math.min(...geometry.map(row => row.item.y - row.by)) - pad;
-    const maxY = Math.max(...geometry.map(row => row.item.y + row.by)) + pad;
-    const worldWidth = maxX - minX;
-    const worldHeight = maxY - minY;
+    const minX = Math.min(...extent.map(box => box.x - box.halfWidth)) - pad;
+    const maxX = Math.max(...extent.map(box => box.x + box.halfWidth)) + pad;
+    const minY = Math.min(...extent.map(box => box.y - box.halfHeight)) - pad;
+    const maxY = Math.max(...extent.map(box => box.y + box.halfHeight)) + pad;
+    return { current, all, shown, boxes, minX, minY, worldWidth: maxX - minX, worldHeight: maxY - minY };
+  }
+
+  // Tile-local percentages (the rotated tile's own frame, as tokens have always been stored)
+  // to world units and back.
+  function tileLocalToWorld(box, point) {
+    const dx = (clamp(point.x, 0, 100) / 100 - .5) * box.width;
+    const dy = (clamp(point.y, 0, 100) / 100 - .5) * box.height;
+    const radians = box.angle * Math.PI / 180;
+    return {
+      x: box.x + dx * Math.cos(radians) - dy * Math.sin(radians),
+      y: box.y + dx * Math.sin(radians) + dy * Math.cos(radians)
+    };
+  }
+
+  function worldToTileLocal(box, point) {
+    const dx = point.x - box.x;
+    const dy = point.y - box.y;
+    const radians = box.angle * Math.PI / 180;
+    const localX = dx * Math.cos(radians) + dy * Math.sin(radians);
+    const localY = -dx * Math.sin(radians) + dy * Math.cos(radians);
+    return {
+      x: Number(clamp((localX / box.width + .5) * 100, 0, 100).toFixed(2)),
+      y: Number(clamp((localY / box.height + .5) * 100, 0, 100).toFixed(2))
+    };
+  }
+
+  function tileAtWorld(geometry, point) {
+    if (!geometry) return null;
+    return geometry.shown.map(item => geometry.boxes.get(item.id)).find(box =>
+      Math.abs(point.x - box.x) <= box.halfWidth && Math.abs(point.y - box.y) <= box.halfHeight
+    ) || null;
+  }
+
+  function boxesTouch(left, right, tolerance = .25) {
+    const gapX = Math.max(left.x - left.halfWidth, right.x - right.halfWidth) - Math.min(left.x + left.halfWidth, right.x + right.halfWidth);
+    const gapY = Math.max(left.y - left.halfHeight, right.y - right.halfHeight) - Math.min(left.y + left.halfHeight, right.y + right.halfHeight);
+    return (Math.abs(gapX) <= tolerance && gapY <= -.25) || (Math.abs(gapY) <= tolerance && gapX <= -.25);
+  }
+
+  // Where the path between two tiles crosses their shared edge. Aligned data gives the printed
+  // exit; otherwise the middle of the shared edge of two touching tiles.
+  function passagePoint(geometry, a, b) {
+    const left = geometry?.boxes.get(a);
+    const right = geometry?.boxes.get(b);
+    if (!left || !right) return null;
+    const aligned = alignedTile(left.item) && alignedTile(right.item)
+      ? list(mapLayout()?.passages).find(passage => pathKey(passage.a, passage.b) === pathKey(a, b))
+      : null;
+    if (aligned) return { x: aligned.x, y: aligned.y, axis: aligned.axis };
+    if (!boxesTouch(left, right)) return null;
+    const gapX = Math.max(left.x - left.halfWidth, right.x - right.halfWidth) - Math.min(left.x + left.halfWidth, right.x + right.halfWidth);
+    const gapY = Math.max(left.y - left.halfHeight, right.y - right.halfHeight) - Math.min(left.y + left.halfHeight, right.y + right.halfHeight);
+    if (gapX > gapY) {
+      const [west, east] = left.x < right.x ? [left, right] : [right, left];
+      const top = Math.max(left.y - left.halfHeight, right.y - right.halfHeight);
+      const bottom = Math.min(left.y + left.halfHeight, right.y + right.halfHeight);
+      return { x: (west.x + west.halfWidth + east.x - east.halfWidth) / 2, y: (top + bottom) / 2, axis: "v", estimated: true };
+    }
+    const [north, south] = left.y < right.y ? [left, right] : [right, left];
+    const west = Math.max(left.x - left.halfWidth, right.x - right.halfWidth);
+    const east = Math.min(left.x + left.halfWidth, right.x + right.halfWidth);
+    return { x: (west + east) / 2, y: (north.y + north.halfHeight + south.y - south.halfHeight) / 2, axis: "h", estimated: true };
+  }
+
+  // Passages a path marker can snap to: path-connected pairs of tiles that are both on the map.
+  function mapPassages(state, data, geometry = stageGeometry(state, data)) {
+    if (!geometry) return [];
+    const shown = new Set(geometry.shown.map(item => item.id));
+    const seen = new Set();
+    const passages = [];
+    for (const item of geometry.shown) {
+      for (const neighbor of list(item.neighbors)) {
+        const key = pathKey(item.id, neighbor);
+        if (!shown.has(neighbor) || seen.has(key)) continue;
+        seen.add(key);
+        const point = passagePoint(geometry, item.id, neighbor);
+        if (point) passages.push({ a: item.id, b: neighbor, ...point });
+      }
+    }
+    return passages;
+  }
+
+  function nearestPassage(passages, point, maxDistance = .9) {
+    let best = null;
+    for (const passage of list(passages)) {
+      const distance = Math.hypot(passage.x - point.x, passage.y - point.y);
+      if (distance <= maxDistance && (!best || distance < best.distance)) best = { ...passage, distance };
+    }
+    return best;
+  }
+
+  // World position of a map marker: bound path markers sit on their passage, everything else is
+  // stored in its tile's local frame (legacy unbound path markers keep their per-tile position).
+  function markerWorldPosition(geometry, marker, kind, index = 0) {
+    if (kind === "path" && marker.to) {
+      const passage = passagePoint(geometry, marker.from, marker.to);
+      if (passage) return passage;
+      const from = geometry.boxes.get(marker.from);
+      const to = geometry.boxes.get(marker.to);
+      if (from && to) return { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 };
+    }
+    const tileId = kind === "path" ? marker.from : marker.tileId;
+    const box = geometry.boxes.get(tileId);
+    if (!box) return null;
+    const saved = savedTokenPosition(marker, kind, tileId);
+    const fallback = TOKEN_SLOTS[index % TOKEN_SLOTS.length];
+    return tileLocalToWorld(box, saved || { x: fallback[0], y: fallback[1] });
+  }
+
+  function renderMarkerLayer(geometry, state, data, options) {
+    const current = geometry.current;
+    const shown = new Set(geometry.shown.map(item => item.id));
+    const interactive = options.interactive !== false;
+    const toStage = point => ({
+      left: (point.x - geometry.minX) / geometry.worldWidth * 100,
+      top: (point.y - geometry.minY) / geometry.worldHeight * 100
+    });
+    const size = MARKER_TOKEN_UNITS / geometry.worldWidth * 100;
+    const perTile = new Map();
+    const entries = [];
+    for (const marker of list(current.tileMarkers)) {
+      if (!shown.has(marker.tileId)) continue;
+      const index = perTile.get(marker.tileId) || 0;
+      perTile.set(marker.tileId, index + 1);
+      entries.push({ marker, kind: "tile", index, label: markerLabel(marker) });
+    }
+    for (const marker of list(current.pathMarkers)) {
+      if (!shown.has(marker.from) || (marker.to && !shown.has(marker.to))) continue;
+      const index = perTile.get(marker.from) || 0;
+      perTile.set(marker.from, index + 1);
+      entries.push({ marker, kind: "path", index, label: PATH_MARKERS.get(marker.type) || marker.type });
+    }
+    const tokens = entries.map(({ marker, kind, index, label }) => {
+      const point = markerWorldPosition(geometry, marker, kind, index);
+      if (!point) return "";
+      const { left, top } = toStage(point);
+      const style = `left:${left}%;top:${top}%;--marker-size:${size}%`;
+      const attrs = interactive
+        ? `draggable="false" data-map-marker="${esc(marker.id)}" data-marker-kind="${kind}" data-marker-type="${esc(marker.type)}" title="${esc(label)}（可拖动，拖回右侧标记栏即删除）"`
+        : `aria-hidden="true" data-display-marker-kind="${kind}"`;
+      const bound = kind === "path" && marker.to ? " on-passage" : "";
+      if (kind === "tile" && marker.type === "custom") {
+        return `<span class="map-marker-token custom-marker-token" style="${style}" ${attrs}>${esc(label)}</span>`;
+      }
+      const source = markerSource(marker.type, data);
+      return source
+        ? `<img class="map-marker-token${bound}" src="${esc(asset(source, options.assetBase))}" alt="${esc(label)}" style="${style}" ${attrs}>`
+        : "";
+    }).join("");
+    return `<div class="map-marker-layer${interactive ? "" : " read-only"}">${tokens}</div>`;
+  }
+
+  function renderMapStage(options = {}) {
+    const state = record(options.state);
+    const data = record(options.data);
+    const geometry = stageGeometry(state, data);
+    if (!geometry) return "";
+    const { current, shown, minX, minY, worldWidth, worldHeight } = geometry;
     const legal = new Set(Array.isArray(options.legalTileIds) ? options.legalTileIds : legalTileIds(state, data));
     const randomHighlights = new Set(list(current.randomTileHighlights));
     const interactive = options.interactive !== false;
     const cards = shown.map(item => {
-      const size = tileSize(item);
+      const box = geometry.boxes.get(item.id);
       const status = current.tileState?.[item.id] || "hidden";
       const face = current.showAll || status !== "hidden";
       const source = item.image?.[face ? "face" : "back"] || item.image?.face;
       const monsters = list(current.monsters).filter(marker => marker.tileId === item.id);
-      const tileMarkers = list(current.tileMarkers).filter(marker => marker.tileId === item.id);
-      const pathMarkers = list(current.pathMarkers).filter(marker => marker.from === item.id || marker.to === item.id);
       const classes = [
         "map-tile", current.selected === item.id ? "selected" : "", current.current === item.id ? "current" : "",
         legal.has(item.id) && !current.showAll ? "legal" : "", status === "revealed" ? "revealed-unexplored" : "",
         randomHighlights.has(item.id) ? "random-highlight" : "", interactive ? "" : "read-only"
       ].filter(Boolean).join(" ");
-      const angle = ttsAngle(item);
-      const mapTokens = [
-        ...tileMarkers.map(marker => ({ record: marker, kind: "tile", source: markerSource(marker.type, data), label: markerLabel(marker) })),
-        ...pathMarkers.map(marker => ({ record: marker, kind: "path", source: markerSource(marker.type, data), label: PATH_MARKERS.get(marker.type) || marker.type })),
-        ...monsters.map(marker => ({
-          record: marker, kind: "monster", source: data.tokens?.monsters?.[marker.monsterId] || "",
-          label: list(data.monsters).find(monster => monster.id === marker.monsterId)?.name || marker.monsterId
-        }))
-      ];
+      const angle = box.angle;
+      const mapTokens = monsters.map(marker => ({
+        record: marker, kind: "monster", source: data.tokens?.monsters?.[marker.monsterId] || "",
+        label: list(data.monsters).find(monster => monster.id === marker.monsterId)?.name || marker.monsterId
+      }));
       const tag = interactive ? "button" : "div";
       const attributes = interactive
         ? `type="button" data-tile="${esc(item.id)}" title="${esc(tileLabel(item))}"`
         : `role="img" aria-label="${esc(tileLabel(item))}"`;
       return `<${tag} class="${classes}" ${attributes} data-angle="${angle}"
-        style="left:${(item.x - size.width / 2 - minX) / worldWidth * 100}%;top:${(item.y - size.height / 2 - minY) / worldHeight * 100}%;width:${size.width / worldWidth * 100}%;height:${size.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg">
+        style="left:${(box.x - box.width / 2 - minX) / worldWidth * 100}%;top:${(box.y - box.height / 2 - minY) / worldHeight * 100}%;width:${box.width / worldWidth * 100}%;height:${box.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg">
         <img class="map-tile-image" src="${esc(asset(source, options.assetBase))}" alt="${esc(tileLabel(item))}" draggable="false">
         ${current.current === item.id ? partyMarker(item.id, state, current, options) : ""}
         ${mapTokens.map((entry, index) => mapToken(entry.source, entry.label, entry.record, entry.kind, item.id, index, options.assetBase, interactive)).join("")}
       </${tag}>`;
     }).join("");
-    return `<div class="map-stage" style="aspect-ratio:${worldWidth}/${worldHeight}">${cards}</div>`;
+    return `<div class="map-stage" style="aspect-ratio:${worldWidth}/${worldHeight}">${cards}${renderMarkerLayer(geometry, state, data, options)}</div>`;
   }
 
   function explorationCardById(data, kingdom, cardId) {
@@ -329,7 +500,7 @@
     const state = record(options.state);
     const knights = list(state.knights)
       .filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId)
-      .slice(0, 4);
+      .slice(0, 5);
     if (!knights.length) return '<p class="display-empty-copy">暂无骑士线索记录</p>';
     const clueSlot = (knight, id, role) => {
       const clue = CLUES.find(([clueId]) => clueId === id);
@@ -343,7 +514,7 @@
     };
     return `<div class="display-clue-list">${knights.map(knight => `<article class="display-clue-knight">
       <div class="display-clue-heading"><strong>${esc(knightDisplayName(knight))}</strong></div>
-      <div class="display-clue-values">${clueSlot(knight, knight.primary, "primary")}${clueSlot(knight, knight.secondary, "secondary")}</div>
+      <div class="display-clue-values">${clueSlot(knight, knight.primary, "primary")}${knight.fivePlayerTarget ? '<span class="display-clue-goal" aria-label="目标 5 枚">/5</span>' : clueSlot(knight, knight.secondary, "secondary")}</div>
     </article>`).join("")}</div>`;
   }
 
@@ -402,5 +573,9 @@
     </section>`;
   }
 
-  window.KFMapView = Object.freeze({ CLUES, legalTileIds, renderMapStage, renderKingdomBoard, renderExplorationCard, renderDistrictExplorationCards, renderClueTracking, renderDelveTracks, tileLabel });
+  window.KFMapView = Object.freeze({
+    CLUES, PASSAGE_MARKER_TYPES, MARKER_TOKEN_UNITS, legalTileIds, renderMapStage, renderKingdomBoard, renderExplorationCard,
+    renderDistrictExplorationCards, renderClueTracking, renderDelveTracks, tileLabel,
+    stageGeometry, tileGeometry, tileAtWorld, tileLocalToWorld, worldToTileLocal, passagePoint, mapPassages, nearestPassage
+  });
 })();
