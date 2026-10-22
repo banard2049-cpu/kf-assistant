@@ -7,6 +7,7 @@ const vm = require("node:vm");
 const appSource = fs.readFileSync("public/modules/map/app.js", "utf8").replace(/\r\n/g, "\n");
 const mapViewSource = fs.readFileSync("public/modules/map/map-view.js", "utf8").replace(/\r\n/g, "\n");
 const styleSource = fs.readFileSync("public/modules/map/styles.css", "utf8");
+const mapViewStyleSource = fs.readFileSync("public/modules/map/map-view.css", "utf8");
 const indexSource = fs.readFileSync("public/modules/map/index.html", "utf8");
 const functionStart = appSource.indexOf("  function trackNoteText(");
 const functionEnd = appSource.indexOf("\n\n  function defaultMap(", functionStart);
@@ -54,6 +55,11 @@ assert.match(appSource, /state\.trackNotes = normalizeTrackNotes\(item\.trackNot
 assert.match(appSource, /KFMapView\.renderDelveTracks/, "the first screen must use the shared track renderer");
 assert.match(mapViewSource, /data-track-note-form="\$\{id\}"/, "all three tracks must render note editors");
 assert.match(mapViewSource, /type="checkbox" data-track-note-value="\$\{id\}"/, "track note values must support multi-selection");
+assert.match(appSource, /const editTrackNote = button => \{[\s\S]*?input\.focus\(\{ preventScroll: true \}\)/,
+  "a single click must target that value in the note editor and focus its input");
+assert.match(appSource, /button\.addEventListener\("dblclick", event => \{[\s\S]*?setTrackValue\(button\)/,
+  "only a double click may switch the track value");
+assert.match(styleSource, /button\.delve-track-cell\.note-target \{/, "the note-target cell must be highlighted");
 assert.match(mapViewSource, /data-track-note-summary="\$\{id\}"[^>]*>\$\{selectedNotePosition\}<\/summary>/, "track note selectors must show the selected value without a redundant label");
 assert.match(appSource, /summary\.textContent = positions\.join\("、"\)/, "multi-selected track values must remain label-free after interaction");
 assert.match(appSource, /changedPositions\.forEach\(position => \{ state\.trackNotes\[key\]\[String\(position\)\] = note; \}\)/, "one save must apply a note to every selected value");
@@ -87,26 +93,51 @@ assert.doesNotMatch(mapViewSource, /DELVE TRACKS|深入轨道/,
 
 assert.match(styleSource, /\.track-note-editor \{/);
 assert.match(styleSource, /\.track-note-position-options \{/);
-assert.match(styleSource, /grid-template-columns: 46px minmax\(64px, 1fr\) auto auto;/, "numeric track-note selector must stay compact");
-assert.match(styleSource, /\.track-curse \.delve-track-heading \{[\s\S]*?grid-template-columns: 34px auto minmax\(0, 1fr\);/, "curse title and compact note controls must share one row");
+assert.match(styleSource, /grid-template-columns: 40px minmax\(40px, 1fr\) auto auto;/, "numeric track-note selector must stay compact");
+assert.match(styleSource, /\.track-curse \.delve-track-heading \{\s+gap: 4px;/, "curse note controls must use the compact wrapped layout");
 assert.match(styleSource, /\.track-curse \.track-note-editor \{[\s\S]*?grid-template-columns: 36px minmax\(34px, 1fr\) auto auto;/, "curse note content must use the compact layout");
 assert.match(styleSource, /\.track-note-editor button \{[\s\S]*?white-space: nowrap;/, "track-note action labels must remain on one line");
 assert.match(styleSource, /button\.delve-track-cell \.track-cell-note \{/);
-assert.match(styleSource, /grid-template-rows: 20px 20px 11px;/, "track cell height must remain stable with notes");
-assert.match(styleSource, /\.delve-tracks \{[\s\S]*?grid-template-columns: minmax\(0, 10fr\) minmax\(240px, 7fr\) minmax\(0, 17fr\);[\s\S]*?overflow: visible;/,
-  "the three tracks must proportionally fill the available width without an outer scrollbar");
+assert.match(styleSource, /grid-template-rows: 11px 20px 11px;/, "track cells must keep the same small note and event rows");
+assert.match(styleSource, /\.delve-tracks \{[\s\S]*?grid-template-columns: minmax\(0, 10fr\) 240px minmax\(0, 17fr\);[\s\S]*?overflow: visible;/,
+  "the curse track must stay five cells wide and leave the rest to threat and time");
+assert.match(styleSource, /\.delve-track-heading \{\s+display: flex;\s+flex-wrap: wrap;/,
+  "track headings must wrap their note controls instead of stealing width from another track");
+assert.match(styleSource, /\.track-note-editor \{[\s\S]*?flex: 1 1 220px;[\s\S]*?grid-template-columns: 40px minmax\(40px, 1fr\) auto auto;/,
+  "the note editor must wrap below the title when its column is narrow");
+assert.match(styleSource, /\.delve-tracks-panel \{ container-type: inline-size; \}/,
+  "the track panel must be a size container for the narrow layout query");
+assert.match(styleSource, /@container \(max-width: 1100px\) \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) 240px;[\s\S]*?\.track-time \{\s+grid-column: 1 \/ -1;/,
+  "when space is tight threat and curse must share a row and time must move to the next row");
 assert.match(styleSource, /\.delve-track-scroll \{[\s\S]*?max-width: 100%;[\s\S]*?overflow-x: auto;[\s\S]*?overflow-y: hidden;/,
   "each track must scroll horizontally inside its own bounded section");
 assert.match(styleSource, /\.track-curse \.delve-track-scroll \{ overflow-x: hidden; \}/,
-  "the widened curse track must fit all five cells without a scrollbar");
+  "the fixed curse track must fit all five cells without a scrollbar");
 assert.match(styleSource, /\.delve-track-cells \{[\s\S]*?grid-template-columns: repeat\(var\(--track-cells\), 40px\);[\s\S]*?width: max-content;/,
   "track cells must keep a stable readable width inside their scroll area");
+assert.match(styleSource, /button\.delve-track-cell \{[\s\S]*?grid-template-rows: 11px 20px 11px;[\s\S]*?height: 50px;/,
+  "track numbers must keep equal, compact space above and below");
+assert.match(styleSource, /button\.delve-track-cell \.track-cell-note \{[\s\S]*?height: 11px;[\s\S]*?-webkit-line-clamp: 1;/,
+  "track notes must use one compact line");
+assert.match(styleSource, /\.track-note-editor input,\s+\.track-note-editor button \{\s+min-width: 0;\s+height: 26px;/,
+  "track heading controls must stay compact");
+assert.match(styleSource, /\.track-note-editor button,\s+\.track-note-editor button\.small \{\s+min-height: 26px;/,
+  "track heading buttons, including small buttons, must match the text box height");
+assert.match(styleSource, /\.track-note-editor \.track-note-position-options input \{[\s\S]*?appearance: none;[\s\S]*?border-radius: 0;/,
+  "numeric note checkboxes must keep square corners");
+assert.match(styleSource, /\.delve-track-logo \{ width: 26px; height: 26px; \}/,
+  "the track logo must not keep the heading taller than its controls");
 assert.match(styleSource, /button\.delve-track-cell \{[\s\S]*?width: 40px;[\s\S]*?min-width: 40px;[\s\S]*?max-width: 40px;/,
   "track cells must keep their fixed width without overlapping");
 assert.match(styleSource, /\.delve-tracks-sticky \.delve-tracks \{\s+grid-template-columns: 1fr;/,
   "narrow screens must stack the tracks instead of scrolling them");
-assert.match(indexSource, /styles\.css\?v=71/);
+assert.match(mapViewStyleSource, /\.delve-track-cell \{[^}]*border-radius: 0;/,
+  "track number cells must have square corners");
+assert.match(mapViewStyleSource, /\.delve-track-cell \{[^}]*grid-template-rows: 11px 20px 11px;[^}]*height: 50px;/,
+  "the shared track styles must keep equal, compact space above and below the number");
+assert.match(indexSource, /styles\.css\?v=83/);
+assert.match(indexSource, /map-view\.css\?v=7/);
 assert.match(indexSource, /map-view\.js\?v=11/);
-assert.match(indexSource, /app\.js\?v=112/);
+assert.match(indexSource, /app\.js\?v=114/);
 
 console.log("map track notes: normalization, persistence, controls and styling verified");

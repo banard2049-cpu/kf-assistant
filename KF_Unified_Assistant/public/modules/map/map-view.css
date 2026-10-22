@@ -150,9 +150,9 @@
 .delve-track-name { color: var(--text, var(--ink, #f3eee2)); font-size: 14px; font-weight: 700; }
 .delve-track-scroll { min-width: 0; overflow-x: auto; padding-bottom: 3px; }
 .delve-track-cells { display: grid; grid-template-columns: repeat(var(--track-cells), 40px); gap: 5px; width: max-content; min-width: 0; }
-.delve-track-cell { position: relative; display: grid; place-items: center; align-content: center; grid-template-rows: 20px 20px 11px; width: 40px; height: 64px; gap: 1px; padding: 4px 3px; overflow: hidden; border: 1px solid var(--line, #4b4740); border-radius: 6px; background: #121915; color: var(--muted, #aaa49a); }
+.delve-track-cell { position: relative; display: grid; place-items: center; align-content: center; grid-template-rows: 11px 20px 11px; width: 40px; height: 50px; gap: 1px; padding: 3px; overflow: hidden; border: 1px solid var(--line, #4b4740); border-radius: 0; background: #121915; color: var(--muted, #aaa49a); }
 .delve-track-cell .track-number { color: var(--text, var(--ink, #f3eee2)); font-size: 16px; font-weight: 800; }
-.delve-track-cell .track-cell-note { display: -webkit-box; width: 100%; min-width: 0; height: 20px; overflow: hidden; color: #d8b96f; font-size: 9px; font-weight: 700; line-height: 10px; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.delve-track-cell .track-cell-note { display: -webkit-box; width: 100%; min-width: 0; height: 11px; overflow: hidden; color: #d8b96f; font-size: 9px; font-weight: 700; line-height: 11px; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
 .delve-track-cell small { color: #f4d28b; font-size: 9px; line-height: 1.05; white-space: nowrap; }
 .delve-track-cell .track-event-label { display: block; width: 100%; min-width: 0; min-height: 10px; overflow: hidden; text-overflow: ellipsis; }
 .delve-track-cell.event-cell { border-color: #92743d; background: rgba(216, 173, 85, .09); }

@@ -240,7 +240,7 @@ body{height:100vh;overflow:hidden}
 .display-body .delve-track-heading small{font-size:9px}
 .display-body .delve-track-scroll{overflow:visible;padding:0}
 .display-body .delve-track-cells{grid-template-columns:repeat(var(--track-cells),28px);gap:3px;width:max-content}
-.display-body .delve-track-cell{grid-template-rows:9px 17px 8px;width:28px;height:42px;padding:2px 1px;border-radius:4px}
+.display-body .delve-track-cell{grid-template-rows:9px 17px 8px;width:28px;height:42px;padding:2px 1px;border-radius:0}
 .display-body .track-time .delve-track-cells{grid-template-columns:repeat(var(--track-cells),22px);gap:2px}
 .display-body .track-time .delve-track-cell{width:22px}
 .display-body .track-time .delve-track-logo{width:24px;height:24px}

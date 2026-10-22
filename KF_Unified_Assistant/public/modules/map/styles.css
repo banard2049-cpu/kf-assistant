@@ -762,7 +762,7 @@ button.effect-card-marker .effect-marker-token {
 }
 .delve-track-heading small {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
 }
 .delve-track-logo {
   display: grid;
@@ -803,17 +803,23 @@ button.delve-track-cell {
   display: grid;
   place-items: center;
   align-content: center;
-  grid-template-rows: 20px 20px 11px;
+  grid-template-rows: 11px 20px 11px;
   width: 40px;
   min-width: 40px;
   max-width: 40px;
-  height: 64px;
+  height: 50px;
   gap: 1px;
-  padding: 4px 3px;
+  padding: 3px;
   border-color: var(--line);
   background: #121915;
   color: var(--muted);
   overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+}
+button.delve-track-cell.note-target {
+  border-color: var(--gold-soft);
+  box-shadow: 0 0 0 2px rgba(216, 173, 85, .4);
 }
 button.delve-track-cell:hover {
   border-color: var(--gold);
@@ -827,15 +833,15 @@ button.delve-track-cell .track-cell-note {
   display: -webkit-box;
   width: 100%;
   min-width: 0;
-  height: 20px;
+  height: 11px;
   overflow: hidden;
   color: #d8b96f;
   font-size: 9px;
   font-weight: 700;
-  line-height: 10px;
+  line-height: 11px;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
 }
 button.delve-track-cell small {
   color: #f4d28b;
@@ -871,7 +877,8 @@ button.delve-track-cell.active .track-cell-note {
 }
 .track-note-editor {
   display: grid;
-  grid-template-columns: 46px minmax(64px, 1fr) auto auto;
+  flex: 1 1 220px;
+  grid-template-columns: 40px minmax(40px, 1fr) auto auto;
   gap: 4px;
   align-items: start;
   min-width: 0;
@@ -879,15 +886,21 @@ button.delve-track-cell.active .track-cell-note {
 .track-note-editor input,
 .track-note-editor button {
   min-width: 0;
-  height: 30px;
-  padding: 3px 6px;
-  font-size: 11px;
+  height: 26px;
+  padding: 2px 5px;
+  font-size: 10px;
 }
-.track-note-editor button {
+.track-note-editor button,
+.track-note-editor button.small {
+  min-height: 26px;
   white-space: nowrap;
 }
 .track-note-editor input {
   width: 100%;
+}
+.track-note-editor.note-target input {
+  border-color: var(--gold-soft);
+  box-shadow: 0 0 0 2px rgba(216, 173, 85, .28);
 }
 .track-note-position-picker {
   position: relative;
@@ -898,15 +911,15 @@ button.delve-track-cell.active .track-cell-note {
 }
 .track-note-position-picker > summary {
   position: relative;
-  height: 30px;
+  height: 26px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 5px 18px 5px 6px;
+  padding: 3px 16px 3px 5px;
   background: #101512;
   color: var(--text);
   cursor: pointer;
-  font-size: 11px;
+  font-size: 10px;
   line-height: 18px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -917,8 +930,8 @@ button.delve-track-cell.active .track-cell-note {
 }
 .track-note-position-picker > summary::after {
   position: absolute;
-  top: 10px;
-  right: 6px;
+  top: 9px;
+  right: 5px;
   width: 0;
   height: 0;
   border: 4px solid transparent;
@@ -926,7 +939,7 @@ button.delve-track-cell.active .track-cell-note {
   content: "";
 }
 .track-note-position-picker[open] > summary::after {
-  top: 6px;
+  top: 5px;
   border-top-color: transparent;
   border-bottom-color: var(--muted);
 }
@@ -964,6 +977,28 @@ button.delve-track-cell.active .track-cell-note {
   height: 14px;
   margin: 0;
   padding: 0;
+  appearance: none;
+  display: grid;
+  place-content: center;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #0d120f;
+  cursor: pointer;
+}
+.track-note-editor .track-note-position-options input::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  transform: scale(0);
+  background: var(--gold);
+  transition: transform .1s ease;
+}
+.track-note-editor .track-note-position-options input:checked::before {
+  transform: scale(1);
+}
+.track-note-editor .track-note-position-options input:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 1px;
 }
 .delve-track.over-limit {
   border-color: var(--red);
@@ -1345,12 +1380,11 @@ main { padding: 12px 18px 24px; }
 .tool-tabs {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 2px;
+  gap: 4px;
   margin-bottom: 8px;
-  padding: 3px;
-  border: 1px solid var(--line-soft);
-  border-radius: 6px;
-  background: #111714;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 .tool-tabs button {
   min-width: 0;
@@ -1445,10 +1479,23 @@ main { padding: 12px 18px 24px; }
 .list-row span,
 .token-label { overflow-wrap: anywhere; }
 
+.delve-tracks-panel { container-type: inline-size; }
 .delve-tracks {
-  grid-template-columns: minmax(0, 10fr) minmax(240px, 7fr) minmax(0, 17fr);
+  /* The curse track only ever shows 0-4, so keep it at the width of five 40px cells and give the
+     remaining room to threat and time. The track headings wrap their note controls when a column
+     is too narrow, so neither threat nor time has to reserve a large fixed width. */
+  grid-template-columns: minmax(0, 10fr) 240px minmax(0, 17fr);
   gap: 8px;
   overflow: visible;
+}
+@container (max-width: 1100px) {
+  /* Not enough width for three readable tracks: pair threat with curse and give time its own row. */
+  .delve-tracks {
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+  .delve-tracks .track-time {
+    grid-column: 1 / -1;
+  }
 }
 .delve-tracks-sticky {
   position: sticky;
@@ -1463,33 +1510,36 @@ main { padding: 12px 18px 24px; }
 }
 .delve-track {
   grid-template-columns: 1fr;
-  gap: 7px;
-  padding: 8px;
+  gap: 5px;
+  padding: 6px;
   border-radius: 6px;
 }
 .delve-track-heading {
-  grid-template-columns: 38px auto minmax(0, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 7px;
+  align-items: center;
 }
 .track-curse .delve-track-heading {
-  grid-template-columns: 34px auto minmax(0, 1fr);
   gap: 4px;
 }
+.delve-track-logo { flex: 0 0 auto; }
+.delve-track-status { flex: 0 1 auto; min-width: 0; gap: 1px; line-height: 1.05; }
 .track-curse .delve-track-scroll { overflow-x: hidden; }
 .track-curse .track-note-editor {
+  flex: 1 1 136px;
   grid-template-columns: 36px minmax(34px, 1fr) auto auto;
   gap: 2px;
   width: auto;
 }
 .track-curse .delve-track-logo {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
 }
 .track-curse .track-note-editor input,
 .track-curse .track-note-editor button,
 .track-curse .track-note-position-picker > summary {
-  height: 30px;
-  min-height: 30px;
+  height: 26px;
   padding-inline: 4px;
   font-size: 10px;
 }
@@ -1499,8 +1549,8 @@ main { padding: 12px 18px 24px; }
 .track-curse .track-note-position-picker > summary::after {
   right: 4px;
 }
-.delve-track-logo { width: 38px; height: 38px; }
-.delve-track-name { font-size: 14px; }
+.delve-track-logo { width: 26px; height: 26px; }
+.delve-track-name { font-size: 13px; }
 .delve-track-cells {
   grid-template-columns: repeat(var(--track-cells), 40px);
   width: max-content;
@@ -2033,6 +2083,7 @@ label,
 .map-workspace.has-marker-palette { display: flex; gap: 10px; align-items: stretch; }
 .map-workspace.has-marker-palette > .map-board { flex: 1 1 auto; min-width: 0; }
 .marker-palette {
+  position: relative;
   flex: 0 0 74px;
   display: flex;
   flex-direction: column;
@@ -2043,8 +2094,49 @@ label,
   border: 1px solid #4b594f;
   border-radius: 4px;
   background: #1b211d;
+  transition: border-color .12s ease, background .12s ease, box-shadow .12s ease;
 }
-.marker-palette.delete-target { border-color: var(--red); background: rgba(213, 107, 101, .16); }
+.marker-palette.delete-ready,
+.marker-palette.delete-target {
+  border-color: var(--red);
+  background: rgba(213, 107, 101, .2);
+  box-shadow: 0 0 0 2px rgba(213, 107, 101, .35), 0 0 18px rgba(213, 107, 101, .28);
+}
+.marker-palette.delete-ready { overflow: hidden; }
+.marker-palette.delete-target {
+  background: rgba(213, 107, 101, .34);
+  box-shadow: 0 0 0 3px rgba(213, 107, 101, .62), 0 0 24px rgba(213, 107, 101, .46), inset 0 0 26px rgba(213, 107, 101, .24);
+}
+.marker-palette-trash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 6px;
+  color: #ffe1dd;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(76, 20, 17, .9), rgba(53, 14, 12, .94));
+  pointer-events: none;
+}
+.marker-palette.delete-ready .marker-palette-trash { display: flex; }
+.marker-palette.delete-target .marker-palette-trash {
+  background: linear-gradient(180deg, rgba(115, 28, 23, .95), rgba(76, 18, 15, .97));
+}
+.marker-palette-trash svg {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .65));
+}
+.marker-palette-trash span {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: .02em;
+}
 .marker-palette-heading { margin: 2px 0 0; color: var(--muted); font-size: 10px; font-weight: 800; text-align: center; letter-spacing: .04em; }
 .marker-palette-item {
   display: grid;
