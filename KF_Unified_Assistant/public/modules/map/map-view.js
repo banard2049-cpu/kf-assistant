@@ -514,7 +514,7 @@
     };
     return `<div class="display-clue-list">${knights.map(knight => `<article class="display-clue-knight">
       <div class="display-clue-heading"><strong>${esc(knightDisplayName(knight))}</strong></div>
-      <div class="display-clue-values">${clueSlot(knight, knight.primary, "primary")}${knight.fivePlayerTarget ? '<span class="display-clue-goal" aria-label="目标 5 枚">/5</span>' : clueSlot(knight, knight.secondary, "secondary")}</div>
+      <div class="display-clue-values">${clueSlot(knight, knight.primary, "primary")}${knight.fivePlayerTarget ? '<span class="display-clue-goal" aria-label="目标 4 枚">/4</span>' : clueSlot(knight, knight.secondary, "secondary")}</div>
     </article>`).join("")}</div>`;
   }
 

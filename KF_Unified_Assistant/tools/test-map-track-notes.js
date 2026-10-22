@@ -106,7 +106,7 @@ assert.match(styleSource, /button\.delve-track-cell \{[\s\S]*?width: 40px;[\s\S]
 assert.match(styleSource, /\.delve-tracks-sticky \.delve-tracks \{\s+grid-template-columns: 1fr;/,
   "narrow screens must stack the tracks instead of scrolling them");
 assert.match(indexSource, /styles\.css\?v=69/);
-assert.match(indexSource, /map-view\.js\?v=9/);
-assert.match(indexSource, /app\.js\?v=110/);
+assert.match(indexSource, /map-view\.js\?v=10/);
+assert.match(indexSource, /app\.js\?v=111/);
 
 console.log("map track notes: normalization, persistence, controls and styling verified");
