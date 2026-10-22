@@ -627,7 +627,9 @@
       : layout.placements.filter(item => item.kind === "terrain");
     const terrainCards = terrainCardsFor(terrain);
     // Number 标记是版图计数信息，即使隐藏起始模型也要保留。
-    const fixed = layout.placements.filter(item => item.kind !== "terrain")
+    // Five-player mode adds a knight start beside the printed ones (stored with the board).
+    const extraPlacements = Array.isArray(boardState.extraPlacements) ? boardState.extraPlacements : [];
+    const fixed = [...layout.placements, ...extraPlacements].filter(item => item.kind !== "terrain")
       .filter(item => boardState.showStarts !== false
         || item.kind === "number"
         || !(["knight","monster"].includes(item.kind) || ["LictorDecoy","Armor"].includes(item.asset)));
@@ -663,14 +665,17 @@
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
     }).join("");
     // 叠加层设置随 conflictBoard 一起从主屏同步过来，第二屏只负责画。
-    const overlay=window.KF_OVERLAY?.computeOverlay(boardState,layout.placements||[])||null;
+    const overlay=window.KF_OVERLAY?.computeOverlay(boardState,[...(layout.placements||[]),...extraPlacements])||null;
     const grid=conflictGridHtml(boardState,overlay);
     const settings=payload.presentation?.settings || {}, scale=clamp(settings.conflictScale || 100,50,200), boardVisible=settings.conflictBoardVisible!==false;
     const rawRotation=((Number(settings.conflictRotation)%360)+360)%360;
     const rotation=[0,90,180,270].includes(rawRotation)?rawRotation:90;
     // “正在结算” follows the main branch: only the card currently drawn
     // from the AI or BP deck is shown here.
-    const activeCards=[publicCard(monster,battle.activeAI,"当前 AI","face","active-ai-card"),publicCard(monster,battle.activeBP,"当前 BP","face","active-bp-card")].filter(Boolean).join("");
+    // Five-player mode: the Accursed Persistence trait BP shows which side is up.
+    const accursedActive=battle.accursed?.side!=="dormant";
+    const accursedCard=battle.accursed?`<figure class="public-card accursed-public-card ${accursedActive?"active":"dormant"}" data-public-card="accursed-persistence"><img class="public-card-image" src="${accursedActive?"/assets/cards/accursed-persistence-a.jpg":"/assets/cards/accursed-persistence-b.jpg"}" alt=""><figcaption>被诅咒的执念 · ${accursedActive&&!battle.accursed.lastKnight?"生效面：骑士攻击改打执念":"休眠面"}</figcaption></figure>`:"";
+    const activeCards=[publicCard(monster,battle.activeAI,"当前 AI","face","active-ai-card"),publicCard(monster,battle.activeBP,"当前 BP","face","active-bp-card"),accursedCard].filter(Boolean).join("");
     const kingdomTrait=layout.kingdom==="stone"?"Trait_POS":"Trait_SK";
     const referenceLabel=card=>card.kind==="BPX"?"BPX":"特质";
     const signatureCard=(monster?.cards||[]).find(card=>card.kind==="SIG");

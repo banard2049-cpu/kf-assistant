@@ -454,3 +454,5 @@ body{height:100vh;overflow:hidden}
 .display-digestive-marker{position:absolute;z-index:81;width:4.8%;aspect-ratio:1;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 3px #000);pointer-events:none}.display-digestive-marker img{display:block;width:100%;height:100%;border-radius:50%;object-fit:contain}
 .board-marker.monster{background:transparent;border:0;box-shadow:none}
 .board-marker.monster img.monster-board-token{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.85))}
+.display-clue-goal{display:grid;place-items:center;min-width:0;padding:3px;border-left:3px solid #6d6255;background:#151412;color:#f0cf84;font-size:14px;font-weight:800}
+.public-card .public-card-image{display:block;width:100%;aspect-ratio:730/1040;object-fit:cover;border-radius:6px}.accursed-public-card.active .public-card-image{box-shadow:0 0 0 2px #c8a966}.accursed-public-card.dormant .public-card-image{filter:saturate(.6) brightness(.85)}

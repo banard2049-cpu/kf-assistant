@@ -6,7 +6,7 @@ const virtueMeta = [
   ["sagacity","睿智","SAGACITY","欺骗 DUPLICITY"],["fortitude","坚韧","FORTITUDE","冷漠 DISREGARD"],
   ["might","威武","MIGHT","残忍 CRUELTY"],["insight","洞察","INSIGHT","背叛 TREACHERY"]
 ];
-let user=null,sheets=[],trash=[],active=null,state=null,revision=0,canRegister=false,isRegister=false,search="",saveTimer=null,syncing=false,viewMode="overview",gameSettings={leaderSheetId:"",kingdom:"sunken",districts:3,devourDragon:false};
+let user=null,sheets=[],trash=[],active=null,state=null,revision=0,canRegister=false,isRegister=false,search="",saveTimer=null,syncing=false,viewMode="overview",gameSettings={leaderSheetId:"",kingdom:"sunken",districts:3,devourDragon:false,fivePlayer:false};
 let campaigns=[],activeCampaign=null,campaignState=null,campaignRevision=0,campaignSyncing=false,campaignSaveTimer=null;
 let sharedSettings={storyMarkers:{},passwords:[]},sharedSettingsSaveTimer=null,sharedSettingsDirty=false;
 let activeSquireSlot=-1;
@@ -276,7 +276,9 @@ async function syncCampaign(){
   catch(e){campaignPending.unshift(...batch);setSave("等待网络",true)}
   finally{persistCampaignPending();campaignSyncing=false;if(campaignPending.length)setTimeout(syncCampaign,600)}
 }
-function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon)};renderPresentationControls()}
+function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon),fivePlayer:Boolean(campaignState.optionalRules?.fivePlayer)};renderPresentationControls()}
+// 五人模式（规则书 P77）把出征队伍从 4 席扩到 5 席。
+const partyLimit=()=>gameSettings.fivePlayer?5:4;
 function presentationSettings(){return {mapScale:100,conflictScale:100,conflictRotation:90,conflictSwapped:false,conflictBoardVisible:true,conflictBoardAlign:"center",...(campaignState?.presentation?.settings||{})}}
 function portraitConflictRotation(value){const normalized=((Number(value)%360)+360)%360;return [0,90,180,270].includes(normalized)?normalized:90}
 function renderPresentationControls(){
@@ -328,10 +330,10 @@ function normalizedParty(input=campaignState?.party||[]){
   const valid=new Set(knightSheets().map(sheet=>sheet.id)),leader=gameSettings.leaderSheetId;
   let party=[...new Set((Array.isArray(input)?input:[]).filter(id=>valid.has(id)))];
   if(leader&&valid.has(leader)){const leaderCount=party.filter(id=>id===leader).length;party=party.filter(id=>id!==leader);party.unshift(...Array(Math.max(1,leaderCount)).fill(leader))}
-  return party.slice(0,4);
+  return party.slice(0,partyLimit());
 }
 function normalizedSquires(party,current=campaignState?.squires||[]){
-  const needed=Math.max(0,4-party.length),available=squireCatalog;
+  const needed=Math.max(0,partyLimit()-party.length),available=squireCatalog;
   const result=[];
   for(const id of Array.isArray(current)?current:[]){
     if(result.length>=needed)break;
@@ -358,7 +360,7 @@ function renderPartyBuilder(){
   $("#squireSlots").innerHTML=squires.length?squires.map((id,index)=>{
     const item=squireCatalog.find(entry=>entry.id===id);
     return `<div class="squire-slot"><strong>席位 ${party.length+index+1} · 侍从</strong><button class="squire-picker" type="button" data-squire-picker="${index}"><img src="/assets/heroes/${id}-avatar.jpg" alt=""><span>${esc(item?.name||id)}<small>${esc(item?.en||"")} · 点击更换</small></span></button></div>`;
-  }).join(""):'<div class="party-complete">4 名骑士已齐，无需侍从补位。</div>';
+  }).join(""):`<div class="party-complete">${partyLimit()} 名骑士已齐，无需侍从补位。</div>`;
 }
 function openSquireDialog(index){
   const party=normalizedParty(),squires=normalizedSquires(party),selectedId=squires[index];if(!selectedId)return;
@@ -420,13 +422,14 @@ function renderEncounterBuilder(){
   $("#leaderSelect").innerHTML='<option value="">请选择</option>'+eligible.map(s=>`<option value="${s.id}">${esc(s.title||s.state?.knight||"未命名骑士")}</option>`).join("");
   $("#leaderSelect").value=leader?.id||"";$("#kingdomSelect").value=gameSettings.kingdom||"sunken";gameSettings.districts=gameSettings.kingdom==="sunken"?3:4;$("#districtCount").textContent=gameSettings.kingdom==="sunken"?"沉没王国：3":"巨石王国：4";
   if($("#devourDragonRule"))$("#devourDragonRule").checked=Boolean(gameSettings.devourDragon);
+  if($("#fivePlayerRule"))$("#fivePlayerRule").checked=Boolean(gameSettings.fivePlayer);
   const pos=talePosition(leader);$("#talePosition").textContent=leader?`第 ${pos.chapter} 章 · ${pos.label}${pos.empty?"（尚无标记，按起始行）":""}`:"请选择主游戏骑士";
   const pool=leader?poolForRow(pos.row,gameSettings.kingdom):[];
   $("#autoPoolPreview").innerHTML=leader?pool.map(card=>`<span class="pool-preview-card">${monsterAvatarMarkup(card.name,"pool-preview-avatar")}<span><strong>${esc(card.name)}</strong><small>Lv.${card.level}</small></span></span>`).join(""):"选择主游戏骑士后自动生成";
   renderPartyBuilder();
 }
-function readGameSettings(){gameSettings.leaderSheetId=$("#leaderSelect").value;gameSettings.kingdom=$("#kingdomSelect").value;gameSettings.districts=gameSettings.kingdom==="sunken"?3:4;gameSettings.devourDragon=Boolean($("#devourDragonRule")?.checked);return gameSettings}
-async function saveGameSettings(){readGameSettings();campaignOp("leaderSheetId",gameSettings.leaderSheetId);campaignOp("kingdom",gameSettings.kingdom);campaignOp("optionalRules.devourDragon",gameSettings.devourDragon);commitParty(campaignState.party||[]);showOverview();toast("主游戏与出征队伍已保存")}
+function readGameSettings(){gameSettings.leaderSheetId=$("#leaderSelect").value;gameSettings.kingdom=$("#kingdomSelect").value;gameSettings.districts=gameSettings.kingdom==="sunken"?3:4;gameSettings.devourDragon=Boolean($("#devourDragonRule")?.checked);gameSettings.fivePlayer=Boolean($("#fivePlayerRule")?.checked);return gameSettings}
+async function saveGameSettings(){readGameSettings();campaignOp("leaderSheetId",gameSettings.leaderSheetId);campaignOp("kingdom",gameSettings.kingdom);campaignOp("optionalRules.devourDragon",gameSettings.devourDragon);campaignOp("optionalRules.fivePlayer",gameSettings.fivePlayer);commitParty(campaignState.party||[]);showOverview();toast("主游戏与出征队伍已保存")}
 function generateMonsterPool(){
   readGameSettings();const leader=knightSheets().find(s=>s.id===gameSettings.leaderSheetId);if(!leader)return toast("请先选择主游戏骑士");
   if(campaignState.monsterPool?.cards?.length&&!confirm("重新生成会替换当前区域怪物。继续吗？"))return;
@@ -571,10 +574,11 @@ $("#alignConflictBottom").onclick=()=>{const settings=presentationSettings();con
 $("#leaderSelect").onchange=e=>{gameSettings.leaderSheetId=e.target.value;campaignOp("leaderSheetId",gameSettings.leaderSheetId);commitParty(campaignState.party||[]);renderEncounterBuilder()};
 $("#kingdomSelect").onchange=e=>{gameSettings.kingdom=e.target.value;renderEncounterBuilder()};
 $("#devourDragonRule").onchange=e=>{gameSettings.devourDragon=e.target.checked};
+$("#fivePlayerRule").onchange=e=>{gameSettings.fivePlayer=e.target.checked;campaignOp("optionalRules.fivePlayer",gameSettings.fivePlayer);commitParty(campaignState.party||[])};
 $("#partyKnights").onchange=e=>{
   const input=e.target.closest("[data-party-sheet]");if(!input)return;
   let party=normalizedParty();
-  if(input.checked){if(party.length>=4){input.checked=false;return toast("出征队伍最多 4 名角色");}party.push(input.dataset.partySheet)}
+  if(input.checked){if(party.length>=partyLimit()){input.checked=false;return toast(`出征队伍最多 ${partyLimit()} 名角色`);}party.push(input.dataset.partySheet)}
   else party=party.filter(id=>id!==input.dataset.partySheet);
   commitParty(party);
 };

@@ -10,7 +10,15 @@
   const rosterKey = `kfCampaignRoster:${activeCampaign}`;
   const mapUpstreamKey = `kfMapUpstream:${activeCampaign}`;
   const kingdomKey = `kfCampaignKingdom:${activeCampaign}`;
+  const optionsKey = `kfCampaignOptions:${activeCampaign}`;
   window.KF_CAMPAIGN_KINGDOM = localStorage.getItem(kingdomKey) || "";
+  // Campaign options the modules need offline too: five-player mode (rulebook p.77) and the
+  // party leader (the five-player clue rule targets the leader).
+  try {
+    window.KF_CAMPAIGN_OPTIONS = JSON.parse(localStorage.getItem(optionsKey) || "null") || { fivePlayer: false, leaderSheetId: "" };
+  } catch {
+    window.KF_CAMPAIGN_OPTIONS = { fivePlayer: false, leaderSheetId: "" };
+  }
   const phaseFromMapTime = value => Number(value) === 8 ? "preliminary" : "full";
   try {
     const cachedMap = [storageKey, "kf-map-host-v6", "kf-map-host-v5"]
@@ -263,12 +271,14 @@
       if (!party.length && campaignState.leaderSheetId && allSheets.some(sheet => sheet.id === campaignState.leaderSheetId && isKnightSheet(sheet))) party = [campaignState.leaderSheetId];
       // Party slots reference distinct sheet records; repeated identities are
       // allowed because their sheet IDs remain different.
-      party = [...new Set(party)].slice(0, 4);
+      const fivePlayer = campaignState.optionalRules?.fivePlayer === true;
+      const partyLimit = fivePlayer ? 5 : 4;
+      party = [...new Set(party)].slice(0, partyLimit);
       const partyKnights = party.map(id => allSheets.find(sheet => sheet.id === id)).filter(Boolean).map(sheet => ({
         id: sheet.id, sheetId: sheet.id, knightId: sheet.state?.knightId || "", type: "knight",
         name: sheet.title || sheet.state?.knight || "未命名骑士", title: sheet.title,
       }));
-      const needed = partyKnights.length ? Math.max(0, 4 - partyKnights.length) : 0;
+      const needed = partyKnights.length ? Math.max(0, partyLimit - partyKnights.length) : 0;
       const requested = Array.isArray(campaignState.squires) ? campaignState.squires : [];
       const squireIds = [];
       for (const id of requested) if (squireIds.length < needed && squireCatalog.some(item => item.id === id) && !squireIds.includes(id)) squireIds.push(id);
@@ -289,9 +299,15 @@
         }
       } catch { /* malformed handoff is ignored */ }
       window.KF_CAMPAIGN_KINGDOM = campaignState.monsterPool?.kingdom || campaignState.kingdom || campaignState.map?.activeKingdom || "";
+      // Five-player rules apply only while a fifth member actually takes part (a rogue roster never does).
+      window.KF_CAMPAIGN_OPTIONS = {
+        fivePlayer: fivePlayer && window.KF_CAMPAIGN_PARTY.length >= 5,
+        leaderSheetId: String(campaignState.leaderSheetId || "")
+      };
       window.KF_CLASH_PHASE = phaseFromMapTime(campaignState.modules?.map?.trackers?.time);
       localStorage.setItem(rosterKey, JSON.stringify(window.KF_CAMPAIGN_PARTY));
       localStorage.setItem(kingdomKey, window.KF_CAMPAIGN_KINGDOM);
+      localStorage.setItem(optionsKey, JSON.stringify(window.KF_CAMPAIGN_OPTIONS));
       exposeMapUpstream(campaignState);
       campaignRevision = detail.campaign.revision;
       const value = detail.campaign.state?.modules?.[stateModuleName] || null;
