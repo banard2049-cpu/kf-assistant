@@ -500,7 +500,7 @@
     const state = record(options.state);
     const knights = list(state.knights)
       .filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId)
-      .slice(0, 4);
+      .slice(0, 5);
     if (!knights.length) return '<p class="display-empty-copy">暂无骑士线索记录</p>';
     const clueSlot = (knight, id, role) => {
       const clue = CLUES.find(([clueId]) => clueId === id);
@@ -514,7 +514,7 @@
     };
     return `<div class="display-clue-list">${knights.map(knight => `<article class="display-clue-knight">
       <div class="display-clue-heading"><strong>${esc(knightDisplayName(knight))}</strong></div>
-      <div class="display-clue-values">${clueSlot(knight, knight.primary, "primary")}${clueSlot(knight, knight.secondary, "secondary")}</div>
+      <div class="display-clue-values">${clueSlot(knight, knight.primary, "primary")}${knight.fivePlayerTarget ? '<span class="display-clue-goal" aria-label="目标 5 枚">/5</span>' : clueSlot(knight, knight.secondary, "secondary")}</div>
     </article>`).join("")}</div>`;
   }
 

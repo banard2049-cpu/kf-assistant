@@ -24,6 +24,8 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const campaignParty = () => Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY : [];
+  // Five-player mode (rulebook p.77) adds a fifth member to every encounter.
+  const partyLimit = () => window.KF_CAMPAIGN_OPTIONS?.fivePlayer === true ? 5 : 4;
   const memberOptions = member => {
     const groups = [
       ["骑士", Array.isArray(window.KF_CAMPAIGN_KNIGHTS) ? window.KF_CAMPAIGN_KNIGHTS : []],
@@ -67,7 +69,7 @@
   }
 
   function rosterKnights(existing = []) {
-    const roster = campaignParty().slice(0, 4);
+    const roster = campaignParty().slice(0, partyLimit());
     if (!roster.length) return [{ id: uid(), name: "骑士 1", heroId: DATA.heroes?.[0]?.id || "", roll: roll(), space: "", facing: 0, action: "", done: false }];
     const usedPrevious = new Set();
     return roster.map((member, index) => {
