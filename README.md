@@ -77,7 +77,7 @@ cd KF_Unified_Assistant\tools
 .\pack-ignored-images.ps1
 ```
 
-生成的资源 ZIP 不包含 `.env`、`data/`、`backups/` 或日志。Android 版可在主界面通过“导入资源 ZIP”恢复图片。
+生成的资源 ZIP 不包含 `.env`、`data/`、`backups/` 或日志。Android 版可在主界面通过“导入资源 ZIP”恢复图片；资源包不再有 1 GB 上限，实际可导入大小取决于设备可用空间；导入时会暂时保留旧资源以便回滚，建议预留约资源包体积 2–3 倍的可用空间。
 
 ## 数据与管理
 
