@@ -35,7 +35,7 @@
   const TILE_MARKERS = new Map([
     ...CLUES.map(([id, name]) => [id, `${name}线索`]),
     ["surge", "涌水标记"], ["flood", "洪水标记"], ["rubble", "瓦砾"],
-    ["generic", "通用标记"], ["quest", "任务标记"]
+    ["generic", "通用标记"]
   ]);
   const KINGDOM_PANEL_ZONES = Object.freeze({
     SK: {
