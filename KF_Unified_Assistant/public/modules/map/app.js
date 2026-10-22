@@ -618,9 +618,9 @@
     knight.id === state.mainKnightId && knight.memberType !== "squire"
   ) || null;
   const clueAssignmentKnights = () => state.knights.filter(knight => !state.mainKnightId || knight.id !== state.mainKnightId);
-  // Five-player mode with nobody on a quest: the leader takes one random clue token as their
-  // target clue (already counting as one collected) and needs five of it; the other four draw
-  // clue cards as usual (rulebook p.77).
+  // Five-player mode with nobody on a quest: the leader takes one random clue as their target
+  // clue and needs five of it; the other four draw clue cards as usual (rulebook p.77). The
+  // digital version only records which clue the leader needs — no token is handed out.
   function fivePlayerClueLeader(recipients = clueAssignmentKnights()) {
     if (!fivePlayerMode() || state.mainKnightId || recipients.length < 5) return null;
     const leaderSheetId = window.KF_CAMPAIGN_OPTIONS?.leaderSheetId || "";
@@ -648,7 +648,6 @@
       leader.primary = target;
       leader.secondary = "";
       leader.fivePlayerTarget = true;
-      leader.clues[target] = Math.max(1, Number(leader.clues[target]) || 0);
     }
     return { ok: true, leader, drawing };
   }
@@ -4244,7 +4243,7 @@
       if (!recipients.length) return toast("没有可分配线索需求的队伍成员");
       const result = assignClueRequirements(recipients);
       if (!result.ok) return toast(result.reason);
-      addLog(`自动分配主次线索：${result.drawing.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}${result.leader ? `；五人模式队长 ${result.leader.name} 随机目标线索${clueName(result.leader.primary)}（已计 1 枚，需 5 枚）` : ""}`);
+      addLog(`自动分配主次线索：${result.drawing.map(knight => `${knight.name} 主${clueName(knight.primary)}／次${clueName(knight.secondary)}`).join("；")}${result.leader ? `；五人模式队长 ${result.leader.name} 随机目标线索${clueName(result.leader.primary)}（需 5 枚）` : ""}`);
       save(true);
     });
     $$("[data-clue]").forEach(button => button.addEventListener("click", () => {

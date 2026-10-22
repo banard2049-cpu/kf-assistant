@@ -61,6 +61,6 @@ assert.equal(fogPng[25], 6, "fog PNG must include an alpha channel");
 
 assert.match(indexSource, /styles\.css\?v=69/);
 assert.match(indexSource, /data\/map-data\.js\?v=6/);
-assert.match(indexSource, /app\.js\?v=109/);
+assert.match(indexSource, /app\.js\?v=110/);
 
 console.log("map custom markers: input, text rendering, persistence shape and styling verified");

@@ -85,7 +85,7 @@ const leader = clues.five.find(item => item.id === clues.fiveLeader);
 assert.equal(clues.fiveLeader, "s2", "the campaign leader takes the five-player target clue");
 assert.equal(leader.fivePlayerTarget, true);
 assert.equal(leader.secondary, "", "the leader collects a single target clue");
-assert.equal(leader.clues[leader.primary], 1, "the random target clue already counts as one collected");
+assert.equal(leader.clues[leader.primary], 0, "the target clue is recorded without handing out a token");
 const drawing = clues.five.filter(item => item.id !== "s2");
 assert.equal(new Set(drawing.map(item => item.primary)).size, 4, "the other four draw distinct primary clues");
 assert.ok(drawing.every(item => item.secondary && item.secondary !== item.primary && !item.fivePlayerTarget));

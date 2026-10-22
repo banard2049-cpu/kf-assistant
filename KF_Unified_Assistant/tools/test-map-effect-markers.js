@@ -53,6 +53,6 @@ assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*border-radius: 0;
 assert.match(styleSource, /\.kingdom-board-dialog \.kingdom-board-layout \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) clamp\(270px, 27vw, 380px\);/,
   "district effect cards opened from the kingdom panel button must be slightly larger");
 assert.match(indexSource, /styles\.css\?v=69/);
-assert.match(indexSource, /app\.js\?v=109/);
+assert.match(indexSource, /app\.js\?v=110/);
 
 console.log("map effect markers: defaults, migration, dragging, persistence and styling verified");

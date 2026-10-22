@@ -107,6 +107,6 @@ assert.match(styleSource, /\.delve-tracks-sticky \.delve-tracks \{\s+grid-templa
   "narrow screens must stack the tracks instead of scrolling them");
 assert.match(indexSource, /styles\.css\?v=69/);
 assert.match(indexSource, /map-view\.js\?v=9/);
-assert.match(indexSource, /app\.js\?v=109/);
+assert.match(indexSource, /app\.js\?v=110/);
 
 console.log("map track notes: normalization, persistence, controls and styling verified");
