@@ -150,7 +150,7 @@ assert.match(displayStyles, /\.map-scene\{grid-template-columns:minmax\(0,1fr\) 
 assert.match(displayStyles, /\.sidebar-clue-panel \.display-clue-list\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:8px;overflow:hidden\}/);
 assert.match(index, /styles\.css\?v=57/);
 assert.match(index, /app\.js\?v=50/);
-assert.match(index, /map-view\.js\?v=8/);
+assert.match(index, /map-view\.js\?v=9/);
 // Board-visible conflict showcase renders the idle-area party strip: knights
 // show six virtues, squires show clues; the hero group is fitted in its own
 // container so reserving the strip space never clips the big card.

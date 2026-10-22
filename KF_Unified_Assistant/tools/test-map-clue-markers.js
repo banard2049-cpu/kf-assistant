@@ -26,10 +26,10 @@ vm.runInNewContext(`
 `, context);
 
 const expected = [
-  ["martial", "武艺", "assets/tokens/红-token.png?v=1"],
-  ["errant", "游侠", "assets/tokens/绿-token.png?v=1"],
-  ["historic", "历史", "assets/tokens/黄-token.png?v=1"],
-  ["mystic", "神秘", "assets/tokens/蓝-token.png?v=1"]
+  ["martial", "武艺", "/assets/tokens/红-token.png?v=1"],
+  ["errant", "游侠", "/assets/tokens/绿-token.png?v=1"],
+  ["historic", "历史", "/assets/tokens/黄-token.png?v=1"],
+  ["mystic", "神秘", "/assets/tokens/蓝-token.png?v=1"]
 ];
 
 for (const [id, name, icon] of expected) {
@@ -40,13 +40,15 @@ for (const [id, name, icon] of expected) {
   const marker = context.result.clueMarkers.find(item => item.id === id);
   assert.equal(marker?.resolved, icon, `${name}线索 must resolve to its colored marker asset`);
   assert.ok(
-    fs.existsSync(`public/modules/map/${icon.replace(/\?.*$/, "")}`),
+    fs.existsSync(`public${icon.replace(/\?.*$/, "")}`),
     `${name}线索 asset must exist`
   );
 }
 
-assert.match(source, /current\.tileMarkers\.push\(\{ id: uid\(\), tileId: current\.selected, type: \$\("#tileMarkerType"\)\.value \}\)/);
+// Clue markers are dragged from the marker palette onto the map and drawn on the marker layer.
+assert.match(source, /function markerPalette\(\)[\s\S]*?TILE_MARKERS\.map\(item\)/);
+assert.match(source, /placeTileMarker\(current, spec\.type, tileId, position, spec\.existingId, spec\.text\)/);
 assert.match(source, /KFMapView\.renderMapStage/);
-assert.match(sharedView, /\.\.\.tileMarkers\.map\(marker => \(\{/);
+assert.match(sharedView, /for \(const marker of list\(current\.tileMarkers\)\)/);
 
 console.log("map clue markers: four placeable marker types and assets verified");

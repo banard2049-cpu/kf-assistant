@@ -674,8 +674,218 @@
       || null;
   }
 
-  function conflictKnightAssignments(layout) {
-    const starts = (layout?.placements || []).filter(placement => placement.kind === "knight");
+  // Five-player mode special trait BP "Accursed Persistence" (rulebook p.77): one copy joins every
+  // clash. Active side: every knight attack resolves against it instead of the original target, so
+  // no BP is drawn or revealed; dormant side: it cannot be targeted. It flips back at the start of
+  // the monster round and stays dormant once only one knight is left alive.
+  const ACCURSED_PERSISTENCE = Object.freeze({
+    name: "被诅咒的执念",
+    images: Object.freeze({
+      active: "/assets/cards/accursed-persistence-a.jpg",
+      dormant: "/assets/cards/accursed-persistence-b.jpg"
+    }),
+    active: Object.freeze([
+      "所有骑士攻击都改为对这张卡结算，而不是原本的目标（不抽取、不揭示原本的 BP 卡）。",
+      "若有任何已揭示的 BP 卡（包括弃牌堆），本卡 AT 等于其中最高的 AT；没有则为 0。",
+      "当只剩一名骑士存活时，立即翻转本卡。",
+      "造成损伤：翻转本卡，不晋升。",
+      "未造成损伤：本次攻击破序，并立即执行标志行为，然后翻转本卡。",
+      "关键损伤：翻转本卡，不晋升。你可以进行一次额外攻击！"
+    ]),
+    dormant: Object.freeze([
+      "你不能以任何方式与本 BP 卡互动或将其作为目标。",
+      "怪物轮开始时：翻转本卡。若只剩一名骑士存活，忽略此效果。"
+    ])
+  });
+  const fivePlayerMode = () => window.KF_CAMPAIGN_OPTIONS?.fivePlayer === true;
+  const accursedState = (battle = state.battle) => battle?.accursed || null;
+  const accursedIntercepts = (battle = state.battle) => {
+    const accursed = accursedState(battle);
+    return Boolean(accursed && accursed.side === "active" && !accursed.lastKnight);
+  };
+
+  function normalizeAccursed(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    return { side: raw.side === "dormant" ? "dormant" : "active", lastKnight: raw.lastKnight === true };
+  }
+
+  // Revealed BP cards that set the Accursed Persistence AT: discard pile, wounded BPs and
+  // face-up mob BPs.
+  function accursedRevealedBps(monster, battle = state.battle) {
+    const piles = [...battle.bpDiscard, ...battle.bpDamage.filter(id => !String(id).startsWith(WOUND_PREFIX))];
+    const track = (battle.bpTrack || []).filter(slot => slot?.id && slot.revealed).map(slot => slot.id);
+    return [...new Set([...piles, ...track])].filter(id => cardById(monster, id));
+  }
+
+  function resolveAccursed(action) {
+    const b = state.battle;
+    const accursed = accursedState(b);
+    if (!accursed) return;
+    if (!accursedIntercepts(b)) return toast("被诅咒的执念在休眠面，不能作为攻击目标");
+    if (action === "fail" && b.ruleState.ruleCard) return toast("请先完成当前特殊卡面处理");
+    const monster = monsterById(b.monsterId);
+    remember();
+    accursed.side = "dormant";
+    if (action === "fail") {
+      const signature = monster.cards.find(card => card.kind === "SIG");
+      if (signature) {
+        b.ruleState.ruleCard = signature.id;
+        b.ruleState.ruleCardReason = "被诅咒的执念：标志行为";
+      }
+      b.ruleState.ruleNotice = "被诅咒的执念·未造成损伤：本次攻击破序，怪物立即执行标志行为；执念已翻到休眠面。";
+      log("被诅咒的执念：未造成损伤，破序并执行标志行为，翻到休眠面");
+    } else if (action === "critical") {
+      b.ruleState.ruleNotice = "被诅咒的执念·关键损伤：翻到休眠面，不晋升；该骑士可以进行一次额外攻击。";
+      log("被诅咒的执念：关键损伤，翻到休眠面，不晋升，可进行额外攻击");
+    } else {
+      b.ruleState.ruleNotice = "被诅咒的执念·造成损伤：翻到休眠面，不晋升，也不计入损伤堆叠。";
+      log("被诅咒的执念：造成损伤，翻到休眠面，不晋升");
+    }
+    save();
+  }
+
+  // Start of the monster round: a dormant Accursed Persistence flips back (not with one knight left).
+  function accursedMonsterRound(source = "怪物轮开始") {
+    const accursed = accursedState();
+    if (!accursed || accursed.lastKnight || accursed.side === "active") return false;
+    accursed.side = "active";
+    log(`${source}：被诅咒的执念翻回生效面`);
+    return true;
+  }
+
+  function flipAccursedForRound() {
+    const accursed = accursedState();
+    if (!accursed) return;
+    if (accursed.lastKnight) return toast("只剩一名骑士存活：执念保持休眠面");
+    if (accursed.side === "active") return toast("执念已经是生效面");
+    remember();
+    accursedMonsterRound();
+    save();
+  }
+
+  function setAccursedLastKnight(value) {
+    const accursed = accursedState();
+    if (!accursed) return;
+    remember();
+    accursed.lastKnight = Boolean(value);
+    if (accursed.lastKnight) accursed.side = "dormant";
+    log(accursed.lastKnight ? "只剩一名骑士存活：被诅咒的执念翻到休眠面，不再翻回" : "取消“只剩一名骑士存活”");
+    save();
+  }
+
+  function addAccursedToClash() {
+    if (accursedState()) return;
+    remember();
+    state.battle.accursed = { side: "active", lastKnight: false };
+    log("五人模式：本场冲突加入被诅咒的执念");
+    save();
+  }
+
+  function accursedPanel(monster, b) {
+    const accursed = accursedState(b);
+    if (!accursed) {
+      return fivePlayerMode()
+        ? `<section class="panel accursed-panel"><div class="panel-header"><div><span class="eyebrow">FIVE PLAYER MODE · TRAIT BP</span><h3>被诅咒的执念</h3></div></div>
+          <p class="rule-notice">这场冲突是在开启五人模式之前建立的，还没有加入被诅咒的执念。</p>
+          <div class="aibp-actions"><button class="button" data-accursed="add">加入被诅咒的执念</button></div></section>`
+        : "";
+    }
+    const active = accursed.side === "active";
+    const intercepts = accursedIntercepts(b);
+    const revealed = accursedRevealedBps(monster, b);
+    const actions = intercepts
+      ? `<p class="rule-notice">骑士攻击改为对执念结算：不抽 BP${isMob(monster) ? "，也不翻开杂兵 BP" : ""}；穿心、精确等 BP 瞄准技能对执念无效。</p>
+        <div class="accursed-at"><strong>AT</strong> ${revealed.length
+          ? `取下列已揭示 BP 中最高的 AT：<div class="accursed-revealed">${revealed.map(id => cardHtml(cardById(monster, id), "accursed-mini", "face", false)).join("")}</div>`
+          : "= 0（还没有已揭示的 BP）"}</div>
+        <div class="aibp-actions">
+          <button class="button secondary" data-accursed="fail" title="破序，怪物立即执行标志行为，然后翻面">未造成损伤</button>
+          <button class="button" data-accursed="wound" title="翻面，不晋升">造成损伤</button>
+          <button class="button secondary" data-accursed="critical" title="翻面，不晋升，可进行一次额外攻击">关键损伤</button>
+        </div>`
+      : `<div class="aibp-actions"><button class="button" data-accursed="round" ${accursed.lastKnight ? "disabled" : ""} title="怪物轮开始时把执念翻回生效面">怪物轮开始：翻回生效面</button></div>`;
+    return `<section class="panel accursed-panel ${active ? "active" : "dormant"}">
+      <div class="panel-header"><div><span class="eyebrow">FIVE PLAYER MODE · TRAIT BP</span><h3>被诅咒的执念</h3></div><span class="badge ${active ? "gold" : ""}">${active ? "生效面" : "休眠面"}</span></div>
+      <div class="accursed-body">
+        <img class="accursed-card" src="${esc(ACCURSED_PERSISTENCE.images[active ? "active" : "dormant"])}" alt="被诅咒的执念（${active ? "生效面" : "休眠面"}）">
+        <div class="accursed-rules">
+          <ul>${ACCURSED_PERSISTENCE[active ? "active" : "dormant"].map(line => `<li>${esc(line)}</li>`).join("")}</ul>
+          ${actions}
+          <label class="accursed-last-knight"><input type="checkbox" data-accursed-last ${accursed.lastKnight ? "checked" : ""}> 只剩一名骑士存活（执念翻到休眠面，不再翻回）</label>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Five-player mode: the fifth member starts beside any other knight (rulebook p.77). Layouts
+  // print four starts, so each missing start goes on a free square next to a knight, as far from
+  // the monster as possible.
+  function extraKnightPlacements(layout, partyCount = Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY.length : 0) {
+    const placements = layout?.placements || [];
+    const starts = placements.filter(item => item.kind === "knight");
+    const missing = Math.max(0, Number(partyCount) - starts.length);
+    if (!missing || !starts.length) return [];
+    const grid = window.KF_CONFLICT_BOARD_DATA?.grid || {};
+    const rows = Number(grid.rows) || 10;
+    const columns = Number(grid.columns) || 14;
+    const key = (row, column) => `${row}:${column}`;
+    const cells = item => {
+      const result = [];
+      for (let row = item.rowStart; row <= item.rowEnd; row++) {
+        for (let column = item.columnStart; column <= item.columnEnd; column++) result.push([row, column]);
+      }
+      return result;
+    };
+    const occupied = new Set(placements.flatMap(item => cells(item).map(([row, column]) => key(row, column))));
+    const monsterCells = placements.filter(item => item.kind === "monster").flatMap(cells);
+    const distance = (row, column) => monsterCells.length
+      ? Math.min(...monsterCells.map(([r, c]) => Math.abs(r - row) + Math.abs(c - column))) : 0;
+    const extras = [];
+    for (let index = 0; index < missing; index++) {
+      let best = null;
+      for (const start of [...starts, ...extras]) {
+        for (const [dRow, dColumn] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
+          const row = start.rowStart + dRow;
+          const column = start.columnStart + dColumn;
+          if (row < 1 || row > rows || column < 1 || column > columns || occupied.has(key(row, column))) continue;
+          const score = distance(row, column);
+          if (!best || score > best.score) best = { row, column, score };
+        }
+      }
+      if (!best) break;
+      occupied.add(key(best.row, best.column));
+      extras.push({
+        id: `knight-extra-${index + 1}`, kind: "knight", asset: starts[0].asset || "KnightStart",
+        ref: `${String.fromCharCode(75 - best.row)}${best.column}`,
+        rowStart: best.row, rowEnd: best.row, columnStart: best.column, columnEnd: best.column,
+        orientation: "S", rotation: 0, layer: starts[0].layer ?? 20, extra: true
+      });
+    }
+    return extras;
+  }
+
+  function normalizeExtraKnightPlacements(raw, layout) {
+    const partyCount = Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY.length : 0;
+    const printed = (layout?.placements || []).filter(item => item.kind === "knight").length;
+    const missing = Math.max(0, partyCount - printed);
+    if (!Array.isArray(raw) || raw.length < missing) return extraKnightPlacements(layout, partyCount);
+    const used = new Set((layout?.placements || []).map(item => item.id));
+    return raw.slice(0, missing).flatMap(item => {
+      const id = String(item?.id || "");
+      if (!/^knight-extra-\d{1,2}$/.test(id) || used.has(id)) return [];
+      used.add(id);
+      const row = clamp(item.rowStart, 1, 10);
+      const column = clamp(item.columnStart, 1, 14);
+      return [{
+        id, kind: "knight", asset: String(item.asset || "KnightStart"), ref: `${String.fromCharCode(75 - row)}${column}`,
+        rowStart: row, rowEnd: row, columnStart: column, columnEnd: column,
+        orientation: "S", rotation: 0, layer: clamp(item.layer ?? 20, 1, 99), extra: true
+      }];
+    });
+  }
+
+  function conflictKnightAssignments(layout, extraPlacements = []) {
+    const starts = [...(layout?.placements || []), ...extraPlacements].filter(placement => placement.kind === "knight");
     const party = Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY : [];
     return starts.slice(0, party.length).flatMap((placement, index) => {
       const member = party[index] || {};
@@ -767,6 +977,7 @@
       max: Number(BELLY_BOARD.digestiveTrack?.max) || 4,
       step: Number(BELLY_BOARD.digestiveTrack?.step) || 1
     } : null;
+    const extraPlacements = extraKnightPlacements(layout);
     return {
       layoutId: layout.id,
       boardId: belly ? "belly_of_beast" : "standard",
@@ -776,7 +987,8 @@
       requestedKingdom,
       level: Number(level) || 1,
       resolvedOrientations,
-      knightAssignments: conflictKnightAssignments(layout),
+      extraPlacements,
+      knightAssignments: conflictKnightAssignments(layout, extraPlacements),
       mobAssignments: numberable.slice(0, numbers.length).map((placement, index) => ({ placementId: placement.id, number: numbers[index] })),
       terrain: defaultConflictTerrain(layout, resolvedOrientations),
       showStarts: true,
@@ -818,8 +1030,9 @@
       const choices = window.KF_CONFLICT_BOARD_DATA?.randomOrientations?.[placement.orientation] || [0];
       resolvedOrientations[placement.id] = choices[Math.floor(Math.random() * choices.length)];
     }
+    const extraPlacements = normalizeExtraKnightPlacements(raw?.extraPlacements, layout);
     const placementIds = new Set(layout.placements.map(item => item.id));
-    const knightPlacementIds = new Set(layout.placements.filter(item => item.kind === "knight").map(item => item.id));
+    const knightPlacementIds = new Set([...layout.placements, ...extraPlacements].filter(item => item.kind === "knight").map(item => item.id));
     const usedKnightPlacements = new Set();
     const knightAssignments = (Array.isArray(raw?.knightAssignments) ? raw.knightAssignments : []).flatMap(item => {
       const placementId = String(item?.placementId || "");
@@ -862,7 +1075,9 @@
       requestedKingdom: raw?.requestedKingdom === "stone" ? "stone" : "sunken",
       level: Number(raw?.level) || Number(level) || 1,
       resolvedOrientations,
-      knightAssignments: knightAssignments.length ? knightAssignments : conflictKnightAssignments(layout),
+      extraPlacements,
+      knightAssignments: knightAssignments.length && extraPlacements.every(item => knightAssignments.some(assigned => assigned.placementId === item.id))
+        ? knightAssignments : conflictKnightAssignments(layout, extraPlacements),
       mobAssignments: mobAssignments.length ? mobAssignments : (fallback?.mobAssignments || []),
       terrain: normalizeConflictTerrain(raw?.terrain, layout, resolvedOrientations),
       showStarts: raw?.showStarts !== false,
@@ -897,6 +1112,7 @@
       conflictLocation: "",
       conflictType: "normal",
       conflictBoard: buildConflictBoard(monster, 1),
+      accursed: null,
       deckOrderVisible: true,
       aiView: "discard", bpView: "damage", galleryKind: "ALL",
       log: []
@@ -1041,6 +1257,7 @@
       conflictLocation: monster.id === "M_YoungDevour" ? "" : String(raw?.conflictLocation || ""),
       conflictType: monster.id === "M_YoungDevour" ? "normal" : (raw?.conflictLocation === "巨兽之腹" || raw?.conflictType === "belly_of_beast" ? "belly_of_beast" : "normal"),
       deckOrderVisible: raw?.deckOrderVisible !== false,
+      accursed: normalizeAccursed(raw?.accursed),
       log: Array.isArray(raw?.log) ? raw.log.slice(-100) : []
     };
     normalized.conflictBoard = normalizeConflictBoard(raw?.conflictBoard, monster, level, normalized);
@@ -1367,6 +1584,7 @@
       mobActivations: isMob(monster) ? battle.mobActivations : [], activeMobActivationId: "",
       sheetTokens: [],
       singleWounds: 0, doubleWounds: 0,
+      accursed: fivePlayerMode() ? { side: "active", lastKnight: false } : null,
       aiView: "discard", bpView: "damage", log: []
     });
     battle.conflictBoard = buildConflictBoard(monster, battle.level, battle);
@@ -1542,6 +1760,7 @@
     const monster = monsterById(state.battle.monsterId);
     if (ratwolfSignaturePending()) return toast("请先完成新生狼鼠的标志行为");
     if (type === "bp" && isMob(monster)) return toast("杂兵请从 BP 轨选择目标");
+    if (type === "bp" && accursedIntercepts()) return toast("被诅咒的执念生效中：这次攻击改为对执念结算，请在执念面板选择结果");
     const active = `active${type.toUpperCase()}`;
     if (state.battle[active]) return toast(`请先处理当前 ${type.toUpperCase()} 卡`);
     if (type === "ai" && bossRule(monster)?.kind === "puppet-king" && state.battle.level >= 4) {
@@ -3406,6 +3625,7 @@
     state.battle.mobActivations.forEach(token => { token.used = false; });
     state.battle.activeMobActivationId = "";
     log("怪物轮开始：所有激活指示物翻至准备面");
+    accursedMonsterRound();
     save();
   }
 
@@ -3449,6 +3669,7 @@
   function selectMob(index) {
     if (ratwolfSignaturePending()) return toast("请先完成新生狼鼠的标志行为");
     if (state.battle.activeBP) return toast("请先处理当前 BP");
+    if (accursedIntercepts()) return toast("被诅咒的执念生效中：这次攻击改为对执念结算，不翻开杂兵 BP");
     const slot = state.battle.bpTrack[index];
     if (!slot?.id) return toast("此位置为空");
     remember();
@@ -4823,7 +5044,7 @@
     const boardState = battle?.conflictBoard;
     if (!boardState || !window.KF_OVERLAY) return null;
     const layout = conflictBoardLayout(battle);
-    return window.KF_OVERLAY.computeOverlay(boardState, layout?.placements || []);
+    return window.KF_OVERLAY.computeOverlay(boardState, [...(layout?.placements || []), ...(boardState.extraPlacements || [])]);
   }
 
   function conflictOverlayCellLabel(cell) {
@@ -5025,7 +5246,7 @@
     const knightAssignments = new Map((boardState.knightAssignments || []).map(item => [item.placementId, item]));
     const mobAssignments = new Map((boardState.mobAssignments || []).map(item => [item.placementId, item.number]));
     // Number 标记是版图计数信息，不属于可隐藏的起始模型。
-    const starts = (layout.placements || []).filter(item => item.kind !== "terrain")
+    const starts = [...(layout.placements || []), ...(boardState.extraPlacements || [])].filter(item => item.kind !== "terrain")
       .filter(item => boardState.showStarts !== false
         || item.kind === "number"
         || !(["knight", "monster"].includes(item.kind) || ["LictorDecoy", "Armor"].includes(item.asset))).map(item => {
@@ -5391,6 +5612,7 @@
             ${mob ? (winged ? "" : mobTrackHtml(monster, b)) : doppelgangerTrackHtml(monster, b)}
           </section>
           ${bossRulePanel(monster)}
+          ${accursedPanel(monster, b)}
           <section class="panel aibp-panel">
             <div class="aibp-columns">
               <div class="aibp-column">
@@ -5803,6 +6025,13 @@
     $$("[data-activation]").forEach(button => button.addEventListener("click", () => resolveMobActivation(button.dataset.activation)));
     $("[data-warrior-muscular-defeat]")?.addEventListener("click", defeatWarriorMuscularChest);
     $("#startMobRound")?.addEventListener("click", startMobRound);
+    $$("[data-accursed]").forEach(button => button.addEventListener("click", () => {
+      const action = button.dataset.accursed;
+      if (action === "add") return addAccursedToClash();
+      if (action === "round") return flipAccursedForRound();
+      resolveAccursed(action);
+    }));
+    $("[data-accursed-last]")?.addEventListener("change", event => setAccursedLastKnight(event.target.checked));
     $("[data-mob-action-complete]")?.addEventListener("click", completeMobAction);
     $("#galleryKind")?.addEventListener("change", event => { state.battle.galleryKind = event.target.value; save(); });
     $$("[data-preview]").forEach(button => button.addEventListener("click", event => {
@@ -6020,6 +6249,9 @@
       spawnMob, completeMobAction, startMobRound, resolveMobActivation, resolveEtherealUnity, completeRatwolfSignature,
       resolveWingedNightmareAttack, resolveWingedAiResponse, ensureWingedAiDiscard,
       selectMob, settleMob: action => settleMob(monsterById(state.battle.monsterId), action),
+      resolveAccursed, flipAccursedForRound, setAccursedLastKnight, addAccursedToClash, extraKnightPlacements,
+      accursedRevealedBps: () => accursedRevealedBps(monsterById(state.battle.monsterId), state.battle),
+      renderAccursed: () => accursedPanel(monsterById(state.battle.monsterId), state.battle),
       resetConflictTerrain, moveConflictTerrain, rotateConflictTerrain, conflictTerrainGeometry,
       toggleConflictCoordinates, drawOrResetFoolCard, conflictGridCellRef, conflictGridHtml,
       conflictOverlay, conflictOverlaySettings, updateConflictOverlay,

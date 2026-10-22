@@ -52,6 +52,6 @@ assert.match(apiSource, /\['attempted'=>false,'success'=>''\]/);
 assert.ok(apiSource.includes("preg_match('/^story\\.\\d+\\.investigations\\.\\d+\\.success$/',$path)"));
 assert.ok(apiSource.includes("$value!=='' && (!is_int($value) || $value<0 || $value>99)"));
 assert.match(indexSource, /\/styles\.css\?v=19/);
-assert.match(indexSource, /\/app\.js\?v=31/);
+assert.match(indexSource, /\/app\.js\?v=32/);
 
 console.log("knight sheet investigations: first cell stores a bounded number");

@@ -2565,3 +2565,19 @@ label,
 .aibp-actions .button.secondary.mob-action-required:not(:disabled):hover {
   background: #cf3030;
 }
+
+/* Five-player mode: Accursed Persistence trait BP */
+.accursed-panel.active { border-color: #c8a966; box-shadow: 0 0 0 1px rgba(200, 169, 102, .35); }
+.accursed-panel .accursed-body { display: grid; grid-template-columns: minmax(120px, 180px) minmax(0, 1fr); gap: 14px; align-items: start; }
+.accursed-panel .accursed-card { width: 100%; border-radius: 8px; box-shadow: 0 6px 16px rgba(0, 0, 0, .45); }
+.accursed-panel .accursed-rules ul { margin: 0 0 8px; padding-left: 18px; line-height: 1.55; }
+.accursed-panel .accursed-at { margin: 8px 0; }
+.accursed-panel .accursed-revealed { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.accursed-panel .accursed-revealed .card-button { width: 64px; }
+.accursed-panel .aibp-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.accursed-panel .accursed-last-knight { display: flex; gap: 8px; align-items: center; justify-content: flex-start; margin-top: 10px; font-size: 13px; }
+.accursed-panel .accursed-last-knight input { width: auto; flex: 0 0 auto; margin: 0; padding: 0; }
+@media (max-width: 700px) {
+  .accursed-panel .accursed-body { grid-template-columns: 1fr; }
+  .accursed-panel .accursed-card { max-width: 200px; }
+}
