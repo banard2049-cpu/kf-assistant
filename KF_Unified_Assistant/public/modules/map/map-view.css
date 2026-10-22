@@ -167,3 +167,80 @@
   .map-stage { min-width: 620px; }
   .delve-tracks { grid-template-columns: minmax(320px, 10fr) minmax(240px, 6fr) minmax(620px, 17fr); }
 }
+
+/* Map markers live on their own layer above the tiles so they can sit on a passage between two
+   tiles and be dragged across the whole map. */
+.map-marker-layer { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
+.map-marker-token {
+  position: absolute;
+  z-index: 1;
+  width: clamp(20px, var(--marker-size, 3%), 64px);
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.map-marker-token.on-passage { z-index: 2; }
+.map-marker-token.custom-marker-token {
+  display: grid;
+  place-items: center;
+  width: auto;
+  min-width: clamp(20px, var(--marker-size, 3%), 64px);
+  max-width: 8.5em;
+  aspect-ratio: auto;
+  padding: 3px 6px;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+  color: #fff1c7;
+  background: rgba(17, 23, 20, .94);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+}
+.map-marker-token.drag-source { opacity: .3; }
+.map-marker-layer.read-only .map-marker-token { pointer-events: none; cursor: default; }
+.map-passage-hint {
+  position: absolute;
+  z-index: 3;
+  width: clamp(22px, var(--marker-size, 3%), 66px);
+  aspect-ratio: 1;
+  border: 3px dashed var(--gold-soft);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px rgba(240, 207, 132, .85);
+  pointer-events: none;
+}
+.map-tile.marker-drop-target { outline: 3px solid var(--gold-soft); outline-offset: -3px; z-index: 19; }
+.marker-drag-ghost {
+  position: fixed;
+  z-index: 1000;
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
+  pointer-events: none;
+}
+.marker-drag-ghost.custom-marker-token {
+  display: grid;
+  place-items: center;
+  width: auto;
+  height: auto;
+  min-width: 46px;
+  padding: 4px 7px;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  color: #fff1c7;
+  background: rgba(17, 23, 20, .94);
+  font-size: 11px;
+  font-weight: 800;
+}
+.marker-drag-ghost.will-delete { opacity: .55; filter: grayscale(1) drop-shadow(0 0 6px #e06c5a); }

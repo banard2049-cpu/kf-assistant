@@ -61,7 +61,7 @@ assert.match(stylesSource, /\.delve-tracks-sticky \{[\s\S]*?top: 46px;/,
   "the sticky delve tracks must clear only the unified campaign bar");
 assert.match(stylesSource, /@media \(max-width: 780px\) \{\s+\.delve-tracks-sticky,\s+\.history-panel \{ top: 0; \}/,
   "sticky panels must drop the offset when the unified campaign bar stops being sticky");
-assert.match(indexSource, /app\.js\?v=108/);
-assert.match(indexSource, /styles\.css\?v=68/);
+assert.match(indexSource, /app\.js\?v=109/);
+assert.match(indexSource, /styles\.css\?v=69/);
 
 console.log("map host layout: priority, recent history, flow control and host tools order verified");
