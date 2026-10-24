@@ -4,21 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KF 地图深入主持器</title>
-  <link rel="stylesheet" href="map-view.css?v=7">
-  <link rel="stylesheet" href="styles.css?v=83">
-  <link rel="stylesheet" href="../module-bridge.css">
+  <link rel="stylesheet" href="map-view.css?v=9">
+  <link rel="stylesheet" href="styles.css?v=85">
+  <link rel="stylesheet" href="../module-bridge.css?v=18">
 </head>
-<body data-kf-module="map" data-storage-key="kf-map-host-v8" data-original-app="app.js?v=114">
-  <header class="app-header">
-    <div class="app-identity">
-      <div class="eyebrow">KINGDOM FORLORN</div>
+<body data-kf-module="map" data-storage-key="kf-map-host-v8" data-original-app="app.js?v=122">
+  <header class="app-header" data-unified-topbar="map">
+    <div data-topbar-title class="app-identity">
       <h1>地图深入主持器</h1>
     </div>
-    <div class="toolbar app-commands">
-      <select id="kingdomSelect" aria-label="王国">
-        <option value="SK">Sunken Kingdom</option>
-        <option value="POS">Principality of Stone</option>
-      </select>
+    <div class="toolbar app-commands" data-topbar-actions>
+      <span id="campaignKingdom" class="bridge-status" aria-label="当前王国" title="由当前战役保存的王国配置决定"></span>
       <button id="undoButton" class="secondary">撤销一步</button>
       <button id="exportButton" class="secondary">导出存档</button>
       <label class="button secondary">导入存档<input id="importInput" type="file" accept=".json" hidden></label>
@@ -29,11 +25,14 @@
   <main id="app"></main>
   <div id="toast" class="toast" hidden></div>
 
-  <script src="data/map-data.js?v=6"></script>
+  <script src="../../monster-labels.js?v=3"></script>
+  <script src="../../knight-portrait-colors.js?v=1"></script>
+  <script src="data/map-data.js?v=14"></script>
   <script src="data/map-layout.js?v=1"></script>
-  <script src="map-view.js?v=11"></script>
+  <script src="map-view.js?v=16"></script>
   <script src="fog-rules.js?v=6"></script>
   <script src="mercenary-rules.js?v=2"></script>
-  <script src="../module-bridge.js?v=15" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=114';document.body.append(app)"></script>
+  <script src="../module-topbar.js?v=1"></script>
+  <script src="../module-bridge.js?v=18" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=122';document.body.append(app)"></script>
 </body>
 </html>

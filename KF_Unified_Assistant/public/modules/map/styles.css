@@ -286,6 +286,7 @@ main { padding: 12px 18px 28px; }
   object-fit: fill;
 }
 .kingdom-monster-wheel-token {
+  container-type: inline-size;
   position: absolute;
   z-index: 4;
   left: var(--token-x);
@@ -309,7 +310,7 @@ main { padding: 12px 18px 28px; }
 .kingdom-monster-wheel-token:hover {
   z-index: 7;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .82)) brightness(1.12);
-  transform: translate(-50%, -50%) scale(1.06);
+  transform: translate(-50%, -50%);
 }
 .kingdom-monster-wheel-token:focus-visible {
   z-index: 8;
@@ -710,6 +711,17 @@ button.effect-card-marker .effect-marker-token {
   object-fit: contain;
   background: transparent;
 }
+.token-icon.monster-portrait,
+.map-tile .map-token[data-token-kind="monster"],
+.kingdom-monster-wheel-token > img {
+  box-sizing: border-box;
+  border: 6px solid #a53c36;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.token-icon.monster-portrait { border-width: min(6px, calc(34px * .112)); }
+.map-tile .map-token[data-token-kind="monster"] { border-width: min(6px, calc(var(--tile-token-size) * .112)); }
+.kingdom-monster-wheel-token > img { border-width: min(6px, 11.2cqw); }
 .token-fallback {
   display: inline-grid;
   place-items: center;

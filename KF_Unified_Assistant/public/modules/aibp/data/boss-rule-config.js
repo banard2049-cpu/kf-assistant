@@ -39,8 +39,7 @@ window.KF_BOSS_RULE_CONFIG = {
   },
   M_Stonemason: {
     kind: "stonemason",
-    actions: ["set-direction", "monster-round", "ruin", "buried-alive", "ferrospikes"],
-    directions: ["front", "right", "back", "left"]
+    actions: ["change-armor"]
   },
   M_KingLaidLow: {
     kind: "king-laid-low",

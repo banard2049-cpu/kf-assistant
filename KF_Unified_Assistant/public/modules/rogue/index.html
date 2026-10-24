@@ -4,15 +4,15 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>KF 肉鸽之路</title>
   <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="../module-bridge.css?v=13">
+  <link rel="stylesheet" href="../module-bridge.css?v=18">
   <style>.counter-controls{display:flex;align-items:center;gap:8px}.counter-button{width:26px;height:26px;padding:0;border:1px solid #b88b52;background:#2b211e;color:#f5d27a;font-size:18px;line-height:1;cursor:pointer}.file-button input{display:none}</style>
 </head>
-<body data-kf-module="rogue" data-storage-key="kf-rogue-path-v2" data-original-app="app.js?v=12">
+<body data-kf-module="rogue" data-storage-key="kf-rogue-path-v2" data-original-app="app.js?v=13">
+  <header class="rogue-head" data-unified-topbar="rogue">
+    <div data-topbar-title><h1>肉鸽之路</h1></div>
+    <div class="rogue-actions" data-topbar-actions><a class="button hidden" href="/tools/rogue-labels/index.html">核对节点标签</a><label class="button file-button hidden">导入标签修正<input id="importRogueLabels" type="file" accept="application/json,.json"></label><span id="saveStatus">已保存</span><label class="save-slot-control">存档<select id="rogueSaveSelect" aria-label="切换肉鸽存档"></select></label><button id="newRun" class="danger">新建肉鸽战役</button></div>
+  </header>
   <main id="app" class="rogue-shell">
-    <header class="rogue-head">
-      <div><p class="eyebrow">ROSEGRAAL · ROGUE'S PATH</p><h1>肉鸽之路</h1><p class="muted">连续冲突闯关 · 独立骑士与成长</p></div>
-      <div class="rogue-actions"><a class="button hidden" href="/tools/rogue-labels/index.html">核对节点标签</a><label class="button file-button hidden">导入标签修正<input id="importRogueLabels" type="file" accept="application/json,.json"></label><span id="saveStatus">已保存</span><label class="save-slot-control">存档<select id="rogueSaveSelect" aria-label="切换肉鸽存档"></select></label><button id="newRun" class="danger">新建肉鸽战役</button></div>
-    </header>
     <section id="setupPanel" class="panel setup-panel">
       <div class="panel-title"><div><h2>创建肉鸽骑士</h2><p class="muted">选择 1–4 名独立骑士；不会读取或修改主战役骑士表。</p></div><span class="badge">初始复活次数：5</span></div>
       <div id="knightChoices" class="knight-choices"></div>
@@ -30,8 +30,10 @@
     <section id="rewardChoiceModal" class="sheet-modal hidden" aria-modal="true" role="dialog" aria-labelledby="rewardChoiceTitle"><div class="sheet-card"><div class="panel-title"><div><h2 id="rewardChoiceTitle">选择奖励</h2><p class="muted">节点类型固定按地图图标结算；仅当奖励表该格有多个勾选项时，在此为每名骑士选择一项。</p></div></div><div id="rewardChoiceBody"></div><div class="resolution-actions"><button id="confirmRewardChoices" class="primary" type="button">确认奖励选择</button></div></div></section>
     <section id="emptyPanel" class="panel empty-panel"><h2>尚未开始肉鸽战役</h2><p class="muted">先在上方创建肉鸽骑士。</p></section>
   </main>
+  <script src="../../knight-portrait-colors.js?v=1"></script>
   <script src="data.js?v=9"></script>
-  <script src="../encounter/data/encounter-data.js"></script>
-  <script src="../module-bridge.js?v=15"></script>
+  <script src="../encounter/data/encounter-data.js?v=12"></script>
+  <script src="../module-topbar.js?v=1"></script>
+  <script src="../module-bridge.js?v=17"></script>
 </body>
 </html>

@@ -23,7 +23,7 @@ assert.match(appSource, /peekBoardIcons\.addEventListener\("blur"/,
   "losing focus restores board pieces");
 assert.match(stylesSource, /\.board-wrap\.pieces-hidden \.piece \{ visibility: hidden; \}/,
   "peek mode hides every board piece without changing encounter state");
-assert.match(indexSource, /styles\.css\?v=14/);
-assert.match(indexSource, /app\.js\?v=25/);
+assert.match(indexSource, /styles\.css\?v=19/);
+assert.match(indexSource, /app\.js\?v=33/);
 
 console.log("encounter board peek: hold hides all board pieces and release restores them");

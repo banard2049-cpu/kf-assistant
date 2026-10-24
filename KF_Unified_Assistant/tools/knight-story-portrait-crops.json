@@ -1,0 +1,95 @@
+{
+  "stoneface": {
+    "fileName": "卡拉与林中骑士（125.pdf",
+    "pdfPage": 5,
+    "printedPage": 4,
+    "cropPdfPoints": [
+      85,
+      35,
+      285,
+      235
+    ],
+    "rotationDegrees": 0,
+    "sha256": "4dae2bd34c1450f353cd067af47ffd446266cb7ff2b6e6f1f0e1e1dd7e46f60c",
+    "identityNote": "The cover names Kara, but the title page and prologue inside identify Stoneface. Use the Stoneface illustration on PDF p.5."
+  },
+  "kara": {
+    "fileName": "石中的男孩（108.pdf",
+    "pdfPage": 5,
+    "printedPage": 4,
+    "cropPdfPoints": [
+      96,
+      66,
+      296,
+      266
+    ],
+    "rotationDegrees": 0,
+    "sha256": "9902cec820302f304544852b4f3e5d496c37aa0614be083b95ae9f50e0c9bced",
+    "identityNote": "The cover names Stoneface, but the title page and prologue inside identify Kara. Use the Kara illustration on PDF p.5."
+  },
+  "paracelsa": {
+    "fileName": "帕拉塞尔苏斯（136.pdf",
+    "pdfPage": 5,
+    "printedPage": 4,
+    "cropPdfPoints": [
+      105,
+      74,
+      285,
+      254
+    ],
+    "rotationDegrees": 0,
+    "sha256": "f0439d9d17ef7382b9ff424e07d31df0fae28a5a29046e55c8fd025eab1fec01"
+  },
+  "ser-ubar": {
+    "fileName": "赛尔乌吧与被扼杀帝国的罪孽（133.pdf",
+    "pdfPage": 5,
+    "printedPage": 4,
+    "cropPdfPoints": [
+      65,
+      25,
+      265,
+      225
+    ],
+    "rotationDegrees": -90,
+    "sha256": "fdcabfd10875b1df8ed1a139f4c5936e248aea059cb2fcd4f5274b35df35026d"
+  },
+  "ser-sonch": {
+    "fileName": "桑乔爵士与最后的交易（140.pdf",
+    "pdfPage": 7,
+    "printedPage": 6,
+    "cropPdfPoints": [
+      95,
+      20,
+      315,
+      240
+    ],
+    "rotationDegrees": 0,
+    "sha256": "33556e55180152215b4e3016c96f97c8fdf6890600fd711fc48fea041ea7930d"
+  },
+  "fleischritter": {
+    "fileName": "肉食者与饥饿之灾（112.pdf",
+    "pdfPage": 7,
+    "printedPage": 6,
+    "cropPdfPoints": [
+      73,
+      6,
+      293,
+      226
+    ],
+    "rotationDegrees": 0,
+    "sha256": "e8191497c635f78b25edafc61ad062b48e28f9a88c19889c5a30632c296eaebb"
+  },
+  "renholder": {
+    "fileName": "雷恩霍尔德与灵之秘（124.pdf",
+    "pdfPage": 7,
+    "printedPage": 6,
+    "cropPdfPoints": [
+      94,
+      105,
+      319,
+      330
+    ],
+    "rotationDegrees": 0,
+    "sha256": "4a7404d242ab3749fb2087585ee3a7024ca7649312a1d80c60f3172d76257af6"
+  }
+}

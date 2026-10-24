@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
+  const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
 
   const DATA = window.KF_MONSTER_DATA;
   const LEVELS = window.KF_LEVEL_CONFIG || {};
@@ -22,7 +24,7 @@
     ["token-01", "Generic", "generic.png"],
     ["token-04", "Bane", "httpssteamusercontentaakamaihdnetugc107925210701772985157F1FFBF1B6B3122574EAC077DF071EEAECD0A.jpg"],
     ["token-06", "Charge", "httpssteamusercontentaakamaihdnetugc107925210701773816D94D0D9F92199789B87B059762037FBCDB3002F.jpg"],
-    ["token-08", "Fog Gate", "httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.jpg"],
+    ["token-08", "Fog Gate", "httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.png"],
     ["token-09", "Devotion", "httpssteamusercontentaakamaihdnetugc1079252107017740261329DF7464BB346AC1307E370422403ED4AABE9.jpg"],
     ["token-11", "Scrape", "httpssteamusercontentaakamaihdnetugc10792521070177409519E3960B377A6A0CF46E8E04206FF8B556C47CF.jpg"],
     ["token-16", "Precision+", "httpssteamusercontentaakamaihdnetugc10792521070177552FA3C2C3D1D58187DA29E930E0BA1248B856EF54B.jpg"],
@@ -35,11 +37,12 @@
     ["token-22", "To-Hit-", "httpssteamusercontentaakamaihdnetugc10792521070177611252C8886A8E299ADF24A84A08DC38FE2D50C2139.jpg"],
     ["token-26", "Trap", "httpssteamusercontentaakamaihdnetugc13216830436822399584A1B8938E37C135D5BE567A1C580CF796E92038C5.png"],
     ["token-27", "Stone Key", "httpssteamusercontentaakamaihdnetugc14218767844456284586295178C389FD1EAF16D781B8833FF32E5DF00F9D.png"],
-    ["token-29", "Token 29", "httpssteamusercontentaakamaihdnetugc159373289066078412246415D2EB9E78B9BCE62F168752E882B6821C3806.png"],
-    ["token-blood", "血液", "httpssteamusercontentaakamaihdnetugc121471199374279135890AFE0D6E4BBFE4427554C0AF999D31C14D91B1E7.png"],
+    ["token-29", "Token 29", "httpssteamusercontentaakamaihdnetugc159373289066078412246415D2EB9E78B9BCE62F168752E882B6821C3806.png", "free"],
+    ["token-blood", "血液", "httpssteamusercontentaakamaihdnetugc121471199374279135890AFE0D6E4BBFE4427554C0AF999D31C14D91B1E7.png", "free"],
     ["token-knighteater-berserk", "首要目标", "httpssteamusercontentaakamaihdnetugc10792521070176964E460F00E6C698AFEB4F862A2B09A8B61D30EB2CD.png"],
     ["token-armor", "盔甲", "httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png", "square"]
   ].map(([id, name, file, shape = "round"]) => ({ id, name, file, shape, src: `/assets/tokens/${file}` }));
+  const tokenShapeClass = asset => asset.shape === "round" ? "" : `token-${asset.shape}`;
   const TOKEN_ASSET_IDS = new Set(TOKEN_ASSETS.map(asset => asset.id));
   const DEFAULT_MOB_MARKER_ASSET_IDS = { M_PalebloodWorms: "token-blood" };
   const MOB_SPAWN_MODES = {
@@ -76,12 +79,20 @@
   const WINGED_WIDE_WINGS_ID = "M_WingedNightmare:BPS:1";
   const WINGED_BLOODY_DEFIANCE_ID = "M_WingedNightmare:BPX:2";
   const WINGED_BLOODY_DEFIANCE_THRESHOLD = 6;
-  const BOG_WITCH_MARKER_SRC = "/assets/images/httpssteamusercontentaakamaihdnetugc102276672612288011771BFEEDE9B444465A77830BDC2F8E79E37A0B9056.png";
+  const BOG_WITCH_MARKER_SRC = window.KF_MOD_DATA?.tokens?.monsters?.M_BogWitch || "";
   const BOG_WITCH_POSITIONS = [
-    { label: "沼泽", x: 6.95, y: 59.05 },
-    { label: "泥地鬼火", x: 13.85, y: 59.05 },
-    { label: "腐烂树桩", x: 20.65, y: 59.05 }
+    // Circle centers on the 4810 × 1649 two-panel spread.
+    { label: "沼泽", x: 6.8763, y: 59.1764 },
+    { label: "泥地鬼火", x: 14.0205, y: 59.1083 },
+    { label: "腐烂树桩", x: 21.1545, y: 59.0759 }
   ];
+  // Manual armor tokens start on a real printed armor slot instead of the generic
+  // token grid. Users can still drag them to any other position afterwards.
+  const SHEET_ARMOR_DEFAULT_POSITIONS = Object.freeze({
+    M_Eggknight: Object.freeze({ x: 56.64, y: 43.0 }),
+    M_Stonemason: Object.freeze({ x: 86.38, y: 36.05 }),
+    M_KnightFen: Object.freeze({ x: 96.0, y: 8.0 })
+  });
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
@@ -176,24 +187,24 @@
   function mobSetupResult(monster) {
     const setup = mobConflictSetup(monster);
     const fail = message => ({ setup, counts: {}, fixedCards: [], total: 0, error: message });
-    if (!setup) return fail(`${monster?.name || "该杂兵"}缺少冲突设置`);
+    if (!setup) return fail(`${monsterLabel(monster) || "该杂兵"}缺少冲突设置`);
     if (!setup.initialBp || typeof setup.initialBp !== "object" || Array.isArray(setup.initialBp)) {
-      return fail(`${setup.name}缺少 initialBp 配置`);
+      return fail(`${monsterLabel(setup)}缺少 initialBp 配置`);
     }
 
     const kinds = ["BP1", "BP2", "BP3", "BPS"];
     const counts = {};
     for (const [kind, rawCount] of Object.entries(setup.initialBp)) {
-      if (!kinds.includes(kind)) return fail(`${setup.name}使用了未知初始 BP 类型：${kind}`);
+      if (!kinds.includes(kind)) return fail(`${monsterLabel(setup)}使用了未知初始 BP 类型：${kind}`);
       const count = Number(rawCount);
       const available = monster.cards.filter(card => card.kind === kind).length;
       if (!Number.isInteger(count) || count < 0 || count > available) {
-        return fail(`${setup.name}的 ${kind} 初始数量 ${rawCount} 超出卡池 ${available}`);
+        return fail(`${monsterLabel(setup)}的 ${kind} 初始数量 ${rawCount} 超出卡池 ${available}`);
       }
       if (count) counts[kind] = count;
     }
     const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
-    if (!total || total > 10) return fail(`${setup.name}的初始 BP 总数必须为 1-10`);
+    if (!total || total > 10) return fail(`${monsterLabel(setup)}的初始 BP 总数必须为 1-10`);
 
     const fixedCards = Array.isArray(setup.initialBpCards) ? setup.initialBpCards : [];
     const fixedIds = new Set();
@@ -201,7 +212,7 @@
     const fixedByKind = {};
     for (const fixed of fixedCards) {
       const card = cardById(monster, fixed?.id);
-      if (!card) return fail(`${setup.name}的固定 BP 不存在：${fixed?.id || "未填写 ID"}`);
+      if (!card) return fail(`${monsterLabel(setup)}的固定 BP 不存在：${fixed?.id || "未填写 ID"}`);
       if (!Object.hasOwn(counts, card.kind)) return fail(`${card.id}不属于初始 BP 配置`);
       if (!Number.isInteger(fixed.slot) || fixed.slot < 0 || fixed.slot >= total) {
         return fail(`${card.id}的固定槽位必须在 0-${total - 1}`);
@@ -222,19 +233,19 @@
       const face = Number(sides.face || 0);
       const back = Number(sides.back || 0);
       if (!Number.isInteger(face) || !Number.isInteger(back) || face < 0 || back < 0 || face + back !== total) {
-        return fail(`${setup.name}的初始 BP 正反面数量必须合计 ${total}`);
+        return fail(`${monsterLabel(setup)}的初始 BP 正反面数量必须合计 ${total}`);
       }
       const fixedFace = fixedCards.filter(item => item.side !== "back").length;
       const fixedBack = fixedCards.filter(item => item.side === "back").length;
-      if (fixedFace > face || fixedBack > back) return fail(`${setup.name}的固定 BP 正反面数量超过初始配置`);
+      if (fixedFace > face || fixedBack > back) return fail(`${monsterLabel(setup)}的固定 BP 正反面数量超过初始配置`);
     }
     const markers = Number(setup.initialGenericMarkersOnBack || 0);
     if (!Number.isInteger(markers) || markers < 0 || markers > MAX_BP_MARKERS) {
-      return fail(`${setup.name}的初始通用标记数量无效`);
+      return fail(`${monsterLabel(setup)}的初始通用标记数量无效`);
     }
 
     for (const conditional of setup.conditionalCards || []) {
-      if (!cardById(monster, conditional?.id)) return fail(`${setup.name}的条件卡不存在：${conditional?.id || "未填写 ID"}`);
+      if (!cardById(monster, conditional?.id)) return fail(`${monsterLabel(setup)}的条件卡不存在：${conditional?.id || "未填写 ID"}`);
     }
     return { setup, counts, fixedCards, total, error: "" };
   }
@@ -301,16 +312,16 @@
     return `<details class="panel conflict-setup-panel">
       <summary class="conflict-setup-summary">
         <span class="conflict-disclosure" aria-hidden="true"></span>
-        <span class="conflict-summary-title"><span class="eyebrow">CLASH SETUP</span><strong>${esc(setup.name)}冲突设置</strong></span>
-        <span class="badge">${esc(setup.type)} · ${esc(kingdomLabels[setup.kingdom] || "通用")}</span>
+        <span class="conflict-summary-title"><span class="eyebrow">CLASH SETUP</span><strong>${esc(monsterLabel(setup))}冲突设置</strong></span>
+        <span class="badge">${esc(monsterRank(monster))} · ${esc(kingdomLabels[setup.kingdom] || "通用")}</span>
       </summary>
       ${original ? `<details class="conflict-original-panel">
         <summary><span>查看原版内容</span><span class="badge">${esc(original.label)}</span></summary>
         <figure class="conflict-original-figure">
-          <button type="button" class="conflict-original-trigger" data-original-preview="${esc(original.src)}" data-original-title="${esc(setup.en)} · ${esc(original.label)}" aria-label="放大查看${esc(setup.name)}原版内容">
-            <img src="${esc(original.src)}" alt="${esc(setup.en)}原版冲突设置双页" loading="lazy">
+          <button type="button" class="conflict-original-trigger" data-original-preview="${esc(original.src)}" data-original-title="${esc(monsterLabel(setup))} · ${esc(original.label)}" aria-label="放大查看${esc(monsterLabel(setup))}原版内容">
+            <img src="${esc(original.src)}" alt="${esc(monsterLabel(setup))}原版冲突设置双页" loading="lazy">
           </button>
-          <figcaption>${esc(setup.en)} · ${esc(original.label)}</figcaption>
+          <figcaption>${esc(monsterLabel(setup))} · ${esc(original.label)}</figcaption>
         </figure>
       </details>` : ""}
       <div class="conflict-setup-layout">
@@ -327,8 +338,8 @@
           </section>
         </div>
         <figure class="conflict-map-figure">
-          <img src="${esc(map)}" alt="${esc(setup.name)}冲突地图" loading="lazy">
-          <figcaption>${esc(setup.name)}冲突地图${setup.mapsByKingdom ? ` · ${kingdomLabels[campaignKingdom]}` : setup.mapsByLevel ? ` · ${levelKey === "1" ? "等级 1" : "等级 2+"}` : ""}</figcaption>
+          <img src="${esc(map)}" alt="${esc(monsterLabel(setup))}冲突地图" loading="lazy">
+          <figcaption>${esc(monsterLabel(setup))}冲突地图${setup.mapsByKingdom ? ` · ${kingdomLabels[campaignKingdom]}` : setup.mapsByLevel ? ` · ${levelKey === "1" ? "等级 1" : "等级 2+"}` : ""}</figcaption>
         </figure>
       </div>
       ${setup.flavor ? `<section class="conflict-flavor" aria-labelledby="conflict-flavor-${esc(setup.id)}">
@@ -429,9 +440,7 @@
         priorityTarget: ""
       },
       stonemason: {
-        armor: { front: 0, right: 0, back: 0, left: 0 },
-        direction: "front",
-        armorLocked: false
+        armor: { front: 0, right: 0, back: 0, left: 0 }
       },
       kingLaidLow: {
         curseHolder: "",
@@ -470,8 +479,8 @@
         if (String(name).trim()) severityByKnight[String(name)] = clamp(severity, 0, 9);
       }
     }
-    const directions = new Set(["front", "right", "back", "left"]);
     const rawStone = raw?.stonemason || {};
+    const legacyStonemasonState = Boolean(rawStone.direction || rawStone.armorLocked);
     const rawBogWitch = raw?.bogWitch || {};
     const rawPatient = raw?.patient || {};
     const rawSmelted = raw?.smeltedFears || {};
@@ -486,6 +495,7 @@
     const guardianSlots = Array.isArray(rawGuardians.slots)
       ? Array.from({ length: 6 }, (_, index) => index < guardianLimit && Boolean(rawGuardians.slots[index]))
       : Array.from({ length: 6 }, (_, index) => index < legacyGuardianCount);
+    const rawNotice = String(raw?.ruleNotice || "");
     return {
       ...base,
       ...raw,
@@ -551,7 +561,8 @@
       aiChoiceMode: raw?.aiChoiceMode === "routine" ? "routine" : "choose",
       ruleCard: cardIds.has(raw?.ruleCard) ? raw.ruleCard : "",
       ruleCardReason: String(raw?.ruleCardReason || ""),
-      ruleNotice: String(raw?.ruleNotice || ""),
+      ruleNotice: bossRule(monster)?.kind === "stonemason" && legacyStonemasonState
+        ? "" : rawNotice,
       severityByKnight,
       activeKnight: String(raw?.activeKnight || ""),
       patient: {
@@ -601,9 +612,7 @@
           right: clamp(rawStone.armor?.right, 0, 20),
           back: clamp(rawStone.armor?.back, 0, 20),
           left: clamp(rawStone.armor?.left, 0, 20)
-        },
-        direction: directions.has(rawStone.direction) ? rawStone.direction : "front",
-        armorLocked: Boolean(rawStone.armorLocked)
+        }
       },
       kingLaidLow: {
         curseHolder: String(rawKing.curseHolder || ""),
@@ -1593,7 +1602,7 @@
     const initialSw = exhibitionStartingWounds(monster, battle.level, battle.clashPhase);
     for (let index = 0; index < initialSw; index++) addWound("single");
     if (!options.preserveHistory) state.history = [];
-    log(`建立 ${monster.name} 的 AI/BP`);
+    log(`建立 ${monsterLabel(monster)} 的 AI/BP`);
     if (monster.id === "M_PalebloodWorms" && battle.level >= 3) {
       log("血痂护甲：初始杂兵轨全部 BP 各放置 1 枚血液指示物");
     }
@@ -1708,7 +1717,7 @@
   function moveAibpCard(id, destination) {
     const monster = monsterById(state.battle.monsterId);
     if (isWingedNightmare(monster) && isWingedFixedBpId(id)) {
-      return toast("翼生梦魇的固定 BP 不能移动或翻面");
+      return toast("展翅魔的固定 BP 不能移动或翻面");
     }
     const card = cardById(monster, id);
     const type = aibpDeckType(card);
@@ -2335,14 +2344,6 @@
       state.battle.ruleState.ruleNotice = "凶暴防守：本次攻击按未造成损伤结算；不加入伤口，也不执行晋升。";
       return true;
     }
-    if (rule?.kind === "stonemason") {
-      const stone = state.battle.ruleState.stonemason;
-      if (state.battle.level >= 3 && stone.armor[stone.direction] >= 2) {
-        state.battle.bpDiscard.push(id);
-        state.battle.ruleState.ruleNotice = "坚不可摧的盔甲：该方向有至少 2 枚盔甲，本次攻击按未造成损伤结算。";
-        return true;
-      }
-    }
     if (rule?.kind === "devour-stages") {
       resolveYoungDevourWound(monster, id, action === "critical");
       return true;
@@ -2377,8 +2378,6 @@
     }
     remember();
     const woundValueBefore = state.battle.singleWounds + state.battle.doubleWounds * 2;
-    const stoneDirection = state.battle.ruleState.stonemason.direction;
-    const stoneArmorBefore = state.battle.ruleState.stonemason.armor[stoneDirection];
     const id = removeActive(type);
     if (resolvingAi0) state.battle.aiRemoved.push(id);
     else {
@@ -2389,10 +2388,6 @@
     if (type === "bp" && ["defeat", "critical"].includes(action)
       && !resolveSpecialBossBp(monster, id, action)) {
       resolveBossBp(monster, id, action === "critical");
-    }
-    if (type === "bp" && ["defeat", "critical"].includes(action)
-      && bossRule(monster)?.kind === "stonemason") {
-      finishStonemasonAttack(stoneDirection, stoneArmorBefore);
     }
     if (type === "bp" && ["defeat", "critical"].includes(action)) {
       const woundValueAfter = state.battle.singleWounds + state.battle.doubleWounds * 2;
@@ -3128,7 +3123,7 @@
       if (eater.brute >= 3) {
         eater.brute = 0;
         eater.armor = 0;
-        b.ruleState.ruleNotice = "凶残计数达到 3：计数与全部盔甲已清除，请执行食骑者标志行为。";
+        b.ruleState.ruleNotice = "凶残计数达到 3：计数与全部盔甲已清除，请执行食士师标志行为。";
       }
     }
     if (rule?.kind === "king-laid-low") {
@@ -3174,6 +3169,22 @@
     save();
   }
 
+  // 头槌弃甲固定弃置护甲最少部位的 1 枚盔甲；并列时取 BP 序号较小者，全部为空时不可用。
+  function leastEggArmorSlot(egg) {
+    let target = 0;
+    for (const slot of [1, 2, 3]) {
+      if (egg.armor[slot] <= 0) continue;
+      if (!target || egg.armor[slot] < egg.armor[target]) target = slot;
+    }
+    return target;
+  }
+
+  function headbuttEggArmor() {
+    const slot = leastEggArmorSlot(state.battle.ruleState.eggknight);
+    if (!slot) return toast("三处盔甲均已弃置，无法头槌弃甲");
+    changeEggArmor(slot, -1, true);
+  }
+
   function changeEggArmor(slot, delta, headbutt = false) {
     slot = clamp(slot, 1, 3);
     const egg = state.battle.ruleState.eggknight;
@@ -3185,7 +3196,8 @@
     egg.jacked += removed;
     const threshold = egg.jacked >= 9 ? "9+：攻击额外造成 3 活力损失"
       : egg.jacked >= 5 ? "5+：怪物攻击获得 +1 闪避" : egg.jacked >= 2 ? "2+：闪避难度 +1" : "尚未达到阈值";
-    state.battle.ruleState.ruleNotice = `${slot} 阶槽盔甲 ${delta > 0 ? "+" : ""}${delta}；Jacked ${egg.jacked}（${threshold}）。${headbutt && removed ? "请抽取致命伤卡，按坐标放置石柱，再将该伤卡放回牌堆底。" : ""}`;
+    const headbuttDetail = headbutt && removed ? `已从护甲最少的 BP${slot} 弃置 1 枚盔甲。请抽取致命伤卡，按坐标放置石柱，再将该伤卡放回牌堆底。` : "";
+    state.battle.ruleState.ruleNotice = `${slot} 阶槽盔甲 ${delta > 0 ? "+" : ""}${delta}；Jacked ${egg.jacked}（${threshold}）。${headbuttDetail}`;
     log(`蛋蛋骑士盔甲槽 ${slot}：${delta > 0 ? "+" : ""}${delta}`);
     save();
   }
@@ -3225,7 +3237,7 @@
     if (eater.brute < 3) return false;
     eater.brute = 0;
     eater.armor = 0;
-    state.battle.ruleState.ruleNotice = "凶残计数达到 3：计数与全部盔甲已清除，请执行食骑者标志行为。";
+    state.battle.ruleState.ruleNotice = "凶残计数达到 3：计数与全部盔甲已清除，请执行食士师标志行为。";
     return true;
   }
 
@@ -3243,7 +3255,7 @@
         ? ""
         : `${type === "meat" ? "肉块" : "盔甲"} ${delta > 0 ? "+" : ""}${delta}。`;
     }
-    log(`食骑者${type}：${delta > 0 ? "+" : ""}${delta}`);
+    log(`食士师${type}：${delta > 0 ? "+" : ""}${delta}`);
     save();
   }
 
@@ -3256,7 +3268,7 @@
     remember();
     eater.brute = next;
     if (!checkKnighteaterBrute()) b.ruleState.ruleNotice = `凶残 ${next}/3。`;
-    log(`食骑者凶残通用指示物：${next}/3`);
+    log(`食士师凶残通用指示物：${next}/3`);
     save();
   }
 
@@ -3270,9 +3282,9 @@
     remember();
     setKnighteaterBerserk(value, priorityTarget);
     state.battle.ruleState.ruleNotice = value
-      ? "食骑者已标记为暴走；优先目标标记放到 Boss 面板。"
-      : "食骑者已停止暴走；请将优先目标标记交给战意最高骑士。";
-    log(`食骑者暴走：${value ? "开始" : "停止"}`);
+      ? "食士师已标记为暴走；优先目标标记放到 Boss 面板。"
+      : "食士师已停止暴走；请将优先目标标记交给战意最高骑士。";
+    log(`食士师暴走：${value ? "开始" : "停止"}`);
     save();
   }
 
@@ -3287,16 +3299,16 @@
     let message = "";
     if (!eater.berserk && !enough) {
       setKnighteaterBerserk(true);
-      message = "肉块不足，食骑者开始暴走；优先目标标记放到 Boss 面板。";
+      message = "肉块不足，食士师开始暴走；优先目标标记放到 Boss 面板。";
     } else if (!eater.berserk && enough) {
       eater.armor++;
       eater.brute++;
       message = "肉块足够：获得 1 枚盔甲，不开始暴走。";
     } else if (eater.berserk && !enough && b.level >= 3) {
       setKnighteaterBerserk(false, priorityTarget);
-      message = "肉块不足：随机一名相邻骑士死亡，食骑者停止暴走。";
+      message = "肉块不足：随机一名相邻骑士死亡，食士师停止暴走。";
     } else if (eater.berserk && !enough) {
-      message = `肉块不足：随机一名相邻骑士失去 ${amount} 活力，食骑者维持暴走。`;
+      message = `肉块不足：随机一名相邻骑士失去 ${amount} 活力，食士师维持暴走。`;
     } else {
       eater.armor++;
       eater.brute++;
@@ -3304,84 +3316,20 @@
       message = "肉块足够：获得 1 枚盔甲并停止暴走；优先目标转给战意最高骑士。";
     }
     if (!checkKnighteaterBrute()) b.ruleState.ruleNotice = `狼吞虎咽 ${amount}：${message}`;
-    log(`食骑者狼吞虎咽 ${amount}`);
-    save();
-  }
-
-  function addStonemasonArmor(direction, amount) {
-    const stone = state.battle.ruleState.stonemason;
-    if (stone.armorLocked || amount <= 0) return false;
-    const occupied = Object.values(stone.armor).filter(value => value > 0).length;
-    if (!stone.armor[direction] && occupied === 3) {
-      for (const key of Object.keys(stone.armor)) stone.armor[key] = Math.max(0, stone.armor[key] - 1);
-      stone.armorLocked = true;
-      state.battle.ruleState.ruleNotice = "第四防护节点触发：改为每个节点各弃置 1 枚盔甲，区域 2 内所有骑士击飞 2；本轮不能再获得盔甲。";
-      return true;
-    }
-    stone.armor[direction] = clamp(stone.armor[direction] + amount, 0, 20);
-    return true;
-  }
-
-  function finishStonemasonAttack(direction, armorBefore) {
-    const b = state.battle;
-    if (armorBefore === 0) {
-      addStonemasonArmor(direction, 1);
-      if (!b.ruleState.stonemason.armorLocked) b.ruleState.ruleNotice = `磁石盔甲：攻击结算完毕，${direction}节点获得 1 枚盔甲。`;
-    } else if (b.level >= 4) {
-      addStonemasonArmor(direction, 1);
-      if (!b.ruleState.stonemason.armorLocked) b.ruleState.ruleNotice = `坚定不移的信念：${direction}节点额外获得 1 枚盔甲。`;
-    }
-  }
-
-  function setStonemasonDirection(direction) {
-    if (!["front", "right", "back", "left"].includes(direction)) return;
-    remember();
-    state.battle.ruleState.stonemason.direction = direction;
-    const armor = state.battle.ruleState.stonemason.armor[direction];
-    state.battle.ruleState.ruleNotice = `攻击方向设为 ${direction}；该节点有 ${armor} 枚盔甲${armor ? "，石匠骑士视作 +1 AT" : ""}。`;
-    log(`石匠攻击方向：${direction}`);
+    log(`食士师狼吞虎咽 ${amount}`);
     save();
   }
 
   function changeStonemasonArmor(direction, delta) {
     if (!["front", "right", "back", "left"].includes(direction)) return;
-    remember();
+    const amount = Number(delta) || 0;
+    if (!amount) return;
     const stone = state.battle.ruleState.stonemason;
-    stone.armor[direction] = clamp(stone.armor[direction] + delta, 0, 20);
-    state.battle.ruleState.ruleNotice = `${direction}节点盔甲 ${delta > 0 ? "+" : ""}${delta}。`;
-    log(`石匠盔甲 ${direction}：${delta > 0 ? "+" : ""}${delta}`);
-    save();
-  }
-
-  function startStonemasonRound() {
-    const b = state.battle;
+    if (amount < 0 && !stone.armor[direction]) return;
     remember();
-    b.ruleState.stonemason.armorLocked = false;
-    b.ruleState.ruleNotice = "新怪物轮开始：盔甲获取限制已解除。";
-    log("石匠骑士怪物轮开始");
-    save();
-  }
-
-  function endStonemasonRound(direction) {
-    if (state.battle.level < 3) return toast("等级 3+ 才执行磁力聚甲");
-    remember();
-    addStonemasonArmor(direction, 2);
-    if (!state.battle.ruleState.stonemason.armorLocked) {
-      state.battle.ruleState.ruleNotice = `磁力聚甲：${direction}节点获得 2 枚盔甲。`;
-    }
-    log("石匠骑士怪物轮结束：磁力聚甲");
-    save();
-  }
-
-  function stonemasonBoardAction(action) {
-    const messages = {
-      ruin: "废墟：在石匠骑士前方相邻位置放置 2×2 瓦砾堆。",
-      buried: "活埋：瓦砾将覆盖已有瓦砾上的骑士，请该骑士执行审判抽取。",
-      spikes: "废墟铁刺：骑士穿过或停在瓦砾堆时失去 1 活力。"
-    };
-    remember();
-    state.battle.ruleState.ruleNotice = messages[action] || "请按大卡确认瓦砾地形。";
-    log(`石匠棋盘效果：${action}`);
+    stone.armor[direction] = clamp(stone.armor[direction] + amount, 0, 20);
+    state.battle.ruleState.ruleNotice = "";
+    log(`石匠盔甲 ${direction}：${amount > 0 ? "+" : ""}${amount}`);
     save();
   }
 
@@ -3879,7 +3827,7 @@
     state.battle.ruleState.ruleNotice = ironcast.necrofusion >= 3
       ? `亡骸融合 ${ironcast.necrofusion}/3：已达到阈值。完成当前行动后，点击“行动完成”自动结算。`
       : `亡骸融合 ${ironcast.necrofusion}/3。`;
-    log(`铁铸亡者亡骸融合通用指示物：${ironcast.necrofusion}/3`);
+    log(`铁铸骷髅亡骸融合通用指示物：${ironcast.necrofusion}/3`);
     if (ironcast.necrofusion === 3) toast("亡骸融合达到 3：完成当前行动后点击结算");
   }
 
@@ -3894,7 +3842,7 @@
     b.ruleState.ruleNotice = next >= 3
       ? `亡骸融合 ${next}/3：已达到阈值。完成当前行动后，点击“行动完成”自动结算。`
       : `亡骸融合 ${next}/3。`;
-    log(`铁铸亡者亡骸融合通用指示物：${next}/3`);
+    log(`铁铸骷髅亡骸融合通用指示物：${next}/3`);
     save();
   }
 
@@ -4015,14 +3963,15 @@
 
   function cropStyle(image, side = "face") {
     if (!image) return "";
-    // KF's TTS data uses aligned face/back sprite sheets. The same card index
-    // must be used on both sides (not the top-left of the whole back sheet).
-    const cols = Math.max(1, Number(image.width) || 1);
-    const rows = Math.max(1, Number(image.height) || 1);
-    const index = Math.max(0, Number(image.index) || 0);
-    const x = cols > 1 ? ((index % cols) / (cols - 1)) * 100 : 0;
-    const y = rows > 1 ? (Math.floor(index / cols) / (rows - 1)) * 100 : 0;
-    const aspect = Number(image.aspect) || (Number(image.cellWidth) / Number(image.cellHeight)) || 0.7;
+    // Each extracted side has its own crop, including hidden JPEG block padding.
+    // The original card index stays available in the base metadata.
+    const crop = image[`${side}Crop`] || image;
+    const cols = Math.max(1, Number(crop.width) || 1);
+    const rows = Math.max(1, Number(crop.height) || 1);
+    const index = Math.max(0, Number(crop.index) || 0);
+    const x = crop.x ?? (cols > 1 ? ((index % cols) / (cols - 1)) * 100 : 0);
+    const y = crop.y ?? (rows > 1 ? (Math.floor(index / cols) / (rows - 1)) * 100 : 0);
+    const aspect = Number(crop.aspect) || (Number(crop.cellWidth) / Number(crop.cellHeight)) || 0.7;
     return `--cols:${cols};--rows:${rows};--x:${x}%;--y:${y}%;--card-aspect:${aspect};background-image:url("${image[side] || image.face}")`;
   }
 
@@ -4031,7 +3980,7 @@
     if (card?.id === FIRSTMEN_WARRIOR_COMPANION_CARDS.rampageStrike) return "AI2 · RAMPAGE STRIKE";
     if (card?.kind !== "SIG") return `${card.kind} · ${card.name}`;
     const monsterName = String(card.name || "").replace(/\s+Signature Routine$/i, "");
-    return `${side === "back" ? "SIGNATURE" : "ROUTINE"} · ${monsterName}`;
+    return `${side === "back" ? "SIGNATURE" : "ROUTINE"} · ${monsterLabel(monsterName)}`;
   }
 
   function cardHtml(card, className = "", side = "face", label = true, interactive = true) {
@@ -4274,7 +4223,9 @@
     return counts;
   }
 
-  function defaultSheetTokenPosition(index) {
+  function defaultSheetTokenPosition(index, assetId = "", battle = {}) {
+    const armorPosition = assetId === "token-armor" ? SHEET_ARMOR_DEFAULT_POSITIONS[battle.monsterId] : null;
+    if (armorPosition) return { ...armorPosition };
     return {
       x: 15 + (index % 6) * 14,
       y: 20 + (Math.floor(index / 6) % 3) * 30
@@ -4292,7 +4243,7 @@
     } else if (existing) {
       existing.count = desired;
     } else {
-      const position = defaultSheetTokenPosition(state.battle.sheetTokens.length);
+      const position = defaultSheetTokenPosition(state.battle.sheetTokens.length, assetId, state.battle);
       state.battle.sheetTokens.push({ id: `sheet-token-${uid()}`, assetId, count: desired, ...position });
     }
     save();
@@ -4366,7 +4317,7 @@
         <div class="sheet-token-palette">${TOKEN_ASSETS.map(asset => {
           const count = counts.get(asset.id) || 0;
           return `<div class="sheet-token-choice" title="${esc(asset.name)}">
-            <img class="${asset.shape === "square" ? "token-square" : ""}" src="${esc(asset.src)}" alt="${esc(asset.name)}">
+            <img class="${tokenShapeClass(asset)}" src="${esc(asset.src)}" alt="${esc(asset.name)}">
             <div class="sheet-token-counter">
               <button type="button" data-token-delta="${asset.id}" data-delta="-1" aria-label="减少 ${esc(asset.name)}" ${count ? "" : "disabled"}>-</button>
               <input type="number" min="0" max="${MAX_SHEET_TOKENS_PER_TYPE}" value="${count}" data-token-count="${asset.id}" aria-label="${esc(asset.name)} 数量">
@@ -4392,10 +4343,12 @@
     if (battle.monsterId === "M_Eggknight") {
       const egg = battle.ruleState.eggknight;
       const armor = egg.armor;
+      // 三个 BP 盔甲槽位印刷框的中心（4810 × 1649 整幅坐标），横竖都以框心为准：
+      // x 等距 7.36%，y 分别对到各自框的上下边线中点。
       return [
-        make("token-armor", "bp1", armor[1], 57.1, 40.2),
-        make("token-armor", "bp2", armor[2], 63.6, 40.3),
-        make("token-armor", "bp3", armor[3], 70.7, 40.2),
+        make("token-armor", "bp1", armor[1], 56.64, 43.0),
+        make("token-armor", "bp2", armor[2], 64.0, 42.8),
+        make("token-armor", "bp3", armor[3], 71.36, 42.8),
         make("token-01", "counter", egg.counter, 24.3, 74.0, {
           autoAction: "egg-counter",
           mustResolve: egg.counter >= 3
@@ -4406,10 +4359,10 @@
     if (battle.monsterId === "M_Stonemason") {
       const armor = battle.ruleState.stonemason.armor;
       return [
-        make("token-armor", "back", armor.back, 85.7, 36.5),
-        make("token-armor", "right", armor.right, 78.3, 61.6),
-        make("token-armor", "left", armor.left, 94.0, 61.8),
-        make("token-armor", "front", armor.front, 86.1, 83.7)
+        make("token-armor", "back", armor.back, 86.38, 36.05),
+        make("token-armor", "right", armor.right, 78.00, 60.75),
+        make("token-armor", "left", armor.left, 94.56, 60.21),
+        make("token-armor", "front", armor.front, 86.28, 84.05)
       ].filter(Boolean);
     }
     if (battle.monsterId === "M_Knighteater") {
@@ -4555,13 +4508,19 @@
         class="sheet-token ${automatic ? "auto-token" : ""} ${interactiveAuto ? "interactive-auto-token" : ""} ${token.mustResolve ? "must-resolve" : ""}" style="left:${token.x}%;top:${token.y}%"
         title="${esc(title)}" ${automatic ? "" : `aria-label="拖动 ${esc(asset.name)}"`}>
         <span class="sheet-token-stack">
-          ${token.count > 2 ? `<img class="sheet-token-copy back ${asset.shape === "square" ? "token-square" : ""}" src="${esc(asset.src)}" alt="">` : ""}
-          ${token.count > 1 ? `<img class="sheet-token-copy middle ${asset.shape === "square" ? "token-square" : ""}" src="${esc(asset.src)}" alt="">` : ""}
-          <img class="sheet-token-image ${asset.shape === "square" ? "token-square" : ""}" src="${esc(asset.src)}" alt="">
+          ${token.count > 2 ? `<img class="sheet-token-copy back ${tokenShapeClass(asset)}" src="${esc(asset.src)}" alt="">` : ""}
+          ${token.count > 1 ? `<img class="sheet-token-copy middle ${tokenShapeClass(asset)}" src="${esc(asset.src)}" alt="">` : ""}
+          <img class="sheet-token-image ${tokenShapeClass(asset)}" src="${esc(asset.src)}" alt="">
         </span>
         ${token.count > 1 ? `<span class="sheet-token-quantity">x${token.count}</span>` : ""}
       </${tag}>`;
     }).join("")}${emptyEggCounterSlot}${emptyIroncastCounterSlot}${emptyWhiteReinforcementSlot}${emptyWhiteVengeanceSlot}${emptyKingPutridSlot}${emptyKnighteaterBruteSlot}</div>`;
+  }
+
+  function sheetStageAspect(monster) {
+    const sheet = monster.sheet || {};
+    const panelAspect = Number(sheet.cellWidth) / Number(sheet.cellHeight) || Number(sheet.aspect) || 2405 / 1649;
+    return panelAspect * (Number(Boolean(sheet.face)) + Number(Boolean(sheet.back)) || 1);
   }
 
   function youngDevourStageOverlay(monster, battle) {
@@ -4634,7 +4593,7 @@
               ${cardHtml(cardById(monster, slot.id), "track-card", slot.revealed ? slot.side : "back", false, false)}
             </button>
             ${placedMarkers.length ? `<div class="mob-bp-markers">${placedMarkers.map(({ asset, count }) =>
-              `<span class="mob-bp-marker" title="${esc(asset.name)} ×${count}"><img class="${asset.shape === "square" ? "token-square" : ""}" src="${esc(asset.src)}" alt=""><strong>×${count}</strong></span>`
+              `<span class="mob-bp-marker" title="${esc(asset.name)} ×${count}"><img class="${tokenShapeClass(asset)}" src="${esc(asset.src)}" alt=""><strong>×${count}</strong></span>`
             ).join("")}</div>` : ""}
             ${slot.decoy ? '<strong class="mob-decoy-badge">诱匿</strong>' : ""}
           </div>
@@ -4642,7 +4601,7 @@
           <div class="mob-marker-controls" aria-label="第 ${index + 1} 张 BP 的 ${esc(selectedAsset.name)}标记">
             <button type="button" data-mob-marker="${index}" data-marker-asset="${esc(selectedAsset.id)}" data-delta="-1" title="移除 ${esc(selectedAsset.name)}" ${selectedCount ? "" : "disabled"}>−</button>
             <label class="mob-marker-type-picker" title="点击切换标记种类：${esc(selectedAsset.name)}">
-              <img class="${selectedAsset.shape === "square" ? "token-square" : ""}" src="${esc(selectedAsset.src)}" alt="">
+              <img class="${tokenShapeClass(selectedAsset)}" src="${esc(selectedAsset.src)}" alt="">
               <strong>${selectedCount}</strong>
               <select data-mob-marker-asset aria-label="第 ${index + 1} 张 BP 的标记种类">${TOKEN_ASSETS.map(asset =>
                 `<option value="${esc(asset.id)}" ${asset.id === selectedAsset.id ? "selected" : ""}>${esc(asset.name)}</option>`
@@ -4904,7 +4863,9 @@
       const egg = rs.eggknight;
       const counterReady = egg.counter >= 3;
       const jackedText = egg.jacked >= 9 ? "攻击额外造成 3 活力损失" : egg.jacked >= 5 ? "怪物攻击 +1 闪避" : egg.jacked >= 2 ? "闪避难度 +1" : "未激活";
-      body = `<div class="egg-rule-line">${[1, 2, 3].map(slot => `<div class="egg-armor-inline"><span>BP${slot} 盔甲 / +AT</span><div class="counter"><button data-egg-armor="${slot}">-</button><strong>${egg.armor[slot]}</strong><button data-egg-add="${slot}">+</button></div><button class="button secondary small" data-egg-headbutt="${slot}">头槌弃甲</button></div>`).join("")}
+      const headbuttSlot = leastEggArmorSlot(egg);
+      body = `<div class="egg-rule-line">${[1, 2, 3].map(slot => `<div class="egg-armor-inline"><span>BP${slot} 盔甲 / +AT</span><div class="counter"><button data-egg-armor="${slot}">-</button><strong>${egg.armor[slot]}</strong><button data-egg-add="${slot}">+</button></div></div>`).join("")}
+        <button class="button secondary small egg-headbutt" data-egg-headbutt title="${headbuttSlot ? `从护甲最少的 BP${headbuttSlot} 弃置 1 枚盔甲（Jacked +1）` : "三处盔甲均已弃置，无法头槌弃甲"}" ${headbuttSlot ? "" : "disabled"}>头槌弃甲</button>
         <span class="badge ${counterReady ? "danger-badge" : ""}">还击 ${egg.counter}/3${counterReady ? " · 立即处理" : ""}</span><span class="badge gold">Jacked ${egg.jacked}：${jackedText}</span></div>`;
     }
 
@@ -4932,7 +4893,7 @@
       const labels = { front: "前", right: "右", back: "后", left: "左" };
       const armorAsset = TOKEN_ASSETS.find(asset => asset.id === "token-armor");
       body = `<div class="stonemason-armor-grid" aria-label="四方向盔甲指示物">${Object.entries(stone.armor).map(([direction, value]) => `
-        <div class="stonemason-armor-module ${direction === stone.direction ? "is-current" : ""}" ${direction === stone.direction ? 'aria-current="true"' : ""}>
+        <div class="stonemason-armor-module">
           <span class="stonemason-armor-label">${labels[direction]}方节点</span>
           <div class="smelted-armor-controls">
             <button class="smelted-armor-step" aria-label="减少${labels[direction]}方盔甲指示物" data-p2-counter="stone:${direction}" data-delta="-1" ${value ? "" : "disabled"}>-</button>
@@ -4942,17 +4903,7 @@
             </span>
             <button class="smelted-armor-step" aria-label="增加${labels[direction]}方盔甲指示物" data-p2-counter="stone:${direction}" data-delta="1">+</button>
           </div>
-        </div>`).join("")}</div>
-        <div class="rule-form-row"><label>攻击/最多骑士方向<select data-stone-direction>${Object.keys(labels).map(direction => `<option value="${direction}" ${direction === stone.direction ? "selected" : ""}>${labels[direction]}</option>`).join("")}</select></label>
-          <button class="button secondary" data-rule-action="stone-direction">设为攻击方向</button>
-          <button class="button secondary" data-rule-action="stone-round-start">怪物轮开始</button>
-          <button class="button" data-rule-action="stone-round-end" ${b.level >= 3 ? "" : "disabled"}>轮结束：磁力聚甲</button>
-          <button class="button secondary" data-rule-action="stone-ruin">废墟</button>
-          <button class="button secondary" data-rule-action="stone-buried">活埋</button>
-          <button class="button secondary" data-rule-action="stone-spikes">铁刺</button>
-        </div>
-        <div class="rule-badges"><span class="badge ${stone.armorLocked ? "danger-badge" : ""}">${stone.armorLocked ? "本轮禁止获得盔甲" : "可获得盔甲"}</span><span class="badge">当前方向 ${labels[stone.direction]}：${stone.armor[stone.direction]} 甲${stone.armor[stone.direction] ? " / +1 AT" : ""}</span></div>
-        <p class="muted">在结算 BP 击伤前先选择攻击方向。瓦砾覆盖、移动穿越和实际地形位置仍由玩家确认。</p>`;
+        </div>`).join("")}</div>`;
     }
 
     const ruleCard = cardById(monster, rs.ruleCard);
@@ -5018,7 +4969,7 @@
 
   function conflictTerrainCards(terrain = state.battle.conflictBoard?.terrain || []) {
     const cardData = window.KF_CONFLICT_BOARD_DATA?.terrainCards;
-    if (!cardData?.sheet || !cardData.byAsset) return [];
+    if (!cardData?.byAsset) return [];
     const seen = new Set();
     return terrain.flatMap(placement => {
       const card = cardData.byAsset[placement.asset];
@@ -5030,8 +4981,12 @@
 
   function conflictTerrainCardFaceHtml(card, className = "") {
     const sheet = window.KF_CONFLICT_BOARD_DATA?.terrainCards?.sheet;
-    if (!sheet || !card) return "";
-    return `<span class="terrain-card-face ${esc(className)}" style="--card-sheet-width:${sheet.columns * 100}%;--card-sheet-height:${sheet.rows * 100}%;--card-left:${-card.column * 100}%;--card-top:${-card.row * 100}%"><img src="${esc(conflictAssetSrc(sheet.asset))}" alt=""></span>`;
+    if (!card || (!card.image && !sheet)) return "";
+    const image = card.image, crop = image?.faceCrop || image;
+    const cols = crop?.width || sheet.columns, rows = crop?.height || sheet.rows;
+    const left = crop ? (1 - cols) * (crop.x || 0) : -card.column * 100;
+    const top = crop ? (1 - rows) * (crop.y || 0) : -card.row * 100;
+    return `<span class="terrain-card-face ${esc(className)}" style="--card-sheet-width:${cols * 100}%;--card-sheet-height:${rows * 100}%;--card-left:${left}%;--card-top:${top}%"><img src="${esc(conflictAssetSrc(image?.face || sheet.asset))}" alt=""></span>`;
   }
 
   function conflictGridCellRef(index) {
@@ -5182,8 +5137,12 @@
 
   function foolCardFaceHtml(card) {
     const sheet = window.KF_CONFLICT_BOARD_DATA?.foolDeck?.sheet;
-    if (!sheet || !card) return "";
-    return `<span class="fool-card-face" style="--card-sheet-width:${sheet.columns * 100}%;--card-sheet-height:${sheet.rows * 100}%;--card-left:${-card.column * 100}%;--card-top:${-card.row * 100}%"><img src="${esc(conflictAssetSrc(sheet.asset))}" alt="${esc(card.label)}"></span>`;
+    if (!card || (!card.image && !sheet)) return "";
+    const image = card.image, crop = image?.faceCrop || image;
+    const cols = crop?.width || sheet.columns, rows = crop?.height || sheet.rows;
+    const left = crop ? (1 - cols) * (crop.x || 0) : -card.column * 100;
+    const top = crop ? (1 - rows) * (crop.y || 0) : -card.row * 100;
+    return `<span class="fool-card-face" style="--card-sheet-width:${cols * 100}%;--card-sheet-height:${rows * 100}%;--card-left:${left}%;--card-top:${top}%"><img src="${esc(conflictAssetSrc(image?.face || sheet.asset))}" alt="${esc(card.label)}"></span>`;
   }
 
   function foolDeckPreviewHtml(boardState) {
@@ -5253,25 +5212,29 @@
         || !(["knight", "monster"].includes(item.kind) || ["LictorDecoy", "Armor"].includes(item.asset))).map(item => {
       const rowSpan = item.rowEnd - item.rowStart + 1;
       const columnSpan = item.columnEnd - item.columnStart + 1;
-      const rotation = boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0;
       const knight = knightAssignments.get(item.id);
-      const arrow = item.kind === "monster" ? `<span class="terrain-start-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>` : "";
       const monsterToken = item.kind === "monster" ? monsterTokenSrc(monster?.id || battle?.monsterId) : "";
       const monsterImage = monsterToken
-        ? `<img class="monster-start-token" src="${esc(monsterToken)}" alt="${esc(monster?.name || "怪物 token")}">`
+        ? `<img class="monster-start-token" src="${esc(monsterToken)}" alt="${esc(monsterLabel(monster) || "怪物标记")}">`
         : "";
       const knightStart = item.kind === "knight"
         ? `<img class="knight-start-marker" src="${esc(conflictAssetSrc(item.asset || "KnightStart"))}" alt="骑士起始位置">`
         : "";
-      const avatar = knight ? knightStart : "";
+      const avatar = knight?.heroId
+        ? `<img class="knight-start-token" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg?v=story-1" alt="${esc(knight.name || "骑士")}">`
+        : "";
       const assignedNumber = mobAssignments.get(item.id);
       const label = knight || item.kind === "knight" ? "" : `${item.kind === "monster" ? (monsterImage ? "" : conflictTerrainLabel(item.asset)) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}`;
       const numberBadge = assignedNumber ? `<b class="${mobNumberClass(assignedNumber)}">${assignedNumber}</b>` : "";
       const numberImage = item.kind === "number"
         ? `<img class="terrain-control-number-image" src="${esc(conflictAssetSrc(item.asset))}" alt="${esc(item.asset)}">`
         : "";
-      const content = item.kind === "knight" ? knightStart : (avatar || numberImage || `${arrow}${monsterImage || label}${numberBadge}`);
-      return `<span class="terrain-control-start ${item.kind} ${item.kind === "knight" ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i>${content}</i></span>`;
+      const content = item.kind === "knight" ? (avatar || knightStart) : (numberImage || `${monsterImage || label}${numberBadge}`);
+      const bossFrame = item.kind === "monster" && monster?.type === "boss";
+      const knightFrame = item.kind === "knight" && Boolean(avatar);
+      const frameClass = bossFrame ? "boss-token-frame" : knightFrame ? "knight-token-frame" : "";
+      const facing = cardinalFacing(boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0);
+      return `<span class="terrain-control-start ${item.kind} ${item.kind === "knight" ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i${frameClass ? ` class="${frameClass}" style="--${bossFrame ? "boss" : "token"}-facing:${facing}deg"` : ""}>${content}</i></span>`;
     }).join("");
     const catalog = conflictTerrainCatalog();
     const usedAssets = [...new Set(terrain.map(item => item.asset))];
@@ -5563,7 +5526,7 @@
               <input id="monsterSearch" placeholder="搜索怪物…">
               <div class="monster-list">${DATA.monsters.map(item =>
                 `<button class="monster-item ${item.id === monster.id ? "active" : ""}" data-monster="${esc(item.id)}">
-                  <strong>${esc(item.name)}</strong><small>${isMob(item) ? "杂兵" : "首领"} · ${item.cards.length} 张牌</small>
+                  <strong>${esc(monsterLabel(item))}</strong><span class="badge">${esc(monsterRank(item))}</span>
                 </button>`).join("")}</div>
             </div>
           </div>
@@ -5572,7 +5535,7 @@
           ${b.conflictLocation ? `<section class="panel conflict-location-alert"><strong>特殊冲突地点：${esc(b.conflictLocation)}</strong><span>“贪食巨龙来了！”已与该怪物绑定，本场冲突在${esc(b.conflictLocation)}中进行。</span></section>` : ""}
           ${conflictSetupPanel(monster, b.level)}
           <section class="panel setup-panel">
-            <div class="panel-header"><div><span class="eyebrow">${mob ? "MOB CLASH" : "BOSS CLASH"}</span><h2>${esc(monster.name)}</h2></div>
+            <div class="panel-header"><div><span class="eyebrow">${esc(monsterRank(monster))}冲突</span><h2>${esc(monsterLabel(monster))}</h2></div>
               <div class="inline-actions"><button class="button" id="setupBattle">开始冲突 / 重建牌组</button></div>
             </div>
             ${b.conflictStatus === "failed" ? `<div class="conflict-alert">${esc(b.failureReason)}</div>` : ""}
@@ -5598,7 +5561,7 @@
             </details>
             ${sheetTokenTools(b)}
             <div class="monster-sheet-display ${b.conflictLocation === "巨兽之腹" ? "has-devour-dragon-trait" : ""}">
-              <div class="monster-sheet-stage" data-sheet-stage>
+              <div class="monster-sheet-stage" data-sheet-stage style="aspect-ratio:${sheetStageAspect(monster)};height:auto">
                 <div class="monster-sheet-spread">
                   ${monster.sheet?.face ? `<img src="${esc(monster.sheet.face)}" alt="怪物面板左侧">` : ""}
                   ${monster.sheet?.back ? `<img src="${esc(monster.sheet.back)}" alt="怪物面板右侧">` : ""}
@@ -5607,7 +5570,7 @@
                 ${sheetTokenLayer(b)}
               </div>
               ${b.conflictLocation === "巨兽之腹" ? `<figure class="devour-dragon-trait">
-                <img src="/assets/traits-zh/devour-dragon-belly.png" alt="巨兽之腹特质">
+                <img src="/assets/cards/monster-faces/young-devour/17e4a0c7-00.jpg" alt="巨兽之腹特质">
               </figure>` : ""}
             </div>
             ${mob ? (winged ? "" : mobTrackHtml(monster, b)) : doppelgangerTrackHtml(monster, b)}
@@ -5696,7 +5659,7 @@
           </section>
           <section class="panel">
             <details><summary>操作日志 (${b.log.length})</summary>
-              <div class="battle-log">${b.log.map(entry => `<p><time>${esc(entry.at)}</time>${esc(entry.message)}</p>`).join("") || "<p>暂无操作</p>"}</div>
+              <div class="battle-log">${b.log.map(entry => `<p><time>${esc(entry.at)}</time>${esc(window.KFMonsterLabels?.text(entry.message) ?? entry.message)}</p>`).join("") || "<p>暂无操作</p>"}</div>
             </details>
           </section>
           ${conflictBoardEditorHtml(monster, b)}
@@ -5810,7 +5773,7 @@
     }));
     $("#monsterSearch")?.addEventListener("input", event => {
       const query = event.target.value.trim().toLowerCase();
-      $$(".monster-item").forEach(item => { item.hidden = query && !item.textContent.toLowerCase().includes(query); });
+      $$(".monster-item").forEach(item => { item.hidden = Boolean(query) && !(window.KFMonsterLabels ? window.KFMonsterLabels.matches(monsterById(item.dataset.monster), query) : item.textContent.toLowerCase().includes(query)); });
     });
     $("[data-level]").addEventListener("input", event => {
       const max = Number(event.target.max) || 4;
@@ -5923,12 +5886,6 @@
         !state.battle.ruleState.knighteater.berserk,
         $("[data-eater-target]")?.value
       );
-      if (action === "stone-direction") return setStonemasonDirection($("[data-stone-direction]")?.value);
-      if (action === "stone-round-start") return startStonemasonRound();
-      if (action === "stone-round-end") return endStonemasonRound($("[data-stone-direction]")?.value);
-      if (action === "stone-ruin") return stonemasonBoardAction("ruin");
-      if (action === "stone-buried") return stonemasonBoardAction("buried");
-      if (action === "stone-spikes") return stonemasonBoardAction("spikes");
       if (action === "king-curse") return setKingCurse($("[data-king-knight]")?.value);
       if (action === "king-death") return kingKnightDied($("[data-king-knight]")?.value);
       if (action === "king-obey") return kingBow($("[data-king-knight]")?.value, true);
@@ -5958,9 +5915,7 @@
     $$("[data-egg-add]").forEach(button => button.addEventListener("click", () =>
       changeEggArmor(Number(button.dataset.eggAdd), 1, false)
     ));
-    $$("[data-egg-headbutt]").forEach(button => button.addEventListener("click", () =>
-      changeEggArmor(Number(button.dataset.eggHeadbutt), -1, true)
-    ));
+    $("[data-egg-headbutt]")?.addEventListener("click", headbuttEggArmor);
     $("[data-egg-counter-slot]")?.addEventListener("click", () => changeEggCounter(1));
     $("[data-egg-counter-token]")?.addEventListener("click", () => {
       if (state.battle.ruleState.eggknight.counter >= 3) return triggerEggCounter();
@@ -6240,9 +6195,9 @@
       migratePanzerArmor, clearPanzerRetributionArmor, discardTopAi, favoriteChild, completeRuleCard,
       setKnightSeverity, ancientBargain, drawSmeltedPatient, stopSmeltedPatient, resolvePatientEffect,
       setSmeltedOubliette, toggleSmeltedGate, smeltedFerrobaptism, changeSmeltedArmor, bargainDiscardSmeltedArmor, smeltedEquipmentEvent,
-      changeEggArmor, changeEggCounter, triggerEggCounter, changeKnighteaterResource, changeKnighteaterBruteCounter, toggleKnighteaterBerserk, resolveWolfDown,
+      changeEggArmor, headbuttEggArmor, leastEggArmorSlot, changeEggCounter, triggerEggCounter, changeKnighteaterResource, changeKnighteaterBruteCounter, toggleKnighteaterBerserk, resolveWolfDown,
       changeIroncastNecrofusionCounter, resolveIroncastNecrofusion,
-      setStonemasonDirection, changeStonemasonArmor, startStonemasonRound, endStonemasonRound, stonemasonBoardAction,
+      changeStonemasonArmor,
       setKingCurse, kingKnightDied, kingBow, kingVpAction, kingDrillAction,
       changeKingPutridCounter, resolveKingPutridPenance, recordP2WoundCounters,
       setSheetTokenCount, setBogWitchPosition, changeMobMarker, toggleLictorDecoy, promoteLowest,

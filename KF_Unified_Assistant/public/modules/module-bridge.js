@@ -54,21 +54,7 @@
   status.className = "bridge-status";
   status.textContent = "连接战役…";
 
-  const bar = document.createElement("nav");
-  bar.className = "unified-module-bar";
-  const links = [
-    ["/", "骑士团"],
-    ["/modules/map/", "地图"],
-    ["/modules/encounter/", "遭遇"],
-    ["/modules/aibp/", "AI / BP"],
-    ["/modules/rogue/", "肉鸽之路"],
-    ["/modules/display/", "第二屏"],
-  ];
-  bar.innerHTML = `<strong>KF 一体化战役</strong>${links.map(([href, label]) =>
-    `<a href="${href}" class="${href.includes(`/modules/${moduleName}/`) ? "active" : ""}">${label}</a>`
-  ).join("")}`;
-  bar.append(status);
-  body.prepend(bar);
+  body.querySelector("header[data-unified-topbar] [data-topbar-actions]")?.prepend(status);
 
   const api = async (route, options = {}) => {
     const [routeName, query = ""] = route.split("?");
@@ -100,7 +86,7 @@
     const monsterPool = campaignState?.monsterPool || null;
     const value = {
       campaignId: activeCampaign,
-      kingdom: monsterPool?.kingdom || campaignState?.kingdom || campaignState?.map?.activeKingdom || "",
+      kingdom: campaignState?.kingdom || campaignState?.map?.activeKingdom || monsterPool?.kingdom || "",
       monsterPool,
     };
     window.KF_MAP_UPSTREAM = value;
@@ -298,7 +284,7 @@
           window.KF_CAMPAIGN_PARTY = rogueHandoff.rogueRoster;
         }
       } catch { /* malformed handoff is ignored */ }
-      window.KF_CAMPAIGN_KINGDOM = campaignState.monsterPool?.kingdom || campaignState.kingdom || campaignState.map?.activeKingdom || "";
+      window.KF_CAMPAIGN_KINGDOM = campaignState.kingdom || campaignState.map?.activeKingdom || campaignState.monsterPool?.kingdom || "";
       // Five-player rules apply only while a fifth member actually takes part (a rogue roster never does).
       window.KF_CAMPAIGN_OPTIONS = {
         fivePlayer: fivePlayer && window.KF_CAMPAIGN_PARTY.length >= 5,

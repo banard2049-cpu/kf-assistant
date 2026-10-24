@@ -15,6 +15,7 @@ assert.ok(rulesStart >= 0 && rulesEnd > rulesStart, "marker drop rules not found
 
 const context = {};
 vm.runInNewContext(`
+  const state = { kingdom: "POS" };
   const PATH_MARKERS = [["armored", "单联装甲门"], ["triple-armored", "三联装甲门"], ["fog", "弥雾"], ["blocked", "其他阻挡"], ["shortcut", "已解锁捷径"]];
   const PASSAGE_MARKER_TYPES = PATH_MARKERS.map(([id]) => id).filter(id => id !== "shortcut");
   const DOOR_MARKER_TYPES = ["armored", "triple-armored"];

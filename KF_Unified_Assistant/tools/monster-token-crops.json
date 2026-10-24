@@ -1,0 +1,353 @@
+{
+  "M_BogWitch": {
+    "slug": "bog-witch",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc102276672612288011771BFEEDE9B444465A77830BDC2F8E79E37A0B9056.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc177853664662533489616A2E93FA44F3FE04648EB4C206473F62F72A0D96.jpg",
+    "affine": [
+      0.638881153,
+      0.00771061,
+      1409.172427084,
+      -0.00771061,
+      0.638881153,
+      375.743334941
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 133
+  },
+  "M_DevilAncientDusk": {
+    "slug": "devil-ancient-dusk",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc1732674147100544965909642F6D45DEC20F1CD9C58C760778A9351E221C.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc125028195194065419432BDD3D74E1CE800FC53844BECFCC7D0EFAF00DA6.jpg",
+    "affine": [
+      0.572625744,
+      -0.011291493,
+      1709.195326194,
+      0.011291493,
+      0.572625744,
+      289.184513126
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 106
+  },
+  "M_DevilSmeltedFears": {
+    "slug": "devil-smelted-fears",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc1571117263127749695299F71D961ABCDB2A395F219DF801C180C494372D.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc152051189910188540546E515CE3655B17EC7504380424C942CD554FBC0D.jpg",
+    "affine": [
+      0.675224,
+      -0.00840045,
+      251.288734766,
+      0.00840045,
+      0.675224,
+      350.168362458
+    ],
+    "mirror": true,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 135
+  },
+  "M_Eggknight": {
+    "slug": "eggknight",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc125876010229041334270D5371E0B152E5520257F48A38E9DEE990FD3322.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc17144757389909982074C30CA36215A79FEF1B2298890A95752A6931EE19.jpg",
+    "affine": [
+      0.823180037,
+      -0.005296768,
+      1531.544938157,
+      0.005296768,
+      0.823180037,
+      110.646728207
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 8
+  },
+  "M_FirstmenLictor": {
+    "slug": "firstmen-lictor",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc11907986404323452980EDBB99D892B06121B5DCC02E1B0BAA432A79B9BB.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc12760910245913265606CD5F0026B5CBD0D731755AF768C2D426CF4C4AD7.jpg",
+    "affine": [
+      0.95510348,
+      0.005966346,
+      1373.187760277,
+      -0.005966346,
+      0.95510348,
+      378.714789
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 97
+  },
+  "M_FirstmenWarriors": {
+    "slug": "firstmen-warriors",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc14559633909060526304E150C78B2EA2BF4725163CF0FF4C2463762B54B0.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc16632063316700297179CE20A468D593DF52A18130E6DD28383EFEB91360.jpg",
+    "affine": [
+      0.880780513,
+      0.004440522,
+      1689.085232104,
+      -0.004440522,
+      0.880780513,
+      155.549969168
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 88
+  },
+  "M_HauntOf": {
+    "slug": "haunts-of-utrebant",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc105584564496133492725D68AAAF929C9BB1542F01B7EF53163F4B865CDE.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc1256283265638384332431AC5121F6A9BDAD6B4789E8BDADD2AECCC15C8A.png",
+    "affine": [
+      0.579043981,
+      -0.005572642,
+      1589.152603288,
+      0.005572642,
+      0.579043981,
+      399.809094824
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 16
+  },
+  "M_Ironcast": {
+    "slug": "ironcast-dead",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc100221529243023028526E5E1E9E3A1347C273785AC7BCB03E2BA0BB07A5.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc181152978611897368043CC409C9274E9BA42CF4497F3E432BC0B938FB5A.jpg",
+    "affine": [
+      0.669832564,
+      -0.012798307,
+      1554.506325408,
+      0.012798307,
+      0.669832564,
+      152.561200767
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 87
+  },
+  "M_KnightFen": {
+    "slug": "knight-fen",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc183642391198062190780125B22BF3DEDAC011E647B2DE5344C85D6A9D07.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc142951439794369965983AF51F1EE89C77D1F88500EE3C0496DAEE16383A.jpg",
+    "affine": [
+      0.722583758,
+      0.008085738,
+      1818.063110032,
+      -0.008085738,
+      0.722583758,
+      199.445369099
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 83
+  },
+  "M_Knighteater": {
+    "slug": "knighteater",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc1652309721907513943744A87EF91E2332AB309CE6572962E3615DD540D6.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc157218921590585702374C6696ED899DDD916AA0B45E395100E8D2ADE534.jpg",
+    "affine": [
+      0.487596162,
+      0.000600207,
+      1421.137221726,
+      -0.000600207,
+      0.487596162,
+      318.827200162
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 36
+  },
+  "M_PalebloodWorms": {
+    "slug": "paleblood-worms",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc18051098189532583992A4329B4DC142761F79CA0212EA6A727F289219E5.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc168634878943008809697AE94267DF94BF6C3391F861194E6E68246076CA.jpg",
+    "affine": [
+      1.40625,
+      0,
+      211,
+      0,
+      1.40625,
+      4
+    ],
+    "mirror": true,
+    "method": "Original token full head and mouth landmarks"
+  },
+  "M_Panzerdragon": {
+    "slug": "panzerdragon",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc115213977891874541903AAB95A5E87C5B21ADDFCEDABA1BB3DE623A2164.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc1340670956645217954531A09AFA69E66C1D0C28F91DE5B031BDEBF42441.jpg",
+    "affine": [
+      0.547141809,
+      -0.006619398,
+      1511.088311742,
+      0.006619398,
+      0.547141809,
+      633.47101612
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 17
+  },
+  "M_Panzergeists": {
+    "slug": "panzergeists",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc171447823075200199776E5AC1B4CCC1B6338EDCF63B920164031CBA8A74.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc12925434717226194127DD62CD8193F53E5407BF24A72689E8A339A619DB.jpg",
+    "affine": [
+      0.759018526,
+      0.004237184,
+      1591.554578163,
+      -0.004237184,
+      0.759018526,
+      188.115899926
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 57
+  },
+  "M_Pumpkinhead": {
+    "slug": "pumpkinhead",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc148563751052677250843343724A00D0262373713BEE1983164FE2B99BDA.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc18381229382902903883CC17C062FF424E8B152FF06F92F6FC5F52C40F3D.jpg",
+    "affine": [
+      0.576944263,
+      -0.016129501,
+      1517.595210078,
+      0.016129501,
+      0.576944263,
+      151.376717018
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 88
+  },
+  "M_PuppetKing": {
+    "slug": "puppet-king",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc143967427866247177473DBA111033C555142C289D503B679F1106C4F4D0.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc12744880351446918615B705B59EE1A4001DFAC6EAF66EFBEBE01686613D.jpg",
+    "affine": [
+      0.580698239,
+      0.024014903,
+      1687.857000377,
+      -0.024014903,
+      0.580698239,
+      684.227896426
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 58
+  },
+  "M_Ratwolves": {
+    "slug": "ratwolves",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc13796232328587293997177368CC3DB416C30FF634B73ED378CDF213CA0A.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc13100873768279761942E8DA40884334B5D27DAB38E80F796668386B1399.jpg",
+    "affine": [
+      1.128966308,
+      -0.033959737,
+      1537.434318716,
+      0.033959737,
+      1.128966308,
+      137.317287762
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 32
+  },
+  "M_Stonemason": {
+    "slug": "stonemason",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc16162565195066997134D203115104A2E6B658FAA2E01F8A7385793C1F37.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc14939262049913592045A8A8BBA6B0958161C1A5033B1A954C880A7ABB22.jpg",
+    "affine": [
+      0.588217862,
+      -0.002989848,
+      1586.459071797,
+      0.002989848,
+      0.588217862,
+      165.81742819
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 147
+  },
+  "M_KingLaidLow": {
+    "slug": "king-laid-low",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc137074367819607862713039FB7BA82CA40313BDB5EE0DCCCCB7263E39F4.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc1097423247185101681261BA534266C8CC4688A0E8B66792216BA931ACE5.png",
+    "affine": [
+      1.057998466,
+      -0.010648722,
+      289.766343522,
+      0.010648722,
+      1.057998466,
+      810.512572877
+    ],
+    "mirror": true,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 90
+  },
+  "M_Toadragon": {
+    "slug": "toadragon",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc1502518980241042980557852B9A4E0FBA42C1F032D58A89B4E671872CBE.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc16599658008364925414543CD896E4DCEEC81B1255A04DBA5C1AD67E57ED.png",
+    "affine": [
+      0.837242649,
+      0.002195314,
+      1212.894452769,
+      -0.002195314,
+      0.837242649,
+      435.951522514
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 41
+  },
+  "M_WhiteApe": {
+    "slug": "white-ape",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc1687821608270011335305761BC370AAE485E48BAD2F1C51C0A9FF5A2DF5.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc13594900721377243184AC9B42E416E577E6672DAB69DC13AF20CCAEB6D1.png",
+    "affine": [
+      0.642289307,
+      -0.008712468,
+      1781.181839552,
+      0.008712468,
+      0.642289307,
+      143.48364988
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 62
+  },
+  "M_WingedNightmare": {
+    "slug": "winged-nightmare",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc15351253842002306204251B12DED23FADA31542FE9F83308B6FFFED62E6.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc1539164250294995378477E1A3E538CD17E25E58656C360E533855AFE1A8.jpg",
+    "affine": [
+      0.490647085,
+      -0.006066576,
+      1657.805952477,
+      0.006066576,
+      0.490647085,
+      164.632336953
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 11
+  },
+  "M_YoungDevour": {
+    "slug": "young-devour",
+    "reference": "/assets/images/httpssteamusercontentaakamaihdnetugc15362440558735186861F72C79CEC7DBCB1BC6400279DCCA834EB7FC9190.png",
+    "source": "/assets/images/httpssteamusercontentaakamaihdnetugc10451908990900552077B51C81AB529DE0A4CB2EC62AD1427BF5F3DB4809.jpg",
+    "affine": [
+      1.106162,
+      0.035279078,
+      1195.264837314,
+      -0.035279078,
+      1.106162,
+      328.852202126
+    ],
+    "mirror": false,
+    "method": "Original token feature registration",
+    "matchingLandmarks": 61
+  }
+}

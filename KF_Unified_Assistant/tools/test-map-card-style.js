@@ -42,7 +42,9 @@ for (const [kingdom, rules] of Object.entries(dataContext.window.KF_MOD_DATA.kin
   const fog = rules.deepFog[0];
   assert.equal(exploration.image.uniqueBack, true, `${kingdom} exploration backs use an atlas`);
   assert.equal(fog.image.uniqueBack, false, `${kingdom} fog cards use a shared back`);
-  assert.match(styleFor(exploration.image, "back"), /--cols:10;--rows:3/);
+  const crop = exploration.image.backCrop;
+  assert.ok(crop, `${kingdom} exploration back has independent geometry`);
+  assert.ok(styleFor(exploration.image, "back").includes(`--cols:${crop.width};--rows:${crop.height}`));
   assert.match(styleFor(fog.image, "back"), /--cols:1;--rows:1;--x:0%;--y:0%/);
 }
 

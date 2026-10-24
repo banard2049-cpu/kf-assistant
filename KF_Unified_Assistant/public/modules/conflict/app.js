@@ -14,7 +14,6 @@
     level: String(saved.level || "1"),
     checks: saved.checks || {},
     search: "",
-    dialogIndex: 0,
   };
 
   function persist() {
@@ -103,15 +102,6 @@
         </div>
         <aside class="side-column">
           <section class="panel"><h3>所需板块与组件</h3>${tileMarkup(monster)}</section>
-          <section class="panel reference-panel">
-            <div class="panel-head"><h3>原版图示</h3><span class="progress">点击放大</span></div>
-            <div class="reference-pages">${monster.pages.map((page, index) => `
-              <button class="reference-thumb" type="button" data-reference-index="${index}" aria-label="打开 PDF 第 ${page} 页">
-                <img loading="lazy" src="/assets/pages/page-${page}.jpg" alt="${esc(monster.name)}原版参考第 ${page} 页">
-                <span>PDF ${page}</span>
-              </button>`).join("")}</div>
-            <p class="source-note">中文步骤依据 PDF 对应页翻译；版图坐标、朝向和图块摆法以原图为准。</p>
-          </section>
         </aside>
       </div>`;
     persist();
@@ -124,20 +114,6 @@
       return;
     }
     renderSetup();
-  }
-
-  function openReference(index) {
-    const monster = currentMonster();
-    state.dialogIndex = Math.max(0, Math.min(index, monster.pages.length - 1));
-    const page = monster.pages[state.dialogIndex];
-    $("#dialogTitle").textContent = `${monster.name} · ${monster.en}`;
-    $("#dialogPage").textContent = `PDF 第 ${page} 页`;
-    $("#dialogImage").src = `/assets/pages/page-${page}.jpg`;
-    $("#dialogImage").alt = `${monster.name}原版参考第 ${page} 页`;
-    $("#previousPage").disabled = state.dialogIndex === 0;
-    $("#nextPage").disabled = state.dialogIndex === monster.pages.length - 1;
-    if (!$("#referenceDialog").open) $("#referenceDialog").showModal();
-    $(".dialog-image-wrap").scrollTo(0, 0);
   }
 
   $("#monsterList").addEventListener("click", event => {
@@ -159,25 +135,10 @@
     if (!input.checked) checks[input.dataset.checkKind] = list.filter(value => value !== index);
     renderSetup();
   });
-  $("#setupView").addEventListener("click", event => {
-    const button = event.target.closest("[data-reference-index]");
-    if (button) openReference(Number(button.dataset.referenceIndex));
-  });
   $("#resetChecks").addEventListener("click", () => {
     if (!confirm(`清空“${currentMonster().name}”的全部设置勾选？`)) return;
     state.checks[currentMonster().id] = { setup: [], standard: [] };
     renderSetup();
-  });
-  $("#previousPage").addEventListener("click", () => openReference(state.dialogIndex - 1));
-  $("#nextPage").addEventListener("click", () => openReference(state.dialogIndex + 1));
-  $("#closeDialog").addEventListener("click", () => $("#referenceDialog").close());
-  $("#referenceDialog").addEventListener("click", event => {
-    if (event.target === $("#referenceDialog")) $("#referenceDialog").close();
-  });
-  addEventListener("keydown", event => {
-    if (!$("#referenceDialog").open) return;
-    if (event.key === "ArrowLeft" && state.dialogIndex > 0) openReference(state.dialogIndex - 1);
-    if (event.key === "ArrowRight" && state.dialogIndex < currentMonster().pages.length - 1) openReference(state.dialogIndex + 1);
   });
 
   $("#kingdomFilter").value = state.kingdom;

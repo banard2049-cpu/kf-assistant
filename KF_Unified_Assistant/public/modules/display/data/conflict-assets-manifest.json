@@ -30,26 +30,6 @@
       "sha256": "50c3c8cfe6797b5883dc9e32bd3f0cabc1dcbf29c6572449f0ebd75a2ddb3dbd"
     },
     {
-      "id": "board-source",
-      "kind": "board",
-      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/16850804953734550429/D9D2F39AE9D45A6B70F318F6D032EEACE2C2BF26/",
-      "cacheFile": "httpssteamusercontentaakamaihdnetugc16850804953734550429D9D2F39AE9D45A6B70F318F6D032EEACE2C2BF26.jpg",
-      "publicPath": "/assets/conflict/board-source.jpg",
-      "height": 4553,
-      "width": 7994,
-      "bytes": 1161919,
-      "sha256": "d4ac8fbebeb23e002e44597ffdf33e97a77b0301c412db0897df9aa14f832696"
-    },
-    {
-      "id": "belly-of-beast",
-      "kind": "board",
-      "sourceUrl": "local://belly-of-beast.jpg",
-      "cacheFile": "belly-of-beast.jpg",
-      "publicPath": "/assets/conflict/belly-of-beast.jpg",
-      "width": 4516,
-      "height": 2833
-    },
-    {
       "id": "Campfire",
       "kind": "terrain",
       "guid": "61b543",
@@ -86,28 +66,6 @@
       "sha256": "36d83e0b371ae1c9464803e068dc00dee81c79bfdbd6bd66bb5676f6e2bbc022"
     },
     {
-      "id": "fool-card-back",
-      "kind": "fool-card-back",
-      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/10792521070176408/FC1854B67107FBFABACDB5A37B4E6896BF2B2B74/",
-      "cacheFile": "httpssteamusercontentaakamaihdnetugc10792521070176408FC1854B67107FBFABACDB5A37B4E6896BF2B2B74.jpg",
-      "publicPath": "/assets/conflict/fool-card-back.jpg",
-      "height": 744,
-      "width": 484,
-      "bytes": 410792,
-      "sha256": "fff74fff91cbc8fe8f1b5729415994a86857d5c2ffd2fb29a77d008a03433247"
-    },
-    {
-      "id": "fool-card-sheet",
-      "kind": "fool-card-sheet",
-      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/10792521070176403/1F3154644FCA46E7833C038E1087E2B0B2E1A12F/",
-      "cacheFile": "httpssteamusercontentaakamaihdnetugc107925210701764031F3154644FCA46E7833C038E1087E2B0B2E1A12F.jpg",
-      "publicPath": "/assets/conflict/fool-card-sheet.jpg",
-      "height": 2232,
-      "width": 2420,
-      "bytes": 7462827,
-      "sha256": "7c8083491e1eade498ec27cb665148458374712bd9f62d00fcbc0c2e3b25a183"
-    },
-    {
       "id": "GreatMangrove",
       "kind": "terrain",
       "guid": "7ca02d",
@@ -137,11 +95,11 @@
       "guid": "fea45f",
       "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/11907986404323452980/EDBB99D892B06121B5DCC02E1B0BAA432A79B9BB/",
       "cacheFile": "httpssteamusercontentaakamaihdnetugc11907986404323452980EDBB99D892B06121B5DCC02E1B0BAA432A79B9BB.png",
-      "publicPath": "/assets/images/httpssteamusercontentaakamaihdnetugc11907986404323452980EDBB99D892B06121B5DCC02E1B0BAA432A79B9BB.png",
-      "width": 584,
-      "height": 584,
-      "bytes": 821770,
-      "sha256": "cd9593b105e26bffcc608fbd8aa2d163d1b4d801b09bfe9691be6584b9e172e1"
+      "publicPath": "/assets/tokens/monsters/firstmen-lictor-portrait-v2.png",
+      "width": 768,
+      "height": 768,
+      "bytes": 813804,
+      "sha256": "396862513a78a29d31ec58c0b2c1b98fc15fb794c1c42c67bfa75e50afd6e326"
     },
     {
       "id": "LooseString",
@@ -456,17 +414,6 @@
       "sha256": "cef724d4a7bcec4fbd548f61ae3f67bf1216f285e5dbd877f81716fcc0cf3cfa"
     },
     {
-      "id": "terrain-card-sheet",
-      "kind": "terrain-card-sheet",
-      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/18336324716199553349/661E737637A3F5DBCE104A06FFA08805A223A79C/",
-      "cacheFile": "httpssteamusercontentaakamaihdnetugc18336324716199553349661E737637A3F5DBCE104A06FFA08805A223A79C.jpg",
-      "publicPath": "/assets/conflict/terrain-card-sheet.jpg",
-      "height": 2080,
-      "width": 7300,
-      "bytes": 1448162,
-      "sha256": "868fd17304b82c6166750c184656c9223131ef7f52286f8c16a7ba30c166f01c"
-    },
-    {
       "id": "Tower",
       "kind": "terrain",
       "guid": "6bb2a7",
@@ -489,6 +436,298 @@
       "height": 791,
       "bytes": 1765549,
       "sha256": "6e5b6b0481d953b5241f918fb532a824b01d36790928cf1dcc2af7c7131453ef"
+    },
+    {
+      "id": "belly-of-beast",
+      "kind": "board",
+      "sourceUrl": "local://belly-of-beast.jpg",
+      "cacheFile": "belly-of-beast.jpg",
+      "publicPath": "/assets/conflict/belly-of-beast.jpg",
+      "width": 4516,
+      "height": 2833
+    },
+    {
+      "id": "board-source",
+      "kind": "board",
+      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/16850804953734550429/D9D2F39AE9D45A6B70F318F6D032EEACE2C2BF26/",
+      "cacheFile": "httpssteamusercontentaakamaihdnetugc16850804953734550429D9D2F39AE9D45A6B70F318F6D032EEACE2C2BF26.jpg",
+      "publicPath": "/assets/conflict/board-source.jpg",
+      "height": 4553,
+      "width": 7994,
+      "bytes": 1161919,
+      "sha256": "d4ac8fbebeb23e002e44597ffdf33e97a77b0301c412db0897df9aa14f832696"
+    },
+    {
+      "id": "card-fool-0",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-00.jpg",
+      "width": 488,
+      "height": 752,
+      "bytes": 529654,
+      "sha256": "eda4fd52e11a45b5d10c23851d484f7015ce0222f626fd51f9e06dfe87aab4fc"
+    },
+    {
+      "id": "card-fool-1",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-01.jpg",
+      "width": 496,
+      "height": 752,
+      "bytes": 576228,
+      "sha256": "d00d72d8f4fec294a1f7763e7bf898aea587624b9fec6b25d695adf82e47658f"
+    },
+    {
+      "id": "card-fool-10",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-10.jpg",
+      "width": 488,
+      "height": 752,
+      "bytes": 495887,
+      "sha256": "53fdc4f6a2da002aed6cf27d0818ad3d7e563b4681b5b34c4af1928811af90b4"
+    },
+    {
+      "id": "card-fool-11",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-11.jpg",
+      "width": 496,
+      "height": 752,
+      "bytes": 523426,
+      "sha256": "7f1692b2451c928247cc28308450826d71754a8e71830364e41cf78e6fbe0937"
+    },
+    {
+      "id": "card-fool-12",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-12.jpg",
+      "width": 496,
+      "height": 752,
+      "bytes": 502780,
+      "sha256": "1829f781a086576d42d45405cd4fb66c42cec68738d71f2e5cbc5834e218b3da"
+    },
+    {
+      "id": "card-fool-13",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-13.jpg",
+      "width": 496,
+      "height": 752,
+      "bytes": 527560,
+      "sha256": "1fc34acb50505acf525de2d2f18769bd543825b7c3463b23f9a3f49cd377e950"
+    },
+    {
+      "id": "card-fool-14",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-14.jpg",
+      "width": 492,
+      "height": 752,
+      "bytes": 532888,
+      "sha256": "634f445dc5b2bbbd74c1c1f657c14c6e81e584da48b9c06f26edae19397a3b8b"
+    },
+    {
+      "id": "card-fool-2",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-02.jpg",
+      "width": 496,
+      "height": 752,
+      "bytes": 501545,
+      "sha256": "9bdc3b412bebae6f6b34f6e324819ede8f4b1a7f50580e0e121d6aeb80fcfc8b"
+    },
+    {
+      "id": "card-fool-3",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-03.jpg",
+      "width": 496,
+      "height": 752,
+      "bytes": 496584,
+      "sha256": "391e6b6ecaf280a688ebebdafceef47836bb274731219d2fefd6e21e88abfb8c"
+    },
+    {
+      "id": "card-fool-4",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-04.jpg",
+      "width": 492,
+      "height": 752,
+      "bytes": 536527,
+      "sha256": "39906bb15ad19a4f6458ee47ec50a0b87a027a7c1db01147bb81fdf7383b1663"
+    },
+    {
+      "id": "card-fool-5",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-05.jpg",
+      "width": 488,
+      "height": 760,
+      "bytes": 495308,
+      "sha256": "fa46f3c4691aeb6b28e4c8a20fd6e10ba3c2b71321152d53ca21559ab1c2f800"
+    },
+    {
+      "id": "card-fool-6",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-06.jpg",
+      "width": 496,
+      "height": 760,
+      "bytes": 444915,
+      "sha256": "3a1c26fa308a0e01c14eccd31533a0ea04a5705e49ca8b75af5a81bdb68b0fd0"
+    },
+    {
+      "id": "card-fool-7",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-07.jpg",
+      "width": 496,
+      "height": 760,
+      "bytes": 500153,
+      "sha256": "954650761b133dafb794ed8febd1135ce906a7dbc434a1b9d269ded9775b9571"
+    },
+    {
+      "id": "card-fool-8",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-08.jpg",
+      "width": 496,
+      "height": 760,
+      "bytes": 523487,
+      "sha256": "bf40598e67699c4b1af15e18f084450a5688efaead1dd7530e46092f9089f125"
+    },
+    {
+      "id": "card-fool-9",
+      "kind": "card",
+      "publicPath": "/assets/cards/fool/ba928730-09.jpg",
+      "width": 492,
+      "height": 760,
+      "bytes": 480459,
+      "sha256": "77594a9227e039b469adbe3feb29f61ff12cccf1b70e2410ef20511178a4248a"
+    },
+    {
+      "id": "card-terrain-0",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-00.jpg",
+      "width": 736,
+      "height": 1056,
+      "bytes": 138720,
+      "sha256": "2afb79c8715ad8ee9b1e22d714c1438a930a4f5f853a221552911019a0178cd4"
+    },
+    {
+      "id": "card-terrain-1",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-01.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 146171,
+      "sha256": "220c57e4c0f38cd2803eaeaadac3170e0deefb87d105b0cd44f99b6106bed91b"
+    },
+    {
+      "id": "card-terrain-10",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-10.jpg",
+      "width": 736,
+      "height": 1056,
+      "bytes": 145076,
+      "sha256": "be9716f8eb41cfa300b3b5a535ed95586b55aac2ee9f62f4388107c49bef3acb"
+    },
+    {
+      "id": "card-terrain-12",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-12.jpg",
+      "width": 736,
+      "height": 1056,
+      "bytes": 131979,
+      "sha256": "a8424871cc4ba50613f96b3489f77ed6e8fa6a467aa7431fad3c35b912ccc783"
+    },
+    {
+      "id": "card-terrain-13",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-13.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 162125,
+      "sha256": "e3a1b3ede1c6e3d280154db3d9edfcb33a62537f0e9b6f12b6c36d9b76974cd5"
+    },
+    {
+      "id": "card-terrain-14",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-14.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 152993,
+      "sha256": "c7d6c42b8cc0b91a2033e32027e945c49b92cef2ba6ceb6efd1a77b7b07f479e"
+    },
+    {
+      "id": "card-terrain-2",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-02.jpg",
+      "width": 736,
+      "height": 1056,
+      "bytes": 123007,
+      "sha256": "b6672eb70f4abd24876afc5d470d27ff87841390546b0972323d080e29890c58"
+    },
+    {
+      "id": "card-terrain-3",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-03.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 143774,
+      "sha256": "f3f962c91cb6e9ea9573cb6a37d03b0e053e256410f3b6846d31fbf40a81db11"
+    },
+    {
+      "id": "card-terrain-4",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-04.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 142449,
+      "sha256": "0ea73ce4c47b9dbb58a0ae0a883b620ae5c560ed5418485dc230ee70e05fbba1"
+    },
+    {
+      "id": "card-terrain-5",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-05.jpg",
+      "width": 736,
+      "height": 1056,
+      "bytes": 156699,
+      "sha256": "f09097ead0bf9bb19e28a026694f79330bc8e35b83e5c7a1b33ce1328143bac7"
+    },
+    {
+      "id": "card-terrain-6",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-06.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 153476,
+      "sha256": "fdc6cf460c542cf7996436a19375675a00d2160c79ff119cc44b193c1e8b5b7d"
+    },
+    {
+      "id": "card-terrain-7",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-07.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 146574,
+      "sha256": "9b0d41ad610bff51863c4fdaaece336ad0e05a0ac800a084e6440d42451900bd"
+    },
+    {
+      "id": "card-terrain-8",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-08.jpg",
+      "width": 752,
+      "height": 1056,
+      "bytes": 126879,
+      "sha256": "bd86f265c91c6a01779f3dcbb1ed00c5a32c2a500488d3451351fc430ac332e9"
+    },
+    {
+      "id": "card-terrain-9",
+      "kind": "card",
+      "publicPath": "/assets/cards/terrain/7f35a2cc-09.jpg",
+      "width": 740,
+      "height": 1056,
+      "bytes": 133588,
+      "sha256": "e4abb36fc63acd4b9c51a5010abceba0324fefa7d31b5b0ee8923bdeb9753583"
+    },
+    {
+      "id": "fool-card-back",
+      "kind": "fool-card-back",
+      "sourceUrl": "https://steamusercontent-a.akamaihd.net/ugc/10792521070176408/FC1854B67107FBFABACDB5A37B4E6896BF2B2B74/",
+      "cacheFile": "httpssteamusercontentaakamaihdnetugc10792521070176408FC1854B67107FBFABACDB5A37B4E6896BF2B2B74.jpg",
+      "publicPath": "/assets/conflict/fool-card-back.jpg",
+      "height": 744,
+      "width": 484,
+      "bytes": 410792,
+      "sha256": "fff74fff91cbc8fe8f1b5729415994a86857d5c2ffd2fb29a77d008a03433247"
     }
   ]
 }

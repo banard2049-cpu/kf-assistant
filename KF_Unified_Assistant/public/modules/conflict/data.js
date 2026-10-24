@@ -14,7 +14,7 @@ window.KF_CONFLICT_SETUPS = {
   monsters: [
     {
       id: "ratwolves",
-      name: "鼠狼群",
+      name: "狼鼠狼",
       en: "Ratwolves",
       kingdom: "both",
       type: "杂兵",
@@ -30,14 +30,14 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "winged-nightmare",
-      name: "翼生梦魇",
+      name: "展翅魔",
       en: "Winged Nightmare",
       kingdom: "sunken",
       type: "首领",
       pages: [40, 41],
       tiles: ["立柱 ×15", "L 形瓦砾 ×4", "1×2 车辙 ×4", "无底井 ×1"],
       steps: [
-        "将翼生梦魇模型放到图示位置，并按箭头确定朝向。",
+        "将展翅魔模型放到图示位置，并按箭头确定朝向。",
         "将“Wide Wings”BP 牌放到杂兵轨第 1 格。",
         "等级 2 及以上：将“Bloody Defiance”BP 特质牌放在怪物面板旁。",
         "继续执行本场特质牌带来的额外冲突设置。"
@@ -63,14 +63,14 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "knight-fen",
-      name: "沼泽骑士",
+      name: "污泥骑士",
       en: "Knight of the Fen",
       kingdom: "both",
       type: "首领",
       pages: [44, 45],
       tiles: ["1×2 沼泽 ×6", "L 形瓦砾 ×3", "2×2 瓦砾 ×2"],
       steps: [
-        "将沼泽骑士模型放到图示位置，并按箭头确定朝向。",
+        "将污泥骑士模型放到图示位置，并按箭头确定朝向。",
         "把“Engulfed”特质牌与 6 枚 Doppelknight 指示物放在怪物面板旁。",
         "按所在王国取用特质牌：石之公国使用“Recycled Armor”，沉没王国使用“Quick Summons”。",
         "继续执行本场特质牌带来的额外冲突设置。"
@@ -78,14 +78,14 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "paleblood-worms",
-      name: "苍血蠕虫",
+      name: "白血蠕虫",
       en: "Paleblood Worms",
       kingdom: "both",
       type: "杂兵",
       pages: [46, 47],
       tiles: ["立柱 ×5", "L 形残墙 ×2", "苍白地穴 ×10", "血泉 ×1"],
       steps: [
-        "给全部苍血蠕虫模型套上编号底环。将 1-4 号模型随机放到图示编号位置，并按箭头确定朝向。",
+        "给全部白血蠕虫模型套上编号底环。将 1-4 号模型随机放到图示编号位置，并按箭头确定朝向。",
         "随机排序 4 张 BP 1，背面朝上放到杂兵轨 1-4 格。",
         "把鲜血指示物放在怪物面板旁。",
         "继续执行本场特质牌带来的额外冲突设置。"
@@ -110,14 +110,14 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "haunts-utrebant",
-      name: "乌特雷班特鬼影",
+      name: "乌特勒班幽灵",
       en: "Haunts of Utrebant",
       kingdom: "both",
       type: "杂兵",
       pages: [50, 51],
       tiles: ["1×2 沼泽 ×8", "2×2 沼泽 ×4", "L 形残墙 ×2", "1×4 残墙 ×1"],
       steps: [
-        "给全部乌特雷班特鬼影模型套上编号底环。将 1-3 号模型随机放到图示编号位置，并按箭头确定朝向。",
+        "给全部乌特勒班幽灵模型套上编号底环。将 1-3 号模型随机放到图示编号位置，并按箭头确定朝向。",
         "随机排序 3 张 BP 1，背面朝上放到杂兵轨 1-3 格。",
         "把愚者牌组放在怪物面板旁。",
         "继续执行本场特质牌带来的额外冲突设置。"
@@ -141,14 +141,14 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "king-laid-low",
-      name: "沉沦之王",
+      name: "俯伏王",
       en: "The King Laid Low",
       kingdom: "both",
       type: "首领",
       pages: [54, 55],
       tiles: ["2×2 车辙 ×4", "L 形残墙 ×2", "1×4 残墙 ×1"],
       steps: [
-        "将沉沦之王模型放到图示位置。",
+        "将俯伏王模型放到图示位置。",
         "查看 Minor Mortis 牌组最底部的牌，按其左下角箭头方向旋转怪物，以确定初始朝向。",
         "冲突开始时：随机一名骑士从状况牌组获得休眠面“Malédiction”牌。",
         "继续执行本场特质牌带来的额外冲突设置。"
@@ -175,14 +175,14 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "toadragon",
-      name: "大沼泽蟾龙",
+      name: "大沼泽蟾蜍龙",
       en: "Toadragon of the Great Marsh",
       kingdom: "both",
       type: "首领",
       pages: [58, 59],
       tiles: ["大红树 ×3", "1×2 沼泽 ×7"],
       steps: [
-        "将大沼泽蟾龙模型放到图示位置，并按箭头确定朝向。",
+        "将大沼泽蟾蜍龙模型放到图示位置，并按箭头确定朝向。",
         "把 Divine Target 指示物和 6 枚 Toadlet 指示物放在怪物面板旁。",
         "继续执行本场特质牌带来的额外冲突设置。"
       ]

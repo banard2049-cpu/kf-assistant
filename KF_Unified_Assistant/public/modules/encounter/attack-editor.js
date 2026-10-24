@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
+  const tierName = value => window.KFMonsterLabels?.tier(value) ?? value;
   const DATA = window.KF_ENCOUNTER_DATA;
   const STORAGE_KEY = "kf-encounter-card-corrections-v1";
   const GRID_SIZE = 19;
@@ -55,10 +57,8 @@
     toast("修正已保存，遭遇战助手会自动读取");
   }
   function crop(card) {
-    const image = card.image;
-    const col = image.index % image.width;
-    const row = Math.floor(image.index / image.width);
-    return `<div class="crop-card"><img alt="${esc(card.name)}" src="${esc(image[card.side])}" style="width:${image.width * 100}%;height:${image.height * 100}%;left:${-col * 100}%;top:${-row * 100}%"></div>`;
+    return window.KFEncounterView.renderCard(card, card.side)
+      .replace('class="crop-card read-only"', 'class="crop-card"');
   }
   function attackGrid() {
     const pattern = new Set(effectivePattern().map(([row, col]) => `${row},${col}`));
@@ -91,12 +91,12 @@
         <div class="panel-head"><div><span class="eyebrow">CARDS</span><h2>怪物列表</h2></div><span class="badge">${correctedCards.size} 项修正</span></div>
         ${DATA.monsters.map(value => {
           const count = value.encounterLevels.filter(item => correctedCards.has(`${value.id}:${item.level}`)).length;
-          return `<button class="audit-monster ${value.id === monster().id ? "active" : ""}" data-monster="${value.id}"><span>${esc(value.name)}</span><span>${count ? `● ${count}` : ""}</span></button>`;
+          return `<button class="audit-monster ${value.id === monster().id ? "active" : ""}" data-monster="${value.id}"><span>${esc(monsterLabel(value))}</span><span>${count ? `● ${count}` : ""}</span></button>`;
         }).join("")}
       </aside>
       <section class="audit-main">
         <div class="panel audit-card">
-          <div class="panel-head"><div><span class="eyebrow">${current.tier.toUpperCase()}</span><h2>${esc(monster().name)}</h2></div><span class="badge gold">等级 ${current.level}</span></div>
+          <div class="panel-head"><div><span class="eyebrow">${esc(tierName(current.tier))}</span><h2>${esc(monsterLabel(monster()))}</h2></div><span class="badge gold">等级 ${current.level}</span></div>
           ${crop(current)}
           <p class="muted">卡图是权威参考。请选择卡图中箭头的实际朝向，再按原图位置绘制红色攻击格。</p>
         </div>

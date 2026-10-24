@@ -75,11 +75,16 @@ local.properties
 # Generated Android web bundle
 KF_Unified_Assistant/tools/packaging/android/app/src/main/assets/web/
 
-# Local caches and browser preview profiles
+# Local caches, browser preview profiles and manual asset backups
 .cache/
 .preview-*/
+/.image-backups/
 __pycache__/
 *.py[cod]
+
+# Local render/export scratch output (never publish)
+/output/
+/KF_Unified_Assistant/output/
 
 # Editor and OS metadata
 .idea/

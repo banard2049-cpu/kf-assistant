@@ -129,19 +129,19 @@ assert.equal(new Set(state().conflictBoard.foolDeckOrder).size, 15,
 assert.doesNotMatch(api.renderBossRules(), /BOSS RULES|当前 Boss 专用操作/,
   "所有 Boss 专用面板都不应显示共用标题文字");
 
-assert.ok(fs.existsSync(path.join(root, "../../assets/traits-zh/devour-dragon-belly.png")),
+assert.ok(fs.existsSync(path.join(root, "../../assets/cards/monster-faces/young-devour/17e4a0c7-00.jpg")),
   "巨兽之腹特质图必须位于共用资源目录");
 state().conflictLocation = "巨兽之腹";
 api.renderApp();
 let devourDragonHtml = nodes.get("#app").innerHTML;
 assert.ok(devourDragonHtml.includes("has-devour-dragon-trait"),
   "拥有“贪食巨龙来了！”状态时，大卡应预留右侧特质图区域");
-assert.ok(devourDragonHtml.includes("assets/traits-zh/devour-dragon-belly.png"),
+assert.ok(devourDragonHtml.includes("assets/cards/monster-faces/young-devour/17e4a0c7-00.jpg"),
   "拥有“贪食巨龙来了！”状态时，大卡右侧应显示巨兽之腹特质图");
 state().conflictLocation = "";
 api.renderApp();
 devourDragonHtml = nodes.get("#app").innerHTML;
-assert.ok(!devourDragonHtml.includes("devour-dragon-belly.png"),
+assert.ok(!devourDragonHtml.includes('<figure class="devour-dragon-trait"'),
   "未拥有“贪食巨龙来了！”状态时，不应显示巨兽之腹特质图");
 
 api.selectMonster("M_Panzergeists");
@@ -1812,6 +1812,8 @@ api.setSheetTokenCount("token-armor", 3);
 let manualArmorTokens = state().sheetTokens.filter(token => token.assetId === "token-armor");
 assert.equal(manualArmorTokens.length, 1, "通用护甲应保存为一个可拖动的指示物堆");
 assert.equal(manualArmorTokens[0].count, 3, "通用护甲指示物堆应保留完整数量");
+assert.equal(manualArmorTokens[0].x, 57.1, "蛋蛋骑士通用护甲应默认放在 BP1 印刷槽位");
+assert.equal(manualArmorTokens[0].y, 40.2, "蛋蛋骑士通用护甲纵坐标应与 BP1 印刷槽位对齐");
 api.setSheetTokenCount("token-armor", 8);
 manualArmorTokens = state().sheetTokens.filter(token => token.assetId === "token-armor");
 assert.equal(manualArmorTokens.length, 1, "增加通用护甲不应产生多个独立位置");

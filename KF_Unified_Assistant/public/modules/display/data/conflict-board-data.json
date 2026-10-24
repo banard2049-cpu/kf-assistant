@@ -30,150 +30,535 @@
     }
   },
   "terrainCards": {
-    "sheet": {
-      "asset": "/assets/conflict/terrain-card-sheet.jpg",
-      "width": 7300,
-      "height": 2080,
-      "columns": 10,
-      "rows": 2
-    },
     "byAsset": {
       "Bloodgeyser": {
         "cardId": 23610,
         "label": "Bloodgeyser",
         "column": 0,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-10.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 10,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 0.0,
+            "y": 100.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Campfire": {
         "cardId": 23607,
         "label": "Campfire",
         "column": 7,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-07.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 7,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 27.27272727272727,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Column": {
         "cardId": 23602,
         "label": "Column",
         "column": 2,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-02.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 2,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 66.66666666666666,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "GreatMangrove": {
         "cardId": 23608,
         "label": "Great Mangrove",
         "column": 8,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-08.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 8,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 72.72727272727273,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "LooseString": {
         "cardId": 23609,
         "label": "Loose String",
         "column": 9,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-09.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 9,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0136986301369864,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 100.0,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Paleburrow": {
         "cardId": 23603,
         "label": "Paleburrow",
         "column": 3,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-03.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 3,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 63.63636363636363,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "PrimalRemnant": {
         "cardId": 23606,
         "label": "Primal Remnant",
         "column": 6,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-06.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 6,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 54.54545454545454,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "RottenStump": {
         "cardId": 23613,
         "label": "Rotten Stump",
         "column": 3,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-13.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 13,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 63.63636363636363,
+            "y": 100.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Rubble2": {
         "cardId": 23601,
         "label": "Rubble",
         "column": 1,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-01.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 1,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 45.45454545454545,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Rubble4": {
         "cardId": 23601,
         "label": "Rubble",
         "column": 1,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-01.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 1,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 45.45454545454545,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "RubbleL": {
         "cardId": 23601,
         "label": "Rubble",
         "column": 1,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-01.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 1,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 45.45454545454545,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "RubbleLM": {
         "cardId": 23601,
         "label": "Rubble",
         "column": 1,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-01.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 1,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 45.45454545454545,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "RuinedWall4": {
         "cardId": 23600,
         "label": "Ruined Wall",
         "column": 0,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-00.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 0,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 0.0,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "RuinedWallL": {
         "cardId": 23600,
         "label": "Ruined Wall",
         "column": 0,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-00.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 0,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 0.0,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "RuinedWallLM": {
         "cardId": 23600,
         "label": "Ruined Wall",
         "column": 0,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-00.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 0,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 0.0,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Rut": {
         "cardId": 23604,
         "label": "Rut",
         "column": 4,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-04.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 4,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 36.36363636363637,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Rut2": {
         "cardId": 23604,
         "label": "Rut",
         "column": 4,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-04.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 4,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 36.36363636363637,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Swamp": {
         "cardId": 23605,
         "label": "Swamp",
         "column": 5,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-05.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 5,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Swamp2": {
         "cardId": 23605,
         "label": "Swamp",
         "column": 5,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-05.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 5,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 0.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Tower": {
         "cardId": 23614,
         "label": "Tower",
         "column": 4,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-14.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 14,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0301369863013699,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 36.36363636363637,
+            "y": 100.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       },
       "Well": {
         "cardId": 23612,
         "label": "Bottomless Well",
         "column": 2,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/terrain/7f35a2cc-12.jpg",
+          "width": 10,
+          "height": 2,
+          "index": 12,
+          "cellWidth": 730.0,
+          "cellHeight": 1040.0,
+          "aspect": 0.7019230769230769,
+          "faceCrop": {
+            "width": 1.0082191780821919,
+            "height": 1.0153846153846153,
+            "index": 0,
+            "x": 66.66666666666666,
+            "y": 100.0,
+            "cellWidth": 730,
+            "cellHeight": 1040,
+            "aspect": 0.7019230769230769
+          }
+        }
       }
     }
   },
   "foolDeck": {
-    "sheet": {
-      "asset": "/assets/conflict/fool-card-sheet.jpg",
-      "width": 2420,
-      "height": 2232,
-      "columns": 5,
-      "rows": 3
-    },
     "back": {
       "asset": "/assets/conflict/fool-card-back.jpg",
       "width": 484,
@@ -187,7 +572,26 @@
           "F6"
         ],
         "column": 0,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-00.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 0,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.0082644628099173,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 0.0,
+            "y": 0.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17101,
@@ -196,7 +600,26 @@
           "E9"
         ],
         "column": 1,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-01.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 1,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 0.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17102,
@@ -205,7 +628,26 @@
           "E6"
         ],
         "column": 2,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-02.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 2,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 66.66666666666666,
+            "y": 0.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17103,
@@ -214,7 +656,26 @@
           "F9"
         ],
         "column": 3,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-03.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 3,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 0.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17104,
@@ -224,7 +685,26 @@
           "J8"
         ],
         "column": 4,
-        "row": 0
+        "row": 0,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-04.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 4,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.0165289256198347,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 100.0,
+            "y": 0.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17105,
@@ -233,7 +713,26 @@
           "J2"
         ],
         "column": 0,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-05.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 5,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.0082644628099173,
+            "height": 1.021505376344086,
+            "index": 0,
+            "x": 0.0,
+            "y": 50.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17106,
@@ -242,7 +741,26 @@
           "C11"
         ],
         "column": 1,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-06.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 6,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.021505376344086,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 50.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17107,
@@ -251,7 +769,26 @@
           "C4"
         ],
         "column": 2,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-07.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 7,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.021505376344086,
+            "index": 0,
+            "x": 66.66666666666666,
+            "y": 50.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17108,
@@ -260,7 +797,26 @@
           "A2"
         ],
         "column": 3,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-08.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 8,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.021505376344086,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 50.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17109,
@@ -269,7 +825,26 @@
           "H7"
         ],
         "column": 4,
-        "row": 1
+        "row": 1,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-09.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 9,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.0165289256198347,
+            "height": 1.021505376344086,
+            "index": 0,
+            "x": 100.0,
+            "y": 50.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17110,
@@ -278,7 +853,26 @@
           "C8"
         ],
         "column": 0,
-        "row": 2
+        "row": 2,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-10.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 10,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.0082644628099173,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 0.0,
+            "y": 100.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17111,
@@ -287,7 +881,26 @@
           "J13"
         ],
         "column": 1,
-        "row": 2
+        "row": 2,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-11.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 11,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 100.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17112,
@@ -296,7 +909,26 @@
           "A13"
         ],
         "column": 2,
-        "row": 2
+        "row": 2,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-12.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 12,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 66.66666666666666,
+            "y": 100.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17113,
@@ -305,7 +937,26 @@
           "H4"
         ],
         "column": 3,
-        "row": 2
+        "row": 2,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-13.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 13,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.024793388429752,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 33.33333333333333,
+            "y": 100.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       },
       {
         "cardId": 17114,
@@ -314,7 +965,26 @@
           "H11"
         ],
         "column": 4,
-        "row": 2
+        "row": 2,
+        "image": {
+          "face": "/assets/cards/fool/ba928730-14.jpg",
+          "width": 5,
+          "height": 3,
+          "index": 14,
+          "cellWidth": 484.0,
+          "cellHeight": 744.0,
+          "aspect": 0.6505376344086021,
+          "faceCrop": {
+            "width": 1.0165289256198347,
+            "height": 1.010752688172043,
+            "index": 0,
+            "x": 100.0,
+            "y": 100.0,
+            "cellWidth": 484,
+            "cellHeight": 744,
+            "aspect": 0.6505376344086021
+          }
+        }
       }
     ]
   },
@@ -344,7 +1014,7 @@
     "FallenKnight": "/assets/conflict/terrain/fallen-knight.png",
     "GreatMangrove": "/assets/conflict/terrain/great-mangrove.png",
     "KnightStart": "/assets/conflict/terrain/knight-start.png",
-    "LictorDecoy": "/assets/images/httpssteamusercontentaakamaihdnetugc11907986404323452980EDBB99D892B06121B5DCC02E1B0BAA432A79B9BB.png",
+    "LictorDecoy": "/assets/tokens/monsters/firstmen-lictor-portrait-v2.png",
     "LooseString": "/assets/conflict/terrain/loose-string.png",
     "Number1": "/assets/conflict/terrain/number1.png",
     "Number10": "/assets/conflict/terrain/number10.png",

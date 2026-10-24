@@ -8,6 +8,13 @@ const mainSource = fs.readFileSync("public/app.js", "utf8").replace(/\r\n/g, "\n
 const mapSource = fs.readFileSync("public/modules/map/app.js", "utf8").replace(/\r\n/g, "\n");
 const mainIndex = fs.readFileSync("public/index.html", "utf8");
 const mapIndex = fs.readFileSync("public/modules/map/index.html", "utf8");
+const bridgeSource = fs.readFileSync("public/modules/module-bridge.js", "utf8").replace(/\r\n/g, "\n");
+const functionSource = (source, name) => {
+  const start = source.indexOf(`  function ${name}(`);
+  const end = source.indexOf("\n  }", start);
+  assert.ok(start >= 0 && end > start, `${name} function not found`);
+  return source.slice(start, end + "\n  }".length);
+};
 
 const savePoolStart = mainSource.indexOf("function saveMonsterPool(");
 const savePoolEnd = mainSource.indexOf("\nfunction openMonsterPoolDialog(", savePoolStart);
@@ -63,9 +70,80 @@ vm.runInNewContext(`
 assert.equal(syncContext.result.firstSync, true, "new upstream assignments must sync");
 assert.equal(syncContext.result.secondSync, false, "an unchanged upstream assignment must be ignored");
 assert.equal(syncContext.result.assignment, "monster-1", "the pool must update its own kingdom wheel");
-assert.equal(syncContext.result.kingdom, "POS", "upstream sync must preserve the selected kingdom");
+assert.equal(syncContext.result.kingdom, "POS", "monster pool sync must not override the campaign's kingdom");
 
-assert.match(mainIndex, /\/app\.js\?v=27/);
-assert.match(mapIndex, /app\.js\?v=114/);
+// A saved campaign configuration wins even if its previous monster pool belongs to another kingdom.
+const bridgeContext = {};
+vm.runInNewContext(`
+  const window = {};
+  const moduleName = "map", activeCampaign = "campaign-1", mapUpstreamKey = "upstream";
+  const cache = new Map();
+  const localStorage = { setItem: (key, value) => cache.set(key, value) };
+  ${functionSource(bridgeSource, "exposeMapUpstream")}
+  exposeMapUpstream({ kingdom: "stone", monsterPool: { kingdom: "sunken", districts: [] } });
+  configured = window.KF_MAP_UPSTREAM.kingdom;
+  cached = JSON.parse(cache.get(mapUpstreamKey)).kingdom;
+  exposeMapUpstream({ kingdom: "sunken" });
+  withoutPool = window.KF_MAP_UPSTREAM.kingdom;
+  exposeMapUpstream({ map: { activeKingdom: "stone" }, monsterPool: { kingdom: "sunken" } });
+  legacyConfiguration = window.KF_MAP_UPSTREAM.kingdom;
+`, bridgeContext);
+assert.equal(bridgeContext.configured, "stone");
+assert.equal(bridgeContext.cached, "stone", "offline cache must retain the saved configuration");
+assert.equal(bridgeContext.withoutPool, "sunken", "a monster pool is not required to select the campaign map");
+assert.equal(bridgeContext.legacyConfiguration, "stone");
 
-console.log("monster pool kingdom: random assignment and map sync preserve the selected kingdom");
+const kingdomContext = {};
+vm.runInNewContext(`
+  const window = { KF_MAP_UPSTREAM: { kingdom: "stone", monsterPool: { kingdom: "sunken" } } };
+  const state = { kingdom: "SK", maps: { SK: { progress: "sunken-progress" }, POS: { progress: "stone-progress" } } };
+  const SAVE_VERSION = 8, SAVE_KEY = "map", LEGACY_SAVE_KEYS = [];
+  const normalizeTrackNotes = value => value || {};
+  const normalizeTrackers = value => value || {};
+  const MERCENARY_RULES = { normalizeState: value => value || {}, createState: () => ({}) };
+  const defaultMap = kingdom => ({ kingdom });
+  const rosterKnights = () => [];
+  const applySavedTileRegionCorrections = saved => saved;
+  let stored = { version: 8, kingdom: "SK", maps: {}, knights: [] };
+  const localStorage = { getItem: () => JSON.stringify(stored) };
+  ${["upstreamKingdom", "campaignKingdom", "syncCampaignKingdom", "normalizeSavedMapState", "defaultState", "readState"].map(name => functionSource(mapSource, name)).join("\n")}
+  staleSave = readState().kingdom;
+  importedSave = normalizeSavedMapState({ kingdom: "SK", maps: {} }).kingdom;
+  newSave = defaultState().kingdom;
+  changed = syncCampaignKingdom();
+  selected = state.kingdom;
+  preserved = state.maps;
+  unchanged = syncCampaignKingdom();
+  // An upstream update without a new monster pool still changes the map.
+  window.KF_MAP_UPSTREAM = { kingdom: "sunken" };
+  changedWithoutPool = syncCampaignKingdom();
+  selectedWithoutPool = state.kingdom;
+  // Offline use follows the per-campaign configuration cached by the bridge.
+  window.KF_MAP_UPSTREAM = null;
+  window.KF_CAMPAIGN_KINGDOM = "stone";
+  offlineSave = readState().kingdom;
+  window.KF_CAMPAIGN_KINGDOM = "";
+  stored.kingdom = "POS";
+  legacySave = readState().kingdom;
+`, kingdomContext);
+assert.equal(kingdomContext.staleSave, "POS", "loading must correct a stale saved map kingdom");
+assert.equal(kingdomContext.importedSave, "POS", "imports and concurrent state replacements must follow the configuration");
+assert.equal(kingdomContext.newSave, "POS", "a new map must start in the configured kingdom");
+assert.equal(kingdomContext.changed, true);
+assert.equal(kingdomContext.selected, "POS");
+assert.equal(kingdomContext.preserved.SK.progress, "sunken-progress");
+assert.equal(kingdomContext.preserved.POS.progress, "stone-progress", "changing the configuration must preserve map progress");
+assert.equal(kingdomContext.unchanged, false);
+assert.equal(kingdomContext.changedWithoutPool, true);
+assert.equal(kingdomContext.selectedWithoutPool, "SK");
+assert.equal(kingdomContext.offlineSave, "POS");
+assert.equal(kingdomContext.legacySave, "POS", "legacy saves remain usable if configuration is unavailable");
+
+assert.doesNotMatch(mapIndex, /id="kingdomSelect"/, "the map page must not offer kingdom switching");
+assert.doesNotMatch(mapSource, /#kingdomSelect/, "the removed dropdown must not leave rendering or event references");
+assert.match(mapSource, /const kingdomChanged = syncCampaignKingdom\(\);\s+const wheelSynced = syncDistrictWheelFromUpstream\(\);/,
+  "upstream configuration changes must apply independently of monster pool updates");
+assert.ok(Number(mainIndex.match(/\/app\.js\?v=(\d+)/)?.[1]) >= 33);
+assert.ok(Number(mapIndex.match(/data-original-app="app\.js\?v=(\d+)/)?.[1]) >= 119);
+
+console.log("campaign kingdom: map loading, import, upstream updates and offline cache follow the saved configuration without resetting progress");

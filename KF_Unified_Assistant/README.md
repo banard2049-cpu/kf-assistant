@@ -4,6 +4,14 @@ PHP 8.2+ / SQLite 的《Kingdoms Forlorn》本地 Web 助手，包含骑士档�
 
 完整使用说明请看仓库根目录的 [README.md](../README.md)。下面只保留应用目录内的常用入口。
 
+## 怪物中文名称与位阶
+
+统一映射位于 [`public/monster-labels.js`](public/monster-labels.js)。AI/BP、遭遇战、主控制台、地图深入及第二屏都读取这份映射。
+
+修改 `monsters` 中对应 ID 的 `zh` 即可改中文名；修改 `tiers` 可调整“杂兵、封臣、国王、恶魔、巨龙”的显示名称。保留 `en`、怪物 ID 和英文 `tier` 值，它们用于关联原始数据和已有存档。`aliases` 用于兼容其他英文拼写。修改后刷新页面；若浏览器仍显示旧名称，按 Ctrl+F5 强制刷新。
+
+检查映射覆盖与跨模块显示：`node tools/test-monster-labels.js`。
+
 ## 许可证：禁止商用
 
 本项目原创代码、文档及项目自有图标采用 [PolyForm Noncommercial License 1.0.0](public/LICENSE.txt)，仅允许许可证规定的非商业用途，商业使用未获授权。修改和再分发必须遵守许可证，并保留完整许可证及 `Required Notice:` 版权声明；商业用途须另行获得相关版权所有者的书面授权。游戏素材、第三方组件和运行时仍归各自版权所有者所有，并遵循其自身许可证。
