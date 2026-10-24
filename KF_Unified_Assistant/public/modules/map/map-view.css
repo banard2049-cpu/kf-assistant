@@ -59,6 +59,17 @@
   box-shadow: none;
   transform: translate(-50%, -50%) rotate(var(--counter-rotation));
 }
+.map-tile .map-token[data-token-kind="monster"],
+.map-tile .map-token[data-display-token-kind="monster"],
+.kingdom-monster-wheel-token > img {
+  box-sizing: border-box;
+  border: 6px solid #a53c36;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.map-tile .map-token[data-token-kind="monster"],
+.map-tile .map-token[data-display-token-kind="monster"] { border-width: min(6px, calc(var(--tile-token-size) * .112)); }
+.kingdom-monster-wheel-token > img { border-width: min(6px, 11.2cqw); }
 .map-tile .custom-map-token {
   display: grid;
   place-items: center;
@@ -98,6 +109,7 @@
 .kingdom-active-exploration .display-exploration-card { border: 2px solid var(--gold-soft); }
 .kingdom-active-exploration figcaption { position: absolute; z-index: 4; top: 3px; left: 3px; max-width: calc(100% - 6px); overflow: hidden; padding: 2px 4px; border: 1px solid rgba(255, 255, 255, .36); border-radius: 3px; color: #fff; background: rgba(10, 13, 11, .9); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .kingdom-monster-wheel-token {
+  container-type: inline-size;
   position: absolute;
   z-index: 4;
   left: var(--token-x);

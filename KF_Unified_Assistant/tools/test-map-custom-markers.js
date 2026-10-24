@@ -47,7 +47,10 @@ assert.doesNotMatch(appSource, /token-palette/, "the all-marker preview must not
 assert.doesNotMatch(styleSource, /token-palette/, "the removed all-marker preview must not keep dead styles");
 assert.doesNotMatch(appSource, /tokenShapeClass|token-flood/, "marker silhouettes must come from image alpha");
 assert.doesNotMatch(styleSource, /token-flood/, "marker silhouettes must not be approximated with CSS clipping");
-assert.match(appSource, /type === "fog"\) return "\/assets\/tokens\/fog\.png";/, "fog must use its transparent PNG");
+const fogAsset = "/assets/tokens/httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.png";
+assert.equal(markerAssets.fog, fogAsset, "fog must share the existing Fog Gate asset");
+assert.ok(appSource.includes(`if (type === "fog") return "${fogAsset}";`));
+assert.ok(fs.readFileSync("public/modules/map/map-view.js", "utf8").includes(`if (type === "fog") return "${fogAsset}";`));
 
 for (const marker of ["surge", "flood", "generic", "quest"]) {
   assert.match(markerAssets[marker], /assets\/tokens\/[a-z-]+\.png$/, `${marker} must use a PNG asset`);
@@ -55,12 +58,14 @@ for (const marker of ["surge", "flood", "generic", "quest"]) {
   assert.equal(png.subarray(1, 4).toString("ascii"), "PNG", `${marker} must reference a valid PNG file`);
   assert.equal(png[25], 6, `${marker} PNG must include an alpha channel`);
 }
-const fogPng = fs.readFileSync("public/assets/tokens/fog.png");
+const fogPng = fs.readFileSync(`public${fogAsset}`);
 assert.equal(fogPng.subarray(1, 4).toString("ascii"), "PNG", "fog must reference a valid PNG file");
-assert.equal(fogPng[25], 6, "fog PNG must include an alpha channel");
+assert.equal(fogPng[25], 6, "fog PNG must include an alpha channel to avoid a white background");
+assert.ok(!fs.existsSync(`public${fogAsset.replace(/\.png$/, ".jpg")}`), "the opaque JPEG must be removed");
+assert.ok(!fs.existsSync("public/assets/tokens/fog.png"), "the duplicate fog asset must be removed");
 
-assert.match(indexSource, /styles\.css\?v=83/);
-assert.match(indexSource, /data\/map-data\.js\?v=6/);
-assert.match(indexSource, /app\.js\?v=114/);
+assert.match(indexSource, /styles\.css\?v=85/);
+assert.match(indexSource, /data\/map-data\.js\?v=13/);
+assert.match(indexSource, /app\.js\?v=121/);
 
 console.log("map custom markers: input, text rendering, persistence shape and styling verified");

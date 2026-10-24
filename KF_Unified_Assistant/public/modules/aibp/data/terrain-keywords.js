@@ -1,5 +1,5 @@
 // KF 地形卡关键词与占格数据（逐张核对卡面，不从 ATO 移植）。
-// 卡面来源：public/assets/conflict/terrain-card-sheet.jpg（10 列 x 2 行，共 15 张，单卡 730x1040）。
+// 卡面来源：public/assets/cards/terrain/（已从原拼图无损切分，单卡 730x1040）。
 // 占格遮罩来源：public/assets/conflict/terrain/*.png 的 alpha 通道统计（单格边长约 395.5px）。
 //
 // 规则依据（KF 中规 1.06 P83 术语表，原文）：
@@ -37,7 +37,7 @@ window.KF_TERRAIN_KEYWORDS = (() => {
     {
       cardId: 23603, sheet: [0, 3], name: "蠕虫地洞", nameEn: "Paleburrow",
       keywords: [CHASM, OBSCURING],
-      note: "相邻骑士可弃置 1 个血标记，将 1 只场外苍血蠕虫引至此板块。",
+      note: "相邻骑士可弃置 1 个血标记，将 1 只场外白血蠕虫引至此板块。",
     },
     {
       cardId: 23604, sheet: [0, 4], name: "凹坑", nameEn: "Rut",
@@ -72,7 +72,7 @@ window.KF_TERRAIN_KEYWORDS = (() => {
     {
       cardId: 23610, sheet: [1, 0], name: "血泉", nameEn: "Bloodgeyser",
       keywords: [],
-      note: "卡面没有任何关键词行。苍血蠕虫起始或结束于此在其 BP 放 1 个血标记；骑士起始或结束于此按属性弃置血标记。",
+      note: "卡面没有任何关键词行。白血蠕虫起始或结束于此在其 BP 放 1 个血标记；骑士起始或结束于此按属性弃置血标记。",
     },
     {
       cardId: 23611, sheet: [1, 1], name: "王座", nameEn: "Throne",
@@ -88,7 +88,7 @@ window.KF_TERRAIN_KEYWORDS = (() => {
     {
       cardId: 23613, sheet: [1, 3], name: "腐烂树桩", nameEn: "Rotten Stump",
       keywords: [DESTRUCTIBLE, OBSTACLE],
-      note: "搜索免费行动掷骰：1-2 获得黏糊，3-10 移动至另一处腐烂树桩；与沼泽女巫有互动。不带遮蔽。",
+      note: "搜索免费行动掷骰：1-2 获得黏糊，3-10 移动至另一处腐烂树桩；与沼泽地女巫有互动。不带遮蔽。",
     },
     {
       cardId: 23614, sheet: [1, 4], name: "塔", nameEn: "Tower",

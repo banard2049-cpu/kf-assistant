@@ -46,6 +46,7 @@ const context = vm.createContext({
 });
 
 for (const file of [
+  "public/monster-labels.js",
   "public/modules/aibp/data/monster-data.js",
   "public/modules/aibp/data/level-config.js",
   "public/modules/aibp/data/mob-activation-config.js",
@@ -329,8 +330,8 @@ const eaterAiBefore = ranks(battle().aiDeck, "AI");
 battle().bpDeck = [battle().bpDeck.find(id => card(id).kind === "BP1")];
 api.draw("bp");
 api.settle("bp", "defeat");
-assert.strictEqual(battle().singleWounds + battle().doubleWounds, 0, "等级 4 暴走食骑者不得被击伤");
-assert.deepStrictEqual(ranks(battle().aiDeck, "AI"), eaterAiBefore, "食骑者免伤时不得晋升 AI");
+assert.strictEqual(battle().singleWounds + battle().doubleWounds, 0, "等级 4 暴走食士师不得被击伤");
+assert.deepStrictEqual(ranks(battle().aiDeck, "AI"), eaterAiBefore, "食士师免伤时不得晋升 AI");
 api.changeKnighteaterResource("meat", 4);
 api.resolveWolfDown("高战意骑士");
 assert.strictEqual(battle().ruleState.knighteater.berserk, false);
@@ -338,17 +339,31 @@ assert.strictEqual(battle().ruleState.knighteater.priorityTarget, "高战意骑�
 
 select("M_Stonemason", 3);
 api.changeStonemasonArmor("front", 2);
-api.setStonemasonDirection("front");
-battle().bpDeck = [battle().bpDeck.find(id => card(id).kind === "BP1")];
-api.draw("bp");
-api.settle("bp", "defeat");
-assert.strictEqual(battle().singleWounds + battle().doubleWounds, 0, "2+ 方向盔甲应拦截击伤");
 api.changeStonemasonArmor("right", 1);
-api.changeStonemasonArmor("back", 1);
-battle().ruleState.stonemason.armor.front = 1;
-api.endStonemasonRound("left");
-assert.strictEqual(battle().ruleState.stonemason.armorLocked, true, "第四节点应触发本轮盔甲锁定");
-assert.deepStrictEqual(JSON.parse(JSON.stringify(battle().ruleState.stonemason.armor)), { front: 0, right: 0, back: 0, left: 0 });
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(battle().ruleState.stonemason.armor)),
+  { front: 2, right: 1, back: 0, left: 0 },
+  "石匠四个方向的盔甲应独立计数"
+);
+api.changeStonemasonArmor("left", -1);
+assert.strictEqual(battle().ruleState.stonemason.armor.left, 0, "空节点不应减为负数");
+assert.strictEqual(battle().ruleState.ruleNotice, "", "调整石匠盔甲不应留下额外提示");
+const stonemasonPanel = api.renderBossRules();
+assert.deepStrictEqual(
+  [...new Set([...stonemasonPanel.matchAll(/data-p2-counter="stone:([a-z]+)"/g)].map(match => match[1]))].sort(),
+  ["back", "front", "left", "right"],
+  "石匠规则区只保留四个方向的盔甲增减"
+);
+for (const removed of ["data-stone-direction", "stone-direction", "stone-round-start", "stone-round-end", "stone-ruin", "stone-buried", "stone-spikes", "设为攻击方向", "废墟", "活埋", "铁刺", "可获得盔甲", "当前方向", "选择攻击方向"]) {
+  assert.ok(!stonemasonPanel.includes(removed), `石匠规则区不应再出现 ${removed}`);
+}
+const legacyStoneSave = JSON.parse(JSON.stringify(state()));
+legacyStoneSave.battle.ruleState.stonemason.direction = "front";
+legacyStoneSave.battle.ruleState.ruleNotice = "新怪物轮开始：盔甲获取限制已解除。";
+assert.strictEqual(
+  api.validateState(legacyStoneSave).battle.ruleState.ruleNotice, "",
+  "旧存档中的石匠盔甲限制提示应被清除"
+);
 
 select("M_KingLaidLow", 4);
 battle().ruleState.kingLaidLow.livingKnights = ["甲", "乙"];
@@ -389,7 +404,7 @@ for (const [id, expectedText] of [
   ["M_DevilSmeltedFears", "窖牢"],
   ["M_Eggknight", "Jacked"],
   ["M_Knighteater", "开始暴走"],
-  ["M_Stonemason", "磁力聚甲"]
+  ["M_Stonemason", 'data-p2-counter="stone:front"']
 ]) {
   select(id, 4);
   const panel = api.renderBossRules();
@@ -404,8 +419,10 @@ assert.strictEqual(api.renderBossRules(), "", "俯伏王不应渲染当前 Boss 
 select("M_Eggknight", 2);
 api.renderApp();
 let autoArmorHtml = element("#app").innerHTML;
-assert.match(autoArmorHtml, /<div class="egg-rule-line">[\s\S]*data-egg-headbutt="3"[\s\S]*>还击 [\s\S]*>Jacked /,
+assert.match(autoArmorHtml, /<div class="egg-rule-line">[\s\S]*data-egg-armor="1"[\s\S]*data-egg-armor="2"[\s\S]*data-egg-armor="3"[\s\S]*data-egg-headbutt[\s\S]*>还击 [\s\S]*>Jacked /,
   "盔甲数量、头槌弃甲、还击与 Jacked 应按顺序位于同一操作行");
+assert.strictEqual((autoArmorHtml.match(/data-egg-headbutt/g) || []).length, 1, "头槌弃甲只需一个按钮，不再按部位重复渲染");
+assert.match(autoArmorHtml, /data-egg-headbutt title="从护甲最少的 BP1 弃置 1 枚盔甲（Jacked \+1）"/, "头槌弃甲按钮应提示自动选择护甲最少的部位");
 assert.ok(autoArmorHtml.includes("data-egg-counter-slot"), "还击为 0 时，大卡还击特性旁应显示通用指示物放置位");
 assert.ok(autoArmorHtml.includes('style="left:24.3%;top:74.0%"'), "还击指示物放置位应对准大卡还击特性");
 api.changeEggCounter(3);
@@ -417,7 +434,7 @@ assert.ok(autoArmorHtml.includes("还击通用指示物 ×3，点击触发标志
 api.triggerEggCounter();
 api.renderApp();
 autoArmorHtml = element("#app").innerHTML;
-assert.ok(autoArmorHtml.includes("SIGNATURE · Eggknight"), "触发还击应展示 SIG 反面的 SIGNATURE");
+assert.ok(autoArmorHtml.includes(`SIGNATURE · ${context.window.KFMonsterLabels.name("M_Eggknight")}`), "触发还击应展示 SIG 反面的 SIGNATURE 和中文怪物名");
 api.completeRuleCard();
 assert.ok(autoArmorHtml.includes("data-monster-directory"), "页面应渲染可折叠怪物目录");
 assert.ok(!autoArmorHtml.includes("data-monster-directory open"), "怪物目录首次进入应默认收起");
@@ -425,7 +442,9 @@ assert.ok(autoArmorHtml.includes("directory-collapsed"), "收起目录时必须�
 const lastMonsterId = context.window.KF_MONSTER_DATA.monsters.at(-1).id;
 assert.ok(autoArmorHtml.includes(`data-monster="${lastMonsterId}"`), "怪物目录必须包含最后一个怪物入口");
 assert.ok(autoArmorHtml.includes('data-auto-armor-slot="bp1"'), "蛋蛋骑士 BP1 空槽应自动填充盔甲 Token");
-assert.ok(autoArmorHtml.includes('style="left:57.1%;top:40.2%"'), "蛋蛋骑士自动盔甲应对准 BP1 印刷槽位");
+assert.ok(autoArmorHtml.includes('style="left:56.64%;top:43%"'), "蛋蛋骑士 BP1 自动盔甲应对准 BP1 印刷槽位中心");
+assert.ok(autoArmorHtml.includes('style="left:64%;top:42.8%"'), "蛋蛋骑士 BP2 自动盔甲应对准 BP2 印刷槽位中心");
+assert.ok(autoArmorHtml.includes('style="left:71.36%;top:42.8%"'), "蛋蛋骑士 BP3 自动盔甲应对准 BP3 印刷槽位中心");
 assert.ok(autoArmorHtml.includes('title="盔甲 · bp1 ×2"'));
 assert.ok(autoArmorHtml.includes('title="盔甲 · bp2 ×3"'));
 assert.ok(autoArmorHtml.includes('title="盔甲 · bp3 ×4"'));
@@ -441,6 +460,27 @@ api.undo();
 api.renderApp();
 assert.ok(element("#app").innerHTML.includes('title="盔甲 · bp1 ×2"'), "自动盔甲槽变化必须可撤销");
 
+const eggArmor = () => JSON.parse(JSON.stringify(battle().ruleState.eggknight.armor));
+api.headbuttEggArmor();
+assert.deepStrictEqual(eggArmor(), { 1: 1, 2: 3, 3: 4 }, "头槌弃甲应从护甲最少的 BP1 弃置 1 枚");
+assert.strictEqual(battle().ruleState.eggknight.jacked, 1, "头槌弃甲弃置的盔甲必须计入 Jacked");
+assert.match(battle().ruleState.ruleNotice, /护甲最少的 BP1/);
+api.changeEggArmor(1, -1, false);
+api.changeEggArmor(2, -2, false);
+api.headbuttEggArmor();
+assert.deepStrictEqual(eggArmor(), { 1: 0, 2: 0, 3: 4 }, "头槌弃甲应跳过空槽，改弃当前护甲最少的 BP2");
+api.changeEggArmor(3, -4, false);
+const emptyJacked = battle().ruleState.eggknight.jacked;
+api.headbuttEggArmor();
+assert.strictEqual(battle().ruleState.eggknight.jacked, emptyJacked, "三处盔甲均为空时头槌弃甲不应生效");
+assert.match(element("#toast").textContent, /无法头槌弃甲/);
+assert.match(api.renderBossRules(), /data-egg-headbutt title="三处盔甲均已弃置，无法头槌弃甲" disabled/, "全部弃空后头槌按钮应禁用");
+
+select("M_Eggknight", 2);
+api.changeEggArmor(2, -1, false);
+api.headbuttEggArmor();
+assert.deepStrictEqual(eggArmor(), { 1: 1, 2: 2, 3: 4 }, "护甲并列最少时应优先弃置 BP 序号较小者");
+
 select("M_Stonemason", 3);
 api.renderApp();
 assert.ok(!element("#app").innerHTML.includes("data-auto-armor-slot="), "无盔甲的石匠节点不应显示 Token");
@@ -450,7 +490,7 @@ api.renderApp();
 autoArmorHtml = element("#app").innerHTML;
 assert.ok(autoArmorHtml.includes('title="盔甲 · front ×2"'), "石匠正面节点应按计数自动填充");
 assert.ok(autoArmorHtml.includes('data-auto-armor-slot="right"'));
-assert.ok(autoArmorHtml.includes('style="left:78.3%;top:61.6%"'), "石匠右侧节点盔甲应对准对应印刷槽位");
+assert.ok(autoArmorHtml.includes('style="left:78%;top:60.75%"'), "石匠右侧节点盔甲应对准对应印刷槽位");
 assert.ok(!autoArmorHtml.includes('data-auto-armor-slot="back"'));
 api.changeStonemasonArmor("front", -2);
 api.renderApp();
@@ -534,11 +574,11 @@ assert.ok(pumpkinSlots.filter(slot => slot.side === "face").every(slot => slot.m
 
 select("M_WingedNightmare", 1);
 assert.strictEqual(battle().mobCount, 1);
-assert.strictEqual(battle().bpTrack.length, 0, "翼生梦魇固定 BPS 不进入杂兵轨");
+assert.strictEqual(battle().bpTrack.length, 0, "展翅魔固定 BPS 不进入杂兵轨");
 api.resolveWingedNightmareAttack(true);
-assert.strictEqual(battle().singleWounds, 1, "翼生梦魇 BPS 击伤应按普通杂兵伤口结算");
-assert.strictEqual(battle().bpTrack.length, 0, "翼生梦魇固定 BPS 击伤后仍不进入杂兵轨");
-assert.strictEqual(battle().conflictStatus, "active", "翼生梦魇不得触发生态灾难失败");
+assert.strictEqual(battle().singleWounds, 1, "展翅魔 BPS 击伤应按普通杂兵伤口结算");
+assert.strictEqual(battle().bpTrack.length, 0, "展翅魔固定 BPS 击伤后仍不进入杂兵轨");
+assert.strictEqual(battle().conflictStatus, "active", "展翅魔不得触发生态灾难失败");
 
 select("M_Pumpkinhead", 1);
 for (let count = 0; count < 4; count++) api.changeMobMarker(0, "token-01", 1);
@@ -550,5 +590,14 @@ assert.strictEqual(battle().conflictStatus, "active", "南瓜头标记失败必�
 const configured = new Set(Object.keys(context.window.KF_BOSS_RULE_CONFIG));
 const unconfiguredBosses = context.window.KF_MONSTER_DATA.monsters.filter(item => item.type === "boss" && !configured.has(item.id));
 assert.strictEqual(unconfiguredBosses.length, 0, "全部 Boss 都应拥有规则配置");
+
+const labels = context.window.KFMonsterLabels;
+labels.monsters.M_BogWitch.zh = "测试中文名称";
+labels.tiers.vassal = "测试中文位阶";
+select("M_BogWitch");
+assert.ok(element("#app").innerHTML.includes("<h2>测试中文名称</h2>"), "修改映射后 AI/BP 标题必须同步改名");
+assert.ok(element("#app").innerHTML.includes("测试中文位阶冲突"), "修改映射后 AI/BP 位阶必须同步改名");
+assert.ok(element("#app").innerHTML.includes("测试中文名称冲突设置"), "冲突设置使用同一份名称映射");
+assert.strictEqual(battle().monsterId, "M_BogWitch", "中文改名不得影响存档的怪物 ID");
 
 console.log("Boss 规则行为测试通过：P0/P1/P2 专用结算、失败、撤销、隐藏弃牌与存档校验。\n");

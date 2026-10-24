@@ -43,6 +43,6 @@ assert.match(consumeSource, /snapshotMap\(current,/,
 assert.doesNotMatch(appSource.slice(appSource.indexOf("  async function openPendingEncounter()"), consumeStart),
   /mapSnapshot/,
   "new encounter handoffs must not carry a stale full-map snapshot");
-assert.match(indexSource, /data-original-app="app\.js\?v=114"/);
+assert.match(indexSource, /data-original-app="app\.js\?v=115"/);
 
 console.log("map state recovery: stale encounter snapshots and empty-record round trips verified");

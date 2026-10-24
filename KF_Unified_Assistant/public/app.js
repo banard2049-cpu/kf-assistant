@@ -1,3 +1,5 @@
+const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
+const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 ["kf-assistant-campaign-v1","kf-assistant-campaign-slots-v1","kf-assistant-active-slot-v1"].forEach(key=>localStorage.removeItem(key));
@@ -129,7 +131,7 @@ const monsterAvatar=name=>{
 const monsterAvatarMarkup=(name,className="monster-avatar")=>{
   const source=monsterAvatar(name);
   return source
-    ?`<img class="${className}" src="${esc(source)}" alt="${esc(name)} 头像" loading="lazy">`
+    ?`<img class="${className}" src="${esc(source)}" alt="${esc(monsterLabel(name))} 头像" loading="lazy">`
     :`<span class="${className} monster-avatar-fallback" aria-hidden="true">?</span>`;
 };
 const cardLabel=card=>typeof card==="string"?card:(card?.name||card?.kind||card?.id||"未知卡牌");
@@ -359,13 +361,13 @@ function renderPartyBuilder(){
   }).join("");
   $("#squireSlots").innerHTML=squires.length?squires.map((id,index)=>{
     const item=squireCatalog.find(entry=>entry.id===id);
-    return `<div class="squire-slot"><strong>席位 ${party.length+index+1} · 侍从</strong><button class="squire-picker" type="button" data-squire-picker="${index}"><img src="/assets/heroes/${id}-avatar.jpg" alt=""><span>${esc(item?.name||id)}<small>${esc(item?.en||"")} · 点击更换</small></span></button></div>`;
+    return `<div class="squire-slot"><strong>席位 ${party.length+index+1} · 侍从</strong><button class="squire-picker" type="button" data-squire-picker="${index}"><img src="/assets/heroes/${id}-avatar.jpg?v=story-1" alt=""><span>${esc(item?.name||id)}<small>${esc(item?.en||"")} · 点击更换</small></span></button></div>`;
   }).join(""):`<div class="party-complete">${partyLimit()} 名骑士已齐，无需侍从补位。</div>`;
 }
 function openSquireDialog(index){
   const party=normalizedParty(),squires=normalizedSquires(party),selectedId=squires[index];if(!selectedId)return;
   activeSquireSlot=index;const used=new Set(squires.filter((_,i)=>i!==index));
-  $("#squireGallery").innerHTML=squireCatalog.map(item=>`<button class="knight-choice ${item.id===selectedId?"selected":""}" type="button" role="radio" aria-checked="${item.id===selectedId}" data-squire-choice="${item.id}" ${used.has(item.id)?"disabled":""}><img src="/assets/heroes/${item.id}-avatar.jpg" alt=""><span>${esc(item.name)} · ${esc(item.en)}</span></button>`).join("");
+  $("#squireGallery").innerHTML=squireCatalog.map(item=>`<button class="knight-choice ${item.id===selectedId?"selected":""}" type="button" role="radio" aria-checked="${item.id===selectedId}" data-squire-choice="${item.id}" ${used.has(item.id)?"disabled":""}><img src="/assets/heroes/${item.id}-avatar.jpg?v=story-1" alt=""><span>${esc(item.name)} · ${esc(item.en)}</span></button>`).join("");
   $("#squireDialog").showModal();
 }
 function hideGameViews(){$$("#mapModule,#encounterModule,#aibpModule").forEach(el=>el.classList.add("hidden"))}
@@ -392,24 +394,41 @@ function renderCurrentModule(){
   if(viewMode==="aibp")renderAIBP();
 }
 function renderMap(){
-  const m=campaignMapState(),districts=campaignState.monsterPool?.districts||[];$("#districtWheel").innerHTML=districts.map((card,index)=>`<article class="district-card">${monsterAvatarMarkup(card.name,"district-monster-avatar")}<div class="district-monster-copy"><strong>区域 ${index+1}</strong><span>${esc(card.name)} <b>Lv.${card.level}</b></span></div><button class="button" data-start-district="${index}">开始遭遇</button></article>`).join("")||"<p>请先在骑士团总览生成怪物池。</p>";
+  const m=campaignMapState(),districts=campaignState.monsterPool?.districts||[];$("#districtWheel").innerHTML=districts.map((card,index)=>`<article class="district-card">${monsterAvatarMarkup(card.name,"district-monster-avatar")}<div class="district-monster-copy"><strong>区域 ${index+1}</strong><span>${esc(monsterLabel(card.name))} <b>${esc(monsterRank(card.name))} · 等级 ${card.level}</b></span></div><button class="button" data-start-district="${index}">开始遭遇</button></article>`).join("")||"<p>请先在骑士团总览生成怪物池。</p>";
   $("#partyTile").value=m.partyTile||"";$("#mapRound").value=m.round||0;$("#mapMarkers").innerHTML=(m.markers||[]).map((marker,index)=>`<span class="tag">${esc(marker)} <button data-remove-marker="${index}">×</button></span>`).join("");
   const available=mapTilesForKingdom(),known=new Set(m.tiles||[]);
   $("#mapTileSelect").innerHTML=available.filter(tile=>!known.has(tile.id)).map(tile=>`<option value="${esc(tile.id)}">${esc(tile.id)} · ${tile.size}</option>`).join("")||"<option value=''>本王国板块已全部加入</option>";
   $("#mapTiles").innerHTML=[...(m.tiles||[])].map(id=>available.find(tile=>tile.id===id)).filter(Boolean).map(tile=>`<figure class="map-tile"><img loading="lazy" src="/${esc(tile.image.face)}" alt="${esc(tile.id)}"><figcaption><span>${esc(tile.id)} · ${esc(tile.size)}</span><button title="移除板块" data-remove-tile="${esc(tile.id)}">×</button></figcaption></figure>`).join("")||"<p>尚未加入地图板块。</p>";
 }
+function availableEncounterMonsters(){
+  const leader=knightSheets().find(sheet=>sheet.id===gameSettings.leaderSheetId);
+  return window.KFEncounterCatalog.available(window.KF_ENCOUNTER_DATA?.monsters,leader?.state?.knightId||"");
+}
+function renderEncounterChoices(selectedName,selectedLevel=1){
+  const wasSpecial=$("#encounterType").disabled;
+  const available=availableEncounterMonsters(),ordinary=available.filter(monster=>monster.category!=="special"),special=available.filter(monster=>monster.category==="special");
+  const options=items=>items.map(monster=>`<option value="${esc(monster.name)}">${monster.special?`${esc(monster.special.code)} · `:""}${esc(monsterLabel(monster))} · ${esc(monsterRank(monster))}</option>`).join("");
+  $("#encounterMonster").innerHTML=`<optgroup label="常规遭遇战">${options(ordinary)}</optgroup>${special.length?`<optgroup label="特殊遭遇战">${options(special)}</optgroup>`:""}`;
+  const selected=available.find(monster=>monster.name===selectedName)||ordinary[0];
+  $("#encounterMonster").value=selected?.name||"";
+  $("#encounterLevel").innerHTML=(selected?.encounterLevels||[]).map(level=>`<option value="${level.level}">${selected.special?selected.special.code:`等级 ${level.level}`}</option>`).join("");
+  $("#encounterLevel").value=String(selected?.encounterLevels.some(level=>level.level===Number(selectedLevel))?selectedLevel:selected?.encounterLevels[0]?.level||1);
+  $("#encounterType").disabled=Boolean(selected?.special);
+  if(selected?.special)$("#encounterType").value="special";
+  else if(wasSpecial)$("#encounterType").value="normal";
+}
 function renderEncounter(){
-  const e=campaignState.encounter||{};$("#encounterMonster").innerHTML=bestiaryMonsters.map(name=>`<option ${e.monster===name?"selected":""}>${name}</option>`).join("");$("#encounterLevel").value=String(e.level||1);$("#encounterType").value=e.type||"normal";
+  const e=campaignState.encounter||{};$("#encounterType").value=e.type||"normal";renderEncounterChoices(e.monster,e.level||1);
   const monster=encounterRecord(e.monster),level=monster?.encounterLevels?.find(item=>item.level===Number(e.level)),stats=level?.stats||{};
   const facts=level?`<div class="encounter-facts"><span>数量 <b>${stats.monsterCount??"—"}</b></span><span>体型 <b>${stats.monsterSize??"—"}</b></span><span>命中 <b>${stats.hit||"—"}</b></span><span>成功值 <b>${stats.success??"—"}</b></span><span>部分成功 <b>${stats.partial??"—"}</b></span></div><p class="attack-pattern">攻击格：${(level.attackPattern||[]).map(point=>`[${point.join(", ")}]`).join(" ")||"依遭遇卡"}</p>`:"";
-  $("#encounterStatus").textContent=e.active?"进行中":"未开始";$("#activeEncounter").innerHTML=e.active?`<h3>${esc(e.monster)} · Lv.${e.level}</h3><p>${e.type==="ambush"?"伏击":e.type==="special"?"特殊遭遇":"普通遭遇"} · ${esc(e.phase||"setup")}</p>${facts}`:"<p>当前没有活动遭遇。</p>";
+  $("#encounterStatus").textContent=e.active?"进行中":"未开始";$("#activeEncounter").innerHTML=e.active?`<h3>${esc(monsterLabel(e.monster))} · ${esc(monsterRank(e.monster))} · 等级 ${e.level}</h3><p>${e.type==="ambush"?"伏击":e.type==="special"?"特殊遭遇":"普通遭遇"} · ${esc(e.phase||"setup")}</p>${facts}`:"<p>当前没有活动遭遇。</p>";
   $("#encounterBoardNotes").value=e.board?.notes||"";$("#encounterCasualties").value=e.resultDetails?.casualties||"";$("#encounterRewards").value=e.resultDetails?.rewards||"";$$(".encounter-results button").forEach(button=>button.disabled=!e.active);
 }
 function renderAIBP(){
-  const a=campaignState.aibp||{};$("#aibpMonster").textContent=a.monster?`${a.monster} · Lv.${a.level}`:"等待遭遇";
+  const a=campaignState.aibp||{};$("#aibpMonster").textContent=a.monster?`${monsterLabel(a.monster)} · ${monsterRank(a.monster)} · 等级 ${a.level}`:"等待遭遇";
   $("#aiDeck").innerHTML=`${a.activeAI?`<span class="playing-card active-card">当前：${esc(cardLabel(a.activeAI))}</span>`:""}<small class="deck-count">牌库 ${a.ai?.length||0} · 弃牌 ${a.discard?.length||0}</small>${(a.ai||[]).slice(0,6).map(card=>`<span class="playing-card">${esc(cardLabel(card))}</span>`).join("")||(!a.activeAI?"<p>开始遭遇后初始化。</p>":"")}`;
   $("#bpDeck").innerHTML=`${a.activeBP?`<span class="playing-card active-card">当前：${esc(cardLabel(a.activeBP))}</span>`:""}<small class="deck-count">牌库 ${a.bp?.length||0} · 损伤 ${a.wounds?.length||0}</small>${(a.bp||[]).slice(0,6).map(card=>`<span class="playing-card">${esc(cardLabel(card))}</span>`).join("")||(!a.activeBP?"<p>暂无 BP 记录。</p>":"")}`;$("#promotionLevel").value=a.promotion||0;
-  $("#aibpHistory").innerHTML=(a.history||[]).slice().reverse().map(item=>`<div class="event-item">${esc(item.text)}<small>${new Date(item.at).toLocaleString()}</small></div>`).join("");
+  $("#aibpHistory").innerHTML=(a.history||[]).slice().reverse().map(item=>`<div class="event-item">${esc(window.KFMonsterLabels?.text(item.text) ?? item.text)}<small>${new Date(item.at).toLocaleString()}</small></div>`).join("");
 }
 const investigationHasNumber=value=>value!==""&&value!==null&&value!==undefined&&value!==false;
 function talePosition(sheet){
@@ -425,7 +444,7 @@ function renderEncounterBuilder(){
   if($("#fivePlayerRule"))$("#fivePlayerRule").checked=Boolean(gameSettings.fivePlayer);
   const pos=talePosition(leader);$("#talePosition").textContent=leader?`第 ${pos.chapter} 章 · ${pos.label}${pos.empty?"（尚无标记，按起始行）":""}`:"请选择主游戏骑士";
   const pool=leader?poolForRow(pos.row,gameSettings.kingdom):[];
-  $("#autoPoolPreview").innerHTML=leader?pool.map(card=>`<span class="pool-preview-card">${monsterAvatarMarkup(card.name,"pool-preview-avatar")}<span><strong>${esc(card.name)}</strong><small>Lv.${card.level}</small></span></span>`).join(""):"选择主游戏骑士后自动生成";
+  $("#autoPoolPreview").innerHTML=leader?pool.map(card=>`<span class="pool-preview-card">${monsterAvatarMarkup(card.name,"pool-preview-avatar")}<span><strong>${esc(monsterLabel(card.name))}</strong><small>${esc(monsterRank(card.name))} · 等级 ${card.level}</small></span></span>`).join(""):"选择主游戏骑士后自动生成";
   renderPartyBuilder();
 }
 function readGameSettings(){gameSettings.leaderSheetId=$("#leaderSelect").value;gameSettings.kingdom=$("#kingdomSelect").value;gameSettings.districts=gameSettings.kingdom==="sunken"?3:4;gameSettings.devourDragon=Boolean($("#devourDragonRule")?.checked);gameSettings.fivePlayer=Boolean($("#fivePlayerRule")?.checked);return gameSettings}
@@ -448,7 +467,7 @@ function openMonsterPoolDialog(){
   readGameSettings();const leader=knightSheets().find(s=>s.id===gameSettings.leaderSheetId);if(!leader)return toast("请先选择主游戏骑士");
   const pos=talePosition(leader),source=poolForRow(pos.row,gameSettings.kingdom);if(source.length<gameSettings.districts)return toast("当前故事行没有足够的可选怪物");
   const current=campaignState.monsterPool?.row===pos.row&&campaignState.monsterPool?.kingdom===gameSettings.kingdom?campaignState.monsterPool.districts||[]:[];
-  $("#monsterPoolChoices").innerHTML=Array.from({length:gameSettings.districts},(_,district)=>`<label>区域 ${district+1}<select data-pool-choice="${district}">${source.map((card,index)=>`<option value="${card.index}" ${card.index===(current[district]?.index??source[district]?.index)?"selected":""}>${esc(card.name)} · Lv.${card.level}</option>`).join("")}</select></label>`).join("");
+  $("#monsterPoolChoices").innerHTML=Array.from({length:gameSettings.districts},(_,district)=>`<label>区域 ${district+1}<select data-pool-choice="${district}">${source.map((card,index)=>`<option value="${card.index}" ${card.index===(current[district]?.index??source[district]?.index)?"selected":""}>${esc(monsterLabel(card.name))} · ${esc(monsterRank(card.name))} · 等级 ${card.level}</option>`).join("")}</select></label>`).join("");
   $("#monsterPoolDialog").showModal();
 }
 function saveChosenMonsterPool(){
@@ -472,7 +491,7 @@ function setDevourDragonBinding(){
   if(!pool.devourDragon?.drawn&&!gameSettings.devourDragon)return toast("请先启用“贪食巨龙来了！”可选规则");
   const eligible=pool.districts.map((card,index)=>({card,index})).filter(({card})=>!["king","dragon"].includes(card.tier||monsterTier(card.name,card.level)));
   if(!eligible.length)return toast("当前怪物池没有可附着的非国王、非巨龙怪物");
-  const promptText=eligible.map((item,index)=>`${index+1}. 区域${item.card.district||item.index+1} · ${item.card.name} Lv.${item.card.level}`).join("\n");
+  const promptText=eligible.map((item,index)=>`${index+1}. 区域${item.card.district||item.index+1} · ${monsterLabel(item.card.name)} 等级 ${item.card.level}`).join("\n");
   const answer=prompt(`选择要与贪食巨龙绑定的怪物（输入序号）：\n${promptText}`,String(Math.max(1,eligible.findIndex(item=>item.card.devourDragonBound)+1)));
   if(answer===null)return;
   const choice=Number(answer)-1;
@@ -483,19 +502,19 @@ function setDevourDragonBinding(){
   campaignOp("monsterPool",{...pool,districts,devourDragon:rule});
   renderMonsterPool({...pool,districts,devourDragon:rule});
   renderMap();
-  toast(`已将贪食巨龙绑定到${districts[boundIndex].name}`);
+  toast(`已将贪食巨龙绑定到${monsterLabel(districts[boundIndex].name)}`);
 }
 function renderMonsterPool(pool=campaignState?.monsterPool,leader=knightSheets().find(s=>s.id===gameSettings.leaderSheetId),pos=leader?talePosition(leader):{row:0}){
   if(!pool?.cards?.length){$("#monsterPool").classList.add("hidden");return}$("#monsterPool").classList.remove("hidden");
-  const dragonNotice=pool.devourDragon?.drawn?`<div class="devour-dragon-notice"><strong>贪食巨龙来了！</strong><span>${pool.devourDragon.boundMonster?`已与 ${esc(pool.devourDragon.boundMonster)} 绑定；该怪物的冲突在巨兽之腹中进行。`:"本次抽到的均为国王或巨龙，没有进行绑定。"}</span></div>`:"";
+  const dragonNotice=pool.devourDragon?.drawn?`<div class="devour-dragon-notice"><strong>贪食巨龙来了！</strong><span>${pool.devourDragon.boundMonster?`已与 ${esc(monsterLabel(pool.devourDragon.boundMonster))} 绑定；该怪物的冲突在巨兽之腹中进行。`:"本次抽到的均为国王或巨龙，没有进行绑定。"}</span></div>`:"";
   const bindButton=(pool.devourDragon?.drawn||gameSettings.devourDragon)?`<button type="button" class="button secondary" id="setDevourBinding">手动设置附着怪物</button>`:"";
-  $("#monsterPool").innerHTML=`<strong>${esc(leader?.title||leader?.state?.knight||"主骑士")} · 比对卡第 ${pos.row+1} 行 · 牌池 ${pool.cards.length} 张</strong>${dragonNotice}${bindButton}<div class="pool-cards">${(pool.districts||[]).map((c,i)=>`<button class="monster-card ${c.devourDragonBound?"devour-bound":""}" type="button" data-original-encounter="${i}" title="打开 ${esc(c.name)} 遭遇">${monsterAvatarMarkup(c.name)}<span><small>区域 ${i+1}${c.devourDragonBound?" · 巨兽之腹":""}</small><strong>${esc(c.name)}</strong><b>Lv.${c.level}</b></span></button>`).join("")}</div>`;
+  $("#monsterPool").innerHTML=`<strong>${esc(leader?.title||leader?.state?.knight||"主骑士")} · 比对卡第 ${pos.row+1} 行 · 牌池 ${pool.cards.length} 张</strong>${dragonNotice}${bindButton}<div class="pool-cards">${(pool.districts||[]).map((c,i)=>`<button class="monster-card ${c.devourDragonBound?"devour-bound":""}" type="button" data-original-encounter="${i}" title="打开 ${esc(monsterLabel(c.name))} 遭遇">${monsterAvatarMarkup(c.name)}<span><small>区域 ${i+1}${c.devourDragonBound?" · 巨兽之腹":""}</small><strong>${esc(monsterLabel(c.name))}</strong><b>${esc(monsterRank(c.name))} · 等级 ${c.level}</b></span></button>`).join("")}</div>`;
   $("#setDevourBinding")?.addEventListener("click",setDevourDragonBinding);
 }
 function renderAll(title){
   hideGameViews();$("#overview").classList.add("hidden");$("#emptyState").classList.add("hidden");$("#sheetForm").classList.remove("hidden");$("#sheetTitle").value=title;setActiveModuleNav();
   $("#virtues").innerHTML=virtueMeta.map(([k,cn,en,vice])=>`<div class="virtue"><img class="virtue-icon" src="assets/sheet-icons/${k}.png" alt="" aria-hidden="true"><div class="virtue-name"><strong>${cn} <small>${en}</small></strong><span>${vice}</span></div><input data-path="virtues.${k}.value" type="number" min="-99" max="99"><div class="vice-checks">${[0,1,2,3].map(i=>check(`virtues.${k}.vice.${i}`,"box-check",`${vice} ${i+1}`)).join("")}</div></div>`).join("");
-  const chapterRanks=[["杂兵","MOBS"],["封臣","VASSAL"],["国王","KING"],["恶魔","DEVIL"],["巨龙","DRAGON"]];
+  const chapterRanks=["mob","vassal","king","devil","dragon"].map(key=>[window.KFMonsterLabels?.tier(key)||key,key==="mob"?"MOBS":key.toUpperCase()]);
   $("#story").innerHTML=state.story.map((c,ci)=>{
     const [rankCn,rankEn]=chapterRanks[ci]||["层级","RANK"];
     return `<div class="chapter"><div class="chapter-rank"><strong>${rankCn}</strong><small>${rankEn}</small><span>层次</span></div><div class="chapter-table"><div class="chapter-head"><span>第${"一二三四五"[ci]}章</span><em>任务</em>${check(`story.${ci}.quest`,"box-check","任务")}</div>${c.investigations.map((v,ii)=>`<div class="investigation"><span>调查 ${ii+1}</span><input class="investigation-number" data-path="story.${ci}.investigations.${ii}.success" data-investigation-success type="number" min="0" max="99" step="1" inputmode="numeric" aria-label="调查 ${ii+1} 数字">${check(`story.${ci}.investigations.${ii}.attempted`,"box-check","已进行")}</div>`).join("")}</div></div>`;
@@ -599,7 +618,7 @@ $("#trashList").onclick=async e=>{const b=e.target.closest("[data-sheet]");if(b&
 function openNewKnightDialog(){
   const first=knightCatalog[0];
   if(!first)return toast("暂无可用骑士");
-  $("#newKnightGallery").innerHTML=knightCatalog.map(item=>`<button class="knight-choice ${item.id===first.id?"selected":""}" type="button" role="radio" aria-checked="${item.id===first.id}" data-knight-choice="${item.id}"><img src="/assets/heroes/${item.id}-avatar.jpg" alt=""><span>${esc(item.name)}</span></button>`).join("");
+  $("#newKnightGallery").innerHTML=knightCatalog.map(item=>`<button class="knight-choice ${item.id===first.id?"selected":""}" type="button" role="radio" aria-checked="${item.id===first.id}" data-knight-choice="${item.id}"><img src="/assets/heroes/${item.id}-avatar.jpg?v=story-1" alt=""><span>${esc(item.name)}</span></button>`).join("");
   $("#newKnightIdentity").value=first.id;
   $("#newKnightTitle").value="";$("#newKnightTitle").placeholder=`默认：${first.name}`;$("#newKnightPlayer").value="";$("#newKnightDialog").showModal();
 }
@@ -639,6 +658,10 @@ $("#mapTiles").onclick=e=>{const button=e.target.closest("[data-remove-tile]");i
 $("#districtWheel").onclick=e=>{const button=e.target.closest("[data-start-district]");if(!button)return;const card=campaignState.monsterPool.districts[Number(button.dataset.startDistrict)];openEncounterAssistant(card.name,card.level,"normal")};
 function openEncounterAssistant(monster,level,type){
   const encounter=encounterRecord(monster);
+  if(encounter?.special){
+    if(!availableEncounterMonsters().some(item=>item.id===encounter.id))return toast("请选择这张特殊遭遇卡对应的主骑士");
+    level=encounter.encounterLevels[0].level;type="special";
+  }
   localStorage.setItem("kfEncounterHandoff",JSON.stringify({
     id:compatibleUuid(),campaignId:activeCampaign,source:"overview",
     monsterId:encounter?.id||"",monster,level:Number(level)||1,type:type||"normal",returnUrl:"/"
@@ -647,6 +670,7 @@ function openEncounterAssistant(monster,level,type){
 }
 function startEncounterFrom(monster,level,type){openEncounterAssistant(monster,level,type)}
 $("#startEncounter").onclick=()=>startEncounterFrom($("#encounterMonster").value,Number($("#encounterLevel").value),$("#encounterType").value);
+$("#encounterMonster").onchange=event=>renderEncounterChoices(event.target.value);
 $(".encounter-results").onclick=async e=>{const button=e.target.closest("[data-result]");if(!button)return;const data=await api("/api/encounters/complete",{method:"POST",body:JSON.stringify({campaignId:activeCampaign,result:button.dataset.result,casualties:$("#encounterCasualties").value,rewards:$("#encounterRewards").value})});campaignState=data.state;campaignRevision++;renderEncounter();toast("遭遇结果已保存")};
 $("#encounterBoardNotes").onchange=e=>campaignOp("encounter.board",{...(campaignState.encounter?.board||{}),notes:e.target.value});
 function pushAIBP(text,changes={}){const a=campaignState.aibp||{},before=structuredClone({ai:a.ai||[],bp:a.bp||[],activeAI:a.activeAI||null,activeBP:a.activeBP||null,discard:a.discard||[],bpDamage:a.bpDamage||[],wounds:a.wounds||[],promotion:a.promotion||0}),history=[...(a.history||[]),{at:new Date().toISOString(),text}].slice(-30);campaignOp("aibp.undo",before);Object.entries(changes).forEach(([path,value])=>campaignOp(`aibp.${path}`,value));campaignOp("aibp.history",history);renderAIBP()}

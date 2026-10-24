@@ -4,22 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>KF AI/BP 辅助器</title>
-  <link rel="stylesheet" href="styles.css?v=72">
-  <link rel="stylesheet" href="../module-bridge.css">
+  <link rel="stylesheet" href="styles.css?v=80">
+  <link rel="stylesheet" href="../module-bridge.css?v=18">
+  <link rel="stylesheet" href="../boss-token-frame.css?v=11">
 </head>
-  <body data-kf-module="aibp" data-storage-key="kf-aibp-assistant-v1" data-original-app="app.js?v=134">
-  <header class="topbar">
-    <div class="topbar-title-group">
+  <body data-kf-module="aibp" data-storage-key="kf-aibp-assistant-v1" data-original-app="app.js?v=151">
+  <header class="topbar" data-unified-topbar="aibp">
+    <div data-topbar-title class="topbar-title-group">
       <button class="directory-header-toggle" id="monsterDirectoryToggle" type="button"
         aria-label="展开怪物目录" aria-expanded="false" title="展开怪物目录">☰</button>
-      <div><span class="eyebrow">KINGDOMS FORLORN</span><h1>KF AI/BP 辅助器</h1></div>
+      <div><h1>KF AI/BP 辅助器</h1></div>
     </div>
-    <div class="top-actions">
+    <div class="top-actions" data-topbar-actions>
       <label class="deck-order-toggle" title="切换 AI/BP 卡背顺序的详细程度">
         <input type="checkbox" id="deckOrderToggle" checked>
         显示牌背顺序
       </label>
-      <span id="saveStatus" class="status">已保存</span>
+      <span id="saveStatus" class="status" hidden>已保存</span>
       <button class="button ghost" id="newBattle">新建冲突</button>
       <button class="button ghost" id="exportSave">导出</button>
       <button class="button ghost" id="importSave">导入</button>
@@ -30,20 +31,22 @@
   <main id="app"></main>
   <div id="toast" class="toast" hidden></div>
   <div id="modal" class="modal" hidden></div>
-  <script src="data/monster-data.js?v=2"></script>
-  <script src="data/localized-traits.js?v=3"></script>
-  <script src="data/localized-sheets.js"></script>
+  <script src="../../monster-labels.js?v=3"></script>
+  <script src="data/monster-data.js?v=10"></script>
+  <script src="data/localized-traits.js?v=5"></script>
+  <script src="data/localized-sheets.js?v=2"></script>
   <script src="data/level-config.js?v=2"></script>
   <script src="data/mob-activation-config.js"></script>
-  <script src="data/boss-rule-config.js?v=4"></script>
-  <script src="data/conflict-setup-data.js?v=5"></script>
-  <script src="data/terrain-keywords.js?v=1"></script>
-  <script src="../map/data/map-data.js?v=6"></script>
-  <script src="../display/data/conflict-board-data.js?v=4"></script>
+  <script src="data/boss-rule-config.js?v=5"></script>
+  <script src="data/conflict-setup-data.js?v=7"></script>
+  <script src="data/terrain-keywords.js?v=3"></script>
+  <script src="../map/data/map-data.js?v=14"></script>
+  <script src="../display/data/conflict-board-data.js?v=6"></script>
   <script src="../display/data/belly-board-data.js?v=10"></script>
   <script src="kf-los.js?v=1"></script>
   <script src="kf-facing.js?v=1"></script>
   <script src="kf-overlay.js?v=1"></script>
-  <script src="../module-bridge.js?v=15" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=134';document.body.append(app)"></script>
+  <script src="../module-topbar.js?v=1"></script>
+  <script src="../module-bridge.js?v=17" onerror="this.onerror=null;const app=document.createElement('script');app.src='app.js?v=151';document.body.append(app)"></script>
 </body>
 </html>

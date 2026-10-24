@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#761923">
   <title>KF 一体化战役管理</title>
-  <link rel="stylesheet" href="/styles.css?v=19">
+  <link rel="stylesheet" href="/styles.css?v=22">
+  <link rel="stylesheet" href="/modules/module-bridge.css?v=18">
 </head>
 <body>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -26,10 +27,10 @@
   </main>
 
   <div id="appView" class="app hidden">
-    <header class="topbar">
-      <button id="menuButton" class="icon-button" aria-label="打开档案列表">☰</button>
-      <div><span class="brand">KINGDOMS FORLORN</span><strong>KF 一体化战役管理</strong></div>
-      <div class="top-actions">
+    <header class="topbar" data-unified-topbar="overview">
+      <div data-topbar-title><button id="menuButton" class="icon-button" aria-label="打开档案列表">☰</button>
+      <strong>KF 一体化战役管理</strong></div>
+      <div class="top-actions" data-topbar-actions>
         <span id="saveState" class="save-state">已保存</span>
         <button id="overviewButton" class="button">多表总览</button>
         <button id="printButton" class="button">打印</button>
@@ -267,10 +268,14 @@
       </div>
     </form>
   </dialog>
-  <script src="/modules/aibp/data/monster-data.js?v=2"></script>
+  <script src="/monster-labels.js?v=3"></script>
+  <script src="/knight-portrait-colors.js?v=1"></script>
+  <script src="/modules/aibp/data/monster-data.js?v=10"></script>
   <script src="/modules/aibp/data/level-config.js?v=2"></script>
-  <script src="/modules/encounter/data/encounter-data.js?v=2"></script>
-  <script src="/modules/map/data/map-data.js?v=6"></script>
-  <script type="module" src="/app.js?v=32"></script>
+  <script src="/modules/encounter/data/encounter-data.js?v=13"></script>
+  <script src="/modules/encounter/encounter-catalog.js?v=1"></script>
+  <script src="/modules/map/data/map-data.js?v=14"></script>
+  <script src="/modules/module-topbar.js?v=1"></script>
+  <script type="module" src="/app.js?v=35"></script>
 </body>
 </html>

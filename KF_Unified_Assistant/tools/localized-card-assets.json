@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "note": "中文卡面（替换了英文扫描卡）。tools/split-card-atlases.py 必须保留这些文件与满幅裁切参数：数据从零重建后重新切图时，它会跳过这些路径而不是用图谱里的英文图覆盖；文件被改动时脚本会报错，确认无误后再更新本清单里的 sha256。",
+  "assets": [
+    {
+      "face": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-37.jpg",
+      "sha256": "3862afcf5718d03cb99f670b65c4a7251032551d3694898a7aab62a9e37be9dd",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_FirstmenLictor:Trait:41"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-38.jpg",
+      "sha256": "197ac21c72e1529410ef35d5d61dc4e19c93f96879579ea769c0e0ab836f3f1f",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_FirstmenLictor:Trait:37"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-39.jpg",
+      "sha256": "6d9d3961e8ed3359da6ebc4636010b1abc67f3e1225d79f28ad3300f30e64cd8",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_FirstmenLictor:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-40.jpg",
+      "sha256": "0cb2a690be87cb84f8d21c7fd7110705bdf1cf56b8b88a5141dc03e20f3e8916",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_FirstmenLictor:Trait:42"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-41.jpg",
+      "sha256": "35310b4083baef500a4921be55e1c9c156dbd35e7cbee891410a7f6817a68409",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_FirstmenLictor:Trait:40"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-42.jpg",
+      "sha256": "b1ed666aaee17d30ed7b59a74fb19c65eae3c3e59afe235e3d19f8e500f543dc",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_FirstmenLictor:Trait:38"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-37.jpg",
+      "sha256": "6e4b2f69f5b4b7660b226ba9baa4168b1750d7ee3a5663c3cb1c17b69d9d1281",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_FirstmenWarriors:Trait:38"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-38.jpg",
+      "sha256": "94fb65df2f582c68983f406b29033a43f32cf131f3135325eec7282cda357664",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_FirstmenWarriors:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-39.jpg",
+      "sha256": "60cf18876d92639f8d7952bc84227762095e7ca6a7b3e9e21f87c3da65e30f74",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_FirstmenWarriors:Trait:37"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/knight-fen/c32b56e4-37.jpg",
+      "sha256": "d716f92ebc58309a29736e1027c13b222ff1468a43eb5a3199725011882194d2",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_KnightFen:Trait_POS:41"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/knight-fen/c32b56e4-38.jpg",
+      "sha256": "47ffc085bc7af5ef4614b304a427ea09ec48c0748e890fe80224e5b7f4f73a84",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_KnightFen:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/knight-fen/c32b56e4-39.jpg",
+      "sha256": "204c4eb29b5f2bf4bc5bea5de125267ab0c3aca71374bb4e3a1f61c19fd4fb2e",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_KnightFen:Trait_SK:40"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/knighteater/a64da226-37.jpg",
+      "sha256": "b840aaef9083f85831ecc2ff250c1cc9204cb532d789fa7aece3e44b2d971d2e",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_Knighteater:Trait_POS:37"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/knighteater/a64da226-38.jpg",
+      "sha256": "5c2a46b810c54d300c353010ad1caee1103d4391aa9b814e9f8c0081cfb01594",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_Knighteater:Trait_SK:36"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/panzerdragon/e2495b11-38.jpg",
+      "sha256": "652faea11c57f14192a76ec300fe79499f6762b9c88f8ede9fa83848bf330f1a",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_Panzerdragon:Trait:38"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/panzerdragon/e2495b11-39.jpg",
+      "sha256": "888c6a4a1ea883d377009ac914ed02443b366e7e601c3b1e586a8442c45415b5",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_Panzerdragon:Trait:40"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/panzerdragon/e2495b11-40.jpg",
+      "sha256": "59aeffe242857ee38d0cb2efa6ac1c7155dfdaf453bc52a710232622c53c55dc",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_Panzerdragon:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/pumpkinhead/c77df093-20.jpg",
+      "sha256": "5c90d6c7b18dfa564083d40e035d69d36b7a61e2097c35994d681733d4908ce8",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_Pumpkinhead:Trait_POS:22",
+        "M_Pumpkinhead:Trait_POS:25"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/pumpkinhead/c77df093-21.jpg",
+      "sha256": "5699e3aca38fde02a995b34515fe4096bf501f999a782b4509d5f829576af9da",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_Pumpkinhead:Trait_SK:23",
+        "M_Pumpkinhead:Trait_SK:24"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/puppet-king/c05af5a0-37.jpg",
+      "sha256": "d658f45c0f6272a7e195f6bd30df261c283cb188d5e2040479ce54aded84cd05",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_PuppetKing:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/puppet-king/c05af5a0-38.jpg",
+      "sha256": "07dc4b47db9cd58a2c08bbb8f4905ef01582435c305f644725c8503f259aded4",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_PuppetKing:Trait:40"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/ratwolves/70c20abe-20.jpg",
+      "sha256": "9003335ab3e8f0d538660a92068fdf5d7ed70bacb084fc4486590fe9ef2188c6",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_Ratwolves:Trait_POS:22"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/ratwolves/70c20abe-21.jpg",
+      "sha256": "205809fa6b736fa1c62e539dcc48675c38b1ccb80840c9a874235f0cd7909fb2",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_Ratwolves:Trait_SK:23"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/white-ape/799e1d2b-38.jpg",
+      "sha256": "961e022085cdd3423c412e7d67cb273847897a8599e00975419bfd4c5bcee4b2",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_WhiteApe:Trait:38"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/white-ape/799e1d2b-39.jpg",
+      "sha256": "40081e98a1846257fcceb687690efceabb040c2040ef82a3555051d2506b2486",
+      "width": 745,
+      "height": 1043,
+      "cards": [
+        "M_WhiteApe:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/young-devour/17e4a0c7-00.jpg",
+      "sha256": "2d83fd501f9dfd012802eb5ceb82dcbadd868ef646147759a2f22909d33b18d6",
+      "width": 885,
+      "height": 1549,
+      "cards": [
+        "M_YoungDevour:EncounterCard:41"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/young-devour/d8eeaf1a-38.jpg",
+      "sha256": "45a41560eb8e9045e50d2e0f5c9ee1c019bc2bc22db1abd0ee520002a34491ce",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_YoungDevour:Trait:38"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/young-devour/d8eeaf1a-39.jpg",
+      "sha256": "14685ad7e4c5519cb16841e92092132b20d109aab19665f0c94fcb1b0fe1e872",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_YoungDevour:Trait:39"
+      ]
+    },
+    {
+      "face": "/assets/cards/monster-faces/young-devour/d8eeaf1a-40.jpg",
+      "sha256": "3039d227311f420c8f6b894e4fc30e9d2d994f967a8ad5c769baf8293edd4941",
+      "width": 745,
+      "height": 1044,
+      "cards": [
+        "M_YoungDevour:Trait:40"
+      ]
+    }
+  ]
+}

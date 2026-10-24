@@ -138,6 +138,6 @@ assert.match(mapViewStyleSource, /\.delve-track-cell \{[^}]*grid-template-rows: 
 assert.match(indexSource, /styles\.css\?v=83/);
 assert.match(indexSource, /map-view\.css\?v=7/);
 assert.match(indexSource, /map-view\.js\?v=11/);
-assert.match(indexSource, /app\.js\?v=114/);
+assert.match(indexSource, /app\.js\?v=115/);
 
 console.log("map track notes: normalization, persistence, controls and styling verified");

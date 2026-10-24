@@ -7,16 +7,15 @@
   <meta name="theme-color" content="#151512">
   <title>KF 冲突设置</title>
   <link rel="stylesheet" href="styles.css?v=1">
-  <link rel="stylesheet" href="../module-bridge.css?v=1">
+  <link rel="stylesheet" href="../module-bridge.css?v=18">
 </head>
 <body data-kf-module="conflict" data-storage-key="kf-conflict-setup-v1" data-original-app="app.js?v=1">
   <script>window.location.replace("/modules/aibp/");</script>
-  <header class="topbar">
-    <div>
-      <span class="eyebrow">KINGDOMS FORLORN · CLASH SETUP</span>
+  <header class="topbar" data-unified-topbar="aibp">
+    <div data-topbar-title>
       <h1>冲突设置</h1>
     </div>
-    <div class="top-actions">
+    <div class="top-actions" data-topbar-actions>
       <label class="field compact">王国
         <select id="kingdomFilter">
           <option value="all">全部</option>
@@ -52,19 +51,8 @@
     <section id="setupView" class="setup-view" aria-live="polite"></section>
   </main>
 
-  <dialog id="referenceDialog" class="reference-dialog">
-    <div class="dialog-bar">
-      <div><strong id="dialogTitle"></strong><span id="dialogPage"></span></div>
-      <div class="dialog-actions">
-        <button id="previousPage" class="icon-button" type="button" title="上一页" aria-label="上一页">‹</button>
-        <button id="nextPage" class="icon-button" type="button" title="下一页" aria-label="下一页">›</button>
-        <button id="closeDialog" class="icon-button" type="button" title="关闭" aria-label="关闭">×</button>
-      </div>
-    </div>
-    <div class="dialog-image-wrap"><img id="dialogImage" alt=""></div>
-  </dialog>
-
-  <script src="data.js?v=1"></script>
-  <script src="../module-bridge.js?v=15"></script>
+  <script src="data.js?v=3"></script>
+  <script src="../module-topbar.js?v=1"></script>
+  <script src="../module-bridge.js?v=17"></script>
 </body>
 </html>

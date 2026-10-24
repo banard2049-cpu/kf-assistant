@@ -1,0 +1,795 @@
+{
+  "version": 1,
+  "source": "(Don)KF 1.8.json / knightbook PDFs",
+  "verification": "Card-bottom model/token icons, footprints, facing arrows and every red grid cell visually checked against the ten original card faces. Offsets are [row,column] relative to the upper-left footprint cell, in the printed facing.",
+  "cards": [
+    {
+      "code": "F4",
+      "knightId": "fleischritter",
+      "name": "Apex Eggknight",
+      "nameZh": "顶级蛋骑士",
+      "tier": "vassal",
+      "baseMonsterId": "M_Eggknight",
+      "usesGenericToken": false,
+      "monsterSize": 2,
+      "monsterCount": 1,
+      "hit": "6+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "ff5810",
+        "pdfPage": 21,
+        "printedPage": 19,
+        "chapter": 1,
+        "cropPdfPoints": [
+          35.625,
+          390.625,
+          278.125,
+          806.25
+        ]
+      },
+      "note": "攻击后，蛋骑士如能移动，向正前方移动 1 格。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "肉食者与饥饿之灾（112.pdf",
+        "sha256": "e8191497c635f78b25edafc61ad062b48e28f9a88c19889c5a30632c296eaebb",
+        "pdfPage": 20,
+        "printedPage": 19,
+        "cropPdfPoints": [
+          36.5,
+          239.0,
+          174.0,
+          480.0
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          33.5,
+          236,
+          177,
+          482
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "colorCorrection": {
+        "channelGain": [
+          1.12,
+          1.18,
+          1.29
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "F3",
+      "knightId": "fleischritter",
+      "name": "Plagued Pumpkinheads",
+      "nameZh": "染疫南瓜头",
+      "tier": "mob",
+      "baseMonsterId": "M_Pumpkinhead",
+      "usesGenericToken": false,
+      "monsterSize": 1,
+      "monsterCount": 3,
+      "hit": "7+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "ff5810",
+        "pdfPage": 31,
+        "printedPage": 29,
+        "chapter": 2,
+        "cropPdfPoints": [
+          50.625,
+          375.0,
+          293.75,
+          790.0
+        ]
+      },
+      "note": "本卡用于该骑士书中的染疫南瓜头特殊遭遇。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "肉食者与饥饿之灾（112.pdf",
+        "sha256": "e8191497c635f78b25edafc61ad062b48e28f9a88c19889c5a30632c296eaebb",
+        "pdfPage": 30,
+        "printedPage": 29,
+        "cropPdfPoints": [
+          41.8,
+          231.3,
+          178.7,
+          471.2
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          38.8,
+          228.3,
+          181.7,
+          473.2
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "colorCorrection": {
+        "channelGain": [
+          1.1,
+          1.16,
+          1.23
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "F2",
+      "knightId": "fleischritter",
+      "name": "Firstmen Oracle",
+      "nameZh": "先民神谕者",
+      "tier": "mob",
+      "baseMonsterId": "M_FirstmenWarriors",
+      "usesGenericToken": false,
+      "monsterSize": 1,
+      "monsterCount": 2,
+      "hit": "6+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "ff5810",
+        "pdfPage": 38,
+        "printedPage": 36,
+        "chapter": 2,
+        "cropPdfPoints": [
+          298.125,
+          30.625,
+          530.625,
+          426.25
+        ]
+      },
+      "note": "怪物回合可能抽取 Mortis 卡，并在下一次 Clash 开始时结算。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "肉食者与饥饿之灾（112.pdf",
+        "sha256": "e8191497c635f78b25edafc61ad062b48e28f9a88c19889c5a30632c296eaebb",
+        "pdfPage": 37,
+        "printedPage": 36,
+        "cropPdfPoints": [
+          173.7,
+          21.5,
+          305.8,
+          253.78
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          171.7,
+          20,
+          307.8,
+          255.5
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "colorCorrection": {
+        "channelGain": [
+          1.1,
+          1.15,
+          1.25
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "K1",
+      "knightId": "kara",
+      "name": "Bounty Hunters",
+      "nameZh": "赏金猎人",
+      "tier": "mob",
+      "baseMonsterId": null,
+      "usesGenericToken": true,
+      "monsterSize": 1,
+      "monsterCount": 1,
+      "hit": "4+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          0,
+          1
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "bookGuid": "0707e1",
+        "pdfPage": 6,
+        "printedPage": 8,
+        "chapter": 1,
+        "cropPdfPoints": [
+          21.25,
+          23.125,
+          273.75,
+          456.25
+        ]
+      },
+      "note": "按伏击队伍的 Bane 标记强度设置数量（1-10）；X 等于本次赏金猎人数量。",
+      "countRange": [
+        1,
+        10
+      ],
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "石中的男孩（108.pdf",
+        "sha256": "9902cec820302f304544852b4f3e5d496c37aa0614be083b95ae9f50e0c9bced",
+        "pdfPage": 9,
+        "printedPage": 8,
+        "cropPdfPoints": [
+          17.44,
+          18.0,
+          159.56,
+          266.96
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          14.2,
+          15,
+          162.8,
+          269.7
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "tokenAssetId": "token-04",
+      "colorCorrection": {
+        "channelGain": [
+          1.06,
+          1.09,
+          1.12
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "K4",
+      "knightId": "kara",
+      "name": "Grove Knight",
+      "nameZh": "林地骑士",
+      "tier": "mob",
+      "baseMonsterId": null,
+      "usesGenericToken": true,
+      "monsterSize": 1,
+      "monsterCount": 1,
+      "hit": "6+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          -2,
+          0
+        ],
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "0707e1",
+        "pdfPage": 9,
+        "printedPage": 15,
+        "chapter": 1,
+        "cropPdfPoints": [
+          608.125,
+          16.875,
+          862.5,
+          448.125
+        ]
+      },
+      "note": "仅 Kara 可以参加这场决斗；忽略其他盟友的站位。",
+      "solo": true,
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "石中的男孩（108.pdf",
+        "sha256": "9902cec820302f304544852b4f3e5d496c37aa0614be083b95ae9f50e0c9bced",
+        "pdfPage": 16,
+        "printedPage": 15,
+        "cropPdfPoints": [
+          30.0,
+          19.7,
+          168.0,
+          270.5
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          27,
+          16.7,
+          172,
+          273
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "tokenAssetId": "token-01",
+      "colorCorrection": {
+        "channelGain": [
+          1.04,
+          1.05,
+          1.02
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "P2",
+      "knightId": "paracelsa",
+      "name": "Questers",
+      "nameZh": "寻道者",
+      "tier": "mob",
+      "baseMonsterId": null,
+      "usesGenericToken": true,
+      "monsterSize": 1,
+      "monsterCount": 2,
+      "hit": "6+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          1,
+          -1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "4e0e0b",
+        "pdfPage": 20,
+        "printedPage": 36,
+        "chapter": 2,
+        "cropPdfPoints": [
+          20.0,
+          370.625,
+          271.25,
+          795.625
+        ]
+      },
+      "note": "用于骑士书中的寻道者特殊遭遇；触发条件见出处原页。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "帕拉塞尔苏斯（136.pdf",
+        "sha256": "f0439d9d17ef7382b9ff424e07d31df0fae28a5a29046e55c8fd025eab1fec01",
+        "pdfPage": 37,
+        "printedPage": 36,
+        "cropPdfPoints": [
+          16.98,
+          222.24,
+          156.72,
+          468.52
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          13.5,
+          219,
+          160.2,
+          471.5
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "tokenAssetId": "token-01",
+      "colorCorrection": {
+        "channelGain": [
+          1.07,
+          1.08,
+          1.14
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "P5",
+      "knightId": "paracelsa",
+      "name": "Changeling",
+      "nameZh": "变形者",
+      "tier": "mob",
+      "baseMonsterId": null,
+      "usesGenericToken": true,
+      "monsterSize": 1,
+      "monsterCount": 1,
+      "hit": "7+",
+      "shieldMark": "1",
+      "attackPattern": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "4e0e0b",
+        "pdfPage": 56,
+        "printedPage": 108,
+        "chapter": 5,
+        "cropPdfPoints": [
+          291.875,
+          223.75,
+          543.75,
+          651.25
+        ]
+      },
+      "note": "本卡的红盾标记为 1；移动与 Zeal 标记规则需配合原书阅读。",
+      "avatarSource": {
+        "kind": "borrowed-guise",
+        "label": "帕拉塞尔莎拟态（借用主角插画）",
+        "bookGuid": "4e0e0b",
+        "pdfPage": 5,
+        "printedPage": 4,
+        "cropPdfPoints": [
+          148,
+          96,
+          234,
+          182
+        ],
+        "evidence": {
+          "pdfPage": 109,
+          "printedPage": 108,
+          "paragraphs": [
+            "0022",
+            "0023"
+          ],
+          "note": "0022 明确描述变形者变成帕拉塞尔莎的镜像，0023 描述它在 Marianne、Nicodemas 等外形间变化。本图仅表示其帕拉塞尔莎拟态，不是独立怪物立绘。",
+          "ttsPdfPage": 56
+        },
+        "fileName": "帕拉塞尔苏斯（136.pdf",
+        "sha256": "f0439d9d17ef7382b9ff424e07d31df0fae28a5a29046e55c8fd025eab1fec01",
+        "dpi": 600,
+        "imageVersion": 2
+      },
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "帕拉塞尔苏斯（136.pdf",
+        "sha256": "f0439d9d17ef7382b9ff424e07d31df0fae28a5a29046e55c8fd025eab1fec01",
+        "pdfPage": 109,
+        "printedPage": 108,
+        "cropPdfPoints": [
+          171.36,
+          133.74,
+          311.44,
+          380.32
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          168,
+          130.5,
+          314.8,
+          383.3
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "tokenAssetId": "token-01",
+      "colorCorrection": {
+        "channelGain": [
+          1.13,
+          1.19,
+          1.25
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "R5",
+      "knightId": "renholder",
+      "name": "Soul-less Firstmen",
+      "nameZh": "无魂先民",
+      "tier": "mob",
+      "baseMonsterId": "M_FirstmenWarriors",
+      "usesGenericToken": false,
+      "monsterSize": 1,
+      "monsterCount": 2,
+      "hit": "9+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "bookGuid": "9b32d8",
+        "pdfPage": 26,
+        "printedPage": 49,
+        "chapter": 3,
+        "cropPdfPoints": [
+          883.75,
+          250.0,
+          1126.25,
+          664.375
+        ]
+      },
+      "note": "用于第三章无魂先民袭击村庄的特殊遭遇。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "雷恩霍尔德与灵之秘（124.pdf",
+        "sha256": "4a7404d242ab3749fb2087585ee3a7024ca7649312a1d80c60f3172d76257af6",
+        "pdfPage": 50,
+        "printedPage": 49,
+        "cropPdfPoints": [
+          191.5,
+          162.5,
+          328.7,
+          403.0
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          188.5,
+          159.5,
+          331.7,
+          405.5
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "colorCorrection": {
+        "channelGain": [
+          1.08,
+          1.1,
+          1.19
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "S4",
+      "knightId": "ser-sonch",
+      "name": "Guardian of the Pool of Tears",
+      "nameZh": "泪池守卫",
+      "tier": "mob",
+      "baseMonsterId": null,
+      "usesGenericToken": true,
+      "monsterSize": 1,
+      "monsterCount": 1,
+      "hit": "7+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "bookGuid": "c9a307",
+        "pdfPage": 22,
+        "printedPage": 41,
+        "chapter": 2,
+        "cropPdfPoints": [
+          616.25,
+          261.875,
+          872.5,
+          687.5
+        ]
+      },
+      "note": "探索新的兴趣点时可触发；削弱守卫的任务规则见出处原页。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "桑乔爵士与最后的交易（140.pdf",
+        "sha256": "33556e55180152215b4e3016c96f97c8fdf6890600fd711fc48fea041ea7930d",
+        "pdfPage": 42,
+        "printedPage": 41,
+        "cropPdfPoints": [
+          34.48,
+          170.0,
+          175.04,
+          416.54
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          31,
+          167,
+          179,
+          420
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "tokenAssetId": "token-01",
+      "colorCorrection": {
+        "channelGain": [
+          1.02,
+          1.03,
+          1.03
+        ],
+        "contrast": 0.84
+      }
+    },
+    {
+      "code": "U1",
+      "knightId": "ser-ubar",
+      "name": "Ratman Gangster",
+      "nameZh": "鼠人匪徒",
+      "tier": "mob",
+      "baseMonsterId": null,
+      "usesGenericToken": true,
+      "monsterSize": 1,
+      "monsterCount": 3,
+      "hit": "4+",
+      "shieldMark": "X",
+      "attackPattern": [
+        [
+          0,
+          1
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "bookGuid": "eb58b8",
+        "pdfPage": 20,
+        "printedPage": 37,
+        "chapter": 2,
+        "cropPdfPoints": [
+          608.125,
+          380.625,
+          861.875,
+          793.125
+        ]
+      },
+      "note": "卡名为 Ratman Gangster；正文也称 Rat-Man Bandit，属于同一特殊遭遇。",
+      "highResolutionSource": {
+        "kind": "local-scan",
+        "fileName": "赛尔乌吧与被扼杀帝国的罪孽（133.pdf",
+        "sha256": "fdcabfd10875b1df8ed1a139f4c5936e248aea059cb2fcd4f5274b35df35026d",
+        "pdfPage": 38,
+        "printedPage": 37,
+        "cropPdfPoints": [
+          33.96,
+          235.48,
+          175.54,
+          475.0
+        ],
+        "dpi": 600,
+        "uncroppedBorderPdfPoints": [
+          30,
+          232,
+          179.5,
+          478.7
+        ],
+        "cornerRadiusRatio": 0.05,
+        "imageVersion": 4
+      },
+      "tokenAssetId": "token-01",
+      "colorCorrection": {
+        "channelGain": [
+          1.1,
+          1.14,
+          1.22
+        ],
+        "contrast": 0.84
+      }
+    }
+  ]
+}

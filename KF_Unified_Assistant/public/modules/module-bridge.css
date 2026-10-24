@@ -1,48 +1,71 @@
-.unified-module-bar{
-  position:sticky;top:0;z-index:10000;display:flex;align-items:center;gap:8px;
-  min-height:46px;padding:7px 12px;background:#171311;color:#f4eadb;
-  border-bottom:2px solid #913421;box-shadow:0 3px 12px #0006;
-  font:14px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif
+:root{--kf-topbar-height:38px}
+/* Shared compact header: title, page actions, then module switching at the right edge. */
+header[data-unified-topbar].unified-topbar{
+  position:sticky;top:0;z-index:50;display:flex;flex-direction:row;flex-wrap:wrap;
+  align-items:center;justify-content:flex-start;gap:4px 10px;width:100%;height:auto;
+  min-height:38px;margin:0;padding:4px 10px;border:0;border-bottom:1px solid #5c5148;
+  background:#211d1b;color:#f8f0df;box-shadow:0 3px 10px #180f0c35;
+  font:13px/1.2 "Noto Serif SC","Songti SC","Microsoft YaHei",serif;backdrop-filter:none;overflow:visible;
 }
-.unified-module-bar strong{margin-right:auto;white-space:nowrap}
-.unified-module-bar a{
-  color:#e7d9bf;text-decoration:none;padding:7px 9px;border:1px solid #6f604e;
-  border-radius:4px;background:#28211d
+header.unified-topbar .unified-topbar-title{display:flex;flex:0 0 auto;align-items:center;gap:6px;min-width:0}
+header.unified-topbar .unified-topbar-title :is(h1,strong){margin:0;font-size:16px;line-height:1.2;letter-spacing:0;color:inherit;white-space:nowrap}
+header.unified-topbar :is(.eyebrow,.brand){display:none}
+header.unified-topbar .unified-topbar-actions{
+  display:flex;flex:0 1 auto;flex-wrap:wrap;align-items:center;justify-content:flex-end;
+  gap:4px;width:auto;min-width:0;max-width:none;margin:0 0 0 auto;
 }
-.unified-module-bar a:hover,.unified-module-bar a.active{color:#fff;background:#913421;border-color:#b85a40}
-.unified-module-bar .bridge-status{font-size:12px;color:#c7b89d;white-space:nowrap}
+header.unified-topbar .unified-topbar-actions #overviewButton{display:inline-flex}
+header.unified-topbar .unified-module-bar{
+  display:flex;flex:0 0 auto;order:3;align-items:center;justify-content:flex-end;gap:4px;
+  min-width:0;max-width:100%;margin-left:0;padding-left:10px;border-left:1px solid #8a7965;overflow-x:auto;
+}
+header.unified-topbar .unified-topbar-control{
+  box-sizing:border-box;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;gap:4px;
+  width:auto;height:28px;min-width:28px;min-height:28px;margin:0;padding:0 8px;
+  border:1px solid #5c5148;border-radius:0;background:#24201e;color:#f8f0df;box-shadow:none;
+  font:inherit;font-weight:500;line-height:1.2;letter-spacing:0;text-decoration:none;white-space:nowrap;cursor:pointer;
+}
+header.unified-topbar .unified-topbar-control:hover,
+header.unified-topbar .unified-module-bar .active,
+header.unified-topbar .unified-topbar-control[aria-expanded="true"]{background:#581016;border-color:#91343d;color:#fff}
+header.unified-topbar .unified-topbar-control:focus-visible{outline:2px solid #d1a84b;outline-offset:2px}
+header.unified-topbar select.unified-topbar-control{flex:0 1 auto;min-width:0;max-width:170px}
+header.unified-topbar label:not(.unified-topbar-control){display:flex;align-items:center;gap:4px;margin:0;font:inherit}
+header.unified-topbar input[type="checkbox"]{width:13px;height:13px;margin:0;accent-color:#91343d}
+header.unified-topbar :is(.bridge-status,.save-status,.save-state,.status,#saveStatus){
+  max-width:160px;margin:0 4px 0 0;overflow:hidden;color:#c7b7a0;
+  font:11px/1.2 "Microsoft YaHei",sans-serif;text-overflow:ellipsis;white-space:nowrap;
+}
+header.unified-topbar .unified-topbar-extra{order:4;flex:1 0 100%;min-width:0;overflow-x:auto}
+header.unified-topbar [hidden]{display:none}
 body[data-kf-module="map"] #exportButton,
 body[data-kf-module="map"] label.button.secondary,
 body[data-kf-module="encounter"] #exportSave,
 body[data-kf-module="encounter"] #importSave,
 body[data-kf-module="aibp"] #exportSave,
 body[data-kf-module="aibp"] #importSave{display:none!important}
-@media(max-width:780px){
-  .unified-module-bar{position:relative;flex-wrap:wrap}
-  .unified-module-bar strong{width:100%}
-  .unified-module-bar a{font-size:12px;padding:6px}
+/* Fixed and sticky content follows the actual header height, including wrapped layouts. */
+#appView > header.unified-topbar{position:fixed}
+#appView .sidebar{top:var(--kf-topbar-height)}
+#appView .scrim{top:var(--kf-topbar-height)}
+#appView .workspace{padding-top:calc(var(--kf-topbar-height) + 14px)}
+body[data-kf-module="map"] :is(.host-sidebar,.delve-tracks-sticky){top:var(--kf-topbar-height)}
+body[data-kf-module="map"] .host-sidebar{max-height:calc(100vh - var(--kf-topbar-height))}
+body[data-kf-module="aibp"] .monster-index{top:calc(var(--kf-topbar-height) + 6px);height:calc(100dvh - var(--kf-topbar-height) - 24px)}
+body[data-kf-module="encounter"] .monster-rail{top:calc(var(--kf-topbar-height) + 12px)}
+body[data-kf-module="rogue"] .rogue-shell{padding-top:12px}
+@media(max-width:1179px){
+  body[data-kf-module="map"] .host-sidebar{max-height:none}
+  body[data-kf-module="map"] .history-panel{top:var(--kf-topbar-height)}
 }
-
-/* Match the unified assistant shell. */
-.unified-module-bar{
-  min-height:46px;
-  background:#211d1b;
-  color:#f8f0df;
-  border-bottom:1px solid #6f604e;
-  box-shadow:0 8px 22px #180f0c55;
-  font-family:"Noto Serif SC","Songti SC","Microsoft YaHei",serif;
+@media(max-width:600px){
+  header[data-unified-topbar].unified-topbar{padding:4px 6px;gap:4px 6px}
+  header.unified-topbar .unified-topbar-actions{justify-content:flex-start}
+  header.unified-topbar .unified-module-bar{gap:3px}
+  header.unified-topbar .unified-topbar-control{padding:0 6px;font-size:12px}
 }
-.unified-module-bar strong{font-family:Georgia,serif;letter-spacing:.08em}
-.unified-module-bar a{
-  border-color:#5c5148;
-  border-radius:0;
-  background:#24201e;
-  color:#f8f0df;
+@media(max-width:1100px){header.unified-topbar .unified-module-bar{margin-left:auto}}
+@media print{
+  header[data-unified-topbar].unified-topbar{display:none!important}
+  #appView .workspace{padding:0;margin:0}
 }
-.unified-module-bar a:hover,
-.unified-module-bar a.active{
-  background:#581016;
-  border-color:#581016;
-  color:#fff;
-}
-.unified-module-bar .bridge-status{color:#c7b7a0}

@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
+  const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
 
   const TTS_CARD_HEIGHT = 3.06;
   const TOKEN_SLOTS = [
@@ -109,7 +111,7 @@
   }
 
   function markerSource(type, data) {
-    if (type === "fog") return "/assets/tokens/fog.png";
+    if (type === "fog") return "/assets/tokens/httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.png";
     const clue = CLUES.find(([id]) => id === type);
     return clue?.[2] || data.tokens?.markers?.[type] || data.tokens?.markers?.generic || "";
   }
@@ -178,7 +180,7 @@
       : `aria-label="当前队伍：${esc(name)}" title="当前队伍：${esc(name)}（可拖动）" data-map-token="party" data-token-kind="party" data-token-tile="${esc(tileId)}" data-token-x="${x}" data-token-y="${y}"`;
     return `<span class="party-location-token" role="img" ${attrs} style="left:${x}%;top:${y}%">
       ${portraitId
-        ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg" alt="" draggable="false">`
+        ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg?v=story-1" alt="" draggable="false">`
         : `<span class="party-location-fallback" aria-hidden="true">${esc(name.slice(0, 1) || "?")}</span>`}
     </span>`;
   }
@@ -385,7 +387,7 @@
       const angle = box.angle;
       const mapTokens = monsters.map(marker => ({
         record: marker, kind: "monster", source: data.tokens?.monsters?.[marker.monsterId] || "",
-        label: list(data.monsters).find(monster => monster.id === marker.monsterId)?.name || marker.monsterId
+        label: monsterLabel(list(data.monsters).find(monster => monster.id === marker.monsterId)) || marker.monsterId
       }));
       const tag = interactive ? "button" : "div";
       const attributes = interactive
@@ -408,13 +410,15 @@
 
   function explorationCardStyle(image, side = "face", assetBase = "") {
     if (!image) return "";
-    const usesAtlas = side !== "back" || image.uniqueBack === true;
-    const columns = usesAtlas ? Math.max(1, Number(image.width) || 1) : 1;
-    const rows = usesAtlas ? Math.max(1, Number(image.height) || 1) : 1;
-    const index = usesAtlas ? Math.max(0, Number(image.index) || 0) : 0;
-    const x = columns > 1 ? (index % columns) / (columns - 1) * 100 : 0;
-    const y = rows > 1 ? Math.floor(index / columns) / (rows - 1) * 100 : 0;
-    return `--exploration-image:url("${esc(asset(image[side] || image.face, assetBase))}");--exploration-cols:${columns};--exploration-rows:${rows};--exploration-x:${x}%;--exploration-y:${y}%;--exploration-aspect:${Number(image.aspect) || .702}`;
+    const crop = image[`${side}Crop`];
+    const usesAtlas = Boolean(crop) || side !== "back" || image.uniqueBack === true;
+    const metadata = crop || image;
+    const columns = usesAtlas ? Math.max(1, Number(metadata.width) || 1) : 1;
+    const rows = usesAtlas ? Math.max(1, Number(metadata.height) || 1) : 1;
+    const index = usesAtlas ? Math.max(0, Number(metadata.index) || 0) : 0;
+    const x = metadata.x ?? (columns > 1 ? (index % columns) / (columns - 1) * 100 : 0);
+    const y = metadata.y ?? (rows > 1 ? Math.floor(index / columns) / (rows - 1) * 100 : 0);
+    return `--exploration-image:url("${esc(asset(image[side] || image.face, assetBase))}");--exploration-cols:${columns};--exploration-rows:${rows};--exploration-x:${x}%;--exploration-y:${y}%;--exploration-aspect:${Number(metadata.aspect || image.aspect) || .702}`;
   }
 
   function explorationEffectMarkers(state, data, slotKey, assetBase) {
@@ -477,9 +481,9 @@
       const source = data.tokens?.monsters?.[monsterId] || "";
       const level = Math.max(1, Number(current.districtWheelLevels?.[district.id]) || 1);
       const location = String(current.districtWheelLocations?.[district.id] || "");
-      const label = `${district.name} · ${monster?.name || monsterId} · Lv.${level}${location ? ` · ${location}` : ""}`;
+      const label = `${district.name} · ${monsterLabel(monster) || monsterId} · ${monsterRank(monster)} · 等级 ${level}${location ? ` · ${location}` : ""}`;
       return `<span class="kingdom-monster-wheel-token read-only" style="--token-x:${zone.x}%;--token-y:${zone.y}%;--token-width:${zone.width}%" title="${esc(label)}">
-        ${source ? `<img src="${esc(asset(source, options.assetBase))}" alt="${esc(label)}">` : `<span class="kingdom-monster-wheel-fallback">${esc((monster?.name || "?").slice(0, 1))}</span>`}
+        ${source ? `<img src="${esc(asset(source, options.assetBase))}" alt="${esc(label)}">` : `<span class="kingdom-monster-wheel-fallback">${esc((monsterLabel(monster) || "?").slice(0, 1))}</span>`}
       </span>`;
     }).join("") : "";
     const markers = list(current.kingdomMarkers).map(marker => {

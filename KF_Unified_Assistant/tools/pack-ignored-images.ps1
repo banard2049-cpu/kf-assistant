@@ -10,6 +10,9 @@
   为避免泄漏，脚本始终强制排除 .env、data/、backups/、logs/ 等敏感路径，
   即使通过 -Extension 传入了自定义扩展名也不会被打包。
 
+  条目名含中文时，脚本会补写 UTF-8 标志位（general purpose bit 11），
+  这样用资源管理器自带解压、unzip 等按本地代码页处理的工具也不会解出乱码文件名。
+
 .PARAMETER OutputPath
   输出 zip 路径。默认为仓库根目录下的 KF_Assistant_Images_<日期>.zip。
 
@@ -92,6 +95,99 @@ function Format-Size {
   if ($Bytes -ge 1MB) { return ('{0:N2} MB' -f ($Bytes / 1MB)) }
   if ($Bytes -ge 1KB) { return ('{0:N2} KB' -f ($Bytes / 1KB)) }
   return ('{0} B' -f [int]$Bytes)
+}
+
+function Set-ZipUtf8NameFlags {
+  # 给条目名含非 ASCII 字符的记录补上 UTF-8 标志位（general purpose bit 11）。
+  # .NET Framework 即使指定 UTF-8 编码写条目名，也不会置这个标志位，
+  # 结果按本地代码页解压的工具（资源管理器自带解压等）会把中文名解成乱码。
+  # 只改写标志位，不动数据、CRC 和尺寸；返回补写的条目数。
+  param([Parameter(Mandatory = $true)][string]$Path)
+
+  $utf8Strict = [System.Text.UTF8Encoding]::new($false, $true)
+  $file = [System.IO.File]::Open(
+    $Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+  try {
+    $length = $file.Length
+    if ($length -lt 22) { throw "压缩包过小，无法定位中央目录: $Path" }
+
+    # 在文件尾部 64 KB 内倒着找 EOCD（中央目录结尾记录）。
+    $tailSize = [int][Math]::Min($length, 65557)
+    $tail = New-Object byte[] $tailSize
+    $file.Position = $length - $tailSize
+    $read = 0
+    while ($read -lt $tailSize) {
+      $chunk = $file.Read($tail, $read, $tailSize - $read)
+      if ($chunk -le 0) { break }
+      $read += $chunk
+    }
+    $eocd = -1
+    for ($i = $tailSize - 22; $i -ge 0; $i--) {
+      if ($tail[$i] -eq 0x50 -and $tail[$i + 1] -eq 0x4B -and
+          $tail[$i + 2] -eq 0x05 -and $tail[$i + 3] -eq 0x06) { $eocd = $i; break }
+    }
+    if ($eocd -lt 0) { throw "未找到中央目录结尾记录，压缩包可能已损坏: $Path" }
+
+    $entryCount = [BitConverter]::ToUInt16($tail, $eocd + 10)
+    $cdSize = [BitConverter]::ToUInt32($tail, $eocd + 12)
+    $cdOffset = [BitConverter]::ToUInt32($tail, $eocd + 16)
+    if ($entryCount -eq 0xFFFF -or $cdSize -eq 0xFFFFFFFF -or $cdOffset -eq 0xFFFFFFFF) {
+      throw "该压缩包是 Zip64 格式，本脚本暂不处理: $Path"
+    }
+
+    $cd = New-Object byte[] $cdSize
+    $file.Position = $cdOffset
+    $read = 0
+    while ($read -lt $cdSize) {
+      $chunk = $file.Read($cd, $read, $cdSize - $read)
+      if ($chunk -le 0) { break }
+      $read += $chunk
+    }
+    if ($read -ne $cdSize) { throw "中央目录没有完整读入: $Path" }
+
+    $patched = 0
+    $cursor = 0
+    for ($index = 0; $index -lt $entryCount; $index++) {
+      if ([BitConverter]::ToUInt32($cd, $cursor) -ne 0x02014b50) {
+        throw "第 $index 条中央目录记录签名异常: $Path"
+      }
+      $flags = [BitConverter]::ToUInt16($cd, $cursor + 8)
+      $nameLength = [BitConverter]::ToUInt16($cd, $cursor + 28)
+      $extraLength = [BitConverter]::ToUInt16($cd, $cursor + 30)
+      $commentLength = [BitConverter]::ToUInt16($cd, $cursor + 32)
+      $localOffset = [BitConverter]::ToUInt32($cd, $cursor + 42)
+
+      $hasHighByte = $false
+      for ($b = 0; $b -lt $nameLength; $b++) {
+        if ($cd[$cursor + 46 + $b] -ge 0x80) { $hasHighByte = $true; break }
+      }
+      if ($hasHighByte -and (($flags -band 0x0800) -eq 0)) {
+        try { $entryName = $utf8Strict.GetString($cd, $cursor + 46, $nameLength) }
+        catch { throw "第 $index 条记录的文件名不是合法 UTF-8: $Path" }
+
+        $flagBytes = [BitConverter]::GetBytes([uint16]($flags -bor 0x0800))
+        $file.Position = $cdOffset + $cursor + 8
+        $file.Write($flagBytes, 0, 2)
+
+        $signature = New-Object byte[] 4
+        $file.Position = $localOffset
+        $file.Read($signature, 0, 4) | Out-Null
+        if ([BitConverter]::ToUInt32($signature, 0) -ne 0x04034b50) {
+          throw "本地文件头签名异常，压缩包可能已损坏: $entryName"
+        }
+        $file.Position = $localOffset + 6
+        $file.Write($flagBytes, 0, 2)
+        $patched++
+      }
+
+      $cursor += 46 + $nameLength + $extraLength + $commentLength
+    }
+
+    $file.Flush($true)
+    return $patched
+  } finally {
+    $file.Dispose()
+  }
 }
 $git = Get-Command git -ErrorAction SilentlyContinue
 if (-not $git) {
@@ -305,6 +401,12 @@ try {
   }
 
   Write-Progress -Activity "打包被忽略的图片" -Completed
+
+  # 交给复核前先补齐中文文件名的 UTF-8 标志位，否则资源管理器解压出来是乱码名。
+  $flaggedCount = Set-ZipUtf8NameFlags -Path $partialPath
+  if ($flaggedCount -gt 0) {
+    Write-Output "已为 $flaggedCount 个中文文件名补写 UTF-8 标志位"
+  }
 
   # 复核：重新打开压缩包，确认条目数与解压体积和源文件一致。
   $verifyZip = [System.IO.Compression.ZipFile]::OpenRead($partialPath)

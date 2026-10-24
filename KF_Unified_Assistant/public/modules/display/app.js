@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
+  const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
   const root = document.querySelector("#displayRoot");
   const displayHeader = document.querySelector("#displayHeader");
   const connectionText = document.querySelector("#connectionText");
@@ -207,8 +209,9 @@
     });
     if (!board) return stateView("遭遇版图资源缺失", "请重新运行资源导入或检查部署文件。", "!");
     const encounterCard = window.KFEncounterView.renderCard(level, level?.side || "face", "");
+    const encounterRank = monster?.special ? `<dt>卡号</dt><dd>${esc(monster.special.code)}</dd>` : `<dt>等级</dt><dd>${esc(state.level)}</dd>`;
     const phaseLabels = {setup:"设置",position:"放置",monster:"怪物轮",knight:"骑士轮",resolution:"结算"};
-    root.innerHTML = `<section class="encounter-scene"><div class="encounter-board-area">${board}</div><aside class="map-side encounter-side"><p class="side-subtitle">ENCOUNTER</p><h2 class="side-title">${esc(monster?.name || state.monsterId)}</h2>${encounterCard}<dl class="fact-list"><dt>等级</dt><dd>${esc(state.level)}</dd><dt>类型</dt><dd>${esc(state.encounterType === "ambush" ? "伏击" : state.encounterType === "special" ? "特殊" : "普通")}</dd><dt>阶段</dt><dd>${esc(phaseLabels[state.phase] || state.phase)}</dd><dt>怪物</dt><dd>${esc(state.monsters?.length || 0)}</dd><dt>队伍</dt><dd>${esc(state.knights?.length || 0)}</dd><dt>机会</dt><dd>${esc(state.pool?.opportunity || 0)}</dd><dt>破甲</dt><dd>${esc(state.pool?.break || 0)}</dd><dt>擦伤</dt><dd>${esc(state.scrapes || 0)}</dd></dl></aside></section>`;
+    root.innerHTML = `<section class="encounter-scene"><div class="encounter-board-area">${board}</div><aside class="map-side encounter-side"><p class="side-subtitle">ENCOUNTER</p><h2 class="side-title">${esc(monsterLabel(monster) || state.monsterId)}</h2>${encounterCard}<dl class="fact-list">${encounterRank}<dt>位阶</dt><dd>${esc(monsterRank(monster))}</dd><dt>类型</dt><dd>${esc(state.encounterType === "ambush" ? "伏击" : state.encounterType === "special" ? "特殊" : "普通")}</dd><dt>阶段</dt><dd>${esc(phaseLabels[state.phase] || state.phase)}</dd><dt>怪物</dt><dd>${esc(state.monsters?.length || 0)}</dd><dt>队伍</dt><dd>${esc(state.knights?.length || 0)}</dd><dt>机会</dt><dd>${esc(state.pool?.opportunity || 0)}</dd><dt>破甲</dt><dd>${esc(state.pool?.break || 0)}</dd><dt>擦伤</dt><dd>${esc(state.scrapes || 0)}</dd></dl></aside></section>`;
   }
 
   function displayAsset(value) {
@@ -220,7 +223,7 @@
   }
   function terrainCardsFor(terrain) {
     const cardData = window.KF_CONFLICT_BOARD_DATA?.terrainCards;
-    if (!cardData?.sheet || !cardData.byAsset) return [];
+    if (!cardData?.byAsset) return [];
     const seen = new Set();
     return (terrain || []).flatMap(placement => {
       const card = cardData.byAsset[placement.asset];
@@ -231,8 +234,12 @@
   }
   function terrainCardFace(card) {
     const sheet = window.KF_CONFLICT_BOARD_DATA?.terrainCards?.sheet;
-    if (!sheet || !card) return "";
-    return `<span class="terrain-card-face" style="--card-sheet-width:${sheet.columns*100}%;--card-sheet-height:${sheet.rows*100}%;--card-left:${-card.column*100}%;--card-top:${-card.row*100}%"><img src="${esc(displayAsset(sheet.asset))}" alt=""></span>`;
+    if (!card || (!card.image && !sheet)) return "";
+    const image = card.image, crop = image?.faceCrop || image;
+    const cols = crop?.width || sheet.columns, rows = crop?.height || sheet.rows;
+    const left = crop ? (1 - cols) * (crop.x || 0) : -card.column * 100;
+    const top = crop ? (1 - rows) * (crop.y || 0) : -card.row * 100;
+    return `<span class="terrain-card-face" style="--card-sheet-width:${cols*100}%;--card-sheet-height:${rows*100}%;--card-left:${left}%;--card-top:${top}%"><img src="${esc(displayAsset(image?.face || sheet.asset))}" alt=""></span>`;
   }
   function publicTerrainCard(entry) {
     const card = entry?.terrainCard;
@@ -245,9 +252,10 @@
   function cardById(monster, id) { return monster?.cards?.find(card => card.id === id); }
   function cardArt(card, side = "face") {
     if (!card?.image?.face) return "";
-    const image = card.image, cols = Math.max(1,Number(image.width)||1), rows = Math.max(1,Number(image.height)||1), index = Math.max(0,Number(image.index)||0);
-    const x = cols > 1 ? (index%cols)/(cols-1)*100 : 0, y = rows > 1 ? Math.floor(index/cols)/(rows-1)*100 : 0;
-    return `--card-aspect:${Number(image.aspect)||.7};background-image:url('${aibpAsset(image[side]||image.face)}');background-size:${cols*100}% ${rows*100}%;background-position:${x}% ${y}%`;
+    const image = card.image, crop = image[`${side}Crop`] || image;
+    const cols = Math.max(1,Number(crop.width)||1), rows = Math.max(1,Number(crop.height)||1), index = Math.max(0,Number(crop.index)||0);
+    const x = crop.x ?? (cols > 1 ? (index%cols)/(cols-1)*100 : 0), y = crop.y ?? (rows > 1 ? Math.floor(index/cols)/(rows-1)*100 : 0);
+    return `--card-aspect:${Number(crop.aspect)||.7};background-image:url('${aibpAsset(image[side]||image.face)}');background-size:${cols*100}% ${rows*100}%;background-position:${x}% ${y}%`;
   }
   function publicCard(monster,id,label,side="face",className="") { const card=cardById(monster,id); return card ? `<figure class="public-card ${esc(className)}" data-public-card="${esc(id)}"><div class="public-card-art" style="${cardArt(card,side)}"></div><figcaption>${esc(label)} · ${esc(card.name)}</figcaption></figure>` : ""; }
   function publicFeatureCard(entry) {
@@ -281,7 +289,7 @@
     };
     return `<section class="conflict-hero-clues" aria-label="英雄线索数量">${heroes.map(hero=>{
       const name=hero.name||hero.heroId||"英雄";
-      const avatar=hero.heroId?`<img src="/assets/heroes/${esc(hero.heroId)}-avatar.jpg" alt="">`:"";
+      const avatar=hero.heroId?`<img src="/assets/heroes/${esc(hero.heroId)}-avatar.jpg?v=story-1" alt="">`:"";
       return `<article title="${esc(name)}">${avatar}<strong>${esc(name)}</strong>${clueValue(hero,hero.primary,"主要")}${clueValue(hero,hero.secondary,"次要")}</article>`;
     }).join("")}</section>`;
   }
@@ -328,7 +336,7 @@
     };
     return heroes.map(hero=>{
       const name=hero.name||hero.heroId||"英雄";
-      const avatar=hero.heroId?`<img class="conflict-party-avatar" src="/assets/heroes/${esc(hero.heroId)}-avatar.jpg" alt="">`:"";
+      const avatar=hero.heroId?`<img class="conflict-party-avatar" src="/assets/heroes/${esc(hero.heroId)}-avatar.jpg?v=story-1" alt="">`:"";
       const isSquire=hero.memberType==="squire";
       const hasVirtues=hero.virtues&&typeof hero.virtues==="object";
       const chips=(!isSquire&&hasVirtues)
@@ -338,10 +346,10 @@
     }).join("");
   }
   const TOKEN_FILES = {
-    "token-01":"httpssteamusercontentaakamaihdnetugc10792521070177147F375BA9D7F1EF7C2ABAA9D04F55839FA6FC24A94.jpg",
+    "token-01":"generic.png",
     "token-04":"httpssteamusercontentaakamaihdnetugc107925210701772985157F1FFBF1B6B3122574EAC077DF071EEAECD0A.jpg",
     "token-06":"httpssteamusercontentaakamaihdnetugc107925210701773816D94D0D9F92199789B87B059762037FBCDB3002F.jpg",
-    "token-08":"httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.jpg",
+    "token-08":"httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.png",
     "token-09":"httpssteamusercontentaakamaihdnetugc1079252107017740261329DF7464BB346AC1307E370422403ED4AABE9.jpg",
     "token-11":"httpssteamusercontentaakamaihdnetugc10792521070177409519E3960B377A6A0CF46E8E04206FF8B556C47CF.jpg",
     "token-16":"httpssteamusercontentaakamaihdnetugc10792521070177552FA3C2C3D1D58187DA29E930E0BA1248B856EF54B.jpg",
@@ -360,21 +368,26 @@
     "token-armor":"httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png"
   };
   function tokenSrc(id) {
-    if (id === "bog-witch-encounter") return "/assets/tokens/httpssteamusercontentaakamaihdnetugc102276672612288011771BFEEDE9B444465A77830BDC2F8E79E37A0B9056.png";
-    if (id === "token-01") return `/assets/images/${TOKEN_FILES[id]}`;
+    if (id === "bog-witch-encounter") return monsterTokenSrc("M_BogWitch");
     return TOKEN_FILES[id] ? `/assets/tokens/${TOKEN_FILES[id]}` : "";
   }
-  function tokenShapeClass(id) { return id === "token-armor" ? "token-square" : ""; }
+  function tokenShapeClass(id) {
+    if (id === "token-armor") return "token-square";
+    return ["token-29", "token-blood"].includes(id) ? "token-free" : "";
+  }
   function publicTokenStacks(tokens) {
     return (tokens || []).map(token => {
       const src=tokenSrc(token.assetId); if(!src)return "";
-      return `<span class="boss-sheet-token ${token.auto ? "auto-token" : ""}" style="left:${clamp(token.x,0,100)}%;top:${clamp(token.y,0,100)}%"><img class="${tokenShapeClass(token.assetId)}" src="${esc(src)}" alt=""><b>×${clamp(token.count||1,1,20)}</b></span>`;
+      const bogPosition = token.assetId === "bog-witch-encounter";
+      return `<span class="boss-sheet-token ${token.auto ? "auto-token" : ""}${bogPosition ? " bog-position-token" : ""}" style="left:${clamp(token.x,0,100)}%;top:${clamp(token.y,0,100)}%"><img class="${tokenShapeClass(token.assetId)}" src="${esc(src)}" alt="">${bogPosition ? "" : `<b>×${clamp(token.count||1,1,20)}</b>`}</span>`;
     }).join("");
   }
   function bossSheetHtml(monster,battle) {
     if(!monster?.sheet?.face&&!monster?.sheet?.back)return "";
     const tokens=[...(Array.isArray(battle.sheetTokens)?battle.sheetTokens:[]),...(Array.isArray(battle.sheetAutoTokens)?battle.sheetAutoTokens:[])];
-    return `<section class="boss-sheet-block boss-sheet-display-bar" data-layout="big-card" aria-label="Boss 大卡"><div class="boss-sheet-stage"><div class="boss-sheet-spread">${monster.sheet.face?`<img src="${esc(aibpAsset(monster.sheet.face))}" alt="${esc(monster.name)} 怪物面板正面">`:""}${monster.sheet.back?`<img src="${esc(aibpAsset(monster.sheet.back))}" alt="${esc(monster.name)} 怪物面板背面">`:""}</div><div class="boss-sheet-token-layer">${publicTokenStacks(tokens)}</div></div></section>`;
+    const panelAspect = Number(monster.sheet.cellWidth) / Number(monster.sheet.cellHeight) || Number(monster.sheet.aspect) || 2405 / 1649;
+    const sheetAspect = panelAspect * (Number(Boolean(monster.sheet.face)) + Number(Boolean(monster.sheet.back)) || 1);
+    return `<section class="boss-sheet-block boss-sheet-display-bar" data-layout="big-card" aria-label="Boss 大卡"><div class="boss-sheet-stage" style="aspect-ratio:${sheetAspect};height:auto;flex:none"><div class="boss-sheet-spread">${monster.sheet.face?`<img src="${esc(aibpAsset(monster.sheet.face))}" alt="${esc(monsterLabel(monster))} 怪物面板正面">`:""}${monster.sheet.back?`<img src="${esc(aibpAsset(monster.sheet.back))}" alt="${esc(monsterLabel(monster))} 怪物面板背面">`:""}</div><div class="boss-sheet-token-layer">${publicTokenStacks(tokens)}</div></div></section>`;
   }
   function markerStacks(markerTokens) {
     return Object.entries(markerTokens||{}).map(([assetId,count])=>{const src=tokenSrc(assetId);return src&&count?`<span class="display-bp-marker"><img class="${tokenShapeClass(assetId)}" src="${esc(src)}" alt=""></span>`:""}).join("");
@@ -652,14 +665,15 @@
         content=`<img class="terrain-art" src="${esc(displayAsset(source))}" alt="${esc(item.asset)}" style="width:${swapped?rowSpan/colSpan*100:100}%;height:${swapped?colSpan/rowSpan*100:100}%;transform:translate(-50%,-50%) rotate(${rotation}deg) scaleX(${item.flipped?-1:1})">`;
       } else if (item.kind === "knight" && knightAssignment.has(item.id)) {
         const knight = knightAssignment.get(item.id);
-        content=`<span class="board-marker knight" aria-label="${esc(knight.name)}" title="${esc(knight.name)}"><img class="knight-avatar" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg" alt=""><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span></span>`;
+        content=`<span class="board-marker knight knight-token-frame" style="--token-facing:${cardinalFacing(rotation)}deg" aria-label="${esc(knight.name)}" title="${esc(knight.name)}"><img class="knight-avatar" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg?v=story-1" alt=""></span>`;
       } else if (item.kind === "monster") {
         const token = monsterTokenSrc(battle.monsterId);
-        const label = belly ? (monster?.name || "附着怪物") : (monster?.name || item.asset.replace(/([a-z])([A-Z])/g,"$1 $2"));
+        const label = belly ? (monsterLabel(monster) || "附着怪物") : (monsterLabel(monster) || item.asset.replace(/([a-z])([A-Z])/g,"$1 $2"));
         const tokenImage = token ? `<img class="monster-board-token" src="${esc(token)}" alt="${esc(label)}">` : "";
-        content=`<span class="board-marker monster" aria-label="${esc(label)}" title="${esc(label)}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${tokenImage || esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
+        const bossFrame = monster?.type === "boss" ? " boss-token-frame" : "";
+        content=`<span class="board-marker monster${bossFrame}" style="--boss-facing:${cardinalFacing(rotation)}deg" aria-label="${esc(label)}" title="${esc(label)}">${tokenImage || esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
       } else {
-        const label=belly && item.kind === "monster" ? (monster?.name || "附着怪物") : item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
+        const label=belly && item.kind === "monster" ? (monsterLabel(monster) || "附着怪物") : item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
         content=`<span class="board-marker ${item.kind}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
       }
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
@@ -739,7 +753,7 @@
     const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"} board-align-${boardAlign}`;
     root.innerHTML=`<section class="${sceneClass}" style="--board-scale:${scale/100}">
       <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(boardDefinition.asset))}" alt="${belly ? "巨兽之腹版图" : "TTS 高清冲突版图"}"><div class="conflict-grid">${grid}</div>${conflictOverlayMarkersHtml(overlay)}${placements}${digestiveMarkerMarkup}${digestiveMarkup}</div></div></div>
-      <aside class="conflict-side"><div class="conflict-side-content"><header class="conflict-side-head"><div><p class="side-subtitle">CLASH · ${esc(kingdomLabel(layout.kingdom))}</p><h2 class="side-title">${esc(monster?.name || battle.monsterId)}</h2></div><dl class="conflict-quick-facts"><div><dt>等级</dt><dd>${esc(battle.level)}</dd></div><div><dt>AI</dt><dd>${esc(battle.aiDeckCount||0)}</dd></div><div><dt>BP</dt><dd>${esc(battle.bpDeckCount||0)}</dd></div><div><dt>损伤</dt><dd>${esc((battle.singleWounds||0)+(battle.doubleWounds||0)*2)}</dd></div></dl></header>
+      <aside class="conflict-side"><div class="conflict-side-content"><header class="conflict-side-head"><div><p class="side-subtitle">CLASH · ${esc(kingdomLabel(layout.kingdom))}</p><h2 class="side-title">${esc(monsterLabel(monster) || battle.monsterId)}</h2></div><dl class="conflict-quick-facts"><div><dt>等级</dt><dd>${esc(monsterRank(monster))} · ${esc(battle.level)}</dd></div><div><dt>AI</dt><dd>${esc(battle.aiDeckCount||0)}</dd></div><div><dt>BP</dt><dd>${esc(battle.bpDeckCount||0)}</dd></div><div><dt>损伤</dt><dd>${esc((battle.singleWounds||0)+(battle.doubleWounds||0)*2)}</dd></div></dl></header>
         <div class="conflict-side-primary">${primaryInner}</div>
         <div class="conflict-side-secondary">
           ${resolvingSection}

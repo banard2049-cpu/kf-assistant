@@ -1,5 +1,7 @@
 (() => {
   "use strict";
+  const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
+  const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
 
   const DATA = window.KF_MOD_DATA;
   const FOG_RULES = window.KF_FOG_RULES;
@@ -220,7 +222,7 @@
   }
 
   function markerToken(type) {
-    if (type === "fog") return "/assets/tokens/fog.png";
+    if (type === "fog") return "/assets/tokens/httpssteamusercontentaakamaihdnetugc107925210701773996ECA849F992C7EA67C78D97A03A7992F61BD241B.png";
     const clue = CLUES.find(([id]) => id === type);
     if (clue) return clue[2];
     const tokens = DATA.tokens?.markers || {};
@@ -248,8 +250,9 @@
   }
 
   function tokenImage(source, label, className = "") {
+    const portraitClass = /\/assets\/tokens\/(boss|monsters)\//.test(source || "") ? " monster-portrait" : "";
     return source
-      ? `<img class="token-icon ${className}" src="${esc(source)}" alt="${esc(label)}" title="${esc(label)}">`
+      ? `<img class="token-icon ${className}${portraitClass}" src="${esc(source)}" alt="${esc(label)}" title="${esc(label)}">`
       : `<span class="token-fallback ${className}" title="${esc(label)}">●</span>`;
   }
 
@@ -381,7 +384,7 @@
     const rule = rules(code);
     const startId = tile(requestedStart, code) ? requestedStart : map.start;
     const placed = initialPlaced(code, startId);
-    return {
+    const current = {
       placed,
       tileState: Object.fromEntries(placed.map(id => [id, id === startId ? "explored" : "hidden"])),
       randomTileHighlights: [],
@@ -447,12 +450,14 @@
       threatSevenPending: false,
       failed: ""
     };
+    placePrintedDoors(current, startId, { code, log: () => {} });
+    return current;
   }
 
   function defaultState() {
     return {
       version: SAVE_VERSION,
-      kingdom: "SK",
+      kingdom: campaignKingdom() || "SK",
       step: 0,
       round: 1,
       taskMode: false,
@@ -495,6 +500,7 @@
   }
 
   function normalizeSavedMapState(saved) {
+    saved.kingdom = campaignKingdom() || saved.kingdom;
     saved.trackNotes = normalizeTrackNotes(saved.trackNotes);
     saved.trackers = normalizeTrackers(saved.trackers);
     Object.entries(saved.maps || {}).forEach(([code, current]) => {
@@ -946,7 +952,7 @@
     const outcome = MERCENARY_RULES.encounterSkip(cardId, current.current, current.travelRoute);
     if (!outcome) return toast("没有最近旅行路线的上一板块，不能使用该效果");
 
-    const monsterName = DATA.monsters.find(item => item.id === marker.monsterId)?.name || "怪物";
+    const monsterName = monsterLabel(DATA.monsters.find(item => item.id === marker.monsterId)?.name || "怪物");
     const encounterTileId = current.current;
     snapshot(`盗贼 ${definition.level} B 忽略遭遇`);
     clearTimeout(encounterNavigationTimer);
@@ -983,7 +989,7 @@
     if (!state.maps[kingdom]) return false;
     const current = state.maps[kingdom];
     const marker = current.monsters.find(item => item.id === handoff.mapEncounter.monsterTokenId);
-    const monsterName = DATA.monsters.find(item => item.id === marker?.monsterId)?.name || handoff.monster || "怪物";
+    const monsterName = monsterLabel(DATA.monsters.find(item => item.id === marker?.monsterId)?.name || handoff.monster || "怪物");
     snapshotMap(current, `完成 ${monsterName} 遭遇`);
     current.monsters = current.monsters.filter(item => item.id !== handoff.mapEncounter.monsterTokenId);
     current.pendingEncounter = null;
@@ -1006,6 +1012,18 @@
     if (["sk", "sunken", "sunken kingdom"].includes(normalized)) return "SK";
     if (["pos", "stone", "principality of stone"].includes(normalized)) return "POS";
     return "";
+  }
+
+  function campaignKingdom() {
+    return upstreamKingdom(window.KF_MAP_UPSTREAM?.kingdom)
+      || upstreamKingdom(window.KF_CAMPAIGN_KINGDOM);
+  }
+
+  function syncCampaignKingdom() {
+    const kingdom = campaignKingdom();
+    if (!kingdom || !state.maps[kingdom] || state.kingdom === kingdom) return false;
+    state.kingdom = kingdom;
+    return true;
   }
 
   function upstreamMonsterPool() {
@@ -1324,7 +1342,7 @@
       data-map-token="party" data-token-kind="party" data-token-tile="${esc(tileId)}"
       data-token-x="${x}" data-token-y="${y}" style="left:${x}%;top:${y}%">
       ${portraitId
-        ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg" alt="" draggable="false">`
+        ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg?v=story-1" alt="" draggable="false">`
         : `<span class="party-location-fallback" aria-hidden="true">${esc(name.slice(0, 1) || "?")}</span>`}
     </span>`;
   }
@@ -1476,13 +1494,15 @@
 
   function cardStyle(image, side = "face") {
     if (!image) return "";
-    const usesAtlas = side !== "back" || image.uniqueBack === true;
-    const cols = usesAtlas ? Math.max(1, Number(image.width) || 1) : 1;
-    const rows = usesAtlas ? Math.max(1, Number(image.height) || 1) : 1;
-    const index = usesAtlas ? Math.max(0, Number(image.index) || 0) : 0;
-    const x = cols > 1 ? (index % cols) / (cols - 1) * 100 : 0;
-    const y = rows > 1 ? Math.floor(index / cols) / (rows - 1) * 100 : 0;
-    return `--image:url("${image[side] || image.face}");--cols:${cols};--rows:${rows};--x:${x}%;--y:${y}%;--aspect:${image.aspect || .702}`;
+    const crop = image[`${side}Crop`];
+    const usesAtlas = Boolean(crop) || side !== "back" || image.uniqueBack === true;
+    const metadata = crop || image;
+    const cols = usesAtlas ? Math.max(1, Number(metadata.width) || 1) : 1;
+    const rows = usesAtlas ? Math.max(1, Number(metadata.height) || 1) : 1;
+    const index = usesAtlas ? Math.max(0, Number(metadata.index) || 0) : 0;
+    const x = metadata.x ?? (cols > 1 ? (index % cols) / (cols - 1) * 100 : 0);
+    const y = metadata.y ?? (rows > 1 ? Math.floor(index / cols) / (rows - 1) * 100 : 0);
+    return `--image:url("${image[side] || image.face}");--cols:${cols};--rows:${rows};--x:${x}%;--y:${y}%;--aspect:${metadata.aspect || image.aspect || .702}`;
   }
 
   function cardView(image, side = "face", extra = "") {
@@ -1525,7 +1545,7 @@
     const adjacentTiles = adjacentFaceUpTileIds(current.current, current);
     const target = adjacentTiles.includes(targetTileId) ? targetTileId : adjacentTiles[0];
     const districtName = rules().districts.find(item => item.id === district)?.name || "未识别地区";
-    const monsterName = DATA.monsters.find(item => item.id === monsterId)?.name || "未指定怪物";
+    const monsterName = monsterLabel(DATA.monsters.find(item => item.id === monsterId)?.name || "未指定怪物");
 
     if (!district || !monsterId || !target) {
       current.threatSevenPending = true;
@@ -1896,7 +1916,7 @@
     const selectedSpawnTile = adjacentTiles.includes(pending.spawnTileId) ? pending.spawnTileId : adjacentTiles[0] || "";
     const pendingDistrictName = rules().districts.find(district => district.id === pending.district)?.name || "未识别地区";
     const pendingMonsterId = mapState().districtWheel[pending.district] || "";
-    const pendingMonsterName = DATA.monsters.find(monster => monster.id === pendingMonsterId)?.name || "地区轮盘未指定";
+    const pendingMonsterName = monsterLabel(DATA.monsters.find(monster => monster.id === pendingMonsterId)?.name || "地区轮盘未指定");
     return `<section class="panel resolution">
       <div class="panel-header"><div><div class="eyebrow">KINGDOM TILE</div><h3>${esc(stageLabel)}</h3></div><span class="badge gold">${esc(tileLabel(item))}</span></div>
       ${cardView(item.image, pending.stage.startsWith("back") ? "back" : "face", "tile-card")}
@@ -2020,23 +2040,24 @@
       && pathKey(marker.from, marker.to) === pathKey(from, to));
   }
 
-  // Panzergates printed on a tile (rules.front.armoredDoors) take effect in its kingdom tile step:
+  // Panzergates printed on a tile (rules.front.armoredDoors) take effect at starting setup
+  // or in its kingdom tile step:
   // a door of the printed type goes on that path; a path already blocked by a door discards the
   // new one (Principality of Stone special rules).
-  function placePrintedDoors(current, tileId) {
+  function placePrintedDoors(current, tileId, { code = state.kingdom, log = addLog } = {}) {
     const placed = [];
-    for (const door of tile(tileId)?.rules?.front?.armoredDoors || []) {
+    for (const door of tile(tileId, code)?.rules?.front?.armoredDoors || []) {
       if (!DOOR_MARKER_TYPES.includes(door?.type) || !door.target) continue;
       const label = PATH_MARKERS.find(([id]) => id === door.type)?.[1] || door.type;
-      const where = `${tileLabel(tile(tileId))} ↔ ${tileLabel(tile(door.target))}`;
+      const where = `${tileLabel(tile(tileId, code))} ↔ ${tileLabel(tile(door.target, code))}`;
       if (passageHasDoor(current, tileId, door.target)) {
-        addLog(`印刷的${label}：${where} 已被装甲门拦阻，按规则弃置`);
+        log(`印刷的${label}：${where} 已被装甲门拦阻，按规则弃置`);
         continue;
       }
       const marker = { id: uid(), from: tileId, to: door.target, type: door.type, printed: true };
       current.pathMarkers.push(marker);
       placed.push(marker);
-      addLog(`印刷的${label}：放在 ${where}`);
+      log(`印刷的${label}：放在 ${where}`);
     }
     return placed;
   }
@@ -2303,7 +2324,7 @@
     const available = MERCENARY_RULES.availableCards(mercenaries);
     const previousTileId = encounterBacktrackTarget(current);
     const pendingMarker = current.monsters.find(item => item.id === current.pendingEncounter);
-    const pendingMonsterName = DATA.monsters.find(item => item.id === pendingMarker?.monsterId)?.name || "当前怪物";
+    const pendingMonsterName = monsterLabel(DATA.monsters.find(item => item.id === pendingMarker?.monsterId)?.name || "当前怪物");
 
     const activeCards = mercenaries.active.map(item => {
       const definition = MERCENARY_RULES.CATALOG[item.cardId];
@@ -2387,18 +2408,18 @@
         ${source ? `<span class="badge${source.unresolved?.length ? " danger" : ""}">上层已同步 ${source.matched}/${source.total}${source.manuallyAdjusted ? " · 已手动调整" : ""}</span>` : '<span class="badge">尚未从上层同步</span>'}
       </div>
       <div class="fields">
-        ${rules().districts.map(d => `<label>${esc(d.name)}${Number.isFinite(current.districtWheelLevels[d.id]) ? `<small class="muted">上层 Lv.${current.districtWheelLevels[d.id]}${current.districtWheelLocations[d.id] ? ` · ${esc(current.districtWheelLocations[d.id])}` : ""}</small>` : ""}<select data-wheel="${d.id}"><option value="">未指定</option>${DATA.monsters.map(monster => `<option value="${monster.id}" ${current.districtWheel[d.id] === monster.id ? "selected" : ""}>${esc(monster.name)}</option>`).join("")}</select></label>`).join("")}
+        ${rules().districts.map(d => `<label>${esc(d.name)}${Number.isFinite(current.districtWheelLevels[d.id]) ? `<small class="muted">上层等级 ${current.districtWheelLevels[d.id]}${current.districtWheelLocations[d.id] ? ` · ${esc(current.districtWheelLocations[d.id])}` : ""}</small>` : ""}<select data-wheel="${d.id}"><option value="">未指定</option>${DATA.monsters.map(monster => `<option value="${monster.id}" ${current.districtWheel[d.id] === monster.id ? "selected" : ""}>${esc(monsterLabel(monster))} · ${esc(monsterRank(monster))}</option>`).join("")}</select></label>`).join("")}
       </div>
       ${source?.unresolved?.length ? `<div class="alert danger">未匹配怪物：${source.unresolved.map(esc).join("、")}</div>` : ""}
       <div class="toolbar"><button id="syncDistrictWheel" class="small secondary" ${upstreamAvailable ? "" : "disabled"}>从上层刷新</button><label>轮换格数<input id="rotateCount" type="number" min="1" value="1" style="width:72px"></label><button class="small secondary" data-rotate="-1">逆时针</button><button class="small secondary" data-rotate="1">顺时针</button><button id="huntButton" class="small">追击 1 格</button></div>
       <div class="toolbar"><span class="badge ${current.threatSevenSpawned ? "green" : current.threatSevenPending ? "gold" : ""}">首次 7+：${current.threatSevenSpawned ? "已生成" : current.threatSevenPending ? "等待步骤 d" : "未触发"}</span><button id="resetThreatSeven" class="small secondary" ${current.threatSevenSpawned || current.threatSevenPending || state.trackers.threat >= 7 ? "" : "disabled"}>重新结算 7+ 生成</button></div>
       <p class="tiny">威胁 3、7、8：追猎 1；威胁 4、9：追猎 2。生成和追击只使用正面朝上的王国板块；无法沿正面板块接近队伍时，随机移到队伍相邻的正面板块。</p>
       <div class="fields">
-        <label>怪物<select id="monsterSelect">${DATA.monsters.map(monster => `<option value="${monster.id}">${esc(monster.name)}</option>`).join("")}</select></label>
+        <label>怪物<select id="monsterSelect">${DATA.monsters.map(monster => `<option value="${monster.id}">${esc(monsterLabel(monster))}</option>`).join("")}</select></label>
         <button id="spawnMonster" class="secondary" ${selectedTileIsFaceUp ? "" : "disabled"}>在所选正面板块生成</button>
       </div>
       <div class="list">${current.monsters.map(item => {
-        const monsterName = DATA.monsters.find(monster => monster.id === item.monsterId)?.name || item.monsterId;
+        const monsterName = monsterLabel(DATA.monsters.find(monster => monster.id === item.monsterId)?.name || item.monsterId);
         return `<div class="list-row"><span class="token-label">${tokenImage(monsterToken(item.monsterId), monsterName)}<span>${esc(monsterName)} · ${esc(tileLabel(tile(item.tileId)))}</span></span><span class="toolbar"><button class="small secondary" data-move-monster="${item.id}" ${selectedTileIsFaceUp ? "" : "disabled"}>移到所选正面板块</button><button class="small danger" data-remove-monster="${item.id}">移除</button></span></div>`;
       }).join("") || '<span class="muted">地图上没有怪物</span>'}</div>
       ${current.pendingEncounter ? '<div class="alert"><strong>遭遇战待处理：</strong>若有可用的 B 面盗贼，会先在佣兵面板等待选择；否则首次触发时自动进入。完成遭遇后会自动处理怪物标记与地区轮盘。<button id="openPendingEncounter" class="small">继续进入遭遇</button></div>' : ""}
@@ -2610,9 +2631,9 @@
       const configuredLevel = Number(current.districtWheelLevels[district.id]);
       const level = Number.isFinite(configuredLevel) && configuredLevel > 0 ? configuredLevel : 1;
       const conflictLocation = String(current.districtWheelLocations[district.id] || "");
-      const label = `${district.name} · ${monster?.name || monsterId} · Lv.${level}${conflictLocation ? ` · 冲突地点：${conflictLocation}` : ""}`;
+      const label = `${district.name} · ${monsterLabel(monster) || monsterId} · ${monsterRank(monster)} · 等级 ${level}${conflictLocation ? ` · 冲突地点：${conflictLocation}` : ""}`;
       return `<button type="button" class="kingdom-monster-wheel-token" data-wheel-monster="${esc(monsterId)}" data-wheel-district="${esc(district.id)}" data-wheel-level="${level}" data-wheel-location="${esc(conflictLocation)}" style="--token-x:${zone.x}%;--token-y:${zone.y}%;--token-width:${zone.width}%" aria-label="${esc(label)}，选择进入遭遇或冲突" title="${esc(label)} · 点击进入遭遇或冲突">
-        ${source ? `<img src="${esc(source)}" alt="">` : `<span class="kingdom-monster-wheel-fallback">${esc((monster?.name || "?").slice(0, 1))}</span>`}
+        ${source ? `<img src="${esc(source)}" alt="">` : `<span class="kingdom-monster-wheel-fallback">${esc((monsterLabel(monster) || "?").slice(0, 1))}</span>`}
       </button>`;
     }).join("");
   }
@@ -2743,7 +2764,7 @@
           const portraitId = member?.type === "squire" ? member.squireId : member?.knightId;
           return `<article class="party-member">
             <div class="party-portrait">
-              ${portraitId ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg" alt="${esc(knight.name)}立绘" loading="lazy">` : `<span aria-hidden="true">${esc(knight.name.slice(0, 1) || "?")}</span>`}
+              ${portraitId ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg?v=story-1" alt="${esc(knight.name)}立绘" loading="lazy">` : `<span aria-hidden="true">${esc(knight.name.slice(0, 1) || "?")}</span>`}
             </div>
             <div class="party-member-info">
               <strong title="${esc(knight.name)}">${esc(knight.name)}</strong>
@@ -2781,8 +2802,7 @@
     const current = mapState();
     if (!TOOL_TABS.some(([id]) => id === activeTool)) activeTool = STEP_TOOL[state.step] || "tile";
 
-    $("#kingdomSelect").value = state.kingdom;
-    $("#kingdomSelect").disabled = Boolean(state.mercenaries.pendingAction);
+    $("#campaignKingdom").textContent = state.kingdom === "POS" ? "石之公国" : "沉没王国";
     $("#undoButton").disabled = !current.history.length;
     const toolTabs = TOOL_TABS.map(([id, label]) => `<button id="tool-tab-${id}" type="button" role="tab" data-tool-tab="${id}" aria-controls="tool-panel-${id}" aria-selected="${activeTool === id}" tabindex="${activeTool === id ? "0" : "-1"}" class="${activeTool === id ? "active" : ""}">${label}</button>`).join("");
     const toolPanel = (id, content) => `<div id="tool-panel-${id}" class="tool-panel stack" role="tabpanel" aria-labelledby="tool-tab-${id}" data-tool-panel="${id}" tabindex="0" ${activeTool === id ? "" : "hidden"}>${content}</div>`;
@@ -2823,7 +2843,7 @@
             <div class="history-actions">
               <details class="history-details">
                 <summary><span><span class="eyebrow">SETTLEMENT HISTORY</span><strong>最近记录</strong></span><span class="tiny">${state.log.length} 条</span></summary>
-                <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
+                <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(window.KFMonsterLabels?.text(item.text) ?? item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
               </details>
               <button id="nextStep" ${stepAction.disabled ? "disabled" : ""}>${stepAction.label}</button>
             </div>
@@ -2856,8 +2876,7 @@
   function renderLegacy() {
     const current = mapState();
     const selected = tile(current.selected);
-    $("#kingdomSelect").value = state.kingdom;
-    $("#kingdomSelect").disabled = Boolean(state.mercenaries.pendingAction);
+    $("#campaignKingdom").textContent = state.kingdom === "POS" ? "石之公国" : "沉没王国";
     $("#undoButton").disabled = !current.history.length;
     $("#app").innerHTML = `<div class="stack">
       <section class="panel">
@@ -2894,7 +2913,7 @@
           ${state.step === 3 ? cluesAndStoryPanel() : ""}
           <section class="panel">
             <div class="panel-header"><div><div class="eyebrow">SETTLEMENT HISTORY</div><h3>最近记录</h3></div><button id="nextStep" class="small">${state.step === 3 ? "完成本轮" : "进入下一步"}</button></div>
-            <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
+            <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(window.KFMonsterLabels?.text(item.text) ?? item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
           </section>
         </div>
         <aside class="stack side">
@@ -3667,7 +3686,7 @@
       dialog.dataset.districtId = token.dataset.wheelDistrict || "";
       dialog.dataset.level = String(level);
       dialog.dataset.conflictLocation = token.dataset.wheelLocation || "";
-      dialog.querySelector("[data-wheel-action-title]").textContent = `${monster.name} · Lv.${level}`;
+      dialog.querySelector("[data-wheel-action-title]").textContent = `${monsterLabel(monster)} · ${monsterRank(monster)} · 等级 ${level}`;
       dialog.querySelector("[data-wheel-action-detail]").textContent = token.dataset.wheelLocation
         ? `${district?.name || "未指定地区"}：遭遇照常进行；冲突改在${token.dataset.wheelLocation}中进行。`
         : `${district?.name || "未指定地区"}：选择进入对应等级的遭遇或冲突。`;
@@ -4428,15 +4447,6 @@
     });
   }
 
-  $("#kingdomSelect").addEventListener("change", event => {
-    if (state.mercenaries.pendingAction) {
-      event.target.value = state.kingdom;
-      return toast("请先完成盗贼探索牌选择");
-    }
-    state.kingdom = event.target.value;
-    render();
-    save();
-  });
   $("#undoButton").addEventListener("click", undo);
   $("#resetButton").addEventListener("click", () => {
     if (!confirm(`彻底重置 ${kingdomData().label} 地图状态与本次远征佣兵？`)) return;
@@ -4480,7 +4490,9 @@
 
   addEventListener("kf:map-upstream", event => {
     if (event.detail && typeof event.detail === "object") window.KF_MAP_UPSTREAM = event.detail;
-    if (syncDistrictWheelFromUpstream()) save(true);
+    const kingdomChanged = syncCampaignKingdom();
+    const wheelSynced = syncDistrictWheelFromUpstream();
+    if (kingdomChanged || wheelSynced) save(true);
   });
 
   addEventListener("kf:module-state", event => {

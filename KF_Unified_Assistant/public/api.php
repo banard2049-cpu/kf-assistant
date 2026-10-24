@@ -211,11 +211,11 @@ function public_aibp_auto_sheet_tokens(array $battle,array $rule): array {
     };
     if($monsterId==='M_Eggknight'){
         $armor=is_array($rule['eggknight']['armor']??null)?$rule['eggknight']['armor']:[];
-        $add('token-armor',$armor[1]??0,57.1,40.2);$add('token-armor',$armor[2]??0,63.6,40.3);$add('token-armor',$armor[3]??0,70.7,40.2);
+        $add('token-armor',$armor[1]??0,56.64,43.0);$add('token-armor',$armor[2]??0,64.0,42.8);$add('token-armor',$armor[3]??0,71.36,42.8);
         $add('token-01',$value('eggknight','counter'),24.3,74.0);$add('token-armor',$value('eggknight','jacked'),96.2,10.4);
     }elseif($monsterId==='M_Stonemason'){
         $armor=is_array($rule['stonemason']['armor']??null)?$rule['stonemason']['armor']:[];
-        $add('token-armor',$armor['back']??0,85.7,36.5);$add('token-armor',$armor['right']??0,78.3,61.6);$add('token-armor',$armor['left']??0,94.0,61.8);$add('token-armor',$armor['front']??0,86.1,83.7);
+        $add('token-armor',$armor['back']??0,86.38,36.05);$add('token-armor',$armor['right']??0,78.00,60.75);$add('token-armor',$armor['left']??0,94.56,60.21);$add('token-armor',$armor['front']??0,86.28,84.05);
     }elseif($monsterId==='M_Knighteater'){
         $add('token-knighteater-berserk',$value('knighteater','berserk'),25,50);
         if($level>=2)$add('token-01',$value('knighteater','brute'),72,47.5);
@@ -235,7 +235,7 @@ function public_aibp_auto_sheet_tokens(array $battle,array $rule): array {
     }elseif($monsterId==='M_KingLaidLow'&&$level>=2){
         $add('token-01',$value('kingLaidLow','putrid'),73.5,41.0);
     }elseif($monsterId==='M_BogWitch'){
-        $positions=[[6.95,59.05],[13.85,59.05],[20.65,59.05]];
+        $positions=[[6.8763,59.1764],[14.0205,59.1083],[21.1545,59.0759]];
         $position=max(0,min(2,$value('bogWitch','position')));
         $add('bog-witch-encounter',1,$positions[$position][0],$positions[$position][1]);
         if($level>=3)$add('token-01',$rule['cookieTokens']??0,94.5,50.5);

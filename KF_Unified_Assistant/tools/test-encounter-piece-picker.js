@@ -42,7 +42,20 @@ assert.match(appSource, /\$\$\("\[data-select-piece\]"\)/, "avatar selection has
 assert.match(appSource, /state\.selectedPiece = pieceChoices\[0\]\?\.key \|\| ""/, "first visible piece is selected by default");
 assert.match(stylesSource, /\.placement-piece-picker\s*\{/, "piece picker has a stable responsive layout");
 assert.match(stylesSource, /\.placement-piece-option\.selected\s*\{/, "selected piece has a visible state");
-assert.match(indexSource, /styles\.css\?v=14/, "encounter stylesheet cache version is updated");
-assert.match(indexSource, /app\.js\?v=25/, "encounter app cache version is updated");
+assert.match(appSource, /const memberDisplayName = item =>/, "squire names are reduced to the Chinese display name");
+const helperStart = appSource.indexOf("const isSquireMember");
+const helperEnd = appSource.indexOf("const memberOptions", helperStart);
+const nameContext = {};
+vm.runInNewContext(`${appSource.slice(helperStart, helperEnd)}
+  result = [
+    memberDisplayName({ memberType: "squire", name: "巴尔托什 · Bartos（侍从）" }),
+    memberDisplayName({ memberType: "squire", name: "凯莉娅 · Caelia（侍从）" }),
+    memberDisplayName({ memberType: "knight", name: "石面 · Stoneface" })
+  ];`, nameContext);
+assert.deepEqual(Array.from(nameContext.result), ["巴尔托什", "凯莉娅", "石面 · Stoneface"], "squire names drop English and 侍从; knight names stay unchanged");
+assert.doesNotMatch(appSource, /item\.memberType === "squire" \? "侍从" : "骑士"/, "squire cards no longer print the 侍从 type label");
+assert.match(appSource, /const meta = \[kindLabel, position\]\.filter\(Boolean\)\.join\(" · "\)/, "squire card meta falls back to the position only");
+assert.match(indexSource, /styles\.css\?v=\d+/, "encounter stylesheet cache version is updated");
+assert.match(indexSource, /data-original-app="app\.js\?v=38"/, "encounter app cache version is updated");
 
 console.log("encounter placement piece picker assertions passed");
