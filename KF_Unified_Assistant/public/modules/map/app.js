@@ -1148,6 +1148,7 @@
       trackers: deepCopy(state.trackers),
       trackNotes: deepCopy(state.trackNotes),
       mercenaries: deepCopy(state.mercenaries),
+      knightClues: Object.fromEntries(state.knights.map(knight => [knight.id, deepCopy(knight.clues)])),
       step: state.step,
       round: state.round
     });
@@ -1163,6 +1164,9 @@
     state.trackers = normalizeTrackers(item.trackers);
     state.trackNotes = normalizeTrackNotes(item.trackNotes || state.trackNotes);
     state.mercenaries = MERCENARY_RULES.normalizeState(item.mercenaries || state.mercenaries);
+    state.knights.forEach(knight => {
+      if (item.knightClues?.[knight.id]) knight.clues = deepCopy(item.knightClues[knight.id]);
+    });
     enterStep(item.step);
     state.round = item.round;
     addLog(`撤销：${item.label}`);
@@ -1589,10 +1593,23 @@
     return current.monsters.some(monster => Boolean(monster?.tileId)) || threatSpawnDue;
   }
 
+  function tileTravelBlockReason(id) {
+    const current = mapState();
+    if (!tile(id)) return "目标板块不存在";
+    if (current.tileResolution) return "请先完成或撤销当前王国板块结算";
+    if (current.pendingEncounter) return "请先完成当前遭遇";
+    if (current.fog.active) return "请先完成当前弥雾流程";
+    if (state.mercenaries.pendingAction) return "请先完成盗贼探索牌选择";
+    if (state.step !== 0) return "请先完成当前轮次，再开始新的旅行";
+    if (!legalUnexplored().includes(id)) return "请选择路径相连且未被阻挡的未探索板块";
+    return "";
+  }
+
   function beginTile(id) {
     const current = mapState();
+    const blockReason = tileTravelBlockReason(id);
+    if (blockReason) return toast(blockReason);
     const item = tile(id);
-    if (!item) return toast("目标板块不存在");
     const back = item?.rules?.back || {};
     snapshot(`前往 ${tileLabel(tile(id))}`);
     current.placed = [...new Set([...current.placed, id])];
@@ -2015,6 +2032,7 @@
     const status = current.tileState[selected.id] || "hidden";
     const back = selected.rules?.back || {};
     const region = rules().districts.find(item => item.id === selected.rules?.region);
+    const travelBlockReason = tileTravelBlockReason(selected.id);
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">SELECTED TILE</div><h3>${esc(tileLabel(selected))}</h3></div><span class="badge ${status === "explored" ? "green" : ""}">${status === "hidden" ? "面朝下未探索" : status === "revealed" ? "已揭示未探索" : "已探索"}</span></div>
       ${cardView(selected.image, current.showAll || status !== "hidden" ? "face" : "back", "tile-card")}
@@ -2026,7 +2044,7 @@
         ${region ? `<span class="badge gold">${esc(region.name)}</span>` : ""}
       </div>
       <div class="toolbar">
-        <button id="selectedBeginButton">开始板块结算</button>
+        <button id="selectedBeginButton" ${travelBlockReason ? `disabled title="${esc(travelBlockReason)}"` : ""}>开始板块结算</button>
         <button id="earlyRevealButton" class="secondary" ${status === "hidden" && !current.showAll ? "" : "disabled"}>提前揭示</button>
         <button id="forceMovePartyButton" class="secondary" ${selected.id === current.current ? "disabled" : ""}>强制移动队伍至此</button>
       </div>

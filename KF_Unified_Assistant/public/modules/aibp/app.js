@@ -713,6 +713,12 @@
     return Boolean(accursed && accursed.side === "active" && !accursed.lastKnight);
   };
 
+  function blockAccursedAttack() {
+    if (!accursedIntercepts()) return false;
+    toast("被诅咒的执念生效中：这次攻击改为对执念结算，请在执念面板选择结果");
+    return true;
+  }
+
   function normalizeAccursed(raw) {
     if (!raw || typeof raw !== "object") return null;
     return { side: raw.side === "dormant" ? "dormant" : "active", lastKnight: raw.lastKnight === true };
@@ -1011,24 +1017,14 @@
   }
 
   function normalizeConflictBoard(raw, monster, level, battle) {
-    if (isBellyConflict(battle)) {
-      const layout = bellyLayout(monster);
-      const base = buildConflictBoard(monster, level, { ...battle, conflictType: "belly_of_beast", conflictLocation: "巨兽之腹" });
-      const rawTrack = raw?.digestiveTrack || {};
-      const min = Number(BELLY_BOARD.digestiveTrack?.min) || 1;
-      const max = Number(BELLY_BOARD.digestiveTrack?.max) || 4;
-      base.digestiveTrack = {
-        position: clamp(rawTrack.position ?? min, min, max),
-        min, max, step: Number(BELLY_BOARD.digestiveTrack?.step) || 1
-      };
-      base.layoutId = layout.id;
-      base.boardId = "belly_of_beast";
-      base.conflictType = "belly_of_beast";
-      return base;
-    }
+    const belly = isBellyConflict(battle);
     const layouts = window.KF_CONFLICT_BOARD_DATA?.layouts || [];
-    const layout = layouts.find(item => item.id === raw?.layoutId && item.monsterId === monster?.id);
+    const layout = belly ? bellyLayout(monster)
+      : layouts.find(item => item.id === raw?.layoutId && item.monsterId === monster?.id);
     if (!layout) return buildConflictBoard(monster, level, battle);
+    const savedBellyBoard = raw?.boardId === "belly_of_beast" || raw?.conflictType === "belly_of_beast"
+      || String(raw?.layoutId || "").startsWith("belly_of_beast:");
+    if (belly && !savedBellyBoard) return buildConflictBoard(monster, level, battle);
     const randomIds = new Set(layout.placements.filter(item => ["R", "K"].includes(item.orientation)).map(item => item.id));
     const resolvedOrientations = {};
     for (const [id, rotation] of Object.entries(raw?.resolvedOrientations || {})) {
@@ -1075,10 +1071,12 @@
     });
     const activeFoolCardId = Number(raw?.activeFoolCardId);
     const normalizedActiveFoolCardId = foolCardIds.has(activeFoolCardId) ? activeFoolCardId : null;
+    const digestiveMin = Number(BELLY_BOARD.digestiveTrack?.min) || 1;
+    const digestiveMax = Number(BELLY_BOARD.digestiveTrack?.max) || 4;
     return {
       layoutId: layout.id,
-      boardId: "standard",
-      conflictType: "normal",
+      boardId: belly ? "belly_of_beast" : "standard",
+      conflictType: belly ? "belly_of_beast" : "normal",
       monsterId: monster.id,
       kingdom: layout.kingdom,
       requestedKingdom: raw?.requestedKingdom === "stone" ? "stone" : "sunken",
@@ -1095,6 +1093,10 @@
       foolDeckOrder: foolDeckOrder.filter(cardId => cardId !== normalizedActiveFoolCardId),
       activeFoolCardId: normalizedActiveFoolCardId,
       createdAt: String(raw?.createdAt || new Date().toISOString()),
+      ...(belly ? { digestiveTrack: {
+        position: clamp(raw?.digestiveTrack?.position ?? digestiveMin, digestiveMin, digestiveMax),
+        min: digestiveMin, max: digestiveMax, step: Number(BELLY_BOARD.digestiveTrack?.step) || 1
+      } } : {}),
     };
   }
 
@@ -2031,6 +2033,7 @@
   function resolveWingedNightmareAttack(success) {
     const monster = monsterById(state.battle.monsterId);
     if (!isWingedNightmare(monster)) return;
+    if (blockAccursedAttack()) return;
     remember();
     ensureWingedAiDiscard(state.battle);
     const attackingBloodyDefiance = wingedBloodyDefianceActive(state.battle);
@@ -2368,6 +2371,7 @@
     const monster = monsterById(state.battle.monsterId);
     const activeKey = `active${type.toUpperCase()}`;
     if (!state.battle[activeKey]) return toast(`当前没有 ${type.toUpperCase()} 卡`);
+    if (type === "bp" && ["defeat", "critical"].includes(action) && blockAccursedAttack()) return;
     const activeCard = cardById(monster, state.battle[activeKey]);
     if (type === "bp" && action === "critical" && [1, 2].includes(bpRank(activeCard))) action = "defeat";
     const resolvingAi0 = type === "ai" && activeCard?.kind === "AI0";
@@ -2542,6 +2546,7 @@
     const list = state.battle.ruleState.doppelgangers;
     const index = list.findIndex(item => item.id === id);
     if (index < 0) return;
+    if (blockAccursedAttack()) return;
     remember();
     const doppel = list[index];
     doppel.cards.forEach(cardId => resolveBossBp(monster, cardId, false));
@@ -2593,6 +2598,7 @@
   function damagePuppetFallenKnight() {
     const monster = monsterById(state.battle.monsterId);
     if (bossRule(monster)?.kind !== "puppet-king") return;
+    if (blockAccursedAttack()) return;
     const puppet = state.battle.ruleState.puppetKing;
     remember();
     puppet.fallenKnightTokens++;
@@ -2750,6 +2756,7 @@
   function panzerAttack(target) {
     const monster = monsterById(state.battle.monsterId);
     const rule = bossRule(monster);
+    if (blockAccursedAttack()) return;
     if (state.battle.ruleState.ruleCard) return toast("请先完成当前特殊卡面处理");
     const cardId = target === "field" ? rule.cards.field : rule.cards.remnant;
     remember();
@@ -3685,6 +3692,7 @@
   function defeatWarriorMuscularChest() {
     const battle = state.battle;
     if (battle.monsterId !== "M_FirstmenWarriors") return;
+    if (blockAccursedAttack()) return;
     const warrior = battle.ruleState.firstmenWarriors;
     if (warrior.muscularChestMarkers >= 4) return toast("MUSCULAR CHEST 已有 4 枚通用标记");
     remember();
@@ -3759,6 +3767,7 @@
   function settleMob(monster, action) {
     const active = activeMobSlot();
     if (!active) return toast("未选择杂兵 BP");
+    if (["defeat", "critical", "fail"].includes(action) && blockAccursedAttack()) return;
     remember();
     const { slot } = active;
     const id = slot.id;
@@ -4668,12 +4677,21 @@
     </div></div>`;
   }
 
+  function ruleCardResolutionHtml(monster) {
+    const rs = state.battle.ruleState;
+    const card = cardById(monster, rs.ruleCard);
+    if (!card) return "";
+    return `<div class="rule-card-resolution"><div>${cardHtml(card, "rule-feature-card", card.kind === "SIG" && rs.ruleCardReason.includes("标志行为") ? "back" : "face")}</div><div class="stack"><strong>${esc(rs.ruleCardReason)}</strong><button class="button" data-rule-action="complete-rule-card">完成卡面处理</button></div></div>`;
+  }
+
   function bossRulePanel(monster) {
     const rule = bossRule(monster);
-    if (!rule) return "";
-    if (["ancient-dusk", "doppelgangers", "hidden-ai-discard", "king-laid-low"].includes(rule.kind)) return "";
     const b = state.battle;
     const rs = b.ruleState;
+    const resolution = ruleCardResolutionHtml(monster);
+    if (!rule || ["ancient-dusk", "doppelgangers", "hidden-ai-discard", "king-laid-low"].includes(rule.kind)) {
+      return resolution ? `<section class="panel boss-rule-panel">${resolution}${rs.ruleNotice ? `<p class="rule-notice">${esc(rs.ruleNotice)}</p>` : ""}</section>` : "";
+    }
     let body = "";
 
     if (rule.kind === "devour-stages") {
@@ -4906,12 +4924,11 @@
         </div>`).join("")}</div>`;
     }
 
-    const ruleCard = cardById(monster, rs.ruleCard);
     return `<section class="panel boss-rule-panel ${b.conflictStatus === "failed" ? "failed" : ""}">
       ${b.conflictStatus === "failed" ? '<div class="rule-badges boss-rule-status"><span class="badge danger-badge">冲突失败</span></div>' : ""}
       ${b.conflictStatus === "failed" ? `<div class="conflict-alert">${esc(b.failureReason)}</div>` : ""}
       ${body}
-      ${ruleCard ? `<div class="rule-card-resolution"><div>${cardHtml(ruleCard, "rule-feature-card", ruleCard.kind === "SIG" && rs.ruleCardReason.includes("标志行为") ? "back" : "face")}</div><div class="stack"><strong>${esc(rs.ruleCardReason)}</strong><button class="button" data-rule-action="complete-rule-card">完成卡面处理</button></div></div>` : ""}
+      ${resolution}
       ${rule.kind !== "panzer-colony" && rs.ruleNotice ? `<p class="rule-notice">${esc(rs.ruleNotice)}</p>` : ""}
     </section>`;
   }

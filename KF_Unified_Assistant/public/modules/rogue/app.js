@@ -16,7 +16,9 @@
   };
   const monsterIdByName = name => (window.KF_ENCOUNTER_DATA?.monsters || []).find(item => item.name === name)?.id || "";
   const knightName = id => RULES.KNIGHTS.find(item => item.id === id)?.name || id;
-  const campaignId = () => localStorage.getItem("kfActiveCampaign") || "";
+  const campaignId = () => window.KF_MODULE_BOOTSTRAP?.campaignId || localStorage.getItem("kfActiveCampaign") || "";
+  const slotsKey = () => `${SLOTS_KEY}:${campaignId() || "standalone"}`;
+  const activeSlotKey = () => `${ACTIVE_SLOT_KEY}:${campaignId() || "standalone"}`;
   let slots = [];
   let activeSlotId = "";
   let state = load();
@@ -27,20 +29,43 @@
 
   function load() {
     try {
-      const storedSlots = JSON.parse(localStorage.getItem(SLOTS_KEY) || "null");
-      if (Array.isArray(storedSlots) && storedSlots.length) slots = storedSlots;
-      else {
-        const legacy = JSON.parse(localStorage.getItem(KEY) || "null");
-        slots = [{ id: `rogue-${Date.now()}`, title: legacy?.partyName || "肉鸽战役", state: legacy || RULES.freshState() }];
-        localStorage.setItem(SLOTS_KEY, JSON.stringify(slots));
+      const raw = JSON.parse(localStorage.getItem(KEY) || "null");
+      const bundled = raw?.schemaVersion === 2 && Array.isArray(raw.slots);
+      const matchingBundle = bundled && raw.campaignId === campaignId();
+      const legacy = !bundled && raw && typeof raw === "object" ? raw : null;
+      let storedSlots = [], requestedSlot = "";
+      if (matchingBundle) {
+        storedSlots = raw.slots;
+        requestedSlot = raw.activeSlotId;
+      } else if (legacy) {
+        // Old slots were global. Adopt them only when one contains this
+        // exact restored run; another campaign's browser slots are unrelated.
+        for (const key of [slotsKey(), SLOTS_KEY]) {
+          const candidate = JSON.parse(localStorage.getItem(key) || "null");
+          const match = Array.isArray(candidate) && candidate.find(slot => JSON.stringify(slot.state) === JSON.stringify(legacy));
+          if (match) { storedSlots = candidate; requestedSlot = match.id; break; }
+        }
+        if (!storedSlots.length) storedSlots = [{ id: `rogue-${Date.now()}`, title: legacy.partyName || "肉鸽战役", state: legacy }];
+      } else if (!window.KF_MODULE_BOOTSTRAP || window.KF_MODULE_BOOTSTRAP.offline) {
+        storedSlots = JSON.parse(localStorage.getItem(slotsKey()) || "null") || [];
+        requestedSlot = localStorage.getItem(activeSlotKey());
       }
-      activeSlotId = localStorage.getItem(ACTIVE_SLOT_KEY) || slots[0].id;
+      const usedIds = new Set();
+      slots = (Array.isArray(storedSlots) ? storedSlots : []).flatMap(slot => {
+        if (!slot || typeof slot !== "object" || !slot.state || typeof slot.state !== "object") return [];
+        const id = String(slot.id || "");
+        if (!id || usedIds.has(id)) return [];
+        usedIds.add(id);
+        return [{ id, title: String(slot.title || "肉鸽战役"), state: normalizeRun(slot.state) }];
+      });
+      if (!slots.length) slots = [{ id: `rogue-${Date.now()}`, title: "肉鸽战役", state: RULES.freshState() }];
+      activeSlotId = requestedSlot || slots[0].id;
       if (!slots.some(slot => slot.id === activeSlotId)) activeSlotId = slots[0].id;
-      localStorage.setItem(ACTIVE_SLOT_KEY, activeSlotId);
       const activeSlot = slots.find(slot => slot.id === activeSlotId);
-      const loaded = RULES.normalizeState(activeSlot?.state || null);
+      const loaded = normalizeRun(activeSlot.state);
       // The currently saved edited graph becomes the user's canonical default.
       if (loaded.linksEdited) loaded.defaultLinks = loaded.nodes.map(node => ({ id: node.id, links: [...node.links] }));
+      persistSlots(loaded);
       return loaded;
     }
     catch {
@@ -49,6 +74,19 @@
       activeSlotId = slots[0].id;
       return fresh;
     }
+  }
+  function normalizeRun(raw) {
+    const { slots: ignoredSlots, activeSlotId: ignoredActive, campaignId: ignoredCampaign, ...run } = raw || {};
+    return RULES.normalizeState({ ...run, schemaVersion: 1 });
+  }
+  function persistSlots(current) {
+    const activeSlot = slots.find(slot => slot.id === activeSlotId);
+    if (activeSlot) { activeSlot.state = current; activeSlot.title = current.partyName || activeSlot.title || "肉鸽战役"; }
+    localStorage.setItem(slotsKey(), JSON.stringify(slots));
+    localStorage.setItem(activeSlotKey(), activeSlotId);
+    // Mirror the active run at the top level for the second screen while
+    // synchronizing all slots as one campaign-owned snapshot.
+    localStorage.setItem(KEY, JSON.stringify({ ...current, schemaVersion: 2, campaignId: campaignId(), activeSlotId, slots }));
   }
   function refreshLabelOverrides() {
     try {
@@ -83,11 +121,7 @@
   }
   function save() {
     state.updatedAt = Date.now();
-    const activeSlot = slots.find(slot => slot.id === activeSlotId);
-    if (activeSlot) { activeSlot.state = state; activeSlot.title = state.partyName || activeSlot.title || "肉鸽战役"; }
-    localStorage.setItem(SLOTS_KEY, JSON.stringify(slots));
-    localStorage.setItem(ACTIVE_SLOT_KEY, activeSlotId);
-    localStorage.setItem(KEY, JSON.stringify(state));
+    persistSlots(state);
     $("#saveStatus").textContent = "已保存";
     renderSaveSlots();
   }
@@ -99,12 +133,11 @@
     if (!slots.some(slot => slot.id === id) || id === activeSlotId) return;
     save();
     activeSlotId = id;
-    localStorage.setItem(ACTIVE_SLOT_KEY, activeSlotId);
     const activeSlot = slots.find(slot => slot.id === activeSlotId);
     state = RULES.normalizeState(activeSlot.state);
     linkEditorOpen = false; linkAnchorId = null;
     selectedNodeId = null;
-    renderSaveSlots(); render();
+    save(); render();
   }
   function createNewSlot() {
     save();

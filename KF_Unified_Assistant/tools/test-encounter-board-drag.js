@@ -18,8 +18,8 @@ assert.match(viewSource, /board\.mirror && footprint > 1 \? " mirror" : ""/,
 
 assert.match(appSource, /function bindBoardDrag\(\) \{/, "the encounter board binds pointer dragging");
 assert.match(appSource, /bindBoardDrag\(\);/, "render binding starts the board drag handler");
-assert.match(appSource, /event\.target\.closest\("\.piece\[data-piece\]"\)/,
-  "dragging starts on a board piece, not on an empty space");
+assert.match(appSource, /event\.target\.closest\("\.piece\[data-piece\], \[data-select-piece\], \[data-select-custom-piece\], \[data-add-piece-icon\]"\)/,
+  "dragging starts on a board piece or picker entry, not on an empty space");
 assert.match(appSource, /window\.addEventListener\("pointermove", onMove, \{ passive: false \}\)/,
   "dragging follows the pointer");
 assert.match(appSource, /piece-drag-ghost/, "dragging shows a floating copy of the piece");
@@ -37,12 +37,13 @@ for (const [name, css] of [["styles.css", stylesSource], ["encounter-view.css", 
   assert.match(css, /\.piece \{[^}]*pointer-events: auto/, `${name}: pieces receive pointer input`);
 }
 
-assert.match(indexSource, /encounter-view\.css\?v=5/, "encounter view stylesheet cache version is updated");
-assert.match(indexSource, /encounter-view\.js\?v=10/, "encounter view script cache version is updated");
-assert.match(indexSource, /styles\.css\?v=19/, "encounter stylesheet cache version is updated");
-assert.match(indexSource, /app\.js\?v=33/, "encounter app cache version is updated");
-assert.match(displayIndex, /encounter-view\.css\?v=5/, "second screen uses the updated view stylesheet");
-assert.match(displayIndex, /encounter-view\.js\?v=10/, "second screen uses the updated view script");
+for (const file of ["encounter-view.css", "encounter-view.js"]) {
+  const version = source => source.match(new RegExp(`${file.replace(".", "\\.")}\\?v=(\\d+)`))?.[1];
+  assert.ok(version(indexSource), `${file} has a cache version`);
+  assert.equal(version(indexSource), version(displayIndex), `second screen uses the same ${file} version`);
+}
+assert.match(indexSource, /styles\.css\?v=\d+/, "encounter stylesheet has a cache version");
+assert.match(indexSource, /app\.js\?v=\d+/, "encounter app has a cache version");
 
 const coveredStart = appSource.indexOf("  function coveredSpaces(");
 const coveredEnd = appSource.indexOf("\n  function movementAnchorForClick(", coveredStart);

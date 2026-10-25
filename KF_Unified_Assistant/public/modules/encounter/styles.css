@@ -160,6 +160,7 @@ h3 { font-size: .94rem; color: var(--gold); margin-bottom: .5rem; }
 }
 .board-remove-zone:hover,
 .board-remove-zone:focus-visible { border-color: #ffaaa0; background: #5a2828; }
+.board-remove-zone.drop-target { border-color: #ffb4a8; background: #79342e; box-shadow: 0 0 0 3px #ff897966, 0 0 18px #ff897988; }
 .board-icon-peek {
   position: absolute;
   top: .55rem;
@@ -255,6 +256,15 @@ h3 { font-size: .94rem; color: var(--gold); margin-bottom: .5rem; }
 .custom-piece-icon-option > span:last-child { overflow-wrap: anywhere; line-height: 1.2; }
 .custom-piece-icon-option:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .custom-piece-hint { margin: 0; color: var(--muted); font-size: .75rem; }
+.custom-piece-icon-option,
+.custom-piece-option,
+.placement-piece-option { cursor: grab; touch-action: none; user-select: none; }
+.custom-piece-icon-option img,
+.custom-piece-option img,
+.placement-piece-option img { -webkit-user-drag: none; }
+.custom-piece-icon-option.dragging,
+.custom-piece-option.dragging,
+.placement-piece-option.dragging { opacity: .3; cursor: grabbing; }
 .custom-piece-form { display: grid; gap: .3rem; }
 .custom-piece-form > label { color: var(--muted); font-size: .78rem; font-weight: 700; }
 .custom-piece-input-row { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: .45rem; }

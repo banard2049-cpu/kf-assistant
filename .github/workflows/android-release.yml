@@ -35,6 +35,9 @@ jobs:
       - name: Test Android WebView safe area
         run: node KF_Unified_Assistant/tools/test-android-safe-area.js
 
+      - name: Test Android campaign import and copy
+        run: node KF_Unified_Assistant/tools/test-android-campaign-import.js
+
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
         with:

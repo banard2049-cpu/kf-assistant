@@ -7,6 +7,51 @@
   const storageKey = body.dataset.storageKey;
   const originalApp = body.dataset.originalApp || "app.js?v=115";
   const activeCampaign = localStorage.getItem("kfActiveCampaign") || "";
+  const cacheKey = `kfModuleCache:${activeCampaign}:${stateModuleName}`;
+  const storageOwnerKey = `kfModuleStorageOwner:${storageKey}`;
+  let cache = (() => {
+    try { return JSON.parse(localStorage.getItem(cacheKey) || "null") || {}; }
+    catch { return {}; }
+  })();
+  const valueSignature = value => {
+    let first = 2166136261, second = 5381;
+    for (let index = 0; index < value.length; index += 1) {
+      const code = value.charCodeAt(index);
+      first = Math.imul(first ^ code, 16777619);
+      second = Math.imul(second, 33) ^ code;
+    }
+    return `${value.length}:${first >>> 0}:${second >>> 0}`;
+  };
+  const cacheIsDirty = () => Boolean(cache.value && (cache.acknowledgedSignature
+    ? valueSignature(cache.value) !== cache.acknowledgedSignature
+    : cache.value !== cache.acknowledgedValue));
+  const storeCache = () => {
+    // Keep one module snapshot, rather than duplicating its potentially large
+    // undo history just to remember which value the server acknowledged.
+    if (typeof cache.acknowledgedValue === "string") {
+      cache.acknowledgedSignature = valueSignature(cache.acknowledgedValue);
+      delete cache.acknowledgedValue;
+    }
+    localStorage.setItem(cacheKey, JSON.stringify(cache));
+  };
+  const acknowledgeValue = (value, revision) => {
+    cache.acknowledgedSignature = valueSignature(value);
+    delete cache.acknowledgedValue;
+    cache.revision = revision;
+    storeCache();
+  };
+  function captureCurrentValue() {
+    if (localStorage.getItem(storageOwnerKey) !== activeCampaign) return cache.value || "";
+    const current = localStorage.getItem(storageKey) || "";
+    if (current && current !== cache.value) {
+      cache.value = current;
+      storeCache();
+    }
+    return current;
+  }
+  // Capture changes made after the last polling tick before replacing the
+  // module's working storage, including a reload after going offline.
+  captureCurrentValue();
   const rosterKey = `kfCampaignRoster:${activeCampaign}`;
   const mapUpstreamKey = `kfMapUpstream:${activeCampaign}`;
   const kingdomKey = `kfCampaignKingdom:${activeCampaign}`;
@@ -79,6 +124,7 @@
   const prepareStorage = value => {
     if (value) localStorage.setItem(storageKey, JSON.stringify(value));
     else localStorage.removeItem(storageKey);
+    localStorage.setItem(storageOwnerKey, activeCampaign);
   };
 
   function exposeMapUpstream(campaignState) {
@@ -125,6 +171,9 @@
     if (!selected || typeof selected !== "object") return false;
     const serialized = JSON.stringify(selected);
     localStorage.setItem(storageKey, serialized);
+    cache.value = serialized;
+    acknowledgeValue(serialized, result.revision);
+    operationQueue = operationQueue.filter(operation => operation.path !== path);
     lastValue = serialized;
     queued = false;
     window.dispatchEvent(new CustomEvent("kf:module-state", { detail: selected }));
@@ -176,7 +225,7 @@
 
   function queueOperation(path, value) {
     operationQueue = operationQueue.filter(operation => operation.path !== path);
-    operationQueue.push({ id: operationId(), clientId, path, value });
+    operationQueue.push({ id: operationId(), clientId, path, value, baseRevision: campaignRevision });
   }
 
   function publishScene(force = false) {
@@ -196,7 +245,7 @@
     if (!activeCampaign || saving || !operationQueue.length || !navigator.onLine) { queued = operationQueue.length > 0; return; }
     saving = true;
     queued = false;
-    const batch = operationQueue.splice(0, 200).map(operation => ({ ...operation, baseRevision: campaignRevision }));
+    const batch = operationQueue.splice(0, 200);
     status.textContent = navigator.onLine ? "同步中…" : "离线暂存";
     try {
       const result = await api("campaign-sync", {
@@ -205,9 +254,14 @@
       });
       campaignRevision = result.revision;
       const serverWon = applyAuthoritativeConflict(result);
+      const savedModule = batch.find(operation => operation.path === `modules.${stateModuleName}`);
+      if (savedModule && !serverWon) {
+        captureCurrentValue();
+        acknowledgeValue(JSON.stringify(savedModule.value), result.revision);
+      }
       status.textContent = serverWon ? "已保留服务器较高轮次存档" : "已同步";
     } catch (error) {
-      operationQueue.unshift(...batch.map(({ baseRevision, ...operation }) => operation));
+      operationQueue.unshift(...batch);
       queued = true;
       status.textContent = navigator.onLine ? error.message : "离线暂存";
     } finally {
@@ -218,13 +272,15 @@
 
   async function pushValue(value) {
     if (!activeCampaign) return;
+    cache.value = value;
+    storeCache();
     queueOperation(`modules.${stateModuleName}`, JSON.parse(value));
     publishScene();
     await drainQueue();
   }
 
   async function flushCurrentValue() {
-    const current = localStorage.getItem(storageKey);
+    const current = captureCurrentValue();
     if (current) {
       lastValue = current;
       queueOperation(`modules.${stateModuleName}`, JSON.parse(current));
@@ -248,6 +304,8 @@
     try {
       const session = await api("auth/me");
       if (!session.user) { location.href = "/"; return; }
+      if (cache.userId && cache.userId !== session.user.id) cache = {};
+      cache.userId = session.user.id;
       const detail = await api(`campaigns/${activeCampaign}`);
       const roster = await api(`sheets?overview=1&campaignId=${encodeURIComponent(activeCampaign)}`);
       const allSheets = roster.sheets || [];
@@ -297,7 +355,22 @@
       exposeMapUpstream(campaignState);
       campaignRevision = detail.campaign.revision;
       const value = detail.campaign.state?.modules?.[stateModuleName] || null;
-      prepareStorage(value);
+      const dirty = cacheIsDirty();
+      if (dirty) {
+        campaignRevision = Number.isInteger(cache.revision) ? cache.revision : 0;
+        prepareStorage(JSON.parse(cache.value));
+      } else {
+        // Preserve unowned pre-upgrade data without assigning another
+        // campaign's old working copy to the currently selected campaign.
+        const legacy = localStorage.getItem(storageKey);
+        if (legacy && !localStorage.getItem(storageOwnerKey) && legacy !== JSON.stringify(value)) {
+          localStorage.setItem(`kfModuleLegacy:${storageKey}`, legacy);
+        }
+        prepareStorage(value);
+        cache.value = value ? JSON.stringify(value) : "";
+        acknowledgeValue(cache.value, campaignRevision);
+      }
+      window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, serverState: value, offline: false };
       const handoff = readHandoff();
       if (handoff && ((moduleName === "encounter" && !handoff.appliedEncounter) || (moduleName === "aibp" && !handoff.appliedAibp))) {
         localStorage.removeItem(storageKey);
@@ -307,41 +380,54 @@
       await script();
       if (moduleName === "encounter") applyEncounterHandoff();
       if (moduleName === "aibp") applyAibpHandoff();
+      if (dirty || captureCurrentValue() !== lastValue) {
+        lastValue = captureCurrentValue();
+        if (lastValue) queueOperation(`modules.${stateModuleName}`, JSON.parse(lastValue));
+      }
       publishScene(true);
-      setInterval(() => {
-        const current = localStorage.getItem(storageKey) || "";
-        if (current && current !== lastValue) {
-          lastValue = current;
-          pushValue(current);
-        }
-      }, 400);
+      watchCurrentValue();
     } catch (error) {
-      const cached = localStorage.getItem(storageKey);
+      const cached = cache.value || (localStorage.getItem(storageOwnerKey) === activeCampaign ? localStorage.getItem(storageKey) : null);
       if (cached) {
+        prepareStorage(JSON.parse(cached));
+        campaignRevision = Number.isInteger(cache.revision) ? cache.revision : 0;
+        window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, serverState: null, offline: true };
         lastValue = cached;
         status.textContent = navigator.onLine ? error.message : "离线使用本机暂存";
         await script();
         if (moduleName === "encounter") applyEncounterHandoff();
         if (moduleName === "aibp") applyAibpHandoff();
+        captureCurrentValue();
         queued = true;
-        setInterval(() => {
-          const current = localStorage.getItem(storageKey) || "";
-          if (current && current !== lastValue) { lastValue = current; queued = true; }
-        }, 400);
+        watchCurrentValue();
       } else {
         status.textContent = error.message;
       }
     }
   }
 
+  function watchCurrentValue() {
+    setInterval(() => {
+      const current = captureCurrentValue();
+      if (current && current !== lastValue) {
+        lastValue = current;
+        pushValue(current);
+      }
+    }, 400);
+  }
+
   addEventListener("online", () => {
-    const current = localStorage.getItem(storageKey);
+    const current = captureCurrentValue();
     if (current) pushValue(current);
     else drainQueue();
   });
   addEventListener("focus", () => publishScene());
   addEventListener("pointerdown", () => publishScene(), { passive: true });
   addEventListener("keydown", () => publishScene(), { passive: true });
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) publishScene(true); });
+  addEventListener("pagehide", () => captureCurrentValue());
+  document.addEventListener("visibilitychange", () => {
+    captureCurrentValue();
+    if (!document.hidden) publishScene(true);
+  });
   boot();
 })();

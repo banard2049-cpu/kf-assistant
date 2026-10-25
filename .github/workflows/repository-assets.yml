@@ -28,3 +28,19 @@ jobs:
 
       - name: Test private file exclusions
         run: ./KF_Unified_Assistant/tools/test-portable-source-filter.ps1
+
+  check-gameplay-regressions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_sqlite, sqlite3
+          coverage: none
+
+      - name: Test campaign sync and gameplay
+        run: node --test KF_Unified_Assistant/public/tests/*.test.cjs

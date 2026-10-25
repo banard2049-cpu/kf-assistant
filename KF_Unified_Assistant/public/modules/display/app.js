@@ -689,7 +689,8 @@
     // Five-player mode: the Accursed Persistence trait BP shows which side is up.
     const accursedActive=battle.accursed?.side!=="dormant";
     const accursedCard=battle.accursed?`<figure class="public-card accursed-public-card ${accursedActive?"active":"dormant"}" data-public-card="accursed-persistence"><img class="public-card-image" src="${accursedActive?"/assets/cards/accursed-persistence-a.jpg":"/assets/cards/accursed-persistence-b.jpg"}" alt=""><figcaption>被诅咒的执念 · ${accursedActive&&!battle.accursed.lastKnight?"生效面：骑士攻击改打执念":"休眠面"}</figcaption></figure>`:"";
-    const activeCards=[publicCard(monster,battle.activeAI,"当前 AI","face","active-ai-card"),publicCard(monster,battle.activeBP,"当前 BP","face","active-bp-card"),accursedCard].filter(Boolean).join("");
+    const activeBpSide=battle.bpTrack?.find(slot=>slot.id===battle.activeBP)?.side==="back"?"back":"face";
+    const activeCards=[publicCard(monster,battle.activeAI,"当前 AI","face","active-ai-card"),publicCard(monster,battle.activeBP,"当前 BP",activeBpSide,"active-bp-card"),accursedCard].filter(Boolean).join("");
     const kingdomTrait=layout.kingdom==="stone"?"Trait_POS":"Trait_SK";
     const referenceLabel=card=>card.kind==="BPX"?"BPX":"特质";
     const signatureCard=(monster?.cards||[]).find(card=>card.kind==="SIG");

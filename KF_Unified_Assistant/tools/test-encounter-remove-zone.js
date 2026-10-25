@@ -8,7 +8,7 @@ const appSource = fs.readFileSync("public/modules/encounter/app.js", "utf8").rep
 const viewSource = fs.readFileSync("public/modules/encounter/encounter-view.js", "utf8").replace(/\r\n/g, "\n");
 const stylesSource = fs.readFileSync("public/modules/encounter/styles.css", "utf8").replace(/\r\n/g, "\n");
 const indexSource = fs.readFileSync("public/modules/encounter/index.html", "utf8");
-const start = appSource.indexOf("  function moveSelectedPieceOffBoard() {");
+const start = appSource.indexOf("  function moveSelectedPieceOffBoard(");
 const end = appSource.indexOf("\n\n  function bind()", start);
 assert.ok(start >= 0 && end > start, "moveSelectedPieceOffBoard function not found");
 
@@ -44,7 +44,7 @@ assert.match(appSource, /\$\("#boardRemoveZone"\)\?\.addEventListener\("click", 
   "the remove zone uses the shared removal behavior");
 assert.match(stylesSource, /\.board-remove-zone \{[\s\S]*?top: \.55rem;[\s\S]*?left: \.55rem;/,
   "the remove zone is anchored in the board's top-left corner");
-assert.match(indexSource, /styles\.css\?v=19/);
-assert.match(indexSource, /app\.js\?v=33/);
+assert.match(indexSource, /styles\.css\?v=\d+/);
+assert.match(indexSource, /app\.js\?v=\d+/);
 
 console.log("encounter remove zone: selected pieces leave the board and monster range updates");

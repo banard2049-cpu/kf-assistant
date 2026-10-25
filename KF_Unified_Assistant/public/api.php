@@ -350,11 +350,23 @@ function public_map_with_virtues(PDO $db, string $userId, mixed $mapModule): mix
 }
 // Signature of the user's knight sheets so the display-state ETag changes when
 // a virtue (or any sheet field) is edited even though the campaign revision has
-// not moved. Cheap: one aggregate query.
+// not moved. Include revisions because multiple edits may share a timestamp.
 function knight_sheets_signature(PDO $db, string $userId): string {
-    $q=$db->prepare("SELECT COALESCE(MAX(updated_at),'')||':'||COUNT(*) FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL");
+    $q=$db->prepare('SELECT id,title,revision,updated_at FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL ORDER BY id');
     $q->execute([$userId]);
-    return (string)$q->fetchColumn();
+    return hash('sha256',json_encode($q->fetchAll(),JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES));
+}
+
+// Remap references in module states and their undo snapshots as well as the
+// campaign roster. Internal piece IDs are unrelated and must remain unchanged.
+function remap_imported_sheet_references(array $value, array $sheetMap): array {
+    foreach($value as $key=>&$item){
+        if(is_string($item)&&in_array($key,['sheetId','leaderSheetId'],true))$item=$sheetMap[$item]??$item;
+        elseif($key==='party'&&is_array($item))$item=array_map(fn($id)=>is_string($id)?($sheetMap[$id]??$id):$id,$item);
+        elseif(is_array($item))$item=remap_imported_sheet_references($item,$sheetMap);
+    }
+    unset($item);
+    return $value;
 }
 function ensure_default_campaign(PDO $db,string $userId): string {
     $q=$db->prepare('SELECT id FROM campaigns WHERE user_id=? AND deleted_at IS NULL ORDER BY created_at LIMIT 1');$q->execute([$userId]);
@@ -686,6 +698,7 @@ try {
         if($action===''&&$method==='PATCH'){$data=request_data();$q=$db->prepare('UPDATE campaigns SET name=?,updated_at=? WHERE id=?');$q->execute([title_value($data['name']??''),stamp(),$row['id']]);respond(200,['ok'=>true]);}
         if($action==='copy'&&$method==='POST'){
             $id=uuid4();$time=stamp();$state=json_decode($row['state_json'],true);
+            if(is_array($state['modules']['roguePath']['slots']??null))$state['modules']['roguePath']['campaignId']=$id;
             $q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');$q->execute([$id,$user['id'],$row['name'].'（副本）',json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);respond(201,['id'=>$id]);
         }
         if($action==='trash'&&$method==='POST'){
@@ -740,8 +753,9 @@ try {
             if(!isset($catalog[$knightId]))respond(400,['error'=>'导入文件包含无效的骑士身份']);
             $title=unique_title_from_set($seenTitles,$sheet['title']??'');$sheet['_resolvedTitle']=$title;$sheetMap[(string)($sheet['id']??uuid4())]=uuid4();
         } unset($sheet);
-        if(isset($sheetMap[$state['leaderSheetId']??'']))$state['leaderSheetId']=$sheetMap[$state['leaderSheetId']];
-        $state['party']=array_values(array_map(fn($sheetId)=>$sheetMap[$sheetId]??$sheetId,is_array($state['party']??null)?$state['party']:[]));$db->beginTransaction();
+        $state=remap_imported_sheet_references($state,$sheetMap);
+        if(is_array($state['modules']['roguePath']['slots']??null))$state['modules']['roguePath']['campaignId']=$id;
+        $state['party']=array_values(is_array($state['party']??null)?$state['party']:[]);$db->beginTransaction();
         try{$q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');$q->execute([$id,$user['id'],title_value($payload['name']??'导入战役').'（导入）',json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
             $insert=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');
             foreach($sourceSheets as $sheet)if(is_array($sheet)&&is_array($sheet['state']??null)){$oldId=(string)($sheet['id']??'');$sheetState=$sheet['state'];$knightId=(string)$sheetState['knightId'];$sheetState['knight']=$catalog[$knightId];$insert->execute([$sheetMap[$oldId]??uuid4(),$user['id'],null,(string)($sheet['_resolvedTitle']??title_value($sheet['title']??'')),json_encode($sheetState,JSON_UNESCAPED_UNICODE),$time,$time]);}
@@ -807,9 +821,11 @@ try {
     }
     if ($route === 'sync' && $method === 'POST') {
         $data=request_data();$row=owned_sheet($db,(string)($data['sheetId']??''),$user['id']);if(!$row)respond(404,['error'=>'档案不存在']);
-        $operations=is_array($data['operations']??null)?array_slice($data['operations'],0,200):[];$state=json_decode($row['state_json'],true);$versions=json_decode($row['field_versions_json'],true);$revision=(int)$row['revision'];$conflicts=[];
+        $operations=is_array($data['operations']??null)?array_slice($data['operations'],0,200):[];$conflicts=[];
         $db->exec('BEGIN IMMEDIATE');
         try{
+            $row=owned_sheet($db,$row['id'],$user['id']);if(!$row)throw new RuntimeException('Sheet disappeared during sync');
+            $state=json_decode($row['state_json'],true);$versions=json_decode($row['field_versions_json'],true);$revision=(int)$row['revision'];
             $exists=$db->prepare('SELECT seq FROM sync_operations WHERE operation_id=?');$insert=$db->prepare('INSERT INTO sync_operations(operation_id,sheet_id,user_id,client_id,field_path,value_json,base_revision,created_at) VALUES(?,?,?,?,?,?,?,?)');
             foreach($operations as $op){if(!is_array($op)||!preg_match('/^[A-Za-z0-9_-]{8,100}$/',(string)($op['id']??''))||!preg_match('/^[A-Za-z0-9_-]{8,100}$/',(string)($op['clientId']??'')))respond(400,['error'=>'同步操作无效']);
                 $exists->execute([$op['id']]);if($exists->fetch())continue;$path=(string)($op['path']??'');$value=$op['value']??null;validate_value($path,$value);$base=is_int($op['baseRevision']??null)?$op['baseRevision']:0;

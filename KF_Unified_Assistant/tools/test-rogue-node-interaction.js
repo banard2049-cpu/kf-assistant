@@ -95,6 +95,9 @@ function boot(patch = () => {}) {
   initial.roster = [{ id: "knight-1", knightId: "fleischritter", name: "Test Knight", alive: true, gold: 10, rewards: [] }];
   patch(initial);
   const storage = new Map([
+    // Real legacy saves wrote the current run as well as the global slot list.
+    // Its matching run proves those slots belong to this restored campaign.
+    ["kf-rogue-path-v2", JSON.stringify(initial)],
     ["kf-rogue-path-slots-v1", JSON.stringify([
       { id: "slot-a", title: "A", state: initial },
       { id: "slot-b", title: "B", state: initial },
@@ -132,6 +135,12 @@ function boot(patch = () => {}) {
 async function main() {
   {
     const app = boot();
+    const migrated = app.saved();
+    assert.equal(migrated.schemaVersion, 2, "legacy storage migrates to a campaign-owned slot bundle");
+    assert.equal(migrated.activeSlotId, "slot-a", "migration keeps the selected legacy run");
+    assert.deepEqual(migrated.slots.map(slot => slot.id), ["slot-a", "slot-b"], "migration preserves inactive legacy runs");
+    assert.equal(migrated.status, migrated.slots[0].state.status, "the top-level active run stays compatible with the second screen");
+    assert.equal(migrated.slots[0].state.slots, undefined, "individual runs do not recursively contain the bundle");
     const id = app.availableIds[0];
     const target = app.node(id);
     const mapWrites = app.get("#nodeLayer").htmlWrites;

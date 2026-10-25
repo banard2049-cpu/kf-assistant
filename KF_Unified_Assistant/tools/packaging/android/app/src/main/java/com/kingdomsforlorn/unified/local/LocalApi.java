@@ -169,6 +169,7 @@ final class LocalApi {
         }
         if ("copy".equals(action) && "POST".equals(method)) {
             JSONObject copy = newCampaign(record.optString("name") + "（副本）", copyObject(record.optJSONObject("state")));
+            CampaignStateImport.rebindRogueCampaign(copy.getJSONObject("state"), copy.getString("id"));
             bucket.put(copy.getString("id"), copy);
             return envelope(201, new JSONObject().put("id", copy.getString("id")));
         }
@@ -293,14 +294,9 @@ final class LocalApi {
             source.put("_resolvedTitle", sheetTitle);
             sheetMap.put(source.optString("id", uuid()), uuid());
         }
-        String leader = importedState.optString("leaderSheetId");
-        if (sheetMap.containsKey(leader)) importedState.put("leaderSheetId", sheetMap.get(leader));
-        JSONArray party = importedState.optJSONArray("party");
-        if (party != null) for (int index = 0; index < party.length(); index++) {
-            String oldId = party.optString(index);
-            if (sheetMap.containsKey(oldId)) party.put(index, sheetMap.get(oldId));
-        }
+        CampaignStateImport.remapSheetReferences(importedState, sheetMap);
         JSONObject campaign = newCampaign(title(payload.optString("name", "导入战役")) + "（导入）", importedState);
+        CampaignStateImport.rebindRogueCampaign(campaign.getJSONObject("state"), campaign.getString("id"));
         campaignBucket(store, userId).put(campaign.getString("id"), campaign);
         for (int index = 0; sourceSheets != null && index < Math.min(100, sourceSheets.length()); index++) {
             JSONObject source = sourceSheets.optJSONObject(index);

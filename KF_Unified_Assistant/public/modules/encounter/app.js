@@ -494,8 +494,8 @@
     return `<div class="custom-piece-tools">
       <div class="custom-piece-icon-tools">
         <strong>Token 指示物</strong>
-        <div class="custom-piece-icon-picker" role="group" aria-label="添加 Token 指示物">${availablePieceIcons().map(icon => `<button type="button" class="custom-piece-icon-option" data-add-piece-icon="${icon.id}" aria-label="添加${icon.name} Token" title="添加${icon.name}，再点击空格放置"><span class="custom-piece-icon-preview">${window.KFEncounterView.customPieceVisual({ iconId: icon.id, name: icon.name })}</span><span>${esc(icon.name)}</span></button>`).join("")}</div>
-        <p class="custom-piece-hint">选择 Token，再点击空格放置；选中后点击其他空格可移动。Little Ser 仅在 Sonch 参与遭遇时可用。</p>
+        <div class="custom-piece-icon-picker" role="group" aria-label="添加 Token 指示物">${availablePieceIcons().map(icon => `<button type="button" class="custom-piece-icon-option" data-add-piece-icon="${icon.id}" aria-label="添加${icon.name} Token" title="将${icon.name}拖到棋盘，或点击添加后再点击空格放置"><span class="custom-piece-icon-preview">${window.KFEncounterView.customPieceVisual({ iconId: icon.id, name: icon.name })}</span><span>${esc(icon.name)}</span></button>`).join("")}</div>
+        <p class="custom-piece-hint">可从选择区将 Token 拖到棋盘，拖到移出区可移出；也可点击选择后再点击空格放置或移动。Little Ser 仅在 Sonch 参与遭遇时可用。</p>
       </div>
       <form id="customPieceForm" class="custom-piece-form">
         <label for="customPieceText">自定义文字棋子</label>
@@ -531,7 +531,7 @@
     return `<section class="panel">
       <div class="panel-head"><div><span class="eyebrow">POSITIONING</span><h2>${dragonReposition ? "巨龙咆哮：重新放置骑士" : ambush ? "伏击放置：先骑士，后怪物" : "放置：先怪物，后骑士"}</h2></div><span class="badge gold">${tierLabel()}遭遇战版图</span></div>
       <div class="grid2 encounter-play-layout ${tier()}">
-        <div>${boardView()}${matchLegend()}<p class="muted placement-hint">点击空格放置当前选中的棋子；规则模型的可放置格会按骰面高亮。也可以按住模型直接拖到目标格。再次点击模型可旋转 90°。</p>${customPieceControls()}</div>
+        <div>${boardView()}${matchLegend()}<p class="muted placement-hint">可从选择区将棋子拖到棋盘，或点击空格放置当前选中的棋子；规则模型的可放置格会按骰面高亮。棋盘上的棋子也可拖动，拖到移出区可移出。再次点击模型可旋转 90°。</p>${customPieceControls()}</div>
         <div>
           <div class="stats-note">${ambush ? "骑士无匹配空格时必须移出遭遇；首领无法放置时，移除尽可能少的骑士，并让其在怪物轮受到攻击。" : "无匹配空格的骑士可移出遭遇，或放到被怪物瞄准的任一格。杂兵攻击范围应尽量少重叠。"}</div>
           ${dragonReposition ? '<p class="stats-note">只重新进行骑士放置；怪物保持原位。已在版图上的骑士可以选择不投骰并保持位置。</p>' : diceEditor(tier() === "dragon" ? "怪物放置骰（白骰）" : "怪物放置骰", state.monsters, "monster")}
@@ -686,8 +686,8 @@
     }
     toast("遭遇已完成");
   }
-  function moveSelectedPieceOffBoard() {
-    const selectedKey = state.selectedPiece || defaultSelectedPieceKey();
+  function moveSelectedPieceOffBoard(key) {
+    const selectedKey = typeof key === "string" ? key : state.selectedPiece || defaultSelectedPieceKey();
     const [kind] = selectedKey.split(":");
     const item = pieceByKey(selectedKey);
     if (!item?.space) {
@@ -696,12 +696,13 @@
     }
     mutate(() => {
       item.space = "";
+      state.selectedPiece = selectedKey;
       if (kind === "monster") state.targets = calculatedAttackTargets();
     }, `${item.name} 移出遭遇版图`);
     return true;
   }
 
-  function addCustomPiece(name, iconId = "") {
+  function addCustomPiece(name, iconId = "", space = "") {
     const icon = availablePieceIcons().find(item => item.id === iconId);
     if (iconId && !icon) return false;
     const existingMonkey = iconId === "monkey" && state.customPieces.find(piece => piece.iconId === "monkey");
@@ -710,9 +711,10 @@
     if (!text) { toast("请输入棋子内容"); return false; }
     if (state.customPieces.length >= MAX_CUSTOM_PIECES) { toast(`最多添加 ${MAX_CUSTOM_PIECES} 个自定义棋子`); return false; }
     mutate(() => {
-      const piece = { id: uid(), name: text, iconId: icon?.id || "", space: "", facing: 0 };
+      const piece = { id: uid(), name: text, iconId: icon?.id || "", space, facing: 0 };
       state.customPieces.push(piece);
       state.selectedPiece = `custom:${piece.id}`;
+      if (space && piece.iconId !== "monkey") displaceLittleSer();
     }, `添加${icon ? "图标" : "自定义"}棋子“${text}”`);
     return true;
   }
@@ -931,11 +933,16 @@
   function bindBoardDrag() {
     const grid = $(".board-grid");
     if (!grid || !["position", "monster", "knight"].includes(state.phase)) return;
+    const removeZone = $("#boardRemoveZone");
+    const sources = $$("[data-select-piece], [data-select-custom-piece], [data-add-piece-icon]");
     const board = boardData();
     const activeCols = ({ vassal: 4, king: 5, devil: 6 })[tier()] || board.cols;
     let drag = null;
 
-    const clearDropHint = () => grid.querySelectorAll(".space.drop-target").forEach(node => node.classList.remove("drop-target"));
+    const clearDropHint = () => {
+      grid.querySelectorAll(".space.drop-target").forEach(node => node.classList.remove("drop-target"));
+      removeZone?.classList.remove("drop-target");
+    };
     const showDropHint = anchor => {
       clearDropHint();
       if (!anchor || !drag) return;
@@ -945,11 +952,26 @@
     };
     const moveGhost = (x, y) => {
       if (!drag?.ghost) return;
-      drag.ghost.style.left = `${x - drag.rect.width / 2}px`;
-      drag.ghost.style.top = `${y - drag.rect.height / 2}px`;
+      drag.ghost.style.left = `${x - drag.offsetX}px`;
+      drag.ghost.style.top = `${y - drag.offsetY}px`;
     };
-    // Drags end with a synthetic click on the piece; handleSpace consumes it so it cannot rotate.
-    const swallowClick = () => { boardClickSuppressed = true; };
+    // Consume the click after a drag before any picker, board or remove-button action runs.
+    const swallowClick = event => {
+      if (!boardClickSuppressed) return;
+      boardClickSuppressed = false;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+    [grid, removeZone, ...sources].filter(Boolean).forEach(node => node.addEventListener("click", swallowClick, true));
+
+    const updateDropTarget = event => {
+      const rect = removeZone?.getBoundingClientRect();
+      drag.removing = Boolean(rect && event.clientX >= rect.left && event.clientX < rect.right
+        && event.clientY >= rect.top && event.clientY < rect.bottom);
+      drag.anchor = drag.removing ? "" : dragAnchorFor(event.clientX, event.clientY, drag.size, activeCols, board, allBoardPieces(), drag.item.id, grid, drag.grab);
+      showDropHint(drag.anchor);
+      removeZone?.classList.toggle("drop-target", drag.removing && Boolean(drag.item.space));
+    };
 
     function onMove(event) {
       if (!drag || event.pointerId !== drag.pointerId) return;
@@ -957,8 +979,17 @@
       if (!drag.moved) {
         drag.moved = true;
         drag.node.classList.add("dragging");
-        const ghost = drag.node.cloneNode(true);
+        const ghost = drag.fromBoard ? drag.node.cloneNode(true) : document.createElement("span");
+        if (!drag.fromBoard) {
+          ghost.className = `piece ${drag.kind} footprint-${drag.size} facing-${drag.item.facing || 0}${drag.item.iconId ? " image-token" : ""}`;
+          if (drag.kind === "knight") ghost.classList.add("knight-token-frame");
+          if (drag.kind === "monster" && currentMonster().type === "boss") ghost.classList.add("boss-token-frame");
+          ghost.style.setProperty("--token-facing", `${drag.item.facing || 0}deg`);
+          ghost.innerHTML = pieceVisual({ ...drag.item, kind: drag.kind });
+        }
+        ghost.classList.remove("dragging");
         ghost.removeAttribute("data-piece");
+        ghost.setAttribute("aria-hidden", "true");
         ghost.classList.add("piece-drag-ghost");
         ghost.style.inset = "auto";
         ghost.style.width = `${drag.rect.width}px`;
@@ -967,24 +998,36 @@
         drag.ghost = ghost;
       }
       moveGhost(event.clientX, event.clientY);
-      drag.anchor = dragAnchorFor(event.clientX, event.clientY, drag.size, activeCols, board, allBoardPieces(), drag.item.id, grid, drag.grab);
-      showDropHint(drag.anchor);
+      updateDropTarget(event);
       event.preventDefault();
     }
 
-    function finish(event) {
+    function finish(event, cancelled = false) {
       if (!drag || (event?.pointerId !== undefined && event.pointerId !== drag.pointerId)) return;
+      if (drag.moved && !cancelled && event?.type === "pointerup") updateDropTarget(event);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", finish);
       window.removeEventListener("pointercancel", finish);
+      window.removeEventListener("blur", cancel);
+      window.removeEventListener("keydown", onKeyDown);
       const current = drag;
       drag = null;
       clearDropHint();
       current.ghost?.remove();
       current.node.classList.remove("dragging");
       if (!current.moved) return;
-      swallowClick();
+      boardClickSuppressed = true;
+      setTimeout(() => { boardClickSuppressed = false; }, 0);
+      if (cancelled || event?.type === "pointercancel" || !grid.isConnected) return;
+      if (current.removing) {
+        if (current.item.space) moveSelectedPieceOffBoard(current.key);
+        return;
+      }
       if (!current.anchor) return toast(`${current.size}×${current.size} 底盘无法放到目标区域`);
+      if (current.newIcon) {
+        addCustomPiece("", current.newIcon, current.anchor);
+        return;
+      }
       if (current.anchor === current.space) return;
       mutate(() => {
         current.item.space = current.anchor;
@@ -994,34 +1037,66 @@
       }, `${current.item.name} 拖放到格 ${spaceLabel(current.anchor, board)}`);
     }
 
-    grid.addEventListener("pointerdown", event => {
+    function cancel() { finish(undefined, true); }
+    function onKeyDown(event) {
+      if (event.key === "Escape") cancel();
+    }
+
+    function start(event) {
       boardClickSuppressed = false;
       if (drag) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
-      const node = event.target.closest(".piece[data-piece]");
+      if (event.isPrimary === false) return;
+      const node = event.target.closest(".piece[data-piece], [data-select-piece], [data-select-custom-piece], [data-add-piece-icon]");
       if (!node) return;
-      const key = node.dataset.piece;
-      const item = pieceByKey(key);
-      if (!item?.space) return;
+      const fromBoard = Boolean(node.dataset.piece);
+      let key = node.dataset.piece || node.dataset.selectPiece || (node.dataset.selectCustomPiece ? `custom:${node.dataset.selectCustomPiece}` : "");
+      let item = key ? pieceByKey(key) : null;
+      let newIcon = "";
+      if (node.dataset.addPieceIcon) {
+        const icon = availablePieceIcons().find(value => value.id === node.dataset.addPieceIcon);
+        if (!icon) return;
+        item = icon.id === "monkey" ? state.customPieces.find(value => value.iconId === icon.id) : null;
+        if (item) key = `custom:${item.id}`;
+        else {
+          newIcon = icon.id;
+          key = "custom:";
+          item = { id: "", name: icon.name, iconId: icon.id, space: "", facing: 0 };
+        }
+      }
+      if (!item || (fromBoard && !item.space)) return;
       const [kind] = key.split(":");
+      if (node.dataset.selectPiece && !positionPieceEntries().some(choice => choice.key === key)) return;
       const gridRect = grid.getBoundingClientRect();
+      if (!gridRect.width || !gridRect.height) return;
       const cellWidth = gridRect.width / board.cols;
       const cellHeight = gridRect.height / board.rows;
+      const size = pieceFootprint({ ...item, kind });
+      const rect = fromBoard ? node.getBoundingClientRect() : { width: cellWidth * (size - .14), height: cellHeight * (size - .14) };
       let grabCol = (event.clientX - gridRect.left) / cellWidth;
       if (board.mirror) grabCol = board.cols - grabCol;
       const grabRow = (event.clientY - gridRect.top) / cellHeight;
       const anchorRow = Math.floor((Number(item.space) - 1) / board.cols);
       const anchorCol = (Number(item.space) - 1) % board.cols;
       drag = {
-        key, item, kind, node, pointerId: event.pointerId,
-        startX: event.clientX, startY: event.clientY, space: String(item.space),
-        size: pieceFootprint({ ...item, kind }), rect: node.getBoundingClientRect(),
-        grab: { row: grabRow - anchorRow, col: grabCol - anchorCol },
-        moved: false, anchor: "", ghost: null
+        key, item, kind, node, fromBoard, newIcon, pointerId: event.pointerId,
+        startX: event.clientX, startY: event.clientY, space: String(item.space || ""),
+        size, rect,
+        offsetX: fromBoard ? event.clientX - rect.left : rect.width / 2,
+        offsetY: fromBoard ? event.clientY - rect.top : rect.height / 2,
+        grab: fromBoard ? { row: grabRow - anchorRow, col: grabCol - anchorCol } : { row: size / 2, col: size / 2 },
+        moved: false, removing: false, anchor: "", ghost: null
       };
+      try { node.setPointerCapture(event.pointerId); } catch {}
       window.addEventListener("pointermove", onMove, { passive: false });
       window.addEventListener("pointerup", finish);
       window.addEventListener("pointercancel", finish);
+      window.addEventListener("blur", cancel);
+      window.addEventListener("keydown", onKeyDown);
+    }
+    [grid, ...sources].forEach(node => {
+      node.addEventListener("pointerdown", start);
+      node.addEventListener("dragstart", event => event.preventDefault());
     });
   }
 
@@ -1115,14 +1190,14 @@
     modal.addEventListener("click", e => { if (e.target === modal) modal.hidden = true; });
   }
   function exportSave() {
-    const blob = new Blob([JSON.stringify({ app: "KF Encounter Assistant", version: 1, state, configs }, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify({ app: "KF Encounter Assistant", version: 1, state }, null, 2)], { type: "application/json" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `kf-encounter-${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(a.href);
   }
   async function importSave(file) {
     try {
       const payload = JSON.parse(await file.text());
       state = normalize(payload.state || payload);
-      if (payload.configs && typeof payload.configs === "object") configs = payload.configs;
+      // Legacy configs had no runtime meaning; card corrections use their own import/export.
       save(); toast("存档已导入");
     } catch { toast("无法导入：文件格式不正确"); }
   }
