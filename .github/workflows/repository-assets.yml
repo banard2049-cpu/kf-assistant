@@ -16,3 +16,15 @@ jobs:
 
       - name: Check tracked resources
         run: node KF_Unified_Assistant/tools/check-repository-assets.js
+
+  check-resource-packaging:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Test complete resource packs
+        run: ./KF_Unified_Assistant/tools/test-resource-image-pack.ps1
+
+      - name: Test private file exclusions
+        run: ./KF_Unified_Assistant/tools/test-portable-source-filter.ps1

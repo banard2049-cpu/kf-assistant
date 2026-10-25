@@ -30,9 +30,13 @@ cleanup(){ rm -rf "$STAGE_PARENT"; }
 trap cleanup EXIT
 mkdir -p "$STAGE_ROOT/runtime/php"
 
-for entry in public tools .env.example start-macos.sh start-macos.command README.md Dockerfile compose.yaml; do
-  [[ -e "$REPO_ROOT/$entry" ]] && cp -R "$REPO_ROOT/$entry" "$STAGE_ROOT/"
+entries=()
+for entry in public tools .env.example start-macos.sh start-macos.command README.md Dockerfile compose.yaml .dockerignore; do
+  [[ -e "$REPO_ROOT/$entry" ]] && entries+=("$entry")
 done
+# Filter before staging: local signing keys and toolchains must never enter a package.
+tar -cf - --exclude-from "$SCRIPT_DIR/portable-excludes.txt" -C "$REPO_ROOT" "${entries[@]}" |
+  tar -xf - -C "$STAGE_ROOT"
 chmod +x "$STAGE_ROOT/start-macos.sh" "$STAGE_ROOT/start-macos.command"
 
 # Copy the PHP installation when its prefix is discoverable (Homebrew/setup-php).

@@ -45,6 +45,8 @@ if ($LASTEXITCODE -ne 0) {
 $stageParent = Join-Path ([IO.Path]::GetTempPath()) ("kf-portable-" + [guid]::NewGuid().ToString("N"))
 $stageRoot = Join-Path $stageParent $packageName
 $portablePhp = Join-Path $stageRoot "runtime\php"
+$tar = Get-Command tar.exe -ErrorAction Stop
+$excludes = Join-Path $PSScriptRoot "portable-excludes.txt"
 
 try {
   New-Item -ItemType Directory -Path $stageRoot -Force | Out-Null
@@ -59,14 +61,18 @@ try {
     "php-admin-windows.bat",
     "README.md",
     "Dockerfile",
-    "compose.yaml"
+    "compose.yaml",
+    ".dockerignore"
   )
-  foreach ($entry in $entries) {
-    $source = Join-Path $repoRoot $entry
-    if (Test-Path $source) {
-      Copy-Item -LiteralPath $source -Destination $stageRoot -Recurse -Force
-    }
-  }
+  $entries = @($entries | Where-Object { Test-Path -LiteralPath (Join-Path $repoRoot $_) })
+  # Filter before staging so local signing keys and toolchains are never copied.
+  # A temporary tar avoids corrupting binary data through a PowerShell 5 pipeline.
+  $sourceArchive = Join-Path $stageParent "source.tar"
+  & $tar.Source -cf $sourceArchive --exclude-from $excludes -C $repoRoot @entries
+  if ($LASTEXITCODE -ne 0) { throw "Source collection failed with exit code $LASTEXITCODE." }
+  & $tar.Source -xf $sourceArchive -C $stageRoot
+  if ($LASTEXITCODE -ne 0) { throw "Source staging failed with exit code $LASTEXITCODE." }
+  Remove-Item -LiteralPath $sourceArchive -Force
 
   New-Item -ItemType Directory -Path $portablePhp -Force | Out-Null
   Copy-Item -Path (Join-Path $PhpSource "*") -Destination $portablePhp -Recurse -Force
@@ -85,7 +91,6 @@ try {
     Remove-Item -LiteralPath $OutputPath -Force
   }
 
-  $tar = Get-Command tar.exe -ErrorAction Stop
   Push-Location $stageParent
   try {
     & $tar.Source -a -cf $OutputPath $packageName
