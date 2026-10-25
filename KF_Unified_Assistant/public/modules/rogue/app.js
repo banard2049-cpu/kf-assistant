@@ -247,13 +247,14 @@
   async function openNode(node) {
     if (!isAvailable(node)) return;
     const result = RULES.randomResult(node.level, node.kingdom);
-    state.pendingBattle = { nodeId: node.id, kingdom: node.kingdom, nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId), level: result.level, startedAt: Date.now() };
+    state.pendingBattle = { handoffId: `rogue-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`, nodeId: node.id, kingdom: node.kingdom, nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId), level: result.level, startedAt: Date.now() };
     state.currentNodeId = node.id;
     selectedNodeId = null;
     state.history.push({ at: Date.now(), type: "battle-start", nodeId: node.id, ...result });
     save();
     const roster = state.roster.filter(member => member.alive).slice(0, 4).map(member => ({ id: member.id, sheetId: member.id, knightId: member.knightId, type: "knight", name: member.name, title: member.name }));
     localStorage.setItem("kfRogueHandoff", JSON.stringify({
+      id: state.pendingBattle.handoffId, slotId: activeSlotId, createdAt: state.pendingBattle.startedAt,
       campaignId: campaignId(), roguePath: true, nodeId: node.id, kingdom: node.kingdom,
       nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId),
       level: result.level, rogueRoster: roster, returnUrl: "/modules/rogue/"
@@ -441,9 +442,29 @@
     $("#battleSummary").innerHTML = `${battleNode ? `等级 ${battleNode.level} · ${esc(rewardName(battleNode.reward))}` : "当前节点"} · ${esc(pending.monster)} · Boss 等级 ${pending.level}<br><small>规则表 d10：${pending.roll}</small>`;
     $("#casualtySelect").innerHTML = state.roster.filter(member => member.alive).map(member => `<label class="casualty-option" style="display:flex;align-items:center;justify-content:space-between;gap:9px"><input type="checkbox" value="${esc(member.id)}" style="order:2;flex:0 0 auto;margin-left:auto"><span><strong>${esc(member.name)}</strong><small>当前存活 · 点击标记死亡</small></span></label>`).join("") || '<p class="muted">没有存活骑士可选择。</p>';
   }
+  function clearBattleHandoff(pending) {
+    try {
+      const handoff = JSON.parse(localStorage.getItem("kfRogueHandoff") || "null");
+      if (!handoff?.roguePath || handoff.campaignId !== campaignId()) return;
+      if (handoff.slotId && handoff.slotId !== activeSlotId) return;
+      if (pending.handoffId) {
+        if (handoff.id !== pending.handoffId) return;
+      } else {
+        // Legacy handoffs had no slot or request ID. Only claim one when its
+        // battle matches exactly one local slot, which must be the current one.
+        const matches = battle => battle?.nodeId === handoff.nodeId
+          && (battle.monsterId || battle.monster) === (handoff.monsterId || handoff.monster)
+          && Number(battle.level) === Number(handoff.level);
+        const owners = slots.filter(slot => matches(slot.state?.pendingBattle));
+        if (!matches(pending) || owners.length !== 1 || owners[0].id !== activeSlotId) return;
+      }
+      localStorage.removeItem("kfRogueHandoff");
+    } catch { /* malformed or unrelated handoffs are not owned by this battle */ }
+  }
   function resolve(result) {
     const pending = state.pendingBattle; if (!pending) return;
     const node = nodeById(pending.nodeId); if (!node) return;
+    clearBattleHandoff(pending);
     selectedNodeId = null;
     const casualties = [...document.querySelectorAll("#casualtySelect input[type=checkbox]:checked")].map(input => input.value);
     const dead = new Set(casualties);

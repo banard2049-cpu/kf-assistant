@@ -51,6 +51,42 @@ test('five-player direct attacks must resolve the active Accursed Persistence fi
   api.damagePuppetFallenKnight(); assert.equal(battle().ruleState.puppetKing.fallenKnightTokens, before);
 });
 
+test('White Ape monster rounds reactivate Accursed Persistence and block ordinary BP draws', () => {
+  const { api, battle } = aibpHarness();
+  api.selectMonster('M_WhiteApe'); api.rebuild();
+  api.resolveAccursed('wound');
+  assert.equal(battle().accursed.side, 'dormant');
+  api.startWhiteApeRound();
+  assert.equal(battle().accursed.side, 'active');
+  assert.equal(battle().ruleState.pendingCoordinatedAttacks, 1);
+  const deck = plain(battle().bpDeck);
+  api.draw('bp');
+  assert.equal(battle().activeBP, '');
+  assert.deepEqual(plain(battle().bpDeck), deck, 'the intercepted attack must not draw thick skin');
+
+  api.rebuild();
+  api.setAccursedLastKnight(true);
+  api.startWhiteApeRound();
+  assert.equal(battle().accursed.side, 'dormant', 'the last surviving knight keeps the trait dormant');
+});
+
+test('Accursed Persistence AT includes every revealed doppelganger BP and excludes hidden ones', () => {
+  const { api, battle } = aibpHarness();
+  api.selectMonster('M_KnightFen'); battle().level = 3; api.rebuild();
+  const doppel = battle().ruleState.doppelgangers[0];
+  const cards = plain(doppel.cards);
+  assert.equal(cards.length, 2);
+  assert.deepEqual(plain(api.accursedRevealedBps()), []);
+  api.resolveAccursed('wound');
+  api.toggleDoppelgangerCards(doppel.id);
+  api.flipAccursedForRound();
+  assert.equal(battle().accursed.side, 'active');
+  assert.deepEqual(plain(api.accursedRevealedBps()), cards);
+  assert.doesNotMatch(api.renderAccursed(), /= 0（还没有已揭示的 BP）/);
+  api.toggleDoppelgangerCards(doppel.id);
+  assert.deepEqual(plain(api.accursedRevealedBps()), [], 'flipping the stack face down removes it from the revealed cards');
+});
+
 test('belly board reload preserves terrain, Fool cards, overlays and display settings', () => {
   const { api, battle } = aibpHarness();
   api.selectMonster('M_Stonemason'); api.rebuild();

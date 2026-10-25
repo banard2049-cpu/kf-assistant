@@ -850,6 +850,7 @@
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     localStorage.setItem(ENCOUNTER_HANDOFF_KEY, JSON.stringify({
       id: uid(),
+      createdAt: Date.now(),
       campaignId,
       source: "map",
       monsterId: marker.monsterId,
@@ -890,6 +891,7 @@
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
     localStorage.setItem(ENCOUNTER_HANDOFF_KEY, JSON.stringify({
       id: uid(),
+      createdAt: Date.now(),
       campaignId: localStorage.getItem("kfActiveCampaign") || "",
       source: "map-wheel",
       monsterId,

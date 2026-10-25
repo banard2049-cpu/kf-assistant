@@ -301,17 +301,21 @@ state().aiDeck = [ids("AI1")[0]];
 hit(0, "defeat", thickSkin);
 assert.equal(state().aiRemoved.length, 0);
 assert.equal(state().singleWounds, 0);
-for (const bossId of ["M_Knighteater", "M_Stonemason"]) {
-  prepare(bossId, 4);
-  state().aiDeck = [ids("AI1")[0]];
-  if (bossId === "M_Knighteater") state().ruleState.knighteater.berserk = true;
-  else {
-    state().ruleState.stonemason.direction = "front";
-    state().ruleState.stonemason.armor.front = 2;
-  }
-  hit(1);
-  assert.equal(state().singleWounds, 0);
-  assert.equal(state().aiRemoved.length, 0);
-  assert.equal(state().aiPromotionBonusStep, 0);
-}
+prepare("M_Knighteater", 4);
+state().aiDeck = [ids("AI1")[0]];
+state().ruleState.knighteater.berserk = true;
+hit(1);
+assert.equal(state().singleWounds, 0);
+assert.equal(state().aiRemoved.length, 0);
+assert.equal(state().aiPromotionBonusStep, 0);
+
+// 石匠的盔甲仅由玩家手动计数；确认击伤后仍执行标准损伤与晋升。
+prepare("M_Stonemason", 4);
+state().aiDeck = [ids("AI1")[0]];
+state().ruleState.stonemason.armor.front = 2;
+hit(1);
+assert.equal(state().singleWounds, 1);
+assert.deepEqual(kinds("aiRemoved"), ["AI1"]);
+assert.deepEqual(kinds("aiDeck"), ["AI2"]);
+assert.equal(state().ruleState.stonemason.armor.front, 2);
 console.log("boss-promotion.test.cjs: all promotion regressions and 13 boss branches passed");

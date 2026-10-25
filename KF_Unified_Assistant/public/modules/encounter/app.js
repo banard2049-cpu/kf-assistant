@@ -5,7 +5,8 @@
   const DATA = window.KF_ENCOUNTER_DATA;
   const RED_DIE_FACES = DATA.dice.faces;
   const DRAGON_DIE_FACES = [
-    { id: "dragon-double-sword-double-cup", label: "双剑＋双杯", match: { sword: 2, cup: 2 }, src: "/assets/dice/faces/dragon-double-sword-double-cup.png" },
+    // Keep the saved face ID; the physical face has three swords, two cups and one ignored Hope.
+    { id: "dragon-double-sword-double-cup", label: "三剑＋双杯", match: { sword: 3, cup: 2 }, src: "/assets/dice/faces/dragon-double-sword-double-cup.png" },
     { id: "dragon-double-sword", label: "双剑", match: { sword: 2 }, src: "/assets/dice/faces/dragon-double-sword.png" },
     { id: "dragon-sword-cup", label: "单剑＋杯", match: { sword: 1, cup: 1 }, src: "/assets/dice/faces/dragon-sword-cup.png" },
     { id: "dragon-sword", label: "单剑", match: { sword: 1 }, src: "/assets/dice/faces/dragon-sword.png" },
@@ -13,6 +14,11 @@
     { id: "dragon-double-sword-cup", label: "双剑＋杯", match: { sword: 2, cup: 1 }, src: "/assets/dice/faces/dragon-double-sword-cup.png" },
   ];
   const ALL_DIE_FACES = [...RED_DIE_FACES, ...DRAGON_DIE_FACES];
+  // The Knight of the Fen encounter card replaces the vassal with Doppelknight Mob Monsters:
+  // "position 2 Doppelknight Mob Monsters instead of Knight of the Fen (use Doppelknight
+  // tokens)". Each token rolls one placement die and follows minion placement, even though
+  // the level still uses the vassal encounter board and its 1x1 monster footprint.
+  const MOB_PLACEMENT_MONSTERS = new Set(["M_KnightFen"]);
   const KEY = "kf-encounter-assistant-v1";
   const CORRECTION_KEY = "kf-encounter-card-corrections-v1";
   const PHASES = ["setup", "position", "monster", "knight", "resolution"];
@@ -71,7 +77,7 @@
   function blankState() {
     const monster = DATA.monsters[0];
     return {
-      version: 1, monsterId: monster.id, level: monster.encounterLevels[0].level,
+      version: 1, boardLayoutVersion: 2, monsterId: monster.id, level: monster.encounterLevels[0].level,
       phase: "setup", encounterType: "normal", specialToken: false,
       knights: rosterKnights(),
       monsters: [], customPieces: [], pool: { opportunity: 0, break: 0 }, scrapes: 0,
@@ -98,10 +104,30 @@
     });
   }
 
+  // One-time upgrade of saved positions to the image's left-to-right cell order.
+  // Runtime rendering, movement and attacks all use the image coordinates directly.
+  function upgradeBoardCoordinates(snapshot, encounterTier, monsterSize) {
+    if (snapshot.boardLayoutVersion >= 2) return;
+    if (["vassal", "king", "devil"].includes(encounterTier)) {
+      const convert = (space, size = 1) => {
+        if (!space) return "";
+        const index = Number(space) - 1;
+        const row = Math.floor(index / 6);
+        const column = index % 6;
+        return String(row * 6 + 6 - size - column + 1);
+      };
+      snapshot.monsters.forEach(piece => { piece.space = convert(piece.space, monsterSize); });
+      [...snapshot.knights, ...snapshot.customPieces].forEach(piece => { piece.space = convert(piece.space); });
+      snapshot.targets = (snapshot.targets || []).map(space => convert(space));
+    }
+    snapshot.boardLayoutVersion = 2;
+  }
+
   function normalize(raw) {
     const base = blankState();
     if (!raw || raw.version !== 1 || !availableMonsters().some(monster => monster.id === raw.monsterId)) return base;
     const merged = { ...base, ...raw };
+    merged.boardLayoutVersion = Number(raw.boardLayoutVersion) || 1;
     const savedMonster = monsterById(merged.monsterId);
     if (!savedMonster.encounterLevels.some(level => level.level === merged.level)) {
       merged.level = savedMonster.encounterLevels[0].level;
@@ -126,7 +152,13 @@
       : RED_DIE_FACES;
     merged.monsters.forEach(monster => {
       monster.roll = normalizeFace(monster.roll, monsterFaces);
-      monster.rolls = (monster.rolls || [monster.roll]).map(value => normalizeFace(value, monsterFaces));
+      const savedRolls = Array.isArray(monster.rolls) && monster.rolls.length ? monster.rolls : [monster.roll];
+      monster.rolls = savedRolls.map(value => normalizeFace(value, monsterFaces));
+      // Older saves gave each Doppelknight the vassal's two placement dice.
+      if (MOB_PLACEMENT_MONSTERS.has(merged.monsterId)) {
+        monster.rolls = monster.rolls.slice(0, 1);
+        monster.roll = monster.rolls[0];
+      }
     });
     const allowedIcons = availablePieceIcons(merged.knights);
     let hasMonkey = false;
@@ -153,9 +185,11 @@
     if (String(merged.selectedPiece).startsWith("custom:") && !merged.customPieces.some(piece => `custom:${piece.id}` === merged.selectedPiece)) merged.selectedPiece = "";
     const savedBoardKind = ["vassal", "king", "devil"].includes(savedTier) ? "vassal" : savedTier;
     const savedBoard = DATA.boards[savedBoardKind] || DATA.boards.all[0] || {};
+    const savedMonsterSize = Number(savedLevel?.stats?.monsterSize) || (savedTier === "mob" ? 1 : savedTier === "dragon" ? 3 : 2);
+    upgradeBoardCoordinates(merged, savedTier, savedMonsterSize);
     let removedBlockedMonster = false;
     merged.monsters.forEach(piece => {
-      if (!isUnavailableBoardSpace(piece.space, savedBoard, savedTier)) return;
+      if (!piece.space || !coveredSpaces(piece.space, savedMonsterSize, savedBoard).some(space => isUnavailableBoardSpace(space, savedBoard, savedTier))) return;
       piece.space = "";
       removedBlockedMonster = true;
     });
@@ -245,28 +279,99 @@
   function tier() {
     return currentLevel().tier;
   }
+  function usesMobPlacement() {
+    return MOB_PLACEMENT_MONSTERS.has(currentMonster().id);
+  }
   function boardKind() {
     return ["vassal", "king", "devil"].includes(tier()) ? "vassal" : tier();
   }
   function tierLabel() {
     return tierName(tier());
   }
-  function requiredMonsterDice() { return ["vassal", "king", "devil"].includes(tier()) ? 2 : 1; }
+  function requiredMonsterDice() {
+    if (usesMobPlacement()) return 1;
+    return ["vassal", "king", "devil"].includes(tier()) ? 2 : 1;
+  }
   function boardData() {
     return DATA.boards[boardKind()] || DATA.boards.all[0] || {};
   }
   function isUnavailableBoardSpace(space, board = boardData(), encounterTier = tier()) {
     const position = Number(space);
-    return encounterTier === "mob" && board.cols === 5 && board.rows === 3 && (position === 1 || position === 15);
+    return (board.lockedSpaces?.[encounterTier] || []).includes(position)
+      || (encounterTier === "mob" && board.cols === 5 && board.rows === 3 && (position === 1 || position === 15));
   }
   function spaceSymbols(space) {
     return boardData().spaces?.[Number(space) - 1] || {};
   }
   function faceMatchesSpace(faceId, symbols) {
-    const match = ALL_DIE_FACES.find(face => face.id === faceId)?.match || {};
-    const keys = Object.keys(match);
-    if (!keys.length) return !symbols.sword && !symbols.cup;
-    return keys.every(key => (symbols[key] || 0) >= match[key]);
+    const match = ALL_DIE_FACES.find(face => face.id === faceId)?.match;
+    if (!match) return false;
+    return ["sword", "cup"].every(key => (symbols[key] || 0) === (match[key] || 0));
+  }
+  function bossDiceMatchCount(rolls, spaces, board) {
+    let count = 0;
+    for (let first = 0; first < rolls.length; first += 1) {
+      const firstSpaces = spaces.filter(space => faceMatchesSpace(rolls[first], board.spaces?.[space - 1] || {}));
+      if (!firstSpaces.length) continue;
+      count = 1;
+      for (let second = first + 1; second < rolls.length; second += 1) {
+        if (spaces.some(space => firstSpaces.some(firstSpace => firstSpace !== space)
+          && faceMatchesSpace(rolls[second], board.spaces?.[space - 1] || {}))) return 2;
+      }
+    }
+    return count;
+  }
+  function bossPlacementRule(kind, item) {
+    if (state.phase !== "position" || kind !== "monster" || usesMobPlacement()
+      || !["vassal", "king", "devil"].includes(tier())) return null;
+    const board = boardData();
+    const size = monsterFootprint();
+    const rolls = item.rolls?.length ? item.rolls : item.roll ? [item.roll] : [];
+    if (rolls.length < 2) return { anchors: new Set(), requiredMatches: 2, message: "请先设置首领的两枚放置骰" };
+    const blockers = allBoardPieces().filter(piece => piece.space && piece.id !== item.id && piece.iconId !== "monkey");
+    const occupied = new Set(blockers.flatMap(piece => coveredSpaces(piece.space, pieceFootprint(piece), board)));
+    // In a normal encounter the boss is placed before the knights. Knights placed later
+    // cannot make a required double match disappear and unlock the single-match fallback.
+    const priorOccupied = new Set(blockers.filter(piece => state.encounterType === "ambush" || piece.kind !== "knight")
+      .flatMap(piece => coveredSpaces(piece.space, pieceFootprint(piece), board)));
+    const candidates = [];
+    for (let row = 0; row + size <= board.rows; row += 1) {
+      for (let col = 0; col + size <= board.cols; col += 1) {
+        const anchor = String(row * board.cols + col + 1);
+        const spaces = coveredSpaces(anchor, size, board);
+        if (spaces.some(space => isUnavailableBoardSpace(space, board) || priorOccupied.has(space))) continue;
+        candidates.push({ anchor, spaces, matches: bossDiceMatchCount(rolls, spaces, board) });
+      }
+    }
+    const requiredMatches = candidates.some(candidate => candidate.matches === 2) ? 2 : 1;
+    const matching = candidates.filter(candidate => candidate.matches >= requiredMatches);
+    const anchors = new Set(matching.filter(candidate => !candidate.spaces.some(space => occupied.has(space)))
+      .map(candidate => candidate.anchor));
+    const message = !candidates.length ? "当前没有能容纳首领底盘的空位，请调整占位模型"
+      : !matching.length ? "当前没有匹配放置骰的合法位置，请核对骰面和占位"
+      : !anchors.size ? "匹配放置骰的位置被其他棋子占用，请先调整占位"
+      : requiredMatches === 2 ? "首领底盘必须覆盖双骰分别匹配的两个不同格子"
+      : "没有能同时匹配双骰的合法位置；底盘仍须覆盖至少一枚骰子匹配的格子";
+    return { anchors, requiredMatches, message };
+  }
+  function confirmPlacement() {
+    if (state.phase !== "position") return false;
+    if (["vassal", "king", "devil"].includes(tier()) && !state.monsters.length) {
+      toast("请先放置首领，再确认放置");
+      return false;
+    }
+    for (const monster of state.monsters) {
+      const rule = bossPlacementRule("monster", monster);
+      if (!rule) continue;
+      if (!monster.space) { toast("请先放置首领，再确认放置"); return false; }
+      if (!rule.anchors.has(String(monster.space))) { toast(rule.message); return false; }
+    }
+    mutate(() => {
+      state.phase = "monster";
+      state.targets = calculatedAttackTargets();
+      state.selectedPiece = defaultSelectedPieceKey();
+    }, "确认所有模型放置并计算攻击范围");
+    return true;
   }
   function positionPieceEntries() {
     const monsters = state.monsters.map(item => ({ key: `monster:${item.id}`, kind: "monster", item }));
@@ -329,7 +434,7 @@
       return (row + rowOffset) * board.cols + col + colOffset + 1;
     });
   }
-  function movementAnchorForClick(space, size, board, activeCols, pieces, item) {
+  function movementAnchorForClick(space, size, board, pieces, item, allowedAnchors = null) {
     const target = Number(space);
     const targetRow = Math.floor((target - 1) / board.cols);
     const targetCol = (target - 1) % board.cols;
@@ -341,13 +446,14 @@
       for (let colOffset = 0; colOffset < size; colOffset += 1) {
         const row = targetRow - rowOffset;
         const col = targetCol - colOffset;
-        if (row < 0 || col < 0 || row + size > board.rows || col + size > activeCols) continue;
+        if (row < 0 || col < 0 || row + size > board.rows || col + size > board.cols) continue;
         anchors.add(String(row * board.cols + col + 1));
       }
     }
     const legal = [...anchors].filter(anchor => {
       const candidate = coveredSpaces(anchor, size, board);
       return candidate.length === size * size
+        && (allowedAnchors === null || allowedAnchors.has(anchor))
         && !candidate.some(candidateSpace => isUnavailableBoardSpace(candidateSpace, board))
         && !pieces
         .filter(value => value.space && value.id !== item.id && value.iconId !== "monkey")
@@ -369,30 +475,63 @@
     }
     return [row, col];
   }
+  function monsterAttackTargets(monster, level = currentLevel(), board = boardData(), size = monsterFootprint()) {
+    if (!monster.space || !level.attackPatternVerified || !Array.isArray(level.attackPattern)) return [];
+    const start = Number(monster.space) - 1;
+    const anchorRow = Math.floor(start / board.cols);
+    const anchorCol = start % board.cols;
+    const relativeFacing = ((monster.facing || 0) - (level.attackFacing || 0) + 360) % 360;
+    const targets = new Set();
+    level.attackPattern.forEach(offset => {
+      const [rowOffset, colOffset] = rotateAttackOffset(offset, size, relativeFacing);
+      const row = anchorRow + rowOffset;
+      const col = anchorCol + colOffset;
+      if (row < 0 || row >= board.rows || col < 0 || col >= board.cols) return;
+      const space = row * board.cols + col + 1;
+      if (!isUnavailableBoardSpace(space, board)) targets.add(String(space));
+    });
+    return [...targets];
+  }
   function calculatedAttackTargets() {
     const level = currentLevel();
-    if (!level.attackPatternVerified || !Array.isArray(level.attackPattern)) return [];
     const board = boardData();
     const size = monsterFootprint();
     const targets = new Set();
     state.monsters.filter(monster => monster.space).forEach(monster => {
-      const start = Number(monster.space) - 1;
-      const anchorRow = Math.floor(start / board.cols);
-      const anchorCol = start % board.cols;
-      // The card diagram is drawn on the monster's physical footprint. Mirrored boards flip the
-      // columns, so resolve the footprint's visual top-left column first and map the result back.
-      const physicalCol = board.mirror ? board.cols - size - anchorCol : anchorCol;
-      level.attackPattern.forEach(offset => {
-        const relativeFacing = ((monster.facing || 0) - (level.attackFacing || 0) + 360) % 360;
-        const [rowOffset, colOffset] = rotateAttackOffset(offset, size, relativeFacing);
-        const row = anchorRow + rowOffset;
-        const visualCol = physicalCol + colOffset;
-        if (row < 0 || row >= board.rows || visualCol < 0 || visualCol >= board.cols) return;
-        const col = board.mirror ? board.cols - 1 - visualCol : visualCol;
-        targets.add(String(row * board.cols + col + 1));
-      });
+      monsterAttackTargets(monster, level, board, size).forEach(space => targets.add(space));
     });
     return [...targets];
+  }
+  function orientPlacedBosses(kind) {
+    if (state.phase !== "position" || kind !== "monster" || currentMonster().type !== "boss") return;
+    const monsters = state.monsters.filter(monster => monster.space);
+    const choices = monsters.map(monster => [...new Set([monster.facing || 0, 0, 90, 180, 270])]
+      .map(facing => ({ facing, targets: monsterAttackTargets({ ...monster, facing }) })));
+    const remainingTargets = Array.from({ length: monsters.length + 1 }, () => new Set());
+    for (let index = monsters.length - 1; index >= 0; index -= 1) {
+      remainingTargets[index] = new Set([...remainingTargets[index + 1], ...choices[index].flatMap(choice => choice.targets)]);
+    }
+    let bestFacings = monsters.map(monster => monster.facing || 0);
+    let mostTargets = calculatedAttackTargets().length;
+    let fewestChanges = 0;
+    const facings = [];
+    // Maximize the union, so overlapping attacks count once. On ties, rotate as few bosses as possible.
+    const search = (index, targets, changes) => {
+      const upperBound = new Set([...targets, ...remainingTargets[index]]).size;
+      if (upperBound < mostTargets || (upperBound === mostTargets && changes >= fewestChanges)) return;
+      if (index === monsters.length) {
+        mostTargets = targets.size;
+        fewestChanges = changes;
+        bestFacings = [...facings];
+        return;
+      }
+      for (const choice of choices[index]) {
+        facings[index] = choice.facing;
+        search(index + 1, new Set([...targets, ...choice.targets]), changes + Number(choice.facing !== (monsters[index].facing || 0)));
+      }
+    };
+    search(0, new Set(), 0);
+    monsters.forEach((monster, index) => { monster.facing = bestFacings[index]; });
   }
   function attackTargetsVisible() {
     if (state.phase === "monster") return true;
@@ -477,7 +616,7 @@
     });
   }
   function matchLegend() {
-    return `<div class="match-legend"><span class="legend-one">骰面 1 匹配</span>${requiredMonsterDice() > 1 ? '<span class="legend-two">骰面 2 匹配</span><span class="legend-both">两枚都匹配</span>' : ""}</div>`;
+    return `<div class="match-legend"><span class="legend-one">骰面 1 匹配</span>${requiredMonsterDice() > 1 ? '<span class="legend-two">骰面 2 匹配</span><span class="legend-both">两枚都匹配</span>' : ""}<span class="legend-attack">攻击范围</span></div>`;
   }
   function boardHtml() {
     return `${boardView()}${customPieceControls()}`;
@@ -523,18 +662,26 @@
   function positionPanel() {
     const ambush = state.encounterType === "ambush";
     const dragonReposition = tier() === "dragon" && state.dragonRoarDone;
+    const mobPlacement = usesMobPlacement();
     const pieceChoices = positionPieceEntries();
     const selectedCustomPiece = String(state.selectedPiece || "").startsWith("custom:") && pieceByKey(state.selectedPiece);
     if (!selectedCustomPiece && !pieceChoices.some(choice => choice.key === state.selectedPiece)) {
       state.selectedPiece = pieceChoices[0]?.key || "";
     }
+    const placementRule = bossPlacementRule(state.selectedPiece.split(":")[0], pieceByKey(state.selectedPiece));
+    const placementHint = mobPlacement
+      ? "高亮表示与所选模型骰面一致的格子；本场用拟身骑士杂兵代替污泥骑士，每个模型只投 1 枚放置骰并独立放置，不适用首领底盘的双骰规则。"
+      : "高亮表示剑、杯组合与骰面一致，希望图标忽略；首领底盘须覆盖两枚骰子分别匹配的两个格子，无法同时满足时才按一枚考虑。";
+    const monsterDiceLabel = mobPlacement ? "怪物放置骰（每个模型 1 枚）" : tier() === "dragon" ? "怪物放置骰（白骰）" : "怪物放置骰";
     return `<section class="panel">
       <div class="panel-head"><div><span class="eyebrow">POSITIONING</span><h2>${dragonReposition ? "巨龙咆哮：重新放置骑士" : ambush ? "伏击放置：先骑士，后怪物" : "放置：先怪物，后骑士"}</h2></div><span class="badge gold">${tierLabel()}遭遇战版图</span></div>
       <div class="grid2 encounter-play-layout ${tier()}">
-        <div>${boardView()}${matchLegend()}<p class="muted placement-hint">可从选择区将棋子拖到棋盘，或点击空格放置当前选中的棋子；规则模型的可放置格会按骰面高亮。棋盘上的棋子也可拖动，拖到移出区可移出。再次点击模型可旋转 90°。</p>${customPieceControls()}</div>
+        <div>${boardView()}${matchLegend()}<p class="muted placement-hint">可从选择区将棋子拖到棋盘，或点击空格放置当前选中的棋子。${placementHint}棋盘上的棋子也可拖动，拖到移出区可移出。再次点击模型可旋转 90°。</p>${customPieceControls()}</div>
         <div>
           <div class="stats-note">${ambush ? "骑士无匹配空格时必须移出遭遇；首领无法放置时，移除尽可能少的骑士，并让其在怪物轮受到攻击。" : "无匹配空格的骑士可移出遭遇，或放到被怪物瞄准的任一格。杂兵攻击范围应尽量少重叠。"}</div>
-          ${dragonReposition ? '<p class="stats-note">只重新进行骑士放置；怪物保持原位。已在版图上的骑士可以选择不投骰并保持位置。</p>' : diceEditor(tier() === "dragon" ? "怪物放置骰（白骰）" : "怪物放置骰", state.monsters, "monster")}
+          ${mobPlacement ? `<div class="stats-note"><strong>拟身骑士杂兵</strong><br>按遭遇卡：怪物放置步骤不放置污泥骑士本体，而是放置 ${stats().monsterCount} 个拟身骑士杂兵（使用拟身骑士指示物）。每个模型只投 1 枚放置骰，按杂兵规则独立放置。</div>` : ""}
+          ${placementRule ? `<p class="stats-note" role="status"><strong>首领放置校验</strong><br>${esc(placementRule.message)}</p>` : ""}
+          ${dragonReposition ? '<p class="stats-note">只重新进行骑士放置；怪物保持原位。已在版图上的骑士可以选择不投骰并保持位置。</p>' : diceEditor(monsterDiceLabel, state.monsters, "monster")}
           ${diceEditor("队伍成员放置骰", state.knights, "knight")}
           <button id="rerollAll">${dragonReposition ? "重新投骑士放置骰" : "重新投全部放置骰"}</button>
           <hr>
@@ -567,7 +714,7 @@
       <div class="panel-head"><div><span class="eyebrow">MONSTER ROUND</span><h2>怪物行动</h2></div><span class="badge gold">${esc(monsterLabel(currentMonster()))}</span></div>
       <div class="grid2 encounter-play-layout ${tier()}"><div>${boardHtml()}<p class="muted">按住怪物或骑士模型可直接拖动调整位置；点击模型可旋转 90°。</p></div><div>
         ${crop(currentLevel(), currentLevel().side)}
-          <div class="stats-note" style="margin-top:.8rem"><strong>卡面攻击效果</strong><br>请直接查看卡面文字并结算。红色格为放置完成时计算的攻击范围，怪物轮不可修改。<br>${currentLevel().attackPatternVerified ? "红色格已根据怪物位置和朝向自动计算。" : "此卡面的范围包含首领或特殊图示，目前不会自动生成红色目标格。"}</div>
+          <div class="stats-note" style="margin-top:.8rem"><strong>卡面攻击效果</strong><br>请直接查看卡面文字并结算。红色手绘标记为放置完成时计算的攻击范围，怪物轮不可修改。<br>${currentLevel().attackPatternVerified ? "标记已根据怪物位置和朝向自动计算。" : "此卡面的范围包含首领或特殊图示，目前不会自动生成攻击范围标记。"}</div>
         <div class="field"><label>受影响骑士</label>${state.knights.map(k => `<label class="check"><input type="checkbox" data-target-knight="${k.id}" ${state.targets.includes(k.space) && k.space ? "checked" : ""} disabled>${esc(k.name)}${k.space ? `（格 ${k.space}）` : "（已移出）"}</label>`).join("")}</div>
         ${tier() === "dragon" && !state.dragonRoarDone ? `<div class="resolution"><h3>巨龙咆哮</h3><p>第一个怪物轮后，重复骑士放置，再执行一次怪物轮。已在版图上的骑士可在投骰前选择保持位置。</p><button class="primary" id="dragon-roar">进入重新放置</button></div>` : ""}
       </div></div>
@@ -629,8 +776,9 @@
   function preparePieces() {
     if (specialEncounter()?.solo) state.knights = state.knights.filter(knight => knight.sheetId === window.KF_CAMPAIGN_OPTIONS?.leaderSheetId);
     const count = Math.max(1, Number(stats().monsterCount) || 1);
+    const pieceName = i => usesMobPlacement() ? `拟身骑士 ${i + 1}` : `怪物 ${i + 1}`;
     state.monsters = Array.from({ length: count }, (_, i) => ({
-      id: uid(), name: count > 1 ? `怪物 ${i + 1}` : currentMonster().name,
+      id: uid(), name: count > 1 ? pieceName(i) : currentMonster().name,
       roll: "", rolls: Array.from({ length: requiredMonsterDice() }, () => roll("monster")), space: "", facing: 0,
     }));
     state.knights.forEach(k => { k.roll = roll(); k.space = ""; k.facing = 0; k.done = false; k.action = ""; });
@@ -830,11 +978,7 @@
     $$(".space").forEach(space => space.addEventListener("click", () => handleSpace(space.dataset.space)));
     bindBoardDrag();
     $("#removePiece")?.addEventListener("click", moveSelectedPieceOffBoard);
-    $("#confirmPosition")?.addEventListener("click", () => mutate(() => {
-      state.phase = "monster";
-      state.targets = calculatedAttackTargets();
-      state.selectedPiece = defaultSelectedPieceKey();
-    }, "确认所有模型放置并计算攻击范围"));
+    $("#confirmPosition")?.addEventListener("click", confirmPlacement);
     $$("[data-target-knight]").forEach(input => input.addEventListener("change", e => {
       if (state.phase === "monster") return;
       const k = state.knights.find(x => x.id === e.target.dataset.targetKnight);
@@ -868,24 +1012,21 @@
     if (!rect.width || !rect.height) return 0;
     let col = Math.floor((clientX - rect.left) / (rect.width / board.cols));
     const row = Math.floor((clientY - rect.top) / (rect.height / board.rows));
-    // A mirrored board renders the columns right-to-left, so visual columns map back to space numbers.
-    if (board.mirror) col = board.cols - 1 - col;
     if (row < 0 || row >= board.rows || col < 0 || col >= board.cols) return 0;
     return row * board.cols + col + 1;
   }
 
   // Drag anchor: keep the grabbed point of the footprint under the pointer, then fall back to the
   // legal anchor that covers the hovered cell, so a multi-cell boss follows the cursor naturally.
-  function dragAnchorFor(clientX, clientY, size, activeCols, board, pieces, draggedId, grid, grab = { row: size / 2, col: size / 2 }) {
+  function dragAnchorFor(clientX, clientY, size, board, pieces, draggedId, grid, grab = { row: size / 2, col: size / 2 }, allowedAnchors = null) {
     const rect = grid.getBoundingClientRect();
     if (!rect.width || !rect.height) return "";
-    let colF = (clientX - rect.left) / (rect.width / board.cols);
-    if (board.mirror) colF = board.cols - colF;
+    const colF = (clientX - rect.left) / (rect.width / board.cols);
     const rowF = (clientY - rect.top) / (rect.height / board.rows);
     const hovered = boardCellFromPoint(clientX, clientY, grid);
     if (!hovered) return "";
     // Dropping over the dimmed columns or a blocked space rejects the move instead of teleporting.
-    if ((hovered - 1) % board.cols >= activeCols || isUnavailableBoardSpace(hovered, board)) return "";
+    if (isUnavailableBoardSpace(hovered, board)) return "";
     const anchors = new Set();
     {
       const hoverRow = Math.floor((hovered - 1) / board.cols);
@@ -898,13 +1039,14 @@
     }
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     const preferredRow = clamp(Math.round(rowF - grab.row), 0, Math.max(0, board.rows - size));
-    const preferredCol = clamp(Math.round(colF - grab.col), 0, Math.max(0, activeCols - size));
+    const preferredCol = clamp(Math.round(colF - grab.col), 0, Math.max(0, board.cols - size));
     anchors.add(`${preferredRow},${preferredCol}`);
     const legal = [];
     for (const candidate of anchors) {
       const [row, col] = candidate.split(",").map(Number);
-      if (row < 0 || col < 0 || row + size > board.rows || col + size > activeCols) continue;
+      if (row < 0 || col < 0 || row + size > board.rows || col + size > board.cols) continue;
       const anchor = String(row * board.cols + col + 1);
+      if (allowedAnchors !== null && !allowedAnchors.has(anchor)) continue;
       const spaces = coveredSpaces(anchor, size, board);
       if (spaces.length !== size * size) continue;
       if (spaces.some(space => isUnavailableBoardSpace(space, board))) continue;
@@ -936,8 +1078,27 @@
     const removeZone = $("#boardRemoveZone");
     const sources = $$("[data-select-piece], [data-select-custom-piece], [data-add-piece-icon]");
     const board = boardData();
-    const activeCols = ({ vassal: 4, king: 5, devil: 6 })[tier()] || board.cols;
     let drag = null;
+
+    // Update only selection and ink. Replacing the board would detach the captured pointer's token.
+    const showSelection = key => {
+      sources.forEach(node => {
+        const nodeKey = node.dataset.selectPiece || (node.dataset.selectCustomPiece ? `custom:${node.dataset.selectCustomPiece}` : "");
+        const selected = Boolean(nodeKey && nodeKey === key);
+        node.classList.toggle("selected", selected);
+        if (nodeKey) node.setAttribute("aria-pressed", String(selected));
+      });
+      grid.querySelectorAll(".piece[data-piece]").forEach(node => node.classList.toggle("selected", node.dataset.piece === key));
+      const { matches, targets } = window.KFEncounterView.boardHighlights({ ...state, selectedPiece: key }, board, currentLevel(), ALL_DIE_FACES);
+      grid.querySelectorAll(".space").forEach(cell => {
+        const matchKind = matches.get(Number(cell.dataset.space));
+        cell.classList.remove(...[...cell.classList].filter(name => name === "match" || name.startsWith("match-")));
+        if (matchKind) cell.classList.add("match", `match-${matchKind}`);
+      });
+      grid.querySelector(".board-ink")?.remove();
+      grid.insertAdjacentHTML("beforeend", window.KFEncounterView.renderBoardInk(matches, targets, board,
+        window.KFEncounterView.boardInkOptions(state, currentMonster(), currentLevel())));
+    };
 
     const clearDropHint = () => {
       grid.querySelectorAll(".space.drop-target").forEach(node => node.classList.remove("drop-target"));
@@ -968,7 +1129,8 @@
       const rect = removeZone?.getBoundingClientRect();
       drag.removing = Boolean(rect && event.clientX >= rect.left && event.clientX < rect.right
         && event.clientY >= rect.top && event.clientY < rect.bottom);
-      drag.anchor = drag.removing ? "" : dragAnchorFor(event.clientX, event.clientY, drag.size, activeCols, board, allBoardPieces(), drag.item.id, grid, drag.grab);
+      drag.placementRule = bossPlacementRule(drag.kind, drag.item);
+      drag.anchor = drag.removing ? "" : dragAnchorFor(event.clientX, event.clientY, drag.size, board, allBoardPieces(), drag.item.id, grid, drag.grab, drag.placementRule?.anchors ?? null);
       showDropHint(drag.anchor);
       removeZone?.classList.toggle("drop-target", drag.removing && Boolean(drag.item.space));
     };
@@ -983,7 +1145,7 @@
         if (!drag.fromBoard) {
           ghost.className = `piece ${drag.kind} footprint-${drag.size} facing-${drag.item.facing || 0}${drag.item.iconId ? " image-token" : ""}`;
           if (drag.kind === "knight") ghost.classList.add("knight-token-frame");
-          if (drag.kind === "monster" && currentMonster().type === "boss") ghost.classList.add("boss-token-frame");
+          if (drag.kind === "monster") ghost.classList.add(currentMonster().type === "boss" ? "boss-token-frame" : "monster-token-frame");
           ghost.style.setProperty("--token-facing", `${drag.item.facing || 0}deg`);
           ghost.innerHTML = pieceVisual({ ...drag.item, kind: drag.kind });
         }
@@ -1015,6 +1177,7 @@
       clearDropHint();
       current.ghost?.remove();
       current.node.classList.remove("dragging");
+      if (grid.isConnected) showSelection(state.selectedPiece);
       if (!current.moved) return;
       boardClickSuppressed = true;
       setTimeout(() => { boardClickSuppressed = false; }, 0);
@@ -1023,7 +1186,7 @@
         if (current.item.space) moveSelectedPieceOffBoard(current.key);
         return;
       }
-      if (!current.anchor) return toast(`${current.size}×${current.size} 底盘无法放到目标区域`);
+      if (!current.anchor) return toast(current.placementRule?.message || `${current.size}×${current.size} 底盘无法放到目标区域`);
       if (current.newIcon) {
         addCustomPiece("", current.newIcon, current.anchor);
         return;
@@ -1031,6 +1194,7 @@
       if (current.anchor === current.space) return;
       mutate(() => {
         current.item.space = current.anchor;
+        orientPlacedBosses(current.kind);
         if (!(current.kind === "custom" && current.item.iconId === "monkey")) displaceLittleSer();
         if (["position", "monster"].includes(state.phase) && current.kind === "monster") state.targets = calculatedAttackTargets();
         state.selectedPiece = current.key;
@@ -1073,8 +1237,7 @@
       const cellHeight = gridRect.height / board.rows;
       const size = pieceFootprint({ ...item, kind });
       const rect = fromBoard ? node.getBoundingClientRect() : { width: cellWidth * (size - .14), height: cellHeight * (size - .14) };
-      let grabCol = (event.clientX - gridRect.left) / cellWidth;
-      if (board.mirror) grabCol = board.cols - grabCol;
+      const grabCol = (event.clientX - gridRect.left) / cellWidth;
       const grabRow = (event.clientY - gridRect.top) / cellHeight;
       const anchorRow = Math.floor((Number(item.space) - 1) / board.cols);
       const anchorCol = (Number(item.space) - 1) % board.cols;
@@ -1087,6 +1250,7 @@
         grab: fromBoard ? { row: grabRow - anchorRow, col: grabCol - anchorCol } : { row: size / 2, col: size / 2 },
         moved: false, removing: false, anchor: "", ghost: null
       };
+      showSelection(key);
       try { node.setPointerCapture(event.pointerId); } catch {}
       window.addEventListener("pointermove", onMove, { passive: false });
       window.addEventListener("pointerup", finish);
@@ -1104,7 +1268,6 @@
     const monkey = state.customPieces.find(piece => piece.iconId === "monkey" && piece.space);
     if (!monkey) return;
     const board = boardData();
-    const activeCols = ({ vassal: 4, king: 5, devil: 6 })[tier()] || board.cols;
     const occupied = new Set(allBoardPieces().filter(piece => piece.space && piece.id !== monkey.id)
       .flatMap(piece => coveredSpaces(piece.space, pieceFootprint(piece), board)));
     const position = Number(monkey.space);
@@ -1112,7 +1275,7 @@
     const distance = space => Math.abs(Math.floor((space - 1) / board.cols) - Math.floor((position - 1) / board.cols))
       + Math.abs((space - 1) % board.cols - (position - 1) % board.cols);
     const spaces = Array.from({ length: board.cols * board.rows }, (_, i) => i + 1)
-      .filter(space => (space - 1) % board.cols < activeCols && !isUnavailableBoardSpace(space, board) && !occupied.has(space))
+      .filter(space => !isUnavailableBoardSpace(space, board) && !occupied.has(space))
       .sort((a, b) => distance(a) - distance(b) || a - b);
     monkey.space = spaces.length ? String(spaces[0]) : "";
   }
@@ -1121,7 +1284,7 @@
     if (!["position", "monster", "knight"].includes(state.phase)) return;
     const pieces = allBoardPieces();
     const board = boardData();
-    if (isUnavailableBoardSpace(space, board)) return toast("杂兵版图的 1、15 格不能放置棋子");
+    if (isUnavailableBoardSpace(space, board)) return toast(tier() === "mob" ? "杂兵版图的 1、15 格不能放置棋子" : "该格在当前层次锁定，不能放置棋子");
     state.selectedPiece ||= defaultSelectedPieceKey();
     const selectedExists = pieces.some(value => `${value.kind}:${value.id}` === state.selectedPiece);
     if (!selectedExists) state.selectedPiece = defaultSelectedPieceKey();
@@ -1137,15 +1300,19 @@
     const list = pieceList(kind);
     const item = list.find(x => x.id === id);
     if (!item || (state.phase !== "position" && kind !== "custom" && !item.space)) return;
-    const activeCols = ({ vassal: 4, king: 5, devil: 6 })[tier()] || board.cols;
     const size = pieceFootprint({ kind });
     const currentCovered = item.space ? coveredSpaces(item.space, size, board) : [];
     if (kind === "custom" && clickedPiece && clickedKey === selectedKey) return;
     const rotateCurrentPiece = kind !== "custom" && clickedPiece && clickedKey === selectedKey && currentCovered.includes(Number(space));
-    const anchor = rotateCurrentPiece ? String(item.space) : movementAnchorForClick(space, size, board, activeCols, pieces, item);
+    const placementRule = bossPlacementRule(kind, item);
+    const anchor = rotateCurrentPiece ? String(item.space) : movementAnchorForClick(space, size, board, pieces, item, placementRule?.anchors ?? null);
+    if (!anchor && placementRule) return toast(placementRule.message);
     mutate(() => {
       if (rotateCurrentPiece) item.facing = ((item.facing || 0) + 90) % 360;
-      else if (anchor) item.space = anchor;
+      else if (anchor) {
+        item.space = anchor;
+        orientPlacedBosses(kind);
+      }
       if (kind !== "custom" || item.iconId !== "monkey") displaceLittleSer();
       if (["position", "monster"].includes(state.phase) && kind === "monster") state.targets = calculatedAttackTargets();
     }, rotateCurrentPiece ? `${item.name} 旋转 90°` : anchor ? `${item.name} 移动到格 ${anchor}，占据 ${size}×${size}` : `${size}×${size} 底盘无法放到目标区域`);
@@ -1153,8 +1320,8 @@
   function helpKnight(id) {
     const k = state.knights.find(x => x.id === id); if (!k) return;
     const symbols = spaceSymbols(k.space);
-    const opportunity = symbols.cup || 0;
-    const breakCount = symbols.sword || 0;
+    const opportunity = symbols.sword || 0;
+    const breakCount = symbols.cup || 0;
     mutate(() => {
       state.pool.opportunity += opportunity;
       state.pool.break += breakCount;

@@ -26,8 +26,8 @@ vm.runInNewContext(`
   mobFifteenBlocked = isUnavailableBoardSpace(15, { cols: 5, rows: 3 }, "mob");
   mobTwoBlocked = isUnavailableBoardSpace(2, { cols: 5, rows: 3 }, "mob");
   vassalOneBlocked = isUnavailableBoardSpace(1, { cols: 6, rows: 4 }, "vassal");
-  moveToOne = movementAnchorForClick("1", 1, { cols: 5, rows: 3 }, 5, [], { id: "k1", space: "" });
-  moveToTwo = movementAnchorForClick("2", 1, { cols: 5, rows: 3 }, 5, [], { id: "k1", space: "" });
+  moveToOne = movementAnchorForClick("1", 1, { cols: 5, rows: 3 }, [], { id: "k1", space: "" });
+  moveToTwo = movementAnchorForClick("2", 1, { cols: 5, rows: 3 }, [], { id: "k1", space: "" });
 `, context);
 
 assert.equal(context.mobOneBlocked, true);
@@ -44,7 +44,7 @@ assert.match(appSource, /杂兵版图的 1、15 格不能放置棋子/,
   "direct movement attempts are rejected with the board rule");
 assert.match(stylesSource, /\.space\.unavailable \{/,
   "blocked mob spaces have a stable visual treatment");
-assert.match(indexSource, /styles\.css\?v=19/);
-assert.match(indexSource, /app\.js\?v=33/);
+assert.match(indexSource, /styles\.css\?v=\d+/);
+assert.match(indexSource, /app\.js\?v=50/);
 
 console.log("encounter mob board: spaces 1 and 15 reject all pieces");

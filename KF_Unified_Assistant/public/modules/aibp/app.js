@@ -725,11 +725,13 @@
   }
 
   // Revealed BP cards that set the Accursed Persistence AT: discard pile, wounded BPs and
-  // face-up mob BPs.
+  // face-up mob and doppelganger BPs.
   function accursedRevealedBps(monster, battle = state.battle) {
     const piles = [...battle.bpDiscard, ...battle.bpDamage.filter(id => !String(id).startsWith(WOUND_PREFIX))];
     const track = (battle.bpTrack || []).filter(slot => slot?.id && slot.revealed).map(slot => slot.id);
-    return [...new Set([...piles, ...track])].filter(id => cardById(monster, id));
+    const doppelgangers = (battle.ruleState?.doppelgangers || [])
+      .filter(item => item.revealed).flatMap(item => item.cards);
+    return [...new Set([...piles, ...track, ...doppelgangers])].filter(id => cardById(monster, id));
   }
 
   function resolveAccursed(action) {
@@ -2439,6 +2441,7 @@
     if (b.activeBP) return toast("请先处理当前 BP");
     if (b.ruleState.pendingCoordinatedAttacks) return toast("请先完成待执行的协同攻击");
     remember();
+    accursedMonsterRound();
     const thickSkin = rule.cards.thickSkin;
     for (const zone of ["bpDeck", "bpDiscard", "bpRemoved"]) {
       b[zone] = b[zone].filter(id => id !== thickSkin);

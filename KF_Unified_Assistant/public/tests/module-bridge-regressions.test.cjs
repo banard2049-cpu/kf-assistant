@@ -11,7 +11,7 @@ const tick = () => new Promise(resolve => setImmediate(resolve));
 
 async function harness({ entries = [], remote = { round: 8 }, offline = false, syncReply } = {}) {
   const storage = new Map([['kfActiveCampaign', 'campaign-A'], ...entries]);
-  const events = {}, intervals = [], requests = [], appLoads = [];
+  const events = {}, intervals = [], requests = [], appLoads = [], timers = [], stateEvents = [];
   const context = vm.createContext({
     navigator: { onLine: !offline }, location: {}, Uint8Array,
     document: {
@@ -35,12 +35,13 @@ async function harness({ entries = [], remote = { round: 8 }, offline = false, s
       return { ok: true, json: async () => data };
     },
     addEventListener(name, callback) { events[name] = callback; },
-    setInterval(callback) { intervals.push(callback); }, setTimeout() {}, CustomEvent: class {},
+    setInterval(callback) { intervals.push(callback); }, setTimeout(callback) { timers.push(callback); },
+    CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options?.detail; } },
   });
   context.window = context;
-  context.dispatchEvent = () => {};
+  context.dispatchEvent = event => stateEvents.push(event);
   vm.runInContext(source, context); await tick(); await tick();
-  return { context, storage, events, intervals, requests, appLoads };
+  return { context, storage, events, intervals, requests, appLoads, timers, stateEvents };
 }
 
 test('reload replays unacknowledged local progress instead of overwriting it', async () => {
@@ -105,4 +106,50 @@ test('a server conflict still preserves the higher authoritative map round', asy
   const cache = JSON.parse(h.storage.get(CACHE));
   assert.equal(JSON.parse(cache.value).round, 12);
   assert.ok(cache.acknowledgedSignature);
+});
+
+for (const polled of [false, true]) {
+  test(`a conflict for an older map snapshot preserves newer edits ${polled ? 'already queued' : 'made after the last poll'}`, async () => {
+    let acknowledge;
+    const local = JSON.stringify({ round: 6 });
+    const h = await harness({
+      entries: [[CACHE, JSON.stringify({ value: local, acknowledgedValue: '', revision: 1 })]],
+      remote: { round: 12 },
+      syncReply: () => new Promise(resolve => { acknowledge = resolve; }),
+    });
+    h.storage.set(KEY, JSON.stringify({ round: 13 }));
+    if (polled) h.intervals[0]();
+    acknowledge({ revision: 15, conflicts: [{ path: 'modules.map', resolution: 'existing' }], state: { modules: { map: { round: 12 } } } });
+    await tick();
+    assert.equal(JSON.parse(h.storage.get(KEY)).round, 13);
+    assert.equal(JSON.parse(JSON.parse(h.storage.get(CACHE)).value).round, 13);
+    assert.equal(h.stateEvents.filter(event => event.type === 'kf:module-state').length, 0, 'an old verdict cannot reset live module state');
+    h.timers.shift()(); await tick();
+    const retry = h.requests[1].operations.find(operation => operation.path === 'modules.map');
+    assert.equal(retry.value.round, 13); assert.equal(retry.baseRevision, 1);
+    acknowledge({ revision: 16, state: { modules: { map: { round: 13 } } } }); await tick();
+    const reloaded = await harness({ entries: [...h.storage.entries()], remote: { round: 13 } });
+    assert.equal(reloaded.appLoads[0].round, 13);
+    assert.equal(reloaded.requests.flatMap(request => request.operations).some(operation => operation.path === 'modules.map'), false, 'the accepted newer snapshot is acknowledged');
+  });
+}
+
+test('later polls and a reload retain the conflict base until the new snapshot is arbitrated', async () => {
+  let acknowledge;
+  const local = JSON.stringify({ round: 6 });
+  const h = await harness({
+    entries: [[CACHE, JSON.stringify({ value: local, acknowledgedValue: '', revision: 1 })]], remote: { round: 12 },
+    syncReply: () => new Promise(resolve => { acknowledge = resolve; }),
+  });
+  h.storage.set(KEY, JSON.stringify({ round: 7 }));
+  acknowledge({ revision: 15, conflicts: [{ path: 'modules.map', resolution: 'existing' }], state: { modules: { map: { round: 12 } } } }); await tick();
+  h.storage.set(KEY, JSON.stringify({ round: 8 })); h.intervals[0](); await tick();
+  const retry = h.requests[1].operations.find(operation => operation.path === 'modules.map');
+  assert.equal(retry.value.round, 8); assert.equal(retry.baseRevision, 1, 'a poll must not rebase the rejected lower round onto the server revision');
+  const entries = [...h.storage.entries()];
+  acknowledge({ revision: 16, conflicts: [{ path: 'modules.map', resolution: 'existing' }], state: { modules: { map: { round: 12 } } } }); await tick();
+  assert.equal(JSON.parse(h.storage.get(KEY)).round, 12, 'an unchanged lower-round snapshot still yields to the server');
+  const reloaded = await harness({ entries, remote: { round: 12 } });
+  const replay = reloaded.requests.flatMap(request => request.operations).find(operation => operation.path === 'modules.map');
+  assert.equal(replay.value.round, 8); assert.equal(replay.baseRevision, 1, 'a reload must also preserve the old conflict base');
 });

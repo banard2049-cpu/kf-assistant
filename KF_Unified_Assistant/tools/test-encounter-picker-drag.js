@@ -14,10 +14,12 @@ class Element {
     this.rect.bottom = this.rect.top + this.rect.height;
     this.listeners = new Map();
     this.classes = new Set();
+    this.attributes = new Map();
     this.classList = {
       add: (...names) => names.forEach(name => this.classes.add(name)),
       remove: (...names) => names.forEach(name => this.classes.delete(name)),
-      toggle: (name, force) => force ? this.classes.add(name) : this.classes.delete(name)
+      toggle: (name, force) => force ? this.classes.add(name) : this.classes.delete(name),
+      [Symbol.iterator]: () => this.classes.values()
     };
     this.style = { setProperty() {} };
     this.isConnected = true;
@@ -41,8 +43,8 @@ class Element {
   closest() { return this; }
   getBoundingClientRect() { return this.rect; }
   setPointerCapture() {}
-  setAttribute() {}
-  removeAttribute() {}
+  setAttribute(name, value) { this.attributes.set(name, value); }
+  removeAttribute(name) { this.attributes.delete(name); }
   cloneNode() { const node = new Element(this.dataset, this.rect); node.classes = new Set(this.classes); return node; }
   remove() { this.isConnected = false; }
 }
@@ -70,7 +72,7 @@ for (const file of ["data/encounter-data.js", "encounter-catalog.js", "encounter
 const app = read("app.js");
 vm.runInContext(app.slice(0, app.lastIndexOf("  renderApp();")) + `
   renderApp = () => {};
-  window.dragTest = { bindBoardDrag, undo, boardData, calculatedAttackTargets,
+  window.dragTest = { bindBoardDrag, undo, boardData, calculatedAttackTargets, monsterAttackTargets,
     get: () => state, set: value => { state = normalize(value); } };
 })();`, context);
 const runtime = window.dragTest;
@@ -83,16 +85,35 @@ function setup({ tier = "mob", customPieces = [], monsterSpace = "", knightSpace
   const level = monster.encounterLevels.find(item => item.tier === tier);
   runtime.set({ ...initial, monsterId: monster.id, level: level.level, phase: "position", history: [], log: [],
     selectedPiece: "knight:k1", knights: [{ ...initial.knights[0], id: "k1", space: knightSpace }],
-    monsters: [{ id: "m1", name: "怪物", space: monsterSpace, facing: 90 }], customPieces });
+    monsters: [{ id: "m1", name: "怪物", space: monsterSpace, facing: 90, rolls: ["sword", "cup"] }], customPieces });
   const grid = new Element({}, { left: 100, top: 100, width: 500, height: 300 });
-  const cells = new Map();
+  const cells = new Map(Array.from({ length: runtime.boardData().cols * runtime.boardData().rows }, (_, index) => {
+    const cell = new Element({ space: String(index + 1) });
+    return [index + 1, cell];
+  }));
+  const boardPieces = [...runtime.get().monsters.map(item => ({ ...item, kind: "monster" })),
+    ...runtime.get().knights.map(item => ({ ...item, kind: "knight" })),
+    ...runtime.get().customPieces.map(item => ({ ...item, kind: "custom" }))]
+    .filter(item => item.space).map(item => new Element({ piece: `${item.kind}:${item.id}` }));
+  let ink = null;
   grid.querySelector = selector => {
-    if (!cells.has(selector)) cells.set(selector, new Element());
-    return cells.get(selector);
+    if (selector === ".board-ink") return ink;
+    return cells.get(Number(selector.match(/data-space="(\d+)"/)?.[1])) || null;
   };
-  grid.querySelectorAll = () => [...cells.values()].filter(node => node.classes.has("drop-target"));
+  grid.querySelectorAll = selector => {
+    if (selector === ".piece[data-piece]") return boardPieces;
+    if (selector === ".space") return [...cells.values()];
+    return [...cells.values()].filter(node => node.classes.has("drop-target"));
+  };
+  grid.insertAdjacentHTML = (position, html) => {
+    assert.equal(position, "beforeend");
+    if (!html) return;
+    ink = new Element();
+    ink.innerHTML = html;
+    ink.remove = () => { ink = null; };
+  };
   const removeZone = new Element({}, { left: 100, top: 70, width: 100, height: 52 });
-  scene = { grid, removeZone, cells, sources: sources.map(dataset => new Element(dataset)),
+  scene = { grid, removeZone, cells, boardPieces, sources: sources.map(dataset => new Element(dataset)),
     elements: new Map([[".board-grid", grid], ["#boardRemoveZone", removeZone]]) };
   runtime.bindBoardDrag();
   return scene;
@@ -100,7 +121,7 @@ function setup({ tier = "mob", customPieces = [], monsterSpace = "", knightSpace
 function point(space) {
   const board = runtime.boardData();
   const col = (Number(space) - 1) % board.cols;
-  return { clientX: 100 + ((board.mirror ? board.cols - 1 - col : col) + .5) * 500 / board.cols,
+  return { clientX: 100 + (col + .5) * 500 / board.cols,
     clientY: 100 + (Math.floor((Number(space) - 1) / board.cols) + .5) * 300 / board.rows };
 }
 function begin(node = scene.sources[0], values = {}) { node.fire("pointerdown", values); }
@@ -114,6 +135,53 @@ function assertClean() {
     assert.equal(window.listeners.get(type)?.length || 0, 0, `${type} listeners are released`);
   }
 }
+
+// Pressing a model immediately previews its selection and matching dice, without replacing nodes or saving.
+const matchingCells = () => [...scene.cells].filter(([, node]) => node.classes.has("match")).map(([number]) => number);
+for (const kind of ["monster", "knight"]) {
+  setup({ tier: "vassal", sources: [{ selectPiece: "monster:m1" }, { selectPiece: "knight:k1" }] });
+  runtime.get().knights[0].roll = "double-sword";
+  runtime.get().selectedPiece = kind === "monster" ? "knight:k1" : "monster:m1";
+  const before = plain(runtime.get());
+  const oldSaved = storage.get("kf-encounter-assistant-v1");
+  const source = scene.sources[kind === "monster" ? 0 : 1];
+  const otherSource = scene.sources[kind === "monster" ? 1 : 0];
+  otherSource.classes.add("selected");
+  begin(source);
+  assert.ok(source.classes.has("selected"), "the pressed model is selected before the first move");
+  assert.equal(source.attributes.get("aria-pressed"), "true");
+  assert.ok(!otherSource.classes.has("selected"), "the old selection clears immediately");
+  assert.equal(otherSource.attributes.get("aria-pressed"), "false");
+  const bossMatches = [3, 4, 10, 17, 23, 24];
+  const knightMatches = [12, 16, 21];
+  assert.deepEqual(matchingCells(), kind === "monster" ? bossMatches : knightMatches);
+  const ink = scene.grid.querySelector(".board-ink");
+  assert.ok(ink?.innerHTML.includes('data-ink-layer="match"'), "the hand-drawn placement overlay updates too");
+  if (kind === "monster") {
+    assert.match(ink.innerHTML, /data-ink-kind="1" data-ink-cells="4"/);
+    assert.match(ink.innerHTML, /data-ink-kind="2" data-ink-cells="3"/);
+  }
+  assert.deepEqual(plain(runtime.get()), before, "preview selection does not change game state");
+  assert.equal(storage.get("kf-encounter-assistant-v1"), oldSaved, "preview selection does not save");
+  hover(18);
+  window.fire("keydown", { key: "Escape" });
+  assert.ok(otherSource.classes.has("selected"), "cancellation restores the original selection");
+  assert.deepEqual(matchingCells(), kind === "monster" ? knightMatches : bossMatches);
+  assert.deepEqual(plain(runtime.get()), before);
+  assertClean();
+}
+
+// A model grabbed on the board uses the same live preview and retains its pointer-capture node.
+setup({ tier: "vassal", monsterSpace: "3", sources: [{ selectPiece: "monster:m1" }, { selectPiece: "knight:k1" }] });
+const boardBoss = scene.boardPieces.find(node => node.dataset.piece === "monster:m1");
+scene.grid.fire("pointerdown", { target: boardBoss, ...point(3) });
+assert.ok(boardBoss.classes.has("selected"));
+assert.ok(scene.sources[0].classes.has("selected"));
+assert.equal(scene.boardPieces[0], boardBoss, "the live token is not replaced to refresh the overlay");
+window.fire("pointercancel");
+assert.ok(!boardBoss.classes.has("selected"));
+assert.ok(scene.sources[1].classes.has("selected"));
+assertClean();
 
 // Palette dragging creates and places exactly one token, as one undoable operation.
 setup({ sources: [{ addPieceIcon: "token-04" }] });
@@ -173,10 +241,13 @@ for (const tier of ["vassal", "dragon"]) {
   begin(); hover(3); drop(3);
   assert.ok(runtime.get().monsters[0].space, `${tier} footprints can be dragged from the picker`);
   assert.deepEqual(plain(runtime.get().targets), plain(runtime.calculatedAttackTargets()));
+  const boss = runtime.get().monsters[0];
+  const maximum = Math.max(...[0, 90, 180, 270].map(facing => runtime.monsterAttackTargets({ ...boss, facing }).length));
+  assert.equal(runtime.get().targets.length, maximum, `${tier} picker drops choose the greatest attack coverage`);
   assertClean();
 }
 setup({ tier: "vassal", sources: [{ selectPiece: "knight:k1" }] });
-begin(); hover(5); drop(5);
+begin(); hover(2); drop(2);
 assert.equal(runtime.get().knights[0].space, "", "inactive columns reject picker drops");
 assert.equal(runtime.get().history.length, 0);
 assertClean();
@@ -234,4 +305,35 @@ assert.equal(runtime.get().customPieces.length, 0, "dropping an unused palette t
 assert.equal(runtime.get().history.length, 0);
 assertClean();
 
-console.log("encounter picker drag: creation, placement, removal, cancellation, collisions, limits, footprints, persistence and undo passed");
+// Boss placement checks are also applied to pointer previews and actual drops.
+setup({ tier: "vassal", sources: [{ selectPiece: "monster:m1" }] });
+const bossBoard = runtime.boardData();
+const originalSymbols = bossBoard.spaces;
+bossBoard.spaces = Array.from({ length: 24 }, (_, i) => i === 2 ? { sword: 1 } : i === 3 ? { cup: 1 } : {});
+const beforeInvalidBossDrop = plain(runtime.get());
+begin(); hover(24);
+assert.equal(scene.grid.querySelectorAll().length, 0, "invalid boss footprints are not previewed as legal");
+drop(24);
+assert.deepEqual(plain(runtime.get()), beforeInvalidBossDrop, "invalid boss drops leave the saved position and history untouched");
+assertClean();
+begin(); hover(3); drop(3);
+assert.equal(runtime.get().monsters[0].space, "3", "a matching double-die footprint can be dropped");
+assertClean();
+bossBoard.spaces = originalSymbols;
+
+// Dropping another boss can reorient the first one to maximize their combined, non-duplicated range.
+setup({ tier: "vassal", monsterSpace: "3", sources: [{ selectPiece: "monster:m2" }] });
+runtime.get().monsters.push({ id: "m2", name: "Boss 2", space: "", facing: 0, rolls: ["blank", "blank"] });
+bossBoard.spaces = Array.from({ length: 24 }, () => ({}));
+begin(); hover(22); drop(22);
+assert.equal(runtime.get().monsters[1].space, "16");
+assert.deepEqual(plain(runtime.get().monsters.map(item => item.facing)), [180, 0]);
+assert.equal(runtime.get().targets.length, 7);
+assertClean();
+runtime.undo();
+assert.deepEqual(plain(runtime.get().monsters.map(({ space, facing }) => ({ space, facing }))), [
+  { space: "3", facing: 90 }, { space: "", facing: 0 }
+]);
+bossBoard.spaces = originalSymbols;
+
+console.log("encounter picker drag: creation, placement, removal, cancellation, collisions, limits, footprints, dice validation, persistence and undo passed");

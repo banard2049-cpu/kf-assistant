@@ -38,7 +38,7 @@ vm.runInNewContext(`
   dragonKnightFaceIds = dieFaces("knight").map(face => face.id);
   migratedDragonFace = normalizeFace("double-sword", DRAGON_DIE_FACES);
   rolledDragonFaceIds = Array.from({ length: 60 }, () => roll("monster"));
-  exactDragonMatch = faceMatchesSpace("dragon-double-sword-double-cup", { sword: 2, cup: 2 });
+  exactDragonMatch = faceMatchesSpace("dragon-double-sword-double-cup", { sword: 3, cup: 2 });
   insufficientDragonMatch = faceMatchesSpace("dragon-double-sword-double-cup", { sword: 1, cup: 2 });
   tierValue = "vassal";
   vassalMonsterFaceIds = dieFaces("monster").map(face => face.id);
@@ -46,7 +46,7 @@ vm.runInNewContext(`
 
 const dragonFaces = JSON.parse(context.dragonFacesJson);
 const expectedMatches = [
-  { sword: 2, cup: 2 },
+  { sword: 3, cup: 2 },
   { sword: 2 },
   { sword: 1, cup: 1 },
   { sword: 1 },
@@ -69,6 +69,6 @@ for (const face of dragonFaces) {
 }
 
 assert.match(appSource, /怪物放置骰（白骰）/, "dragon monster die is identified in the UI");
-assert.match(indexSource, /app\.js\?v=33/, "encounter app cache version is updated");
+assert.match(indexSource, /app\.js\?v=50/, "encounter app cache version is updated");
 
 console.log("encounter dragon white die assertions passed");

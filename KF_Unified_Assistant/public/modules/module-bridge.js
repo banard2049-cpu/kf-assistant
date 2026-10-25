@@ -161,7 +161,7 @@
   let operationQueue = [];
   let lastScenePublish = 0;
 
-  function applyAuthoritativeConflict(result) {
+  function applyAuthoritativeConflict(result, batch) {
     const path = `modules.${stateModuleName}`;
     const serverWon = result.conflicts?.some(conflict =>
       conflict.path === path && conflict.resolution === "existing"
@@ -169,6 +169,21 @@
     if (!serverWon) return false;
     const selected = result.state?.modules?.[stateModuleName];
     if (!selected || typeof selected !== "object") return false;
+    const submitted = batch.find(operation => operation.path === path);
+    const current = captureCurrentValue();
+    if (submitted && current && current !== JSON.stringify(submitted.value)) {
+      // This verdict belongs to the submitted snapshot. Keep edits made while
+      // it was in flight and let the server arbitrate that newer snapshot too.
+      // Retain the old base even across a reload, so a lower map round cannot
+      // bypass the server's conflict protection using this response's revision.
+      const pending = operationQueue.find(operation => operation.path === path);
+      const baseRevision = pending?.baseRevision ?? submitted.baseRevision;
+      queueOperation(path, JSON.parse(current), baseRevision);
+      cache.revision = baseRevision;
+      storeCache();
+      lastValue = current;
+      return "deferred";
+    }
     const serialized = JSON.stringify(selected);
     localStorage.setItem(storageKey, serialized);
     cache.value = serialized;
@@ -177,18 +192,32 @@
     lastValue = serialized;
     queued = false;
     window.dispatchEvent(new CustomEvent("kf:module-state", { detail: selected }));
-    return true;
+    return "applied";
   }
 
   function readHandoff() {
-    try {
-      const keys = moduleName === "aibp" ? ["kfRogueHandoff", "kfEncounterHandoff"] : ["kfEncounterHandoff"];
-      for (const key of keys) {
+    const keys = moduleName === "aibp" ? ["kfEncounterHandoff", "kfRogueHandoff"] : ["kfEncounterHandoff"];
+    const candidates = [];
+    for (const key of keys) {
+      try {
         const value = JSON.parse(localStorage.getItem(key) || "null");
-        if (value?.campaignId === activeCampaign) return value;
-      }
-      return null;
-    } catch { return null; }
+        if (value?.campaignId !== activeCampaign) continue;
+        if (value.roguePath && value.slotId) {
+          const activeSlot = localStorage.getItem(`kf-rogue-path-active-slot-v1:${activeCampaign}`);
+          if (activeSlot && activeSlot !== value.slotId) continue;
+        }
+        candidates.push(value);
+      } catch { /* one malformed handoff must not hide the other source */ }
+    }
+    // New requests carry their creation time. Legacy requests have no clock,
+    // so an unapplied request wins over an already consumed legacy handoff.
+    candidates.sort((left, right) => {
+      const leftTime = Number(left.createdAt || left.startedAt || 0);
+      const rightTime = Number(right.createdAt || right.startedAt || 0);
+      return rightTime - leftTime || Number(Boolean(left.appliedAibp)) - Number(Boolean(right.appliedAibp))
+        || Number(right.appliedAt || 0) - Number(left.appliedAt || 0);
+    });
+    return candidates[0] || null;
   }
 
   function applyEncounterHandoff() {
@@ -219,13 +248,17 @@
     if (level) { level.value = String(handoff.level); level.dispatchEvent(new Event("input", { bubbles: true })); }
     document.querySelector("#setupBattle")?.click();
     handoff.appliedAibp = true;
+    handoff.appliedAt = Date.now();
     localStorage.setItem(handoff.roguePath ? "kfRogueHandoff" : "kfEncounterHandoff", JSON.stringify(handoff));
     window.dispatchEvent(new CustomEvent("kf:aibp-handoff", { detail: handoff }));
   }
 
-  function queueOperation(path, value) {
+  function queueOperation(path, value, baseRevision = campaignRevision) {
+    if (path === `modules.${stateModuleName}` && cacheIsDirty() && Number.isInteger(cache.revision)) {
+      baseRevision = Math.min(baseRevision, cache.revision);
+    }
     operationQueue = operationQueue.filter(operation => operation.path !== path);
-    operationQueue.push({ id: operationId(), clientId, path, value, baseRevision: campaignRevision });
+    operationQueue.push({ id: operationId(), clientId, path, value, baseRevision });
   }
 
   function publishScene(force = false) {
@@ -253,13 +286,13 @@
         body: JSON.stringify({ campaignId: activeCampaign, operations: batch }),
       });
       campaignRevision = result.revision;
-      const serverWon = applyAuthoritativeConflict(result);
+      const serverWon = applyAuthoritativeConflict(result, batch);
       const savedModule = batch.find(operation => operation.path === `modules.${stateModuleName}`);
       if (savedModule && !serverWon) {
         captureCurrentValue();
         acknowledgeValue(JSON.stringify(savedModule.value), result.revision);
       }
-      status.textContent = serverWon ? "已保留服务器较高轮次存档" : "已同步";
+      status.textContent = serverWon === "deferred" ? "继续同步本机新修改…" : serverWon ? "已保留服务器较高轮次存档" : "已同步";
     } catch (error) {
       operationQueue.unshift(...batch);
       queued = true;
@@ -335,7 +368,7 @@
       window.KF_CAMPAIGN_SQUIRES = squires;
       window.KF_CAMPAIGN_PARTY = [...partyKnights, ...squires];
       try {
-        const rogueHandoff = JSON.parse(localStorage.getItem("kfRogueHandoff") || "null");
+        const rogueHandoff = readHandoff();
         if (moduleName === "aibp" && rogueHandoff?.roguePath && rogueHandoff.campaignId === activeCampaign && Array.isArray(rogueHandoff.rogueRoster)) {
           window.KF_CAMPAIGN_KNIGHTS = rogueHandoff.rogueRoster;
           window.KF_CAMPAIGN_SQUIRES = [];

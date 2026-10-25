@@ -13,8 +13,8 @@ const displayIndex = fs.readFileSync("public/modules/display/index.html", "utf8"
 
 // Every board piece exposes its state key, so pointer handling can resolve the dragged piece.
 assert.match(viewSource, /data-piece="\$\{pieceKey\}"/, "board pieces expose a draggable piece key");
-assert.match(viewSource, /board\.mirror && footprint > 1 \? " mirror" : ""/,
-  "multi-cell footprints know when the board columns are mirrored");
+assert.doesNotMatch(viewSource, /board\.mirror|direction:rtl|mirrorClass/,
+  "board cells and footprints use image coordinates directly");
 
 assert.match(appSource, /function bindBoardDrag\(\) \{/, "the encounter board binds pointer dragging");
 assert.match(appSource, /bindBoardDrag\(\);/, "render binding starts the board drag handler");
@@ -26,12 +26,11 @@ assert.match(appSource, /piece-drag-ghost/, "dragging shows a floating copy of t
 assert.match(appSource, /\.space\.drop-target/, "dragging highlights the target footprint");
 assert.match(appSource, /state\.selectedPiece = current\.key;/, "a dropped piece stays selected");
 
-// Both stylesheets render 2- and 3-cell bosses as circles and mirror their footprint.
+// Both stylesheets render 2- and 3-cell bosses from the image's top-left anchor.
 for (const [name, css] of [["styles.css", stylesSource], ["encounter-view.css", boardStyles]]) {
   assert.match(css, /\.piece\.footprint-2 \{[^}]*border-radius: 50%/, `${name}: 2×2 boss is round`);
   assert.match(css, /\.piece\.footprint-3 \{[^}]*border-radius: 50%/, `${name}: 3×3 boss is round`);
-  assert.match(css, /\.piece\.mirror \{ left: auto; right: 7%; \}/,
-    `${name}: mirrored footprints grow leftwards from their anchor`);
+  assert.doesNotMatch(css, /\.piece\.mirror/, `${name}: no reversed footprint styles remain`);
   assert.match(css, /\.piece-drag-ghost \{/, `${name}: drag ghost has stable styling`);
   assert.match(css, /\.space\.drop-target \{/, `${name}: drop target has a visible state`);
   assert.match(css, /\.piece \{[^}]*pointer-events: auto/, `${name}: pieces receive pointer input`);
@@ -54,33 +53,29 @@ assert.ok(dragStart >= 0 && dragEnd > dragStart, "drag geometry helpers not foun
 
 const context = {};
 vm.runInNewContext(`
-  let board = { cols: 6, rows: 4, mirror: true };
-  const blockedSpaces = new Set();
+  const board = { cols: 6, rows: 4 };
+  const blockedSpaces = new Set([1, 2, 7, 8, 13, 14, 19, 20]);
   const boardData = () => board;
   const isUnavailableBoardSpace = space => blockedSpaces.has(Number(space));
   const pieceFootprint = piece => piece.kind === "monster" ? 2 : 1;
   const grid = { getBoundingClientRect: () => ({ left: 0, top: 0, width: 600, height: 400 }) };
   ${appSource.slice(coveredStart, coveredEnd)}
   ${appSource.slice(dragStart, dragEnd)}
-  mirroredColumn4 = boardCellFromPoint(450, 50, grid);
-  mirroredColumn0 = boardCellFromPoint(50, 50, grid);
-  board = { cols: 6, rows: 4, mirror: false };
-  plainColumn4 = boardCellFromPoint(450, 50, grid);
-  board = { cols: 6, rows: 4, mirror: true };
-  bossAnchor = dragAnchorFor(350, 150, 2, 4, board, [], "boss", grid);
+  column5 = boardCellFromPoint(450, 50, grid);
+  column1 = boardCellFromPoint(50, 50, grid);
+  bossAnchor = dragAnchorFor(350, 150, 2, board, [], "boss", grid);
   bossCovered = coveredSpaces(bossAnchor, 2, board);
   bossHovered = boardCellFromPoint(350, 150, grid);
-  blockedByBoss = dragAnchorFor(250, 50, 1, 4, board, [{ id: "boss", space: "3", kind: "monster" }], "knight", grid);
-  inactiveColumn = dragAnchorFor(50, 50, 1, 4, board, [], "knight", grid);
+  blockedByBoss = dragAnchorFor(350, 50, 1, board, [{ id: "boss", space: "3", kind: "monster" }], "knight", grid);
+  inactiveColumn = dragAnchorFor(50, 50, 1, board, [], "knight", grid);
   blockedSpaces.add(3);
-  blockedSpace = dragAnchorFor(350, 50, 1, 4, board, [], "knight", grid);
+  blockedSpace = dragAnchorFor(250, 50, 1, board, [], "knight", grid);
 `, context);
 
-assert.equal(context.mirroredColumn4, 2, "mirrored boards map the visual column back to its space number");
-assert.equal(context.mirroredColumn0, 6, "mirrored boards start numbering on the visual right");
-assert.equal(context.plainColumn4, 5, "unmirrored boards number columns left to right");
-assert.equal(context.bossAnchor, "9", "a 2×2 boss snaps around the cell under the pointer");
-assert.deepEqual(Array.from(context.bossCovered), [9, 10, 15, 16], "the boss footprint stays square on the board");
+assert.equal(context.column5, 5, "image column five is cell five");
+assert.equal(context.column1, 1, "the image's leftmost column is column one");
+assert.equal(context.bossAnchor, "10", "a 2×2 boss snaps around the cell under the pointer");
+assert.deepEqual(Array.from(context.bossCovered), [10, 11, 16, 17], "the boss footprint stays square on the board");
 assert.ok(context.bossCovered.includes(context.bossHovered), "the boss always covers the cell under the pointer");
 assert.equal(context.blockedByBoss, "", "a knight cannot be dropped onto a boss footprint");
 assert.equal(context.inactiveColumn, "", "pieces cannot be dropped on the dimmed columns");

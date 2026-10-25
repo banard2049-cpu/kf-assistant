@@ -729,11 +729,10 @@ assert.equal(state().ruleState.knighteater.brute, 0,
   "凶残达到 3 后应清除全部凶残指示物");
 assert.equal(state().ruleState.knighteater.armor, 0,
   "凶残达到 3 后应清除全部盔甲指示物");
-assert.match(state().ruleState.ruleNotice, /执行食骑者标志行为/,
-  "凶残达到 3 后应提示执行食骑者标志行为");
+assert.match(state().ruleState.ruleNotice, /执行食士师标志行为/,
+  "凶残达到 3 后应提示执行食士师标志行为");
 api.selectMonster("M_Stonemason");
 state().ruleState.stonemason.armor = { front: 2, right: 1, back: 0, left: 3 };
-state().ruleState.stonemason.direction = "right";
 const stonemasonRules = api.renderBossRules();
 assert.match(stonemasonRules, /class="stonemason-armor-grid"/,
   "Stonemason should use the dedicated four-direction armor layout");
@@ -741,8 +740,8 @@ assert.equal((stonemasonRules.match(/class="smelted-armor-token"/g) || []).lengt
   "All four Stonemason directions should use graphical armor tokens");
 assert.equal((stonemasonRules.match(/10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99/g) || []).length, 4,
   "All four Stonemason controls should render the armor token asset");
-assert.match(stonemasonRules, /stonemason-armor-module is-current" aria-current="true">\s*<span class="stonemason-armor-label">右方节点/,
-  "The current Stonemason attack direction should be highlighted");
+assert.doesNotMatch(stonemasonRules, /is-current|data-stone-direction/,
+  "Stonemason armor counters should not select an automatic attack direction");
 assert.match(stonemasonRules, /data-p2-counter="stone:front" data-delta="-1"/,
   "The restyled Stonemason controls should retain their counter actions");
 assert.doesNotMatch(stonemasonRules, /class="rule-counter-grid"/,
@@ -1812,8 +1811,8 @@ api.setSheetTokenCount("token-armor", 3);
 let manualArmorTokens = state().sheetTokens.filter(token => token.assetId === "token-armor");
 assert.equal(manualArmorTokens.length, 1, "通用护甲应保存为一个可拖动的指示物堆");
 assert.equal(manualArmorTokens[0].count, 3, "通用护甲指示物堆应保留完整数量");
-assert.equal(manualArmorTokens[0].x, 57.1, "蛋蛋骑士通用护甲应默认放在 BP1 印刷槽位");
-assert.equal(manualArmorTokens[0].y, 40.2, "蛋蛋骑士通用护甲纵坐标应与 BP1 印刷槽位对齐");
+assert.equal(manualArmorTokens[0].x, 56.64, "蛋蛋骑士通用护甲应默认放在 BP1 印刷槽位");
+assert.equal(manualArmorTokens[0].y, 43.0, "蛋蛋骑士通用护甲纵坐标应与 BP1 印刷槽位对齐");
 api.setSheetTokenCount("token-armor", 8);
 manualArmorTokens = state().sheetTokens.filter(token => token.assetId === "token-armor");
 assert.equal(manualArmorTokens.length, 1, "增加通用护甲不应产生多个独立位置");
@@ -1935,9 +1934,9 @@ api.selectMonster("M_Toadragon");
 rebuild("full", 1);
 api.renderApp();
 const conflictBoardHtml = nodes.get("#app").innerHTML;
-assert.match(conflictBoardHtml, /terrain-control-start monster[\s\S]*terrain-start-arrow facing-(0|90|180|270)/,
+assert.match(conflictBoardHtml, /terrain-control-start monster[\s\S]*class="boss-token-frame" style="--boss-facing:(0|90|180|270)deg"/,
   "冲突版图中的 Boss 必须显示明确的上下左右朝向");
-assert.doesNotMatch(conflictBoardHtml, /terrain-start-arrow[^>]*rotate\((45|135|225|315)deg\)/,
+assert.doesNotMatch(conflictBoardHtml, /--boss-facing:(45|135|225|315)deg/,
   "冲突版图中的 Boss 不得显示斜向箭头");
 
 // ---- 视线叠加层 -----------------------------------------------------------

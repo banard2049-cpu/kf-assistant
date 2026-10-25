@@ -135,10 +135,10 @@ for (const id of ["M_FirstmenWarriors", "M_FirstmenLictor"]) {
   defeat(index);
   assert.equal(occupied(), count - 1);
   assert.match(state().mobSpawn.notices.at(-1), /BP3.*耗尽/);
-  prepare(id);
+  const bp1Index = prepare(id, 1);
   exhaust("BP2");
   const countBefore = occupied();
-  defeat(0);
+  defeat(bp1Index);
   assert.equal(occupied(), countBefore - 1, "no other rank substitutes for exhausted standard immediate supply");
   assert.equal(state().mobSpawn.nextMangrove, 1);
 }

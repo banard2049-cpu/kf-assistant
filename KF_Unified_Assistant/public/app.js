@@ -249,21 +249,45 @@ const op=(path,value)=>{
   persistPending();cacheSheet();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
 };
 const cacheSheet=()=>active&&localStorage.setItem(`kf-sheet-${active}`,JSON.stringify({state,revision}));
+const sheetSnapshots=new Map();
+const operationOwnedBy=(item,ownerId)=>!item.userId||item.userId===ownerId;
+const operationReady=(item,ownerId)=>operationOwnedBy(item,ownerId)&&!item.syncBlocked;
+function latestSheetSnapshot(ownerId,id,snapshot){
+  const key=`${ownerId}:${id}`,known=sheetSnapshots.get(key);
+  if(!known||snapshot.revision>=known.revision)sheetSnapshots.set(key,structuredClone({state:snapshot.state,revision:snapshot.revision}));
+  return structuredClone(sheetSnapshots.get(key));
+}
+function blockUnavailableOperations(queue,key,id,ownerId,error){
+  if(![403,404,410].includes(error.status))return false;
+  // Keep unavailable records in the durable queue without blocking other saves.
+  queue.filter(item=>item[key]===id&&operationOwnedBy(item,ownerId)).forEach(item=>{item.syncBlocked=error.status});
+  return true;
+}
+function resumeAvailableOperations(queue,key,records){
+  const available=new Set(records.map(record=>record.id));let resumed=false;
+  queue.forEach(item=>{if(item.syncBlocked&&operationOwnedBy(item,user?.id)&&available.has(item[key])){delete item.syncBlocked;resumed=true}});
+  return resumed;
+}
+function showQueuedSaveState(){
+  const owned=[...pending,...campaignPending].filter(item=>operationOwnedBy(item,user?.id));
+  if(owned.some(item=>item.syncBlocked))setSave("部分档案不可用，修改已保留本机",true);
+  else setSave(owned.length?"保存中…":"已保存");
+}
 async function sync(){
   if(syncing||!user||!pending.length||!navigator.onLine)return;
-  const ownerId=user.id,sheetId=pending.find(item=>!item.userId||item.userId===ownerId)?.sheetId;
-  const batch=pending.filter(item=>item.sheetId===sheetId&&(!item.userId||item.userId===ownerId)).slice(0,200);if(!batch.length)return;
+  const ownerId=user.id,sheetId=pending.find(item=>operationReady(item,ownerId))?.sheetId;
+  const batch=pending.filter(item=>item.sheetId===sheetId&&operationReady(item,ownerId)).slice(0,200);if(!batch.length){showQueuedSaveState();return}
   const batchIds=new Set(batch.map(item=>item.id));
   syncing=true;
   try{const data=await api("/api/sync",{method:"POST",body:JSON.stringify({sheetId,operations:batch})});
     for(let i=pending.length-1;i>=0;i--)if(batchIds.has(pending[i].id))pending.splice(i,1);
     if(user?.id!==ownerId)return;
-    const mergedState=data.state;pending.filter(item=>item.sheetId===sheetId&&(!item.userId||item.userId===ownerId)).forEach(item=>pathSet(mergedState,item.path,item.value));
-    const summary=sheets.find(s=>s.id===sheetId);if(summary){summary.state=structuredClone(mergedState);summary.revision=data.revision}
-    localStorage.setItem(`kf-sheet-${sheetId}`,JSON.stringify({state:mergedState,revision:data.revision}));
-    if(active===sheetId){state=mergedState;revision=data.revision;if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项跨设备修改`);setSave(pending.length?"保存中…":"已保存");renderValues()}}
-  catch(e){if(user?.id===ownerId)setSave("等待网络",true)}
-  finally{persistPending();syncing=false;if(pending.some(item=>!item.userId||item.userId===user?.id))setTimeout(sync,600)}
+    const snapshot=latestSheetSnapshot(ownerId,sheetId,data),mergedState=snapshot.state;pending.filter(item=>item.sheetId===sheetId&&operationOwnedBy(item,ownerId)).forEach(item=>pathSet(mergedState,item.path,item.value));
+    const summary=sheets.find(s=>s.id===sheetId);if(summary){summary.state=structuredClone(mergedState);summary.revision=snapshot.revision}
+    localStorage.setItem(`kf-sheet-${sheetId}`,JSON.stringify({state:mergedState,revision:snapshot.revision}));
+    if(active===sheetId){state=mergedState;revision=snapshot.revision;if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项跨设备修改`);renderValues()}showQueuedSaveState()}
+  catch(e){const blocked=blockUnavailableOperations(pending,"sheetId",sheetId,ownerId,e);if(user?.id===ownerId){if(blocked)showQueuedSaveState();else setSave("等待网络",true)}}
+  finally{persistPending();syncing=false;if(user&&pending.some(item=>operationReady(item,user.id)))setTimeout(sync,600)}
 }
 function campaignOp(path,value){
   pathSet(campaignState,path,value);campaignPending.push({id:compatibleUuid().replace(/-/g,""),userId:user?.id,campaignId:activeCampaign,clientId,path,value,baseRevision:campaignRevision});
@@ -271,17 +295,18 @@ function campaignOp(path,value){
 }
 async function syncCampaign(){
   if(campaignSyncing||!user||!campaignPending.length||!navigator.onLine)return;
-  const ownerId=user.id,campaignId=campaignPending.find(item=>!item.userId||item.userId===ownerId)?.campaignId;
-  const batch=campaignPending.filter(item=>item.campaignId===campaignId&&(!item.userId||item.userId===ownerId)).slice(0,200);if(!batch.length)return;
+  const ownerId=user.id,campaignId=campaignPending.find(item=>operationReady(item,ownerId))?.campaignId;
+  const batch=campaignPending.filter(item=>item.campaignId===campaignId&&operationReady(item,ownerId)).slice(0,200);if(!batch.length){showQueuedSaveState();return}
   const ids=new Set(batch.map(item=>item.id));
   campaignSyncing=true;
   try{const data=await api("/api/campaign-sync",{method:"POST",body:JSON.stringify({campaignId,operations:batch})});
     for(let i=campaignPending.length-1;i>=0;i--)if(ids.has(campaignPending[i].id))campaignPending.splice(i,1);
-    if(user?.id!==ownerId||activeCampaign!==campaignId)return;
+    if(user?.id!==ownerId)return;
+    showQueuedSaveState();if(activeCampaign!==campaignId)return;
     const mergedState=data.state;campaignPending.filter(item=>item.campaignId===campaignId&&(!item.userId||item.userId===ownerId)).forEach(item=>pathSet(mergedState,item.path,item.value));
-    campaignState=mergedState;campaignRevision=data.revision;hydrateGameSettings();setSave(campaignPending.length?"保存中…":"已保存");renderCurrentModule();if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项战役修改`)}
-  catch(e){if(user?.id===ownerId)setSave("等待网络",true)}
-  finally{persistCampaignPending();campaignSyncing=false;if(campaignPending.some(item=>!item.userId||item.userId===user?.id))setTimeout(syncCampaign,600)}
+    campaignState=mergedState;campaignRevision=data.revision;hydrateGameSettings();renderCurrentModule();if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项战役修改`)}
+  catch(e){const blocked=blockUnavailableOperations(campaignPending,"campaignId",campaignId,ownerId,e);if(user?.id===ownerId){if(blocked)showQueuedSaveState();else setSave("等待网络",true)}}
+  finally{persistCampaignPending();campaignSyncing=false;if(user&&campaignPending.some(item=>operationReady(item,user.id)))setTimeout(syncCampaign,600)}
 }
 function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon),fivePlayer:Boolean(campaignState.optionalRules?.fivePlayer)};renderPresentationControls()}
 // 五人模式（规则书 P77）把出征队伍从 4 席扩到 5 席。
@@ -307,6 +332,7 @@ function renderPresentationControls(){
 }
 async function loadCampaigns(preferred){
   const data=await api("/api/campaigns");campaigns=data.campaigns;
+  if(resumeAvailableOperations(campaignPending,"campaignId",campaigns))persistCampaignPending();
   activeCampaign=preferred||localStorage.kfActiveCampaign||activeCampaign||data.defaultCampaignId||campaigns[0]?.id;
   if(!campaigns.some(c=>c.id===activeCampaign))activeCampaign=campaigns[0]?.id;
   localStorage.kfActiveCampaign=activeCampaign||"";renderCampaignSelect();
@@ -321,6 +347,7 @@ function showAuth(){$("#authView").classList.remove("hidden");$("#appView").clas
 async function showApp(){$("#authView").classList.add("hidden");$("#appView").classList.remove("hidden");$("#currentUser").textContent=user.username;await Promise.all([loadCampaigns(),loadSharedSettings()]);await refreshLists();sync();syncCampaign()}
 async function refreshLists(){
   const suffix=`&campaignId=${encodeURIComponent(activeCampaign)}`;const [a,b]=await Promise.all([api(`/api/sheets?overview=1${suffix}`),api(`/api/sheets?trash=1${suffix}`)]);sheets=a.sheets;trash=b.sheets;renderLists();
+  if(resumeAvailableOperations(pending,"sheetId",sheets)){persistPending();sync()}
   if(active&&!sheets.some(s=>s.id===active)){active=null;state=null}
   if(viewMode==="overview"||!active)showOverview();
 }
@@ -331,7 +358,7 @@ function renderLists(){
 let sheetOpenRequest=0;
 async function openSheet(id){
   const request=++sheetOpenRequest,ownerId=user?.id;
-  try{const data=await api(`/api/sheets/${id}`);if(request!==sheetOpenRequest||user?.id!==ownerId)return;active=id;state=data.sheet.state;pending.filter(item=>item.sheetId===id&&(!item.userId||item.userId===ownerId)).forEach(item=>pathSet(state,item.path,item.value));revision=data.sheet.revision;viewMode="edit";cacheSheet();renderAll(data.sheet.title);closeSidebar();sync()}
+  try{const data=await api(`/api/sheets/${id}`);if(request!==sheetOpenRequest||user?.id!==ownerId)return;const snapshot=latestSheetSnapshot(ownerId,id,data.sheet);active=id;state=snapshot.state;pending.filter(item=>item.sheetId===id&&operationOwnedBy(item,ownerId)).forEach(item=>pathSet(state,item.path,item.value));revision=snapshot.revision;viewMode="edit";cacheSheet();renderAll(data.sheet.title);closeSidebar();sync()}
   catch(e){if(request!==sheetOpenRequest||user?.id!==ownerId)return;const cached=JSON.parse(localStorage.getItem(`kf-sheet-${id}`)||"null");if(cached){active=id;state=cached.state;pending.filter(item=>item.sheetId===id&&(!item.userId||item.userId===ownerId)).forEach(item=>pathSet(state,item.path,item.value));revision=cached.revision;viewMode="edit";renderAll("离线档案");setSave("离线暂存",true)}else toast(e.message)}
 }
 function showEmpty(){$("#overview").classList.add("hidden");$("#emptyState").classList.remove("hidden");$("#sheetForm").classList.add("hidden")}
@@ -670,7 +697,7 @@ function openEncounterAssistant(monster,level,type){
     level=encounter.encounterLevels[0].level;type="special";
   }
   localStorage.setItem("kfEncounterHandoff",JSON.stringify({
-    id:compatibleUuid(),campaignId:activeCampaign,source:"overview",
+    id:compatibleUuid(),createdAt:Date.now(),campaignId:activeCampaign,source:"overview",
     monsterId:encounter?.id||"",monster,level:Number(level)||1,type:type||"normal",returnUrl:"/"
   }));
   location.href="/modules/encounter/"
@@ -689,5 +716,5 @@ $("#promotionLevel").onchange=e=>pushAIBP(`晋升调整为 ${e.target.value}`,{p
 $("#undoAIBP").onclick=()=>{const a=campaignState.aibp||{},before=a.undo;if(!before)return toast("没有可撤销的 AI/BP 操作");Object.entries(before).forEach(([key,value])=>campaignOp(`aibp.${key}`,value));campaignOp("aibp.undo",null);campaignOp("aibp.history",[...(a.history||[]),{at:new Date().toISOString(),text:"撤销上一步操作"}].slice(-30));renderAIBP();toast("已撤销上一步 AI/BP 操作")};
 $("#printButton").onclick=()=>window.print();
 addEventListener("online",()=>{setSave("正在同步…");sync();syncCampaign();if(sharedSettingsDirty)saveSharedSettings()});addEventListener("offline",()=>setSave("离线暂存",true));
-setInterval(()=>{if(!user)return;if(viewMode==="edit"&&active&&!pending.length&&!syncing&&navigator.onLine)openSheet(active);else if(viewMode==="overview"&&navigator.onLine)refreshLists()},15000);
+setInterval(()=>{if(!user)return;if(viewMode==="edit"&&active&&!pending.some(item=>item.sheetId===active&&operationOwnedBy(item,user.id))&&!syncing&&navigator.onLine)openSheet(active);else if(viewMode==="overview"&&navigator.onLine)refreshLists()},15000);
 initOffline().finally(()=>loadSession().catch(e=>toast(e.message)));

@@ -87,12 +87,10 @@ const setLeader = knightId => { context.window.KF_CAMPAIGN_OPTIONS.leaderSheetId
 const select = code => runtime.set({ ...plain(runtime.blankState()), monsterId: `Special_${code}`, phase: "setup" });
 select("F4"); runtime.preparePieces();
 assert.equal(runtime.get().monsters.length, 1);
-runtime.get().monsters[0].space = "9"; // 6 columns, anchor row 1 col 2.
-assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["2","3","4","5","8","11","14","17"].sort(), "F4 uses its own 2x2 footprint range");
+runtime.get().monsters[0].space = "10"; // Image row 2, column 4, within the printed Vassal area.
+assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["3","4","5","6","9","12","15","18"].sort(), "F4 uses its own 2x2 footprint range");
 runtime.get().monsters[0].facing = 90;
-// The vassal board is mirrored, so the card diagram rotates in visual space: the 90° ring lands on
-// the opposite side of the footprint from the old space-number mapping.
-assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["2","3","4","8","14","20","21","22"].sort(), "F4 range rotates around its whole footprint in printed orientation");
+assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["4","5","6","12","18","22","23","24"].sort(), "F4 range rotates around its whole footprint in printed orientation");
 setLeader("stoneface");
 runtime.set({ ...plain(runtime.get()), phase: "monster", monsters: [{ id: "old", space: "9" }] });
 assert.equal(runtime.get().phase, "setup");
@@ -110,7 +108,7 @@ runtime.set({ ...plain(runtime.blankState()), monsterId: "M_Eggknight" }); runti
 assert.equal(runtime.get().knights.length, 4, "normal encounter restores the campaign party");
 setLeader("ser-sonch"); select("S4"); runtime.preparePieces();
 runtime.get().monsters[0].space = "8"; runtime.get().monsters[0].facing = 90;
-assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["4","9","10","14","15"].sort(), "S4 uses printed right-facing range and clips the board edge");
+assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["4","9","10","14"].sort(), "S4 uses printed right-facing range and clips the board edge and absent corner");
 runtime.get().monsters[0].facing = 0;
 assert.deepEqual(plain(runtime.calculatedAttackTargets()).sort(), ["2","3","4"].sort(), "S4 rotates its asymmetric pattern to face up");
 // The main page uses the same leader filter for its grouped selector and handoff.
