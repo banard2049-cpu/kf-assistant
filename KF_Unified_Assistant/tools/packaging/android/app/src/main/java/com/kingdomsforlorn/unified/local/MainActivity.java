@@ -19,6 +19,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -49,7 +50,9 @@ public final class MainActivity extends Activity {
         secondScreenServer = new LocalSecondScreenServer(this, resourceStore, localApi);
         try { secondScreenServer.start(); } catch (Exception error) { Toast.makeText(this, "局域网第二屏启动失败", Toast.LENGTH_LONG).show(); }
         webView = new WebView(this);
-        setContentView(webView);
+        FrameLayout content = WebViewSafeArea.wrap(this, webView);
+        setContentView(content);
+        content.requestApplyInsets();
 
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
