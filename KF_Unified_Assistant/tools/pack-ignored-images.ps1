@@ -1,11 +1,11 @@
 ﻿<#
 .SYNOPSIS
-  将仓库中被 .gitignore 排除的图片打包成单个 zip，便于分发。
+  将 public/assets/ 下的全部图片打包成单个 zip，便于分发。
 
 .DESCRIPTION
-  用 git 自身的忽略规则枚举 public/assets/ 下「未跟踪且被忽略」的图片文件，
-  按仓库相对路径原样打包。接收方在仓库根目录解压覆盖即可恢复全部美术资源，
-  无需手工对照目录。
+  枚举 public/assets/ 下的全部图片文件，包括已被 git 跟踪的图片，按仓库
+  相对路径原样打包。接收方在仓库根目录解压覆盖即可恢复全部美术资源，
+  Android 版可直接导入此 ZIP；导入成功后整体替换旧资源。
 
   为避免泄漏，脚本始终强制排除 .env、data/、backups/、logs/ 等敏感路径，
   即使通过 -Extension 传入了自定义扩展名也不会被打包。
@@ -24,8 +24,7 @@
   换来极少的体积收益。
 
 .PARAMETER IncludeGenerated
-  一并打包构建产物中的图片（Android 生成的 web 副本、便携版 PHP 运行时）。
-  默认排除，因为它们由构建脚本从 Web 项目复制而来，属于冗余。
+  为兼容旧命令保留。资源包始终只收集 public/assets/，不包含构建产物副本。
 
 .PARAMETER NoHash
   跳过 SHA256 校验文件的生成。
@@ -77,13 +76,6 @@ $blockedPatterns = @(
   '(^|/)data/',
   '(^|/)backups/',
   '(^|/)logs/'
-)
-
-# 构建产物中的图片副本，默认排除，-IncludeGenerated 可加回。
-$generatedPatterns = @(
-  '(^|/)KF_Unified_Assistant/tools/packaging/android/',
-  '(^|/)KF_Unified_Assistant/tools/packaging/android/app/src/main/assets/web/',
-  '(^|/)KF_Unified_Assistant/runtime/'
 )
 
 # 资源已经统一到这里；工具截图和其他构建目录中的图片不属于资源包。
@@ -191,7 +183,7 @@ function Set-ZipUtf8NameFlags {
 }
 $git = Get-Command git -ErrorAction SilentlyContinue
 if (-not $git) {
-  throw "未找到 git 命令。本脚本依赖 git 的忽略规则来判断哪些图片没有进仓库。"
+  throw "未找到 git 命令。本脚本使用 git 定位仓库根目录。"
 }
 
 $repoRoot = & $git.Source -C $PSScriptRoot rev-parse --show-toplevel 2>$null
@@ -214,29 +206,20 @@ if (-not $OutputPath) {
 }
 $OutputPath = [IO.Path]::GetFullPath($OutputPath)
 
-# git 用 NUL 分隔输出，避免中文文件名被转成八进制转义序列。
-$previousEncoding = [Console]::OutputEncoding
-try {
-  [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
-  $raw = (& $git.Source -C $repoRoot ls-files --others --ignored --exclude-standard -z) -join ''
-  if ($LASTEXITCODE -ne 0) {
-    throw "git ls-files 执行失败，退出码 $LASTEXITCODE。"
-  }
-} finally {
-  [Console]::OutputEncoding = $previousEncoding
+# APK 不内置图片，完整资源包必须包含已跟踪、被忽略及普通未跟踪图片。
+# 不能只用 git ls-files --others --ignored，否则肉鸽底图等已跟踪资源会漏包。
+$assetRoot = Join-Path $repoRoot ($assetRootPrefix -replace '/', [IO.Path]::DirectorySeparatorChar)
+if (-not (Test-Path -LiteralPath $assetRoot -PathType Container)) {
+  throw "资源目录不存在: $assetRoot"
 }
-
-$candidates = $raw -split "`0" | Where-Object { $_ }
-Write-Verbose "git 报告被忽略的条目共 $($candidates.Count) 个。"
+$candidates = @(Get-ChildItem -LiteralPath $assetRoot -Recurse -File -Force | Sort-Object FullName)
+Write-Verbose "资源目录中共有 $($candidates.Count) 个文件。"
 
 $skippedSensitive = 0
-$skippedGenerated = 0
 $selected = [System.Collections.Generic.List[object]]::new()
 
-foreach ($relative in $candidates) {
-  if (-not $relative.StartsWith($assetRootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
-    continue
-  }
+foreach ($item in $candidates) {
+  $relative = $item.FullName.Substring($repoRoot.Length + 1) -replace '\\', '/'
   $ext = [IO.Path]::GetExtension($relative).TrimStart('.')
   if (-not $extensionSet.Contains($ext)) { continue }
 
@@ -246,17 +229,6 @@ foreach ($relative in $candidates) {
   }
   if ($isSensitive) { $skippedSensitive++; continue }
 
-  if (-not $IncludeGenerated) {
-    $isGenerated = $false
-    foreach ($pattern in $generatedPatterns) {
-      if ($relative -match $pattern) { $isGenerated = $true; break }
-    }
-    if ($isGenerated) { $skippedGenerated++; continue }
-  }
-
-  $full = Join-Path $repoRoot ($relative -replace '/', [IO.Path]::DirectorySeparatorChar)
-  $item = Get-Item -LiteralPath $full -ErrorAction SilentlyContinue
-  if (-not $item -or $item.PSIsContainer) { continue }
   if ($item.FullName -eq $OutputPath) { continue }
 
   $selected.Add([pscustomobject]@{
@@ -267,15 +239,12 @@ foreach ($relative in $candidates) {
 }
 
 if ($selected.Count -eq 0) {
-  throw "没有找到任何被忽略的图片文件。请确认在包含图片的仓库副本中运行本脚本。"
+  throw "没有找到任何图片文件。请确认 public/assets/ 中包含图片资源。"
 }
 
 $totalBytes = ($selected | Measure-Object -Property Length -Sum).Sum
 Write-Output "仓库根目录: $repoRoot"
 Write-Output "待打包图片: $($selected.Count) 个，共 $(Format-Size $totalBytes)"
-if ($skippedGenerated -gt 0) {
-  Write-Output "已跳过构建产物副本 $skippedGenerated 个（加 -IncludeGenerated 可包含）"
-}
 if ($skippedSensitive -gt 0) {
   Write-Output "已跳过敏感路径文件 $skippedSensitive 个"
 }
@@ -355,7 +324,7 @@ try {
         $written++
         $writtenBytes += $file.Length
         if ($written % 25 -eq 0 -or $written -eq $selected.Count) {
-          Write-Progress -Activity "打包被忽略的图片" `
+          Write-Progress -Activity "打包全部资源图片" `
             -Status "$written / $($selected.Count)  ($(Format-Size $writtenBytes))" `
             -PercentComplete ([math]::Min(100, $writtenBytes * 100.0 / [math]::Max(1, $totalBytes)))
         }
@@ -374,7 +343,7 @@ try {
       $manifestLines.Add('  Expand-Archive -LiteralPath <本文件>.zip -DestinationPath . -Force')
       $manifestLines.Add("")
       $manifestLines.Add("注意：本压缩包仅含图片，不含 .env、数据库、备份和日志。")
-      $manifestLines.Add("Android 版无需单独恢复图片，构建脚本会从 Web 项目同步。")
+      $manifestLines.Add('Android 版：在主界面选择“导入资源 ZIP”并导入本文件；成功后会整体替换旧资源。')
       $manifestLines.Add("")
       $manifestLines.Add("--- 文件清单 ---")
       foreach ($file in $selected) {
@@ -400,7 +369,7 @@ try {
     $stream.Dispose()
   }
 
-  Write-Progress -Activity "打包被忽略的图片" -Completed
+  Write-Progress -Activity "打包全部资源图片" -Completed
 
   # 交给复核前先补齐中文文件名的 UTF-8 标志位，否则资源管理器解压出来是乱码名。
   $flaggedCount = Set-ZipUtf8NameFlags -Path $partialPath

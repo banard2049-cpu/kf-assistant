@@ -16,6 +16,9 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      - name: Check tracked resources
+        run: node KF_Unified_Assistant/tools/check-repository-assets.js
+
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -67,6 +70,9 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
+      - name: Check tracked resources
+        run: node KF_Unified_Assistant/tools/check-repository-assets.js
 
       # homebrew-core publishes prebuilt bottles for php@8.4 on both macOS 15
       # architectures. The shivammathur/php tap has no reliable bottle for the

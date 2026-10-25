@@ -23,6 +23,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check tracked resources
+        run: node KF_Unified_Assistant/tools/check-repository-assets.js
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:

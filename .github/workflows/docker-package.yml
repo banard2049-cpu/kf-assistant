@@ -26,6 +26,9 @@ jobs:
       - name: Check out release sources
         uses: actions/checkout@v4
 
+      - name: Check tracked resources
+        run: node KF_Unified_Assistant/tools/check-repository-assets.js
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

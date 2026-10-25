@@ -1,6 +1,6 @@
 # KF 一体化助手 Android 本地版
 
-这是 `KF_Unified_Assistant` 的 Android 打包工程。APK 内置完整网页和图片资源，使用 Android SQLite 保存账号、战役、骑士、地图、遭遇及 AI/BP 状态，运行时不需要 PHP、电脑服务器或网络。
+这是 `KF_Unified_Assistant` 的 Android 打包工程。APK 内置完整网页，图片通过“导入资源 ZIP”单独恢复，使用 Android SQLite 保存账号、战役、骑士、地图、遭遇及 AI/BP 状态，运行时不需要 PHP、电脑服务器或网络。
 
 ## 一键生成 APK
 
@@ -58,5 +58,7 @@ powershell -ExecutionPolicy Bypass -File .\dist\install-android.ps1
 首次启动时在 App 内注册本地账号。数据位于 App 私有 SQLite 数据库；卸载 App 会删除本地数据，卸载前应先使用“导出存档”。
 
 ## 导入资源 ZIP
+
+使用 `tools/pack-ignored-images.ps1` 从 `public/assets/` 的全部图片生成完整资源 ZIP，在主界面选择“导入资源 ZIP”。导入成功后会整体替换旧资源，资源包应包含全部所需图片。
 
 主界面的“导入资源 ZIP”支持超过 1 GB 的资源包，实际可导入大小取决于设备可用空间。导入过程会显示解压进度；新资源完整解压前会保留旧资源用于回滚，因此建议预留约资源包体积 2–3 倍的可用空间。若空间不足，App 会在写满存储前中止并提示，不会破坏已有资源。
