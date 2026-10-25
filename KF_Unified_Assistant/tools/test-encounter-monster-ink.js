@@ -105,7 +105,7 @@ for(let seed=1;seed<=24;seed++) {
 }
 assert.deepEqual([...devourStyles].sort(),["dense-chew","dense-eat","dense-meat","two-rows-of-teeth"]);
 const mud=fixtures.find(item=>item.id==="M_KnightFen"),mudPose=Object.values(mud.poses).sort((a,b)=>b.targets.length-a.targets.length)[0],mudStyles=new Set();
-const mudTexts={"mud-fen-abbr":"FEN!","mud-fen-cn":"粪！","mud-is-shit":"这就是屎"};
+const mudTexts={"mud-fen-abbr":"FEN!","mud-fen-cn":"粪！"};
 for(let seed=1;seed<=60;seed++) {
   const html=view.renderBoardInk(new Map(),mudPose.targets.map(Number),mud.board,{monsterInk:mud.id,warningSeed:seed});
   assert.ok(!/NaN|Infinity/.test(html));
@@ -122,14 +122,10 @@ for(let seed=1;seed<=60;seed++) {
     const expected=[...new Set([...mudTexts[motif]].map(char=>char==="！"?"!":char))].sort();
     assert.deepEqual([...new Set(glyphs)].sort(),expected,"mud lettering draws every letter with a pen glyph");
     assert.doesNotMatch(html,/data-brush-glyph|<text\b|font-family/);
-    if(motif==="mud-is-shit") {
-      assert.equal([...html.matchAll(/data-special-text="这就是屎"/g)].length,1,"the complete shit phrase appears only once");
-      assert.equal(glyphs.length,4,"the single phrase has exactly four handwritten characters");
-    }
   }
   assert.equal(normalized(html),normalized(view.renderBoardInk(new Map(),mudPose.targets.map(Number),mud.board,{monsterInk:mud.id,warningSeed:seed})),"mud writing stays stable while selecting or dragging");
 }
-assert.deepEqual([...mudStyles].sort(),["mud-fen-abbr","mud-fen-cn","mud-is-shit","mud-poop"]);
+assert.deepEqual([...mudStyles].sort(),["mud-fen-abbr","mud-fen-cn","mud-poop"]);
 const eater=fixtures.find(item=>item.id==="M_Knighteater"),eaterPose=Object.values(eater.poses).sort((a,b)=>b.targets.length-a.targets.length)[0],eaterStyles=new Set(),shiChars=new Set();
 for(let seed=1;seed<=60;seed++) {
   const html=view.renderBoardInk(new Map(),eaterPose.targets.map(Number),eater.board,{monsterInk:eater.id,warningSeed:seed});

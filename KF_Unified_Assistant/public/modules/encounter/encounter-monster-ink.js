@@ -220,11 +220,6 @@
       }).join("")}</g>`;
     }
 
-    function singlePhrase(text,kind) {
-      const strip=runs(false)[0]||runs(true)[0];
-      return `<g data-monster-motif="${kind}" data-single-text="true">${runWord(text,strip,seed+171,56)}</g>`;
-    }
-
     function mud() {
       const outline=[[21,86],[11,81],[10,71],[17,63],[27,60],[22,54],[24,45],[36,40],
         [35,33],[43,26],[48,18],[47,8],[59,13],[66,22],[65,30],[74,35],[79,44],
@@ -277,12 +272,11 @@
     else if(id==="M_KnightFen") {
       // Mud-knight lettering is drawn with the same pen strokes as every other boss
       // (see 吃/血/好吃); the brush-font outlines stay for the latin "shi" jokes only.
-      const variant=Math.floor(rand(337)*4);
+      const variant=Math.floor(rand(337)*3);
       strongDense=variant!==0;
       content=variant===0?mud()
         :variant===1?dense("FEN!","mud-fen-abbr")
-          :variant===2?dense("粪！","mud-fen-cn")
-            :singlePhrase("这就是屎","mud-is-shit");
+          :dense("粪！","mud-fen-cn");
     }
     else if(id==="M_KingLaidLow") {
       const phrases=["椅子能坐","骇物牛逼","开放世界","FUFU王","好想玩XX"];
