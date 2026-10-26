@@ -127,6 +127,11 @@ h3 { font-size: .94rem; color: var(--gold); margin-bottom: .5rem; }
 .monster-group { display: grid; gap: .35rem; }
 .monster-group + .monster-group { margin-top: .7rem; }
 .monster-group h3 { margin: .3rem 0; }
+details.monster-group { display: block; }
+.special-encounters summary { margin: .3rem 0; color: var(--gold); font-size: .94rem; font-weight: 700; cursor: pointer; }
+.special-encounters summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
+.special-encounters summary .badge { float: right; }
+.monster-group-items { display: grid; gap: .35rem; margin-top: .35rem; }
 .monster-btn small { display: block; margin-top: .15rem; color: var(--muted); font-size: .75rem; font-weight: 400; }
 .badge { display: inline-flex; align-items: center; min-height: 23px; padding: 0 .5rem; border-radius: 999px; border: 1px solid var(--line); font-size: .72rem; color: var(--muted); white-space: nowrap; }
 .badge.gold { border-color: var(--gold-soft); color: #e6c875; }

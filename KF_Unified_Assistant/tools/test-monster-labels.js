@@ -91,7 +91,7 @@ assert.ok(runtime.positionPanel().includes(labels.name("M_BogWitch")));
 assert.equal(runtime.get().monsters[0].name, "Bog Witch", "saved names remain canonical");
 
 // The console selector displays Chinese but submits the original name to the bridge.
-const main = read("public/app.js");
+const main = read("public/app.js").replace(/^import\s.+;\n/gm, "");
 context.$ = node;
 context.esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
 context.knightSheets = () => [];

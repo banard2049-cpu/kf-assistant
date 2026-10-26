@@ -1,3 +1,5 @@
+import {createJuraPanel} from "./jura.js?v=21";
+
 const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
 const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
 const $ = (s, root = document) => root.querySelector(s);
@@ -8,9 +10,24 @@ const virtueMeta = [
   ["sagacity","睿智","SAGACITY","欺骗 DUPLICITY"],["fortitude","坚韧","FORTITUDE","冷漠 DISREGARD"],
   ["might","威武","MIGHT","残忍 CRUELTY"],["insight","洞察","INSIGHT","背叛 TREACHERY"]
 ];
+const viceEffects={
+  bravery:"你获得 -1 闪避加成。",
+  tenacity:"忽略你在一次远征中抽取到的第一张正面伤亡卡。",
+  sagacity:"在收获阶段开始时，从战利品卡组中弃置 1 张战利品卡。",
+  fortitude:"忽略你在一次远征中获得的第一个线索。",
+  might:"当你即将获得热度（Heat）时，将该获得降低 1（最低为 0）。",
+  insight:"你的佣兵卡使用金钱（Gold）费用 +2。"
+};
+const viceNoteEntries=virtueMeta.map(([key,,,name])=>({key,text:`【恶习】${name.split(" ")[0]}：${viceEffects[key]}`,legacyText:`【恶习自动记录】${name}：${viceEffects[key]}`}));
+function notesWithViceEffects(sheet){
+  const generated=new Set(viceNoteEntries.flatMap(entry=>[entry.text,entry.legacyText]));
+  const notes=String(sheet?.notes??"").split("\n").filter(line=>!generated.has(line.replace(/\r$/,""))).join("\n");
+  const effects=viceNoteEntries.filter(({key})=>Object.values(sheet?.virtues?.[key]?.vice||{}).some(Boolean)).map(entry=>entry.text);
+  return effects.length?`${notes}${notes?"\n":""}${effects.join("\n")}`:notes;
+}
 let user=null,sheets=[],trash=[],active=null,state=null,revision=0,canRegister=false,isRegister=false,search="",saveTimer=null,syncing=false,viewMode="overview",gameSettings={leaderSheetId:"",kingdom:"sunken",districts:3,devourDragon:false,fivePlayer:false};
 let campaigns=[],activeCampaign=null,campaignState=null,campaignRevision=0,campaignSyncing=false,campaignSaveTimer=null;
-let sharedSettings={storyMarkers:{},passwords:[]},sharedSettingsSaveTimer=null,sharedSettingsDirty=false;
+let sharedSettings={storyMarkers:{},passwords:[],jura:null},sharedSettingsSaveTimer=null,sharedSettingsDirty=false;
 let activeSquireSlot=-1;
 const campaignPending=[];
 const knightCatalog=[
@@ -225,19 +242,26 @@ function renderPasswordRecords(){
 }
 async function saveSharedSettings(){
   clearTimeout(sharedSettingsSaveTimer);sharedSettingsSaveTimer=null;
-  const storyMarkers=normalizePermanentStoryMarkers(sharedSettings.storyMarkers),passwords=normalizePasswordRecords(sharedSettings.passwords);sharedSettings={storyMarkers,passwords};cacheSharedSettings(true);setSave(navigator.onLine?"保存账号记录中…":"账号记录离线暂存",!navigator.onLine);
+  const storyMarkers=normalizePermanentStoryMarkers(sharedSettings.storyMarkers),passwords=normalizePasswordRecords(sharedSettings.passwords),jura=sharedSettings.jura&&typeof sharedSettings.jura==="object"?sharedSettings.jura:null;sharedSettings={storyMarkers,passwords,jura};cacheSharedSettings(true);setSave(navigator.onLine?"保存账号记录中…":"账号记录离线暂存",!navigator.onLine);
   if(!navigator.onLine){sharedSettingsDirty=true;return}
-  try{await api("/api/user-settings",{method:"PATCH",body:JSON.stringify({storyMarkers,passwords})});sharedSettingsDirty=false;cacheSharedSettings(false);setSave("已保存")}
+  try{await api("/api/user-settings",{method:"PATCH",body:JSON.stringify({storyMarkers,passwords,jura})});sharedSettingsDirty=false;cacheSharedSettings(false);setSave("已保存")}
   catch(error){sharedSettingsDirty=true;cacheSharedSettings(true);setSave("账号记录等待同步",true)}
 }
 function queueSharedSettingsSave(){sharedSettingsDirty=true;cacheSharedSettings(true);clearTimeout(sharedSettingsSaveTimer);sharedSettingsSaveTimer=setTimeout(saveSharedSettings,300)}
 async function loadSharedSettings(){
   let cached=null;try{cached=JSON.parse(localStorage.getItem(sharedSettingsCacheKey())||"null")}catch{}
   try{
-    const data=await api("/api/user-settings"),remote={storyMarkers:normalizePermanentStoryMarkers(data.settings?.storyMarkers),passwords:normalizePasswordRecords(data.settings?.passwords)};
-    sharedSettings=cached?.dirty?{storyMarkers:normalizePermanentStoryMarkers(cached.settings?.storyMarkers),passwords:normalizePasswordRecords(cached.settings?.passwords)}:remote;
+    const data=await api("/api/user-settings"),remote={storyMarkers:normalizePermanentStoryMarkers(data.settings?.storyMarkers),passwords:normalizePasswordRecords(data.settings?.passwords),jura:data.settings?.jura&&typeof data.settings.jura==="object"?data.settings.jura:null};
+    sharedSettings=cached?.dirty?{storyMarkers:normalizePermanentStoryMarkers(cached.settings?.storyMarkers),passwords:normalizePasswordRecords(cached.settings?.passwords),jura:cached.settings?.jura&&typeof cached.settings.jura==="object"?cached.settings.jura:null}:remote;
     sharedSettingsDirty=Boolean(cached?.dirty);cacheSharedSettings(sharedSettingsDirty);renderPermanentStoryMarkers();renderPasswordRecords();if(sharedSettingsDirty)queueSharedSettingsSave();
-  }catch(error){sharedSettings={storyMarkers:normalizePermanentStoryMarkers(cached?.settings?.storyMarkers),passwords:normalizePasswordRecords(cached?.settings?.passwords)};sharedSettingsDirty=Boolean(cached);renderPermanentStoryMarkers();renderPasswordRecords();if(cached)setSave("账号记录离线暂存",true)}
+  }catch(error){sharedSettings={storyMarkers:normalizePermanentStoryMarkers(cached?.settings?.storyMarkers),passwords:normalizePasswordRecords(cached?.settings?.passwords),jura:cached?.settings?.jura&&typeof cached.settings.jura==="object"?cached.settings.jura:null};sharedSettingsDirty=Boolean(cached);renderPermanentStoryMarkers();renderPasswordRecords();if(cached)setSave("账号记录离线暂存",true)}
+}
+function migrateLegacyJura(){
+  const current=sharedSettings.jura;
+  if(current&&typeof current==="object"&&Object.keys(current).length)return;
+  const legacy=campaignState?.modules?.jura;
+  if(!legacy||typeof legacy!=="object"||Array.isArray(legacy)||!Object.keys(legacy).length)return;
+  sharedSettings.jura=legacy;queueSharedSettingsSave();
 }
 const toast=(message)=>{const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(el.t);el.t=setTimeout(()=>el.classList.remove("show"),2600)};
 const setSave=(text,bad=false)=>{const el=$("#saveState");el.textContent=text;el.style.color=bad?"#f2b0a7":""};
@@ -249,6 +273,20 @@ const op=(path,value)=>{
   persistPending();cacheSheet();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
 };
 const cacheSheet=()=>active&&localStorage.setItem(`kf-sheet-${active}`,JSON.stringify({state,revision}));
+function sheetOp(sheetId,path,value){
+  const summary=sheets.find(sheet=>sheet.id===sheetId);if(!summary)throw new Error("未找到这张骑士记录表。");
+  if(summary.state)pathSet(summary.state,path,value);
+  if(active===sheetId&&state){pathSet(state,path,value);cacheSheet();renderValues()}
+  pending.push({id:compatibleUuid().replace(/-/g,""),userId:user?.id,sheetId,clientId,path,value,baseRevision:active===sheetId?revision:(Number(summary.revision)||0)});
+  persistPending();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
+}
+function adjustSheetGold(sheetId,delta){
+  const sheet=sheets.find(item=>item.id===sheetId);if(!sheet)throw new Error("未找到这张骑士记录表。");
+  const current=Number(active===sheetId?state?.gold:sheet.state?.gold)||0;
+  const next=current+Math.trunc(Number(delta));
+  if(!Number.isFinite(next)||next<0||next>99999)throw new Error("所选记录表的金钱不足。");
+  sheetOp(sheetId,"gold",next);return next;
+}
 const sheetSnapshots=new Map();
 const operationOwnedBy=(item,ownerId)=>!item.userId||item.userId===ownerId;
 const operationReady=(item,ownerId)=>operationOwnedBy(item,ownerId)&&!item.syncBlocked;
@@ -344,7 +382,7 @@ async function loadSession(){
   if(user)showApp();else showAuth();
 }
 function showAuth(){$("#authView").classList.remove("hidden");$("#appView").classList.add("hidden");$("#authMode").classList.toggle("hidden",!canRegister);$("#authHint").textContent=canRegister?"":"服务器已关闭新用户注册"}
-async function showApp(){$("#authView").classList.add("hidden");$("#appView").classList.remove("hidden");$("#currentUser").textContent=user.username;await Promise.all([loadCampaigns(),loadSharedSettings()]);await refreshLists();sync();syncCampaign()}
+async function showApp(){$("#authView").classList.add("hidden");$("#appView").classList.remove("hidden");$("#currentUser").textContent=user.username;await Promise.all([loadCampaigns(),loadSharedSettings()]);migrateLegacyJura();await refreshLists();sync();syncCampaign()}
 async function refreshLists(){
   const suffix=`&campaignId=${encodeURIComponent(activeCampaign)}`;const [a,b]=await Promise.all([api(`/api/sheets?overview=1${suffix}`),api(`/api/sheets?trash=1${suffix}`)]);sheets=a.sheets;trash=b.sheets;renderLists();
   if(resumeAvailableOperations(pending,"sheetId",sheets)){persistPending();sync()}
@@ -414,6 +452,7 @@ function showOverview(){
     return `<article class="overview-card" data-open-sheet="${sheet.id}" tabindex="0"><header><div><small>${esc(s.knight||"未命名身份")}</small><h2>${leader?'<span class="leader-name-mark" aria-label="当前主游戏骑士">♜</span> ':''}${esc(sheet.title||s.knight||"未命名骑士")}</h2>${!valid?'<span class="leader-ribbon">此身份属于侍从，旧档案仅保留数据</span>':""}</div><span class="chapter-badge">${Math.min(5,Math.floor(done/4)+1)} 章</span></header><div class="overview-resources"><span>灾祸 <b>${s.bane??0}</b></span><span>金钱 <b>${s.gold??0}</b></span><span>旁证 <b>${s.leads??0}</b></span><span>叹息 <b>${s.sigh??0}</b></span></div><div class="overview-virtues">${virtues}</div><section class="overview-notes"><strong>笔记</strong><p>${s.notes?esc(s.notes):'<span class="subtle">暂无笔记</span>'}</p></section><footer><span>故事进度 ${done}/20</span><div class="progress"><i style="width:${done/20*100}%"></i></div><button class="button" data-edit-sheet="${sheet.id}">打开记录表</button>${valid&&!leader?`<button class="button leader-button" data-leader-sheet="${sheet.id}">设为主游戏骑士</button>`:""}</footer></article>`}).join("")||'<div class="overview-empty"><div class="crest">♜</div><h2>还没有骑士档案</h2><p>建立第一张记录表，开始你的故事。</p></div>';
   renderEncounterBuilder();
   renderMonsterPool();
+  juraPanel.render();
 }
 function showModule(name){
   viewMode=name;$("#overview").classList.add("hidden");$("#sheetForm").classList.add("hidden");$("#emptyState").classList.add("hidden");hideGameViews();
@@ -547,7 +586,7 @@ function renderMonsterPool(pool=campaignState?.monsterPool,leader=knightSheets()
 }
 function renderAll(title){
   hideGameViews();$("#overview").classList.add("hidden");$("#emptyState").classList.add("hidden");$("#sheetForm").classList.remove("hidden");$("#sheetTitle").value=title;setActiveModuleNav();
-  $("#virtues").innerHTML=virtueMeta.map(([k,cn,en,vice])=>`<div class="virtue"><img class="virtue-icon" src="assets/sheet-icons/${k}.png" alt="" aria-hidden="true"><div class="virtue-name"><strong>${cn} <small>${en}</small></strong><span>${vice}</span></div><input data-path="virtues.${k}.value" type="number" min="-99" max="99"><div class="vice-checks">${[0,1,2,3].map(i=>check(`virtues.${k}.vice.${i}`,"box-check",`${vice} ${i+1}`)).join("")}</div></div>`).join("");
+  $("#virtues").innerHTML=virtueMeta.map(([k,cn,en,vice])=>`<div class="virtue"><img class="virtue-icon" src="assets/sheet-icons/${k}.png" alt="" aria-hidden="true"><div class="virtue-name"><strong>${cn} <small>${en}</small></strong><span>${vice.split(" ")[0]} <small class="vice-english">${vice.split(" ")[1]}</small></span></div><input data-path="virtues.${k}.value" type="number" min="-99" max="99"><div class="vice-checks">${[0,1,2,3].map(i=>check(`virtues.${k}.vice.${i}`,"box-check",`${vice} ${i+1}`)).join("")}</div></div>`).join("");
   const chapterRanks=["mob","vassal","king","devil","dragon"].map(key=>[window.KFMonsterLabels?.tier(key)||key,key==="mob"?"MOBS":key.toUpperCase()]);
   $("#story").innerHTML=state.story.map((c,ci)=>{
     const [rankCn,rankEn]=chapterRanks[ci]||["层级","RANK"];
@@ -562,6 +601,38 @@ const investigationSuccessValue=value=>{
   const numeric=value===true?1:Number(value);
   return Number.isFinite(numeric)?Math.max(0,Math.min(99,Math.trunc(numeric))):""
 };
+function recordSuccessfulInvestigation(path,checked){
+  const match=/^successfulInvestigations\.([1-5])-([1-5])$/.exec(path);
+  if(!match)return false;
+  const chapter=Number(match[1])-1,number=Number(match[2]),investigations=state.story?.[chapter]?.investigations||[];
+  const slots=investigations.flatMap((item,index)=>investigationSuccessValue(item.success)===number?[index]:[]);
+  if(checked&&!slots.length){
+    const empty=investigations.findIndex(item=>investigationSuccessValue(item.success)==="");
+    if(empty>=0)slots.push(empty);
+  }
+  op(path,checked);
+  for(const slot of slots){
+    const prefix=`story.${chapter}.investigations.${slot}`;
+    if(checked&&investigationSuccessValue(investigations[slot].success)!==number)op(`${prefix}.success`,number);
+    if(Boolean(investigations[slot].attempted)!==checked)op(`${prefix}.attempted`,checked);
+  }
+  return true;
+}
+function recordStoryInvestigation(path,value){
+  const match=/^story\.([0-4])\.investigations\.([0-2])\.(success|attempted)$/.exec(path);
+  if(!match)return false;
+  const chapter=Number(match[1]),slot=Number(match[2]),field=match[3],investigations=state.story?.[chapter]?.investigations;
+  if(!investigations?.[slot])return false;
+  const previous=investigationSuccessValue(investigations[slot].success);
+  op(path,value);
+  if(field==="success"&&!investigations[slot].attempted)return true;
+  const current=investigationSuccessValue(investigations[slot].success),isNumber=number=>Number.isInteger(number)&&number>=1&&number<=5;
+  for(const number of new Set([previous,current].filter(isNumber))){
+    const key=`${chapter+1}-${number}`,checked=investigations.some(item=>investigationSuccessValue(item.success)===number&&Boolean(item.attempted));
+    if(Boolean(state.successfulInvestigations?.[key])!==checked)op(`successfulInvestigations.${key}`,checked);
+  }
+  return true;
+}
 function rapportHearts(value){
   if(Array.isArray(value))return [0,1,2].map(index=>Boolean(value[index]));
   const count=Math.max(0,Math.min(3,Number(value)||0));
@@ -569,25 +640,47 @@ function rapportHearts(value){
 }
 function renderRapport(){$("#rapport").innerHTML=state.rapport.map((r,i)=>`<div class="rapport-row"><input data-path="rapport.${i}.knight" placeholder="骑士姓名" maxlength="80"><div class="hearts">${[1,2,3].map(n=>`<label class="heart-check"><input type="checkbox" data-heart="${i}.${n}"><span></span></label>`).join("")}</div><input data-path="rapport.${i}.favor" placeholder="恩惠" maxlength="300"><button type="button" class="remove-row no-print" data-remove-rapport="${i}" aria-label="删除亲和力">×</button></div>`).join("")}
 function renderMatrix(){
-  const unlocked=Boolean(state.choicesUnlocked);$("#matrixLock").textContent=unlocked?"锁定矩阵":"解锁矩阵";$("#matrixLock").classList.toggle("unlocked",unlocked);$("#choices").classList.toggle("locked",!unlocked);
+  const unlocked=Boolean(state.choicesUnlocked),lockButton=$("#matrixLock"),lockLabel=unlocked?"锁定抉择矩阵":"解锁抉择矩阵";
+  lockButton.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${unlocked?"M8 10V6a4 4 0 0 1 8 0":"M8 10V7a4 4 0 0 1 8 0v3"}"></path><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M12 14v3"></path></svg>`;
+  lockButton.title=lockLabel;lockButton.setAttribute("aria-label",lockLabel);lockButton.setAttribute("aria-pressed",String(unlocked));lockButton.classList.toggle("unlocked",unlocked);$("#choices").classList.toggle("locked",!unlocked);
   $("#choices").innerHTML=[...Array.from({length:30},(_,i)=>String(i+1).padStart(2,"0")),...Array.from({length:10},(_,i)=>`E${i+1}`)].map(k=>check(`choices.${k}`,"matrix-check",k,unlocked)).join("");
   $("#successes").innerHTML=Array.from({length:25},(_,i)=>`${Math.floor(i/5)+1}-${i%5+1}`).map(k=>check(`successfulInvestigations.${k}`,"matrix-check",k)).join("")
 }
 function renderList(name){const arr=state[name];$(`#${name}`).innerHTML=arr.map((v,i)=>`<div class="list-row"><input data-path="${name}.${i}" maxlength="300"><button type="button" class="remove-row no-print" data-remove-list="${name}.${i}">×</button></div>`).join("")}
 function renderValues(){
-  if(!state)return;$$("[data-path]",$("#sheetForm")).forEach(el=>{const v=pathGet(state,el.dataset.path);if(document.activeElement===el)return;if(el.type==="checkbox")el.checked=Boolean(v);else el.value=el.hasAttribute("data-investigation-success")?investigationSuccessValue(v):v??""});
+  if(!state)return;
+  if(document.activeElement?.dataset?.path!=="notes")syncViceNotes();
+  $$("[data-path]",$("#sheetForm")).forEach(el=>{const v=pathGet(state,el.dataset.path);if(document.activeElement===el)return;if(el.type==="checkbox")el.checked=Boolean(v);else el.value=el.hasAttribute("data-investigation-success")?investigationSuccessValue(v):v??""});
   $$("[data-heart]").forEach(el=>{const[i,n]=el.dataset.heart.split(".").map(Number);el.checked=rapportHearts(state.rapport[i]?.hearts)[n-1]})
 }
+function syncViceNotes(){
+  const notes=notesWithViceEffects(state);
+  if(notes!==(state.notes??""))op("notes",notes);
+}
 function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function alignSheetNotesHeight(){
+  const virtues=$(".virtues-panel"),notes=$(".notes-panel"),field=$("textarea",notes);
+  const virtueBounds=virtues.getBoundingClientRect(),noteBounds=notes.getBoundingClientRect();
+  if(!virtueBounds.width||!noteBounds.width)return;
+  if(Math.abs(virtueBounds.top-noteBounds.top)>1){field.style.removeProperty("height");return}
+  const fieldBounds=field.getBoundingClientRect(),height=Math.max(0,virtueBounds.height-(noteBounds.height-fieldBounds.height));
+  if(Math.abs(fieldBounds.height-height)>.5)field.style.height=`${height}px`;
+}
+if(typeof ResizeObserver==="function"){
+  const notesLayoutObserver=new ResizeObserver(alignSheetNotesHeight);
+  notesLayoutObserver.observe($(".virtues-panel"));notesLayoutObserver.observe($(".notes-panel h2"));
+}
 function closeSidebar(){$("#sidebar").classList.remove("open");$("#scrim").classList.remove("open")}
 function secondScreenUrl(){
   if(window.KFAndroidFiles?.lanDisplayUrl)return String(window.KFAndroidFiles.lanDisplayUrl(activeCampaign||"")||"");
   return new URL(`/modules/display/?campaignId=${encodeURIComponent(activeCampaign||"")}`,location.href).href
 }
 function refreshDisplayUrlHint(){const output=$("#displayUrlHint");if(!output)return;const url=secondScreenUrl();output.textContent=url||"请连接 Wi-Fi 或开启手机热点"}
+const juraPanel=createJuraPanel({root:$("#juraPanel"),getState:()=>sharedSettings.jura,getCampaignId:()=>"shared",save:value=>{sharedSettings.jura=value;queueSharedSettingsSave()},notify:toast,catalog:window.KF_JURA_DATA||{},getSheets:()=>knightSheets(),adjustGold:adjustSheetGold});
+$("#openJura").onclick=()=>{showOverview();closeSidebar();$("#juraPanel").scrollIntoView({behavior:"smooth",block:"start"})};
 $("#authMode").onclick=()=>{isRegister=!isRegister;$("#authSubmit").textContent=isRegister?"注册":"登录";$("#authMode").textContent=isRegister?"已有账号？登录":"没有账号？注册";$("#authPassword").autocomplete=isRegister?"new-password":"current-password"};
 $("#authForm").onsubmit=async e=>{e.preventDefault();try{const route=isRegister?"register":"login";const data=await api(`/api/auth/${route}`,{method:"POST",body:JSON.stringify({username:$("#authUsername").value,password:$("#authPassword").value})});user=data.user;await showApp()}catch(err){$("#authHint").textContent=err.message}};
-$("#logoutButton").onclick=async()=>{await api("/api/auth/logout",{method:"POST"});user=null;active=null;state=null;campaigns=[];activeCampaign=null;campaignState=null;sharedSettings={storyMarkers:{},passwords:[]};sharedSettingsDirty=false;renderPermanentStoryMarkers();renderPasswordRecords();showAuth()};
+$("#logoutButton").onclick=async()=>{await api("/api/auth/logout",{method:"POST"});user=null;active=null;state=null;campaigns=[];activeCampaign=null;campaignState=null;sharedSettings={storyMarkers:{},passwords:[],jura:null};sharedSettingsDirty=false;renderPermanentStoryMarkers();renderPasswordRecords();showAuth()};
 $("#menuButton").onclick=()=>{$("#sidebar").classList.add("open");$("#scrim").classList.add("open");refreshDisplayUrlHint()};$("#closeSidebar").onclick=$("#scrim").onclick=closeSidebar;
 $("#searchSheets").oninput=e=>{search=e.target.value;renderLists()};
 $("#permanentStoryMarkerGroups").onchange=e=>{const input=e.target.closest("[data-permanent-story-marker]");if(!input)return;const id=input.dataset.permanentStoryMarker;if(!permanentStoryMarkerIds.has(id))return;if(input.checked)sharedSettings.storyMarkers[id]=true;else delete sharedSettings.storyMarkers[id];renderPermanentStoryMarkers();queueSharedSettingsSave()};
@@ -672,8 +765,11 @@ function knightExportPayload(){return {format:"kf-unified-knight",schemaVersion:
 $("#exportKnight").onclick=()=>{if(!state)return toast("请先打开一张骑士档案");download(`kf-knight-${state.knightId||"sheet"}.json`,knightExportPayload());toast("骑士档案已导出")};
 $("#importKnightFile").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());if(payload?.format!=="kf-unified-knight"||payload?.schemaVersion!==1||!payload?.sheet?.state)throw new Error("只支持 KF 骑士档案（版本 1）");const knightId=payload.sheet.state.knightId;if(!knightCatalog.some(item=>item.id===knightId))throw new Error("导入文件包含无效的骑士身份");await sync();let result;try{result=await api("/api/sheet-import",{method:"POST",body:JSON.stringify(payload)})}catch(error){if(error.status!==409||!error.data?.sheetId||!confirm(`${error.message}\n是否覆盖现有的${payload.sheet.state.knight||"骑士"}档案？`))throw error;result=await api("/api/sheet-import",{method:"POST",body:JSON.stringify({...payload,replaceSheetId:error.data.sheetId})})}await refreshLists();await openSheet(result.sheet.id);toast(result.replaced?"骑士档案已覆盖导入":"骑士档案已导入")}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#sheetForm").addEventListener("input",e=>{const el=e.target;if(!el.dataset.path)return;let value=el.type==="checkbox"?el.checked:el.type==="number"&&el.hasAttribute("data-investigation-success")&&el.value===""?"":el.type==="number"?Math.max(Number(el.min||-999),Math.min(Number(el.max||99999),Number(el.value)||0)):el.value;
+  if(el.dataset.path.startsWith("successfulInvestigations.")){if(!recordSuccessfulInvestigation(el.dataset.path,value))el.checked=false;renderValues();return}
+  if(/^story\.\d+\.investigations\./.test(el.dataset.path)&&recordStoryInvestigation(el.dataset.path,value)){renderValues();return}
   op(el.dataset.path,value);renderValues()
 });
+$("#sheetForm").addEventListener("focusout",e=>{if(e.target.dataset.path==="notes")renderValues()});
 $("#sheetForm").addEventListener("click",e=>{const h=e.target.closest("[data-heart]");if(h){e.preventDefault();const[i,n]=h.dataset.heart.split(".").map(Number),hearts=rapportHearts(state.rapport[i]?.hearts);hearts[n-1]=!hearts[n-1];op(`rapport.${i}.hearts`,hearts);renderValues()}
   const rr=e.target.closest("[data-remove-rapport]");if(rr){state.rapport.splice(Number(rr.dataset.removeRapport),1);op("rapport",[...state.rapport]);renderRapport();renderValues()}
   const rl=e.target.closest("[data-remove-list]");if(rl){const[name,index]=rl.dataset.removeList.split(".");state[name].splice(Number(index),1);op(name,[...state[name]]);renderList(name);renderValues()}
@@ -681,8 +777,8 @@ $("#sheetForm").addEventListener("click",e=>{const h=e.target.closest("[data-hea
 $("#addRapport").onclick=()=>{state.rapport.push({knight:"",hearts:[false,false,false],favor:""});op("rapport",[...state.rapport]);renderRapport();renderValues()};
 $("#matrixLock").onclick=()=>{op("choicesUnlocked",!Boolean(state.choicesUnlocked));renderMatrix();renderValues();toast(state.choicesUnlocked?"抉择矩阵已解锁":"抉择矩阵已锁定")};
 $$(".add-list").forEach(b=>b.onclick=()=>{state[b.dataset.list].push("");op(b.dataset.list,[...state[b.dataset.list]]);renderList(b.dataset.list);renderValues()});
-$("#exportAll").onclick=async()=>download("kf-unified-save.json",await api(`/api/campaign-export?campaignId=${encodeURIComponent(activeCampaign)}`));
-$("#importFile").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text()),created=await api("/api/campaign-import",{method:"POST",body:JSON.stringify(data)});await Promise.all([loadCampaigns(created.id),loadSharedSettings()]);await refreshLists();showOverview();toast("存档导入完成，账号共享记录已合并")}catch(err){toast(err.message)}finally{e.target.value=""}};
+$("#exportAll").onclick=async()=>{try{await Promise.all([sync(),syncCampaign(),saveSharedSettings()]);if(pending.some(item=>operationOwnedBy(item,user?.id))||campaignPending.some(item=>operationOwnedBy(item,user?.id))||sharedSettingsDirty)return toast("修改仍在保存，请在显示已保存后再导出存档");download("kf-unified-save.json",await api(`/api/campaign-export?campaignId=${encodeURIComponent(activeCampaign)}`))}catch(error){toast(error.message)}};
+$("#importFile").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text()),created=await api("/api/campaign-import",{method:"POST",body:JSON.stringify(data)});await Promise.all([loadCampaigns(created.id),loadSharedSettings()]);migrateLegacyJura();await refreshLists();showOverview();toast("存档导入完成，账号共享记录已合并")}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#partyTile").onchange=e=>campaignOp(campaignMapPath("partyTile"),e.target.value.trim());$("#mapRound").onchange=e=>campaignOp(campaignMapPath("round"),Math.max(0,Number(e.target.value)||0));
 $("#advanceMapRound").onclick=()=>{campaignOp(campaignMapPath("round"),(campaignMapState().round||0)+1);renderMap()};
 $("#addMarker").onclick=()=>{const marker=prompt("标记名称");if(marker){campaignOp(campaignMapPath("markers"),[...(campaignMapState().markers||[]),marker]);renderMap()}};

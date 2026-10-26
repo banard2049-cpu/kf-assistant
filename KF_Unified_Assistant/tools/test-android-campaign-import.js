@@ -12,6 +12,8 @@ const { execFileSync } = require("node:child_process");
 const javaRoot = path.join(__dirname, "packaging/android/app/src/main/java/com/kingdomsforlorn/unified/local");
 const production = path.join(javaRoot, "CampaignStateImport.java");
 const api = fs.readFileSync(path.join(javaRoot, "LocalApi.java"), "utf8");
+const settingsMethod = api.slice(api.indexOf("    private JSONObject userSettings("), api.indexOf("    private JSONObject campaigns("));
+const mergeSettingsMethod = api.slice(api.indexOf("    private void mergeSettings("), api.indexOf("    private JSONObject currentUser("));
 const copyRoute = api.slice(api.indexOf('if ("copy".equals(action) && "POST".equals(method))'), api.indexOf('if ("trash".equals(action)'));
 const importRoute = api.slice(api.indexOf("private JSONObject campaignImport("), api.indexOf("private JSONObject sheetImport("));
 assert.match(copyRoute, /CampaignStateImport\.rebindRogueCampaign\(copy\.getJSONObject\("state"\), copy\.getString\("id"\)\)/,
@@ -39,8 +41,12 @@ const sources = {
   "com/kingdomsforlorn/unified/local/CampaignStateImportTest.java": `package com.kingdomsforlorn.unified.local;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONException;
 public final class CampaignStateImportTest {
   private static void check(boolean value, String message) { if (!value) throw new AssertionError(message); }
   private static JSONObject object(Object... items) throws Exception {
@@ -51,7 +57,31 @@ public final class CampaignStateImportTest {
   private static JSONArray array(Object... items) {
     JSONArray result = new JSONArray(); for (Object item : items) result.put(item); return result;
   }
+  private static JSONObject copyObject(JSONObject value) throws JSONException { return value == null ? new JSONObject() : new JSONObject(value.toString()); }
+  private static JSONArray copyArray(JSONArray value) throws JSONException { return value == null ? new JSONArray() : new JSONArray(value.toString()); }
+  private static JSONObject ok(JSONObject value) { return value; }
+  ${settingsMethod}
+  ${mergeSettingsMethod}
   public static void main(String[] args) throws Exception {
+    CampaignStateImportTest localApi = new CampaignStateImportTest();
+    JSONObject store = object("settings", new JSONObject());
+    JSONObject ledger = object("enabled", true, "level", 2, "shards", 14, "built", array("saints-sanctuary"), "loadouts", array(object("name", "saved setup")));
+    localApi.userSettings(store, "owner", "PATCH", object("jura", ledger));
+    ledger.put("shards", 999);
+    JSONObject savedSettings = localApi.userSettings(store, "owner", "GET", new JSONObject()).getJSONObject("settings");
+    check(savedSettings.getJSONObject("jura").getInt("shards") == 14, "Android must persist a copied Jura ledger");
+    savedSettings.getJSONObject("jura").put("shards", 888);
+    check(store.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 14, "GET must not expose mutable stored data");
+    localApi.userSettings(store, "owner", "PATCH", object("passwords", array(object("id", "keep"))));
+    check(store.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 14, "unrelated settings updates preserve Jura");
+    localApi.mergeSettings(store, "owner", object("jura", object("enabled", true, "shards", 7), "passwords", array(object("id", "imported"))));
+    check(store.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 7, "campaign imports restore the shared Jura ledger");
+    check(store.getJSONObject("settings").getJSONObject("owner").getJSONArray("passwords").length() == 2, "imports retain existing passwords");
+    localApi.mergeSettings(store, "owner", object("jura", JSONObject.NULL));
+    check(store.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 7, "legacy imports without a ledger cannot clear existing Jura");
+    localApi.userSettings(store, "owner", "PATCH", object("jura", JSONObject.NULL));
+    check(store.getJSONObject("settings").getJSONObject("owner").isNull("jura"), "explicit settings reset stores JSON null");
+    check(!localApi.userSettings(store, "other", "GET", new JSONObject()).getJSONObject("settings").has("jura"), "accounts keep separate ledgers");
     Map<String,String> sheets = new HashMap<>(); sheets.put("old-sheet", "new-sheet");
     JSONObject knight = object("id", "old-sheet", "sheetId", "old-sheet", "space", "7", "done", true);
     JSONObject undoKnight = object("id", "piece-1", "sheetId", "old-sheet", "clues", object("martial", 3));
@@ -97,7 +127,7 @@ public final class CampaignStateImportTest {
     check("unchanged".equals(legacy.opt("campaignId")) && legacy.opt("slots")==JSONObject.NULL,"legacy single-run saves must remain compatible");
     CampaignStateImport.remapSheetReferences(JSONObject.NULL,sheets);
     CampaignStateImport.remapSheetReferences(null,sheets);
-    System.out.println("Android campaign import passed: copied/imported rogue bundles, inactive slots, nested sheet references, piece identity, unknown IDs, nulls and legacy saves.");
+    System.out.println("Android campaign import passed: Jura save/import/reset/account isolation, copied/imported rogue bundles, inactive slots, nested sheet references, piece identity, unknown IDs, nulls and legacy saves.");
   }
 }`
 };

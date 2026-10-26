@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/database-maintenance.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
@@ -146,7 +148,7 @@ function default_state(string $knightId='', string $player=''): array {
     for ($i=0; $i<5; $i++) $story[] = ['quest'=>false,'investigations'=>array_fill(0,3,['attempted'=>false,'success'=>''])];
     $catalog=knight_catalog();
     return [
-        'knightId'=>$knightId,'knight'=>$catalog[$knightId]??'','player'=>text_value($player,80),'bane'=>0,'gold'=>0,'leads'=>0,'sigh'=>0,'virtues'=>$virtues,'notes'=>'','prologue'=>false,'story'=>$story,
+        'knightId'=>$knightId,'knight'=>$catalog[$knightId]??'','player'=>text_value($player,80),'bane'=>0,'gold'=>0,'leads'=>0,'sigh'=>0,'virtues'=>$virtues,'notes'=>'','prologue'=>false,'story'=>$story,'endgame'=>false,
         'rapport'=>array_fill(0,4,['knight'=>'','hearts'=>[false,false,false],'favor'=>'']),'armory'=>[''],'saints'=>[''],'mercenaries'=>[''],
         'choices'=>(object)[],'choicesUnlocked'=>false,'successfulInvestigations'=>(object)[],'firstDeath'=>false,
     ];
@@ -441,7 +443,7 @@ function store_user_settings(PDO $db,string $userId,array $settings): void {
 }
 function public_user_settings(array $settings): array {
     $markers=normalize_story_markers($settings['storyMarkers']??[]);
-    return ['storyMarkers'=>$markers?:new stdClass(),'passwords'=>normalize_password_records($settings['passwords']??[])];
+    return ['storyMarkers'=>$markers?:new stdClass(),'passwords'=>normalize_password_records($settings['passwords']??[]),'jura'=>is_array($settings['jura']??null)?$settings['jura']:null];
 }
 function &path_ref(array &$root, array $parts): mixed {
     $ref =& $root;
@@ -490,20 +492,7 @@ function resolve_campaign_sync_conflict(string $path,mixed $previous,mixed $inco
     return $result;
 }
 function create_backup(PDO $db, string $backupDir, string $label='manual'): string {
-    $safe = preg_replace('/[^a-z0-9_-]/i','-',$label);
-    $target = $backupDir . DIRECTORY_SEPARATOR . gmdate('Y-m-d\TH-i-s-v\Z') . '-' . $safe . '.db';
-    $quoted = str_replace("'", "''", $target);
-    // A backup is a current-state snapshot. Operation/undo logs are deliberately
-    // omitted because they can contain huge historical AIBP payloads.
-    $db->exec("VACUUM INTO '$quoted'");
-    $snapshot = new PDO('sqlite:' . $target, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    $snapshot->exec('DELETE FROM sessions');
-    $snapshot->exec('DELETE FROM sync_operations');
-    $snapshot->exec('DELETE FROM campaign_operations');
-    if ($snapshot->inTransaction()) $snapshot->commit();
-    $snapshot->exec('VACUUM');
-    $snapshot = null;
-    return $target;
+    return database_state_backup($db, $backupDir, $label);
 }
 function migrate_global_knights(PDO $db, string $backupDir): void {
     $key='global-knights-v1';$q=$db->prepare('SELECT meta_value FROM app_meta WHERE meta_key=?');$q->execute([$key]);if($q->fetchColumn()!==false)return;
@@ -578,6 +567,14 @@ function maintenance(PDO $db, string $backupDir): void {
     // If the marker cannot be written we simply fall through every time,
     // which is the previous behaviour.
     @touch($tick);
+    // Existing installations also need their pre-placeholder history archived.
+    // A persistent migration marker makes subsequent sweeps a single lookup.
+    try {
+        database_maintain_operation_storage($db, $backupDir);
+    } catch (Throwable $e) {
+        // Failed archival never discards a payload; retry on the next sweep.
+        error_log('Operation storage maintenance deferred: ' . $e->getMessage());
+    }
     $cutoff = gmdate('Y-m-d\TH:i:s.v\Z', time()-30*86400);
     $q=$db->prepare('DELETE FROM knight_sheets WHERE deleted_at IS NOT NULL AND deleted_at<?');$q->execute([$cutoff]);
     $q=$db->prepare('DELETE FROM campaigns WHERE deleted_at IS NOT NULL AND deleted_at<?');$q->execute([$cutoff]);
@@ -663,10 +660,11 @@ try {
     $defaultCampaignId=ensure_default_campaign($db,$user['id']);
     if ($route === 'user-settings' && $method === 'GET') respond(200,['settings'=>public_user_settings(load_user_settings($db,$user['id']))]);
     if ($route === 'user-settings' && $method === 'PATCH') {
-        $data=request_data();if(!array_key_exists('storyMarkers',$data)&&!array_key_exists('passwords',$data))respond(400,['error'=>'账号共享记录无效']);
+        $data=request_data();if(!array_key_exists('storyMarkers',$data)&&!array_key_exists('passwords',$data)&&!array_key_exists('jura',$data))respond(400,['error'=>'账号共享记录无效']);
         if(array_key_exists('storyMarkers',$data)&&!is_array($data['storyMarkers']))respond(400,['error'=>'永久故事标记无效']);
         if(array_key_exists('passwords',$data)&&!is_array($data['passwords']))respond(400,['error'=>'密码记录无效']);
-        $settings=load_user_settings($db,$user['id']);if(array_key_exists('storyMarkers',$data))$settings['storyMarkers']=normalize_story_markers($data['storyMarkers']);if(array_key_exists('passwords',$data))$settings['passwords']=normalize_password_records($data['passwords']);store_user_settings($db,$user['id'],$settings);
+        if(array_key_exists('jura',$data)&&$data['jura']!==null&&!is_array($data['jura']))respond(400,['error'=>'尤拉记录无效']);
+        $settings=load_user_settings($db,$user['id']);if(array_key_exists('storyMarkers',$data))$settings['storyMarkers']=normalize_story_markers($data['storyMarkers']);if(array_key_exists('passwords',$data))$settings['passwords']=normalize_password_records($data['passwords']);if(array_key_exists('jura',$data))$settings['jura']=$data['jura'];store_user_settings($db,$user['id'],$settings);
         respond(200,['settings'=>public_user_settings($settings)]);
     }
     if ($route === 'campaigns' && $method === 'GET') {
@@ -724,7 +722,7 @@ try {
                 // payload here duplicates the whole module state on every
                 // keystroke-sized edit.  Log a placeholder for all module
                 // paths; small scalar paths keep their value for debugging.
-                $loggedValue = str_starts_with($path,'modules.')
+                $loggedValue = (str_starts_with($path,'modules.') || is_aibp_operation_path($path))
                     ? '{"snapshot":true}'
                     : json_encode($incoming,JSON_UNESCAPED_UNICODE);
                 $insert->execute([$op['id'],$row['id'],$user['id'],$op['clientId'],$path,$loggedValue,$base,stamp()]);
@@ -747,7 +745,7 @@ try {
     }
     if ($route === 'campaign-import' && $method === 'POST') {
         $data=request_data();if(($data['format']??'')!=='kf-unified-campaign'||($data['schemaVersion']??0)!==2||!is_array($data['campaign']??null))respond(400,['error'=>'只支持新版 KF 一体化战役存档（版本 2）']);
-        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$state['presentation']=default_presentation_state();$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$catalog=knight_catalog();$seenTitles=[];$q=$db->prepare('SELECT title FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll(PDO::FETCH_COLUMN) as $title)$seenTitles[(string)$title]=true;
+        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$importedJura=is_array($sharedImport['jura']??null)?$sharedImport['jura']:null;$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$state['presentation']=default_presentation_state();$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$catalog=knight_catalog();$seenTitles=[];$q=$db->prepare('SELECT title FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll(PDO::FETCH_COLUMN) as $title)$seenTitles[(string)$title]=true;
         foreach($sourceSheets as &$sheet)if(is_array($sheet)){
             $sheetState=$sheet['state']??null;$knightId=is_array($sheetState)?(string)($sheetState['knightId']??''):'';
             if(!isset($catalog[$knightId]))respond(400,['error'=>'导入文件包含无效的骑士身份']);
@@ -759,7 +757,7 @@ try {
         try{$q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');$q->execute([$id,$user['id'],title_value($payload['name']??'导入战役').'（导入）',json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
             $insert=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');
             foreach($sourceSheets as $sheet)if(is_array($sheet)&&is_array($sheet['state']??null)){$oldId=(string)($sheet['id']??'');$sheetState=$sheet['state'];$knightId=(string)$sheetState['knightId'];$sheetState['knight']=$catalog[$knightId];$insert->execute([$sheetMap[$oldId]??uuid4(),$user['id'],null,(string)($sheet['_resolvedTitle']??title_value($sheet['title']??'')),json_encode($sheetState,JSON_UNESCAPED_UNICODE),$time,$time]);}
-            if($importedStoryMarkers||$importedPasswords){$settings=load_user_settings($db,$user['id']);$settings['storyMarkers']=array_replace(normalize_story_markers($settings['storyMarkers']??[]),$importedStoryMarkers);$settings['passwords']=normalize_password_records(array_merge(normalize_password_records($settings['passwords']??[]),$importedPasswords));store_user_settings($db,$user['id'],$settings);}
+            if($importedStoryMarkers||$importedPasswords||$importedJura!==null){$settings=load_user_settings($db,$user['id']);$settings['storyMarkers']=array_replace(normalize_story_markers($settings['storyMarkers']??[]),$importedStoryMarkers);$settings['passwords']=normalize_password_records(array_merge(normalize_password_records($settings['passwords']??[]),$importedPasswords));if($importedJura!==null)$settings['jura']=$importedJura;store_user_settings($db,$user['id'],$settings);}
             $db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}respond(201,['id'=>$id]);
     }
     if ($route === 'sheet-import' && $method === 'POST') {

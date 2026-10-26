@@ -47,11 +47,14 @@
 
   function boardKind(level) {
     const tier = level?.tier || "mob";
-    return ["vassal", "king", "devil"].includes(tier) ? "vassal" : tier;
+    return level?.boardKind || (["vassal", "king", "devil"].includes(tier) ? "vassal" : tier);
   }
 
   function boardData(data, level) {
-    return data?.boards?.[boardKind(level)] || data?.boards?.all?.[0] || {};
+    const base = data?.boards?.[boardKind(level)] || data?.boards?.all?.[0] || {};
+    return Array.isArray(level?.boardLockedSpaces)
+      ? { ...base, lockedSpaces: { ...base.lockedSpaces, [level.tier]: level.boardLockedSpaces } }
+      : base;
   }
 
   function isUnavailableBoardSpace(space, board, tier) {

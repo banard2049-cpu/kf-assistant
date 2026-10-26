@@ -151,6 +151,10 @@
       ? DRAGON_DIE_FACES
       : RED_DIE_FACES;
     merged.monsters.forEach(monster => {
+      if (savedMonster.special?.positioning === "center") {
+        monster.roll = ""; monster.rolls = [];
+        return;
+      }
       monster.roll = normalizeFace(monster.roll, monsterFaces);
       const savedRolls = Array.isArray(monster.rolls) && monster.rolls.length ? monster.rolls : [monster.roll];
       monster.rolls = savedRolls.map(value => normalizeFace(value, monsterFaces));
@@ -183,10 +187,12 @@
         return true;
       });
     if (String(merged.selectedPiece).startsWith("custom:") && !merged.customPieces.some(piece => `custom:${piece.id}` === merged.selectedPiece)) merged.selectedPiece = "";
-    const savedBoardKind = ["vassal", "king", "devil"].includes(savedTier) ? "vassal" : savedTier;
-    const savedBoard = DATA.boards[savedBoardKind] || DATA.boards.all[0] || {};
+    const savedBoard = window.KFEncounterView.boardData(DATA, savedLevel);
     const savedMonsterSize = Number(savedLevel?.stats?.monsterSize) || (savedTier === "mob" ? 1 : savedTier === "dragon" ? 3 : 2);
     upgradeBoardCoordinates(merged, savedTier, savedMonsterSize);
+    if (savedMonster.special?.positioning === "center" && merged.phase === "position") {
+      merged.monsters.forEach(piece => { piece.space = centerAnchor(savedBoard, savedMonsterSize); });
+    }
     let removedBlockedMonster = false;
     merged.monsters.forEach(piece => {
       if (!piece.space || !coveredSpaces(piece.space, savedMonsterSize, savedBoard).some(space => isUnavailableBoardSpace(space, savedBoard, savedTier))) return;
@@ -209,6 +215,7 @@
   }
   let state = load();
   let monsterRailCollapsed = true;
+  let specialEncountersExpanded = false;
   // Set after a piece is dragged; the synthetic click that follows must not rotate/select it again.
   let boardClickSuppressed = false;
   function stats() {
@@ -282,18 +289,32 @@
   function usesMobPlacement() {
     return MOB_PLACEMENT_MONSTERS.has(currentMonster().id);
   }
-  function boardKind() {
-    return ["vassal", "king", "devil"].includes(tier()) ? "vassal" : tier();
+  function usesCenterPlacement() {
+    return specialEncounter()?.positioning === "center";
+  }
+  function centerAnchor(board, size) {
+    return String(Math.floor((board.rows - size) / 2) * board.cols + Math.floor((board.cols - size) / 2) + 1);
+  }
+  function fixedCenterRule() {
+    return { anchors: new Set([centerAnchor(boardData(), monsterFootprint())]), requiredMatches: 0,
+      message: "忽略怪物放置步骤：树固定在遭遇版图中央，无需投怪物放置骰；可旋转朝向，不能移动或移出。" };
   }
   function tierLabel() {
     return tierName(tier());
   }
   function requiredMonsterDice() {
+    if (usesCenterPlacement()) return 0;
     if (usesMobPlacement()) return 1;
     return ["vassal", "king", "devil"].includes(tier()) ? 2 : 1;
   }
+  function rerollPlacementDice() {
+    if (!usesCenterPlacement() && !(tier() === "dragon" && state.dragonRoarDone)) {
+      state.monsters.forEach(m => { m.rolls = Array.from({ length: requiredMonsterDice() }, () => roll("monster")); m.roll = m.rolls[0]; });
+    }
+    state.knights.forEach(k => k.roll = roll());
+  }
   function boardData() {
-    return DATA.boards[boardKind()] || DATA.boards.all[0] || {};
+    return window.KFEncounterView.boardData(DATA, currentLevel());
   }
   function isUnavailableBoardSpace(space, board = boardData(), encounterTier = tier()) {
     const position = Number(space);
@@ -322,6 +343,7 @@
     return count;
   }
   function bossPlacementRule(kind, item) {
+    if (state.phase === "position" && kind === "monster" && usesCenterPlacement()) return fixedCenterRule();
     if (state.phase !== "position" || kind !== "monster" || usesMobPlacement()
       || !["vassal", "king", "devil"].includes(tier())) return null;
     const board = boardData();
@@ -356,7 +378,7 @@
   }
   function confirmPlacement() {
     if (state.phase !== "position") return false;
-    if (["vassal", "king", "devil"].includes(tier()) && !state.monsters.length) {
+    if ((usesCenterPlacement() || ["vassal", "king", "devil"].includes(tier())) && !state.monsters.length) {
       toast("请先放置首领，再确认放置");
       return false;
     }
@@ -400,6 +422,7 @@
     return pieceByKey(state.selectedPiece || fallback);
   }
   function defaultSelectedPieceKey() {
+    if (state.phase === "position" && usesCenterPlacement() && state.knights[0]) return `knight:${state.knights[0].id}`;
     if (state.phase === "position") return positionPieceEntries()[0]?.key || "";
     if (state.phase === "monster") {
       const monster = state.monsters.find(item => item.space) || state.monsters[0];
@@ -574,7 +597,7 @@
     const specials = monsters.filter(m => m.category === "special");
     return `<aside class="panel monster-rail ${monsterRailCollapsed ? "collapsed" : ""}">
       <div class="panel-head"><div><span class="eyebrow">BESTIARY</span><h2>遭遇怪物</h2><p class="monster-current">${esc(monsterLabel(currentMonster()))}</p></div><button class="small ghost" id="toggleMonsterRail" title="${monsterRailCollapsed ? "展开遭遇怪物" : "折叠遭遇怪物"}" aria-label="${monsterRailCollapsed ? "展开遭遇怪物" : "折叠遭遇怪物"}" aria-expanded="${!monsterRailCollapsed}">${monsterRailCollapsed ? "›" : "‹"}</button></div>
-      <div class="monster-list">${specials.length ? `<section class="monster-group"><h3>特殊遭遇战</h3>${buttons(specials)}</section>` : ""}<section class="monster-group"><h3>常规遭遇战</h3>${buttons(monsters.filter(m => m.category !== "special"))}</section></div>
+      <div class="monster-list">${specials.length ? `<details class="monster-group special-encounters" id="specialEncounters"${specialEncountersExpanded ? " open" : ""}><summary>特殊遭遇战 <span class="badge">${specials.length}</span></summary><div class="monster-group-items">${buttons(specials)}</div></details>` : ""}<section class="monster-group"><h3>常规遭遇战</h3>${buttons(monsters.filter(m => m.category !== "special"))}</section></div>
     </aside>`;
   }
   function setupPanel() {
@@ -591,7 +614,7 @@
             <div class="field"><label>${special ? "特殊遭遇卡" : "遭遇等级"}</label><select id="level">${currentMonster().encounterLevels.map(l => `<option value="${l.level}" ${l.level === state.level ? "selected" : ""}>${special ? `${esc(special.code)} · 独立卡面` : `等级 ${l.level} · ${l.side === "face" ? "正面" : "背面"}`}</option>`).join("")}</select></div>
             <div class="field"><label>遭遇类型</label><select id="encounterType" ${special ? "disabled" : ""}>${special ? '<option value="special" selected>特殊遭遇战</option>' : `<option value="normal">普通遭遇</option><option value="ambush" ${state.encounterType === "ambush" ? "selected" : ""}>伏击</option><option value="special" ${state.encounterType === "special" ? "selected" : ""}>特殊遭遇</option>`}</select></div>
           </div>
-          ${special ? `<div class="stats-note"><strong>${esc(monsterLabel(currentMonster()))} · ${baseMonster ? `基础怪物：${esc(monsterLabel(baseMonster))}` : special.tokenAsset ? `使用 ${esc(special.tokenAsset.name)} 标记` : "使用通用指示物"}</strong><br>底盘 ${monsterFootprint()}×${monsterFootprint()} · ${special.countRange ? `数量 ${stats().monsterCount}` : `${stats().monsterCount} 只`}<br>${esc(special.note)}${special.avatarSource ? `<br><small>头像：${esc(special.avatarSource.label)}</small>` : ""}<br><small>骑士书第 ${special.source.printedPage} 页（PDF 第 ${special.source.pdfPage} 页）</small></div>` : ""}
+          ${special ? `<div class="stats-note"><strong>${esc(monsterLabel(currentMonster()))} · ${baseMonster ? `基础怪物：${esc(monsterLabel(baseMonster))}` : special.tokenAsset ? `使用 ${esc(special.tokenAsset.name)} 标记` : "使用通用指示物"}</strong><br>底盘 ${monsterFootprint()}×${monsterFootprint()} · ${special.countRange ? `数量 ${stats().monsterCount}` : `${stats().monsterCount} 只`}<br>${esc(special.note)}${special.avatarSource ? `<br><small>头像：${esc(special.avatarSource.label)}</small>` : ""}<br><small>${esc(special.source.bookTitle || "骑士书")}第 ${special.source.printedPage} 页（PDF 第 ${special.source.pdfPage} 页）</small></div>` : ""}
           ${special?.countRange ? `<div class="field"><label for="specialMonsterCount">赏金猎人数量（按 Bane 标记强度，1-10）</label><input id="specialMonsterCount" type="number" min="1" max="10" step="1" value="${stats().monsterCount}"></div>` : ""}
           ${state.encounterType === "special" ? `<label class="check"><input type="checkbox" id="specialToken" ${state.specialToken ? "checked" : ""} ${special ? "disabled" : ""}>按卡底图标使用通用指示物代替模型</label>` : ""}
           <div class="field"><label>队伍席位</label><div class="row"><span class="badge">${participants.length} 席（骑士与侍从分开）</span></div></div>
@@ -662,6 +685,7 @@
   function positionPanel() {
     const ambush = state.encounterType === "ambush";
     const dragonReposition = tier() === "dragon" && state.dragonRoarDone;
+    const centerPlacement = usesCenterPlacement();
     const mobPlacement = usesMobPlacement();
     const pieceChoices = positionPieceEntries();
     const selectedCustomPiece = String(state.selectedPiece || "").startsWith("custom:") && pieceByKey(state.selectedPiece);
@@ -669,21 +693,22 @@
       state.selectedPiece = pieceChoices[0]?.key || "";
     }
     const placementRule = bossPlacementRule(state.selectedPiece.split(":")[0], pieceByKey(state.selectedPiece));
-    const placementHint = mobPlacement
+    const placementHint = centerPlacement ? "树已固定在版图中央，无需匹配怪物放置骰；高亮仅供骑士匹配放置骰。"
+      : mobPlacement
       ? "高亮表示与所选模型骰面一致的格子；本场用拟身骑士杂兵代替污泥骑士，每个模型只投 1 枚放置骰并独立放置，不适用首领底盘的双骰规则。"
       : "高亮表示剑、杯组合与骰面一致，希望图标忽略；首领底盘须覆盖两枚骰子分别匹配的两个格子，无法同时满足时才按一枚考虑。";
     const monsterDiceLabel = mobPlacement ? "怪物放置骰（每个模型 1 枚）" : tier() === "dragon" ? "怪物放置骰（白骰）" : "怪物放置骰";
     return `<section class="panel">
-      <div class="panel-head"><div><span class="eyebrow">POSITIONING</span><h2>${dragonReposition ? "巨龙咆哮：重新放置骑士" : ambush ? "伏击放置：先骑士，后怪物" : "放置：先怪物，后骑士"}</h2></div><span class="badge gold">${tierLabel()}遭遇战版图</span></div>
+      <div class="panel-head"><div><span class="eyebrow">POSITIONING</span><h2>${dragonReposition ? "巨龙咆哮：重新放置骑士" : centerPlacement ? "放置骑士：树已固定中央" : ambush ? "伏击放置：先骑士，后怪物" : "放置：先怪物，后骑士"}</h2></div><span class="badge gold">${tierLabel()}遭遇战版图</span></div>
       <div class="grid2 encounter-play-layout ${tier()}">
         <div>${boardView()}${matchLegend()}<p class="muted placement-hint">可从选择区将棋子拖到棋盘，或点击空格放置当前选中的棋子。${placementHint}棋盘上的棋子也可拖动，拖到移出区可移出。再次点击模型可旋转 90°。</p>${customPieceControls()}</div>
         <div>
           <div class="stats-note">${ambush ? "骑士无匹配空格时必须移出遭遇；首领无法放置时，移除尽可能少的骑士，并让其在怪物轮受到攻击。" : "无匹配空格的骑士可移出遭遇，或放到被怪物瞄准的任一格。杂兵攻击范围应尽量少重叠。"}</div>
           ${mobPlacement ? `<div class="stats-note"><strong>拟身骑士杂兵</strong><br>按遭遇卡：怪物放置步骤不放置污泥骑士本体，而是放置 ${stats().monsterCount} 个拟身骑士杂兵（使用拟身骑士指示物）。每个模型只投 1 枚放置骰，按杂兵规则独立放置。</div>` : ""}
-          ${placementRule ? `<p class="stats-note" role="status"><strong>首领放置校验</strong><br>${esc(placementRule.message)}</p>` : ""}
-          ${dragonReposition ? '<p class="stats-note">只重新进行骑士放置；怪物保持原位。已在版图上的骑士可以选择不投骰并保持位置。</p>' : diceEditor(monsterDiceLabel, state.monsters, "monster")}
+          ${centerPlacement ? `<p class="stats-note" role="status"><strong>固定中央放置</strong><br>${esc(fixedCenterRule().message)}</p>` : placementRule ? `<p class="stats-note" role="status"><strong>首领放置校验</strong><br>${esc(placementRule.message)}</p>` : ""}
+          ${dragonReposition ? '<p class="stats-note">只重新进行骑士放置；怪物保持原位。已在版图上的骑士可以选择不投骰并保持位置。</p>' : centerPlacement ? "" : diceEditor(monsterDiceLabel, state.monsters, "monster")}
           ${diceEditor("队伍成员放置骰", state.knights, "knight")}
-          <button id="rerollAll">${dragonReposition ? "重新投骑士放置骰" : "重新投全部放置骰"}</button>
+          <button id="rerollAll">${dragonReposition || centerPlacement ? "重新投骑士放置骰" : "重新投全部放置骰"}</button>
           <hr>
           <div class="field placement-piece-field"><label>当前放置模型</label><div class="placement-piece-picker">
             ${pieceChoices.map(({ key, kind, item }) => {
@@ -702,7 +727,7 @@
               </button>`;
             }).join("")}
           </div></div>
-          <button id="removePiece">将当前棋子移出遭遇</button>
+          <button id="removePiece" ${centerPlacement && state.selectedPiece.startsWith("monster:") ? "disabled" : ""}>将当前棋子移出遭遇</button>
           <p class="muted">系统会保留骰面和最终位置，但需要玩家按照卡面攻击图示确认怪物朝向是否覆盖最多格子或骑士。</p>
         </div>
       </div>
@@ -779,12 +804,13 @@
     const pieceName = i => usesMobPlacement() ? `拟身骑士 ${i + 1}` : `怪物 ${i + 1}`;
     state.monsters = Array.from({ length: count }, (_, i) => ({
       id: uid(), name: count > 1 ? pieceName(i) : currentMonster().name,
-      roll: "", rolls: Array.from({ length: requiredMonsterDice() }, () => roll("monster")), space: "", facing: 0,
+      roll: "", rolls: Array.from({ length: requiredMonsterDice() }, () => roll("monster")),
+      space: usesCenterPlacement() ? centerAnchor(boardData(), monsterFootprint()) : "", facing: 0,
     }));
     state.knights.forEach(k => { k.roll = roll(); k.space = ""; k.facing = 0; k.done = false; k.action = ""; });
     state.customPieces.forEach(piece => { piece.space = ""; piece.facing = 0; });
     state.targets = [];
-    state.selectedPiece = state.encounterType === "ambush" && state.knights[0]
+    state.selectedPiece = (state.encounterType === "ambush" || usesCenterPlacement()) && state.knights[0]
       ? `knight:${state.knights[0].id}`
       : state.monsters[0] ? `monster:${state.monsters[0].id}` : `knight:${state.knights[0]?.id || ""}`;
   }
@@ -837,6 +863,10 @@
   function moveSelectedPieceOffBoard(key) {
     const selectedKey = typeof key === "string" ? key : state.selectedPiece || defaultSelectedPieceKey();
     const [kind] = selectedKey.split(":");
+    if (state.phase === "position" && kind === "monster" && usesCenterPlacement()) {
+      toast(fixedCenterRule().message);
+      return false;
+    }
     const item = pieceByKey(selectedKey);
     if (!item?.space) {
       toast("请先选择版图上的棋子");
@@ -891,6 +921,9 @@
       peekBoardIcons.addEventListener("blur", () => setPiecePeek(false));
     }
     $("#boardRemoveZone")?.addEventListener("click", moveSelectedPieceOffBoard);
+    $("#specialEncounters")?.addEventListener("toggle", event => {
+      specialEncountersExpanded = event.currentTarget.open;
+    });
     $("#toggleMonsterRail")?.addEventListener("click", () => {
       monsterRailCollapsed = !monsterRailCollapsed;
       renderApp();
@@ -925,6 +958,7 @@
     $("#removeKnight")?.addEventListener("click", () => mutate(() => { if (state.knights.length > 1) state.knights.pop(); }, "减少骑士"));
     $("#startPosition")?.addEventListener("click", () => mutate(() => { preparePieces(); state.phase = "position"; }, "开始遭遇战放置"));
     $$("[data-die]").forEach(input => input.addEventListener("change", e => {
+      if (e.target.dataset.die === "monster" && usesCenterPlacement()) return;
       const list = e.target.dataset.die === "monster" ? state.monsters : state.knights;
       const item = list.find(x => x.id === e.target.dataset.id);
       if (item) {
@@ -936,6 +970,7 @@
     }));
     $$("[data-reroll-die]").forEach(button => button.addEventListener("click", () => {
       const type = button.dataset.rerollDie;
+      if (type === "monster" && usesCenterPlacement()) return;
       const list = type === "monster" ? state.monsters : state.knights;
       const item = list.find(entry => entry.id === button.dataset.id);
       if (!item) return;
@@ -969,12 +1004,8 @@
       state.customPieces = state.customPieces.filter(piece => piece.id !== id);
       state.selectedPiece = defaultSelectedPieceKey();
     }, "删除自定义棋子"));
-    $("#rerollAll")?.addEventListener("click", () => mutate(() => {
-      if (!(tier() === "dragon" && state.dragonRoarDone)) {
-        state.monsters.forEach(m => { m.rolls = Array.from({ length: requiredMonsterDice() }, () => roll("monster")); m.roll = m.rolls[0]; });
-      }
-      state.knights.forEach(k => k.roll = roll());
-    }, "重投全部放置骰"));
+    $("#rerollAll")?.addEventListener("click", () => mutate(rerollPlacementDice,
+      usesCenterPlacement() || (tier() === "dragon" && state.dragonRoarDone) ? "重投骑士放置骰" : "重投全部放置骰"));
     $$(".space").forEach(space => space.addEventListener("click", () => handleSpace(space.dataset.space)));
     bindBoardDrag();
     $("#removePiece")?.addEventListener("click", moveSelectedPieceOffBoard);

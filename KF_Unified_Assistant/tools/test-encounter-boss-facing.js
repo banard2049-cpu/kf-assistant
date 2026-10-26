@@ -121,7 +121,7 @@ assert.equal(runtime.get().monsters[0].facing, 180, "mob facing is unchanged");
 
 // Exercise all real boss cards, including 3x3 dragons and special encounters, at both board edges.
 let cards = 0;
-for (const monster of data.monsters.filter(item => item.type === "boss")) {
+for (const monster of data.monsters.filter(item => item.type === "boss" && item.special?.positioning !== "center")) {
   for (const level of monster.encounterLevels) {
     for (const corner of ["first", "last"]) {
       setup({ monsterId: monster.id, level: level.level });

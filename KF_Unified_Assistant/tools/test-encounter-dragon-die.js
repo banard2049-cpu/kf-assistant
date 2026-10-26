@@ -69,6 +69,6 @@ for (const face of dragonFaces) {
 }
 
 assert.match(appSource, /怪物放置骰（白骰）/, "dragon monster die is identified in the UI");
-assert.match(indexSource, /app\.js\?v=50/, "encounter app cache version is updated");
+assert.ok(Number(indexSource.match(/data-original-app="app\.js\?v=(\d+)"/)?.[1]) >= 50, "encounter app cache version is updated");
 
 console.log("encounter dragon white die assertions passed");

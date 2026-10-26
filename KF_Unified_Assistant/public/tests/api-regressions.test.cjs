@@ -56,8 +56,12 @@ test('campaign import remaps module/history references and display ETags follow 
       op('enc_operation___', 'modules.encounter', { knights: [{ id: 'piece-2', sheetId: sheet.id, space: '7', done: true }], history: [{ knights: [{ id: 'piece-2', sheetId: sheet.id }] }] }),
       op('rogue_operation_', 'modules.roguePath', { schemaVersion: 2, campaignId, activeSlotId: 'run-1', slots: [{ id: 'run-1', state: { schemaVersion: 1, partyName: 'saved run' } }] }),
     ] });
+    const juraRecord = { enabled: true, level: 2, shards: 4, built: ['saints-sanctuary'], quests: { fragments: 'completed' }, loadouts: [{ name: '测试配装', level: 2, facilities: [], chants: [] }] };
+    await api('user-settings', 'PATCH', { jura: juraRecord });
     const exported = await api('campaign-export?campaignId=' + campaignId);
+    assert.deepEqual(exported.shared.jura, juraRecord);
     const importedId = (await api('campaign-import', 'POST', exported)).id;
+    assert.deepEqual((await api('user-settings')).settings.jura, juraRecord);
     const imported = (await api('campaigns/' + importedId)).campaign.state;
     const newId = imported.party[0]; assert.notEqual(newId, sheet.id);
     assert.equal(imported.leaderSheetId, newId);
@@ -101,6 +105,57 @@ test('campaign import remaps module/history references and display ETags follow 
     const unchanged = await fetch(url(displayRoute), { headers: { Cookie: cookie, 'If-None-Match': after.headers.get('etag') } });
     assert.equal(unchanged.status, 304);
     assert.ok(etag);
+
+    // Simulate an existing installation whose old sync log still contains full
+    // module snapshots. A normal request after updating must migrate it without
+    // changing current saves or losing operation-ID deduplication.
+    const savedCampaign = (await api('campaigns/' + campaignId)).campaign;
+    const databasePath = path.join(scratch, 'data/kf-knights.db');
+    const runPhpJson = source => {
+      const result = spawnSync(php, [...args, '-r', source, databasePath], { encoding: 'utf8', windowsHide: true });
+      assert.equal(result.status, 0, result.stderr);
+      return JSON.parse(result.stdout);
+    };
+    const legacyOperation = runPhpJson(`
+      $db=new PDO("sqlite:".$argv[1],null,null,[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+      $q=$db->prepare("UPDATE campaign_operations SET value_json=? WHERE operation_id=?");
+      $q->execute([json_encode(["obsolete"=>str_repeat("legacy map snapshot ",50000)]),"map_operation___"]);
+      $q=$db->prepare("DELETE FROM app_meta WHERE meta_key=?");$q->execute(["operation-payload-storage-v1"]);
+      $q=$db->prepare("SELECT * FROM campaign_operations WHERE operation_id=?");$q->execute(["map_operation___"]);
+      echo json_encode($q->fetch(PDO::FETCH_ASSOC));
+    `);
+    assert.ok(legacyOperation.value_json.length > 900000);
+    const tick = path.join(scratch, 'backups/.maintenance-tick');
+    fs.utimesSync(tick, new Date(0), new Date(0));
+    await api('health');
+    const migrated = runPhpJson(`
+      $db=new PDO("sqlite:".$argv[1]);
+      $q=$db->prepare("SELECT * FROM campaign_operations WHERE operation_id=?");$q->execute(["map_operation___"]);
+      $operation=$q->fetch(PDO::FETCH_ASSOC);
+      $q=$db->prepare("SELECT meta_value FROM app_meta WHERE meta_key=?");$q->execute(["operation-payload-storage-v1"]);
+      echo json_encode(["operation"=>$operation,"migration"=>json_decode($q->fetchColumn(),true)]);
+    `);
+    assert.equal(migrated.migration.phase, 'complete', log);
+    assert.deepEqual(migrated.operation, { ...legacyOperation, value_json: '{"snapshot":true}' });
+    const archivePath = path.join(scratch, 'backups', migrated.migration.archive);
+    assert.ok(fs.existsSync(archivePath), 'Legacy payloads must be archived outside the main database');
+    const archiveBytes = fs.readFileSync(archivePath);
+    const archiveText = (archivePath.endsWith('.gz') ? require('node:zlib').gunzipSync(archiveBytes) : archiveBytes).toString('utf8');
+    const archived = archiveText.trim().split('\n').map(line => JSON.parse(line));
+    assert.deepEqual(archived.find(record => record.row.operation_id === 'map_operation___').row, legacyOperation);
+    const preservedCampaign = (await api('campaigns/' + campaignId)).campaign;
+    assert.deepEqual(preservedCampaign.state, savedCampaign.state, 'Automatic migration must retain current saves and undo history');
+    assert.equal(preservedCampaign.revision, savedCampaign.revision);
+    const retried = await api('campaign-sync', 'POST', { campaignId, operations: [
+      op('map_operation___', 'modules.map', { round: 999, history: [] }, savedCampaign.revision),
+    ] });
+    assert.equal(retried.revision, savedCampaign.revision, 'An offline retry must remain deduplicated after migration');
+    assert.deepEqual(retried.state, savedCampaign.state);
+    const historyFiles = fs.readdirSync(path.join(scratch, 'backups')).filter(name => name.includes('-operation-history.jsonl'));
+    fs.utimesSync(tick, new Date(0), new Date(0));
+    await api('health');
+    assert.deepEqual(fs.readdirSync(path.join(scratch, 'backups')).filter(name => name.includes('-operation-history.jsonl')), historyFiles,
+      'Repeated maintenance must not create another archive');
   } finally {
     const stopped = once(server, 'exit'); server.kill(); await stopped;
     // The directory contains only this test's newly created database and backups.

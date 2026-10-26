@@ -1,6 +1,7 @@
 """Import special encounter card crops from a locally owned TTS save/PDF cache.
 
 python tools/import-knightbook-encounters.py --save ".../(Don)KF 1.8.json" --source-dir ".../FileRecv"
+python tools/import-knightbook-encounters.py --source-dir ".../FileRecv" --codes TSF-0032 TSF-0531 TSF-0932 TSF-7012 TSF-7416 TSF-7912
 Requires PyMuPDF and Pillow. No network access or Lua execution.
 """
 import argparse
@@ -13,15 +14,16 @@ from PIL import Image, ImageDraw, PngImagePlugin
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--save', type=Path, required=True)
+    parser.add_argument('--save', type=Path, help='TTS save; not needed when all selected cards use local scans')
+    parser.add_argument('--codes', nargs='+', help='Import only these card codes, preserving other encounters')
     parser.add_argument('--pdf-cache', type=Path)
     parser.add_argument('--source-dir', type=Path, help='Folder containing the verified high-resolution scans')
     parser.add_argument('--public', type=Path, default=Path(__file__).resolve().parents[1] / 'public')
     args = parser.parse_args()
     public = args.public
-    cache = args.pdf_cache or args.save.parent.parent / 'PDF'
-    save = json.loads(args.save.read_text(encoding='utf-8-sig'))
-    objects = {obj['GUID']: obj for obj in save['ObjectStates']}
+    cache = args.pdf_cache or (args.save.parent.parent / 'PDF' if args.save else None)
+    save = json.loads(args.save.read_text(encoding='utf-8-sig')) if args.save else {}
+    objects = {obj['GUID']: obj for obj in save.get('ObjectStates', [])}
     data_path = public / 'modules/encounter/data/encounter-data.js'
     data = json.loads(data_path.read_text(encoding='utf-8').split('=', 1)[1].strip().rstrip(';'))
     ordinary = [m for m in data['monsters'] if m.get('category') != 'special']
@@ -30,10 +32,23 @@ def main():
     boss_rows = json.loads('[' + boss_app.split('const TOKEN_ASSETS = [', 1)[1].split('].map', 1)[0] + ']')
     boss_tokens = {row[0]: {'id': row[0], 'name': row[1], 'src': f'/assets/tokens/{row[2]}'} for row in boss_rows}
     specs = json.loads((data_path.parent / 'special-encounters.json').read_text(encoding='utf-8'))['cards']
+    if args.codes:
+        unknown = set(args.codes) - {spec['code'] for spec in specs}
+        if unknown:
+            parser.error(f"Unknown card codes: {', '.join(sorted(unknown))}")
+        specs = [spec for spec in specs if spec['code'] in args.codes]
     for spec in specs:
-        scan = spec.get('highResolutionSource')
-        if scan and (not args.source_dir or not (args.source_dir / scan['fileName']).is_file()):
-            parser.error(f"Pass --source-dir containing {scan['fileName']} to preserve the high-resolution card")
+        sources = [spec.get('highResolutionSource') or spec['source'], spec.get('avatarSource')]
+        if spec.get('highResolutionSource'):
+            sources.append(spec['source'])  # Retain the original TTS provenance as well.
+        for source in sources:
+            if not source:
+                continue
+            if source.get('fileName'):
+                if not args.source_dir or not (args.source_dir / source['fileName']).is_file():
+                    parser.error(f"Pass --source-dir containing {source['fileName']}")
+            elif not args.save or not cache:
+                parser.error(f"Pass --save for the cached TTS source of {spec['code']}")
     assets = public / 'assets/cards/special-encounters'
     assets.mkdir(parents=True, exist_ok=True)
     additions = []
@@ -89,7 +104,7 @@ def main():
         if spec['baseMonsterId'] and not base:
             raise ValueError(f"Unknown base monster: {spec['baseMonsterId']}")
         metadata = {key: spec[key] for key in ('code', 'knightId', 'baseMonsterId', 'usesGenericToken', 'source', 'note')}
-        for key in ('countRange', 'solo'):
+        for key in ('countRange', 'solo', 'scope', 'positioning'):
             if key in spec:
                 metadata[key] = spec[key]
         metadata['source'] = {**source, **({'pdfUrl': url} if url else {})}
@@ -111,14 +126,17 @@ def main():
         count = spec['monsterCount']
         level = {
             'level': 1, 'tier': spec['tier'], 'name': spec['name'],
-            'cardId': f"Knightbook:{spec['code']}", 'side': 'face',
+            'cardId': spec.get('cardId', f"Knightbook:{spec['code']}"), 'side': 'face',
             'attackPattern': spec['attackPattern'], 'attackPatternVerified': True,
             'attackFacing': spec['attackFacing'],
             'image': {'face': image_path, 'width': 1, 'height': 1, 'index': 0, 'aspect': card_aspect},
             'stats': {'monsterCount': count, 'monsterSize': spec['monsterSize'], 'hit': spec['hit'],
-                      'success': 'X' if spec['code'] == 'K1' else 5 if spec['code'] == 'P5' else 1 if spec['code'] in ('K4', 'U1') else 2,
-                      'partial': 2 if spec['code'] == 'P5' else None if spec['code'] in ('K1', 'K4', 'U1') else 1},
+                      'success': spec.get('success', 'X' if spec['code'] == 'K1' else 5 if spec['code'] == 'P5' else 1 if spec['code'] in ('K4', 'U1') else 2),
+                      'partial': spec.get('partial', 2 if spec['code'] == 'P5' else None if spec['code'] in ('K1', 'K4', 'U1') else 1)},
         }
+        for key in ('boardKind', 'boardLockedSpaces'):
+            if key in spec:
+                level[key] = spec[key]
         if source.get('cornerRadiusRatio'):
             level['image']['cornerRadiusRatio'] = source['cornerRadiusRatio']
         if spec.get('colorCorrection'):
@@ -130,8 +148,11 @@ def main():
             'avatar': avatar,
             'encounterLevels': [level],
         })
-    data['version'] = max(7, data.get('version', 0))
-    data['monsters'] = ordinary + additions
+    data['version'] = max(10, data.get('version', 0))
+    replacements = {monster['id']: monster for monster in additions}
+    existing_ids = {monster['id'] for monster in data['monsters']}
+    data['monsters'] = [replacements.get(monster['id'], monster) for monster in data['monsters']]
+    data['monsters'].extend(monster for monster in additions if monster['id'] not in existing_ids)
     data_path.write_text('window.KF_ENCOUNTER_DATA=' + json.dumps(data, ensure_ascii=False, separators=(',', ':')) + ';\n', encoding='utf-8')
     print(f"Imported {len(additions)} special encounter cards and their verified attack patterns.")
 

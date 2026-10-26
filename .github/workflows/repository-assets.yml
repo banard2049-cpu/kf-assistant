@@ -44,3 +44,8 @@ jobs:
 
       - name: Test campaign sync and gameplay
         run: node --test KF_Unified_Assistant/public/tests/*.test.cjs
+
+      - name: Test database backups and automatic legacy migration
+        run: |
+          php KF_Unified_Assistant/tools/test-database-backup.php
+          php KF_Unified_Assistant/tools/test-database-maintenance.php

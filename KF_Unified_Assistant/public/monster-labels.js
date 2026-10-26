@@ -37,6 +37,12 @@
     Special_R5: {"en":"Soul-less Firstmen","zh":"无魂先民","tier":"mob"},
     Special_S4: {"en":"Guardian of the Pool of Tears","zh":"泪池守卫","tier":"mob"},
     Special_U1: {"en":"Ratman Gangster","zh":"鼠人匪徒","tier":"mob"},
+    "Special_TSF-0032": {"en":"Crazed Modmaker Tree","zh":"疯狂改造师之树","tier":"dragon"},
+    "Special_TSF-0531": {"en":"Manybody of the Junkheap","zh":"废料堆多体怪","tier":"vassal"},
+    "Special_TSF-0932": {"en":"Phantasmal Workers","zh":"幻影工人","tier":"mob"},
+    "Special_TSF-7012": {"en":"Wretchflayer Tree","zh":"剥皮之树","tier":"dragon"},
+    "Special_TSF-7416": {"en":"Fused-Flesh Goliath","zh":"血肉融合巨像","tier":"vassal"},
+    "Special_TSF-7912": {"en":"Frightful Specters","zh":"恐怖幽魂","tier":"mob"},
   };
   const tiers = { mob: "杂兵", vassal: "封臣", king: "国王", devil: "恶魔", dragon: "巨龙", boss: "首领" };
 

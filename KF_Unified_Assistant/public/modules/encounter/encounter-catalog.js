@@ -9,7 +9,8 @@
     return leader?.knightId || "";
   };
   const available = (monsters, knightId) => (monsters || []).filter(monster =>
-    monster.category !== "special" || (knightId && monster.special?.knightId === knightId)
+    monster.category !== "special" || monster.special?.scope === "campaign" ||
+    (knightId && monster.special?.knightId === knightId)
   );
   window.KFEncounterCatalog = Object.freeze({ leaderKnightId, available });
 })();

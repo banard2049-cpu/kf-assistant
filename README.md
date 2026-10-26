@@ -86,9 +86,12 @@ cd KF_Unified_Assistant\tools
 ```bash
 cd KF_Unified_Assistant
 php tools/admin.php backup
+php tools/admin.php compact
 php tools/admin.php list
 php tools/admin.php reset-password 用户名 新密码
 ```
+
+主库存放当前存档及同步去重信息；完整备份单独保存在 `backups/*.db`，读取存档不会加载备份文件。更新后首次维护会自动把旧版同步日志中的完整模块快照转存为 `backups/*-operation-history.jsonl.gz`，并收缩主库；当前存档、模块内的撤销历史和同步操作 ID 均保留。未启用 gzip 时归档为 `.jsonl`。整理失败会保留原数据并在之后重试，也可运行 `compact` 立即整理。
 
 默认配置适合可信局域网。公网部署请配置 HTTPS、关闭开放注册并限制 `data/`、`backups/` 的访问。
 

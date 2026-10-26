@@ -137,6 +137,7 @@ final class LocalApi {
         if ("PATCH".equals(method)) {
             if (data.has("storyMarkers")) settings.put("storyMarkers", copyObject(data.optJSONObject("storyMarkers")));
             if (data.has("passwords")) settings.put("passwords", copyArray(data.optJSONArray("passwords")));
+            if (data.has("jura")) settings.put("jura", data.optJSONObject("jura") == null ? JSONObject.NULL : copyObject(data.optJSONObject("jura")));
             all.put(userId, settings);
         }
         return ok(new JSONObject().put("settings", copyObject(settings)));
@@ -615,6 +616,7 @@ final class LocalApi {
             if (item != null && ids.add(item.optString("id"))) passwords.put(copyObject(item));
         }
         current.put("storyMarkers", markers).put("passwords", passwords);
+        if (imported.optJSONObject("jura") != null) current.put("jura", copyObject(imported.getJSONObject("jura")));
         all.put(userId, current);
     }
 

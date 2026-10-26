@@ -4,9 +4,10 @@
   const links = [
     ["overview", "/", "骑士团"],
     ["map", "/modules/map/", "地图"],
-    ["encounter", "/modules/encounter/", "遭遇"],
+    ["encounter", "/modules/encounter/", "遭遇战"],
     ["aibp", "/modules/aibp/", "AI / BP"],
     ["rogue", "/modules/rogue/", "肉鸽之路"],
+    ["equipment", "/modules/equipment/", "装备预览"],
     ["display", "/modules/display/", "第二屏"],
   ];
 
@@ -20,6 +21,12 @@
     nav.className = "unified-module-bar";
     nav.setAttribute("aria-label", "模块切换");
     for (const [id, href, label] of links) {
+      if (id === "rogue") {
+        const separator = document.createElement("span");
+        separator.className = "unified-module-separator";
+        separator.setAttribute("aria-hidden", "true");
+        nav.append(separator);
+      }
       const link = document.createElement("a");
       link.href = href;
       link.textContent = label;

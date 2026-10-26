@@ -1,7 +1,7 @@
 {
-  "version": 1,
-  "source": "(Don)KF 1.8.json / knightbook PDFs",
-  "verification": "Card-bottom model/token icons, footprints, facing arrows and every red grid cell visually checked against the ten original card faces. Offsets are [row,column] relative to the upper-left footprint cell, in the printed facing.",
+  "version": 2,
+  "source": "(Don)KF 1.8.json / knightbook PDFs / Ten Thousand Succulent Fears Codex local scan",
+  "verification": "Card-bottom model icons, footprints, facing arrows and every red grid cell visually checked against all 16 original card faces. Offsets are [row,column] relative to the upper-left footprint cell, in the printed facing. Codex cards are campaign-wide; the two tree cards ignore Monster Positioning and use a centered 2x2 footprint.",
   "cards": [
     {
       "code": "F4",
@@ -790,6 +790,484 @@
         ],
         "contrast": 0.84
       }
+    },
+    {
+      "code": "TSF-0032",
+      "cardId": "Codex:TenThousandSucculentFears:0032",
+      "scope": "campaign",
+      "knightId": null,
+      "name": "Crazed Modmaker Tree",
+      "nameZh": "疯狂改造师之树",
+      "tier": "dragon",
+      "baseMonsterId": "M_DevilSmeltedFears",
+      "usesGenericToken": false,
+      "monsterSize": 2,
+      "monsterCount": 1,
+      "hit": "7+",
+      "shieldMark": "X",
+      "success": "X",
+      "partial": null,
+      "attackPattern": [
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          -2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "kind": "local-scan",
+        "bookTitle": "万种多肉恐惧",
+        "fileName": "万种多肉恐惧（76.pdf",
+        "sha256": "276e46b68a8ad4f3fb90a81f2b3b82e95e4df8898e5e8be222df29fc0f315a48",
+        "pdfPage": 33,
+        "printedPage": 32,
+        "storyCipher": "0032",
+        "cardNumber": 9,
+        "cropPdfPoints": [
+          48.9,
+          457.95,
+          194.5,
+          709.85
+        ],
+        "dpi": 600,
+        "cornerRadiusRatio": 0.1,
+        "imageVersion": 2,
+        "uncroppedBorderPdfPoints": [
+          48.4,
+          457.5,
+          196.2,
+          710.3
+        ]
+      },
+      "note": "密码 0032（改造师温室）：忽略怪物放置，将树置于版图中央。X＝1＋承受攻击效果的骑士数；按卡面结算。",
+      "positioning": "center",
+      "boardKind": "vassal",
+      "boardLockedSpaces": []
+    },
+    {
+      "code": "TSF-0531",
+      "cardId": "Codex:TenThousandSucculentFears:0531",
+      "scope": "campaign",
+      "knightId": null,
+      "name": "Manybody of the Junkheap",
+      "nameZh": "废料堆多体怪",
+      "tier": "vassal",
+      "baseMonsterId": "M_DevilSmeltedFears",
+      "usesGenericToken": false,
+      "monsterSize": 2,
+      "monsterCount": 1,
+      "hit": "8+",
+      "shieldMark": "X",
+      "success": 3,
+      "partial": null,
+      "attackPattern": [
+        [
+          -1,
+          -1
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "kind": "local-scan",
+        "bookTitle": "万种多肉恐惧",
+        "fileName": "万种多肉恐惧（76.pdf",
+        "sha256": "276e46b68a8ad4f3fb90a81f2b3b82e95e4df8898e5e8be222df29fc0f315a48",
+        "pdfPage": 34,
+        "printedPage": 33,
+        "storyCipher": "0531",
+        "cardNumber": 8,
+        "cropPdfPoints": [
+          391.3,
+          57.45,
+          535.65,
+          312.85
+        ],
+        "dpi": 600,
+        "cornerRadiusRatio": 0.1,
+        "imageVersion": 2,
+        "uncroppedBorderPdfPoints": [
+          390.2,
+          56,
+          536.1,
+          313.3
+        ]
+      },
+      "note": "密码 0531（锈蚀宝库）：使用熔怖恶魔模型，按本卡的 2×2 底盘与攻击范围进行遭遇；胜败后续见原书。",
+      "boardKind": "vassal",
+      "boardLockedSpaces": []
+    },
+    {
+      "code": "TSF-0932",
+      "cardId": "Codex:TenThousandSucculentFears:0932",
+      "scope": "campaign",
+      "knightId": null,
+      "name": "Phantasmal Workers",
+      "nameZh": "幻影工人",
+      "tier": "mob",
+      "baseMonsterId": "M_Panzergeists",
+      "usesGenericToken": false,
+      "monsterSize": 1,
+      "monsterCount": 2,
+      "hit": "10+",
+      "shieldMark": "X",
+      "success": 3,
+      "partial": null,
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "kind": "local-scan",
+        "bookTitle": "万种多肉恐惧",
+        "fileName": "万种多肉恐惧（76.pdf",
+        "sha256": "276e46b68a8ad4f3fb90a81f2b3b82e95e4df8898e5e8be222df29fc0f315a48",
+        "pdfPage": 36,
+        "printedPage": 35,
+        "storyCipher": "0932",
+        "cardNumber": 6,
+        "cropPdfPoints": [
+          34.5,
+          119.45,
+          180.35,
+          374.45
+        ],
+        "dpi": 600,
+        "cornerRadiusRatio": 0.1,
+        "imageVersion": 2,
+        "uncroppedBorderPdfPoints": [
+          34,
+          119,
+          181.8,
+          375.5
+        ]
+      },
+      "note": "密码 0932（工人宿舍），选择夺取钥匙时触发；使用 2 个装甲幽鬼模型。带 Holy（神圣）或 Ethereal（以太）特性的武器装备获得 +2 Precision（精准）。"
+    },
+    {
+      "code": "TSF-7012",
+      "cardId": "Codex:TenThousandSucculentFears:7012",
+      "scope": "campaign",
+      "knightId": null,
+      "name": "Wretchflayer Tree",
+      "nameZh": "剥皮之树",
+      "tier": "dragon",
+      "baseMonsterId": "M_DevilSmeltedFears",
+      "usesGenericToken": false,
+      "monsterSize": 2,
+      "monsterCount": 1,
+      "hit": "7+",
+      "shieldMark": "X",
+      "success": "X",
+      "partial": null,
+      "attackPattern": [
+        [
+          -1,
+          -2
+        ],
+        [
+          -1,
+          0
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          -1,
+          3
+        ],
+        [
+          0,
+          -2
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          -1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          -2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "attackFacing": 0,
+      "source": {
+        "kind": "local-scan",
+        "bookTitle": "万种多肉恐惧",
+        "fileName": "万种多肉恐惧（76.pdf",
+        "sha256": "276e46b68a8ad4f3fb90a81f2b3b82e95e4df8898e5e8be222df29fc0f315a48",
+        "pdfPage": 44,
+        "printedPage": 43,
+        "storyCipher": "7012",
+        "cardNumber": 10,
+        "cropPdfPoints": [
+          210.25,
+          347.05,
+          354.5,
+          599.3
+        ],
+        "dpi": 600,
+        "cornerRadiusRatio": 0.1,
+        "imageVersion": 3,
+        "uncroppedBorderPdfPoints": [
+          209.8,
+          346.6,
+          355.9,
+          602.4
+        ]
+      },
+      "note": "密码 7012（苦难果园）：忽略怪物放置，将树置于版图中央。X＝1＋承受攻击效果的骑士数。原卡底部误沿用了疯狂改造师之树的名称，此放置说明适用于本卡。",
+      "positioning": "center",
+      "boardKind": "vassal",
+      "boardLockedSpaces": []
+    },
+    {
+      "code": "TSF-7416",
+      "cardId": "Codex:TenThousandSucculentFears:7416",
+      "scope": "campaign",
+      "knightId": null,
+      "name": "Fused-Flesh Goliath",
+      "nameZh": "血肉融合巨像",
+      "tier": "vassal",
+      "baseMonsterId": "M_DevilSmeltedFears",
+      "usesGenericToken": false,
+      "monsterSize": 2,
+      "monsterCount": 1,
+      "hit": "9+",
+      "shieldMark": "X",
+      "success": 3,
+      "partial": null,
+      "attackPattern": [
+        [
+          -1,
+          -1
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          -1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          -1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "kind": "local-scan",
+        "bookTitle": "万种多肉恐惧",
+        "fileName": "万种多肉恐惧（76.pdf",
+        "sha256": "276e46b68a8ad4f3fb90a81f2b3b82e95e4df8898e5e8be222df29fc0f315a48",
+        "pdfPage": 46,
+        "printedPage": 45,
+        "storyCipher": "7416",
+        "cardNumber": 9,
+        "cropPdfPoints": [
+          31.15,
+          396.85,
+          177.4,
+          648.5
+        ],
+        "dpi": 600,
+        "cornerRadiusRatio": 0.1,
+        "imageVersion": 3,
+        "uncroppedBorderPdfPoints": [
+          30.5,
+          396.4,
+          181.0,
+          651.7
+        ]
+      },
+      "note": "密码 7416（腐烂宝库）：使用熔怖恶魔模型；攻击会造成 3 点伤害并施加 Bane 1。按卡面结算，胜败后续见原书。",
+      "boardKind": "vassal",
+      "boardLockedSpaces": []
+    },
+    {
+      "code": "TSF-7912",
+      "cardId": "Codex:TenThousandSucculentFears:7912",
+      "scope": "campaign",
+      "knightId": null,
+      "name": "Frightful Specters",
+      "nameZh": "恐怖幽魂",
+      "tier": "mob",
+      "baseMonsterId": "M_Panzergeists",
+      "usesGenericToken": false,
+      "monsterSize": 1,
+      "monsterCount": 3,
+      "hit": "11+",
+      "shieldMark": "X",
+      "success": 3,
+      "partial": null,
+      "attackPattern": [
+        [
+          -1,
+          1
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "attackFacing": 90,
+      "source": {
+        "kind": "local-scan",
+        "bookTitle": "万种多肉恐惧",
+        "fileName": "万种多肉恐惧（76.pdf",
+        "sha256": "276e46b68a8ad4f3fb90a81f2b3b82e95e4df8898e5e8be222df29fc0f315a48",
+        "pdfPage": 47,
+        "printedPage": 46,
+        "storyCipher": "7912",
+        "cardNumber": 7,
+        "cropPdfPoints": [
+          230.25,
+          132.9,
+          375.2,
+          388.3
+        ],
+        "dpi": 600,
+        "cornerRadiusRatio": 0.1,
+        "imageVersion": 2,
+        "uncroppedBorderPdfPoints": [
+          229.8,
+          132.0,
+          378.1,
+          389.6
+        ]
+      },
+      "note": "密码 7912（惊惧者收容所）：使用 3 个装甲幽鬼模型。带 Holy（神圣）或 Ethereal（以太）特性的武器装备获得 +2 Precision（精准）；胜败后续见原书。"
     }
   ]
 }

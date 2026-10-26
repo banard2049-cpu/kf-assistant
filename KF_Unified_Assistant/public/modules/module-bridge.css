@@ -19,6 +19,7 @@ header.unified-topbar .unified-module-bar{
   display:flex;flex:0 0 auto;order:3;align-items:center;justify-content:flex-end;gap:4px;
   min-width:0;max-width:100%;margin-left:0;padding-left:10px;border-left:1px solid #8a7965;overflow-x:auto;
 }
+header.unified-topbar .unified-module-separator{flex:0 0 1px;height:28px;margin:0 6px;border-left:1px solid #8a7965}
 header.unified-topbar .unified-topbar-control{
   box-sizing:border-box;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;gap:4px;
   width:auto;height:28px;min-width:28px;min-height:28px;margin:0;padding:0 8px;

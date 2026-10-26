@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#211d1b">
+  <title>KF 装备预览</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="../module-bridge.css?v=19">
+</head>
+<body data-kf-module="equipment">
+  <header class="equipment-topbar" data-unified-topbar="equipment">
+    <div data-topbar-title><h1>装备预览</h1></div>
+    <div data-topbar-actions><button id="resetFilters" type="button">重置筛选</button></div>
+  </header>
+
+  <main class="equipment-shell">
+    <aside class="equipment-sidebar" aria-label="装备来源筛选">
+      <details class="category-panel" open>
+        <summary><span>装备来源</span><span class="category-hint">选择分类</span></summary>
+        <div id="categoryList" class="category-list"></div>
+      </details>
+    </aside>
+
+    <section class="equipment-content" aria-labelledby="currentCategory">
+      <div class="catalog-head">
+        <div class="catalog-heading">
+          <p class="eyebrow">KINGDOMS FORLORN / ARMORY</p>
+          <h2 id="currentCategory">全部装备</h2>
+        </div>
+        <span id="resultCount" class="result-count" role="status" aria-live="polite"></span>
+      </div>
+
+      <div class="catalog-filters">
+        <div class="tier-row">
+          <span class="filter-label">装备阶级 <small>可多选</small></span>
+          <div id="tierFilters" class="tier-filters" role="group" aria-label="装备阶级筛选，可多选"></div>
+        </div>
+        <div class="search-field">
+          <label class="sr-only" for="equipmentSearch">搜索装备</label>
+          <input id="equipmentSearch" type="search" maxlength="160" placeholder="搜索装备名称或来源" autocomplete="off">
+          <button id="clearSearch" class="search-clear" type="button" aria-label="清空搜索" title="清空搜索">清空</button>
+        </div>
+      </div>
+
+      <div id="equipmentGrid" class="equipment-grid"></div>
+      <div id="emptyState" class="empty-state" hidden>
+        <span class="empty-symbol" aria-hidden="true">—</span>
+        <h3>没有符合条件的装备</h3>
+        <p>试试其他来源或阶级，或使用“重置筛选”查看全部装备。</p>
+      </div>
+      <noscript><p class="empty-state">请启用 JavaScript，以浏览装备目录和卡面。</p></noscript>
+    </section>
+  </main>
+
+  <dialog id="cardDialog" class="card-dialog" aria-labelledby="dialogTitle" aria-describedby="dialogMeta">
+    <div class="preview-header">
+      <div class="preview-heading"><h2 id="dialogTitle">装备预览</h2><p id="dialogMeta"></p></div>
+      <button id="closePreview" class="button close-preview" type="button" autofocus>关闭</button>
+    </div>
+    <div class="preview-stage"><div id="previewCard" class="card-art preview-card" role="img" aria-label="装备卡面"></div></div>
+    <div class="preview-toolbar">
+      <button id="prevCard" class="button" type="button" aria-label="上一张装备">← 上一张</button>
+      <button id="flipCard" class="button primary" type="button" aria-pressed="false">查看背面</button>
+      <button id="nextCard" class="button" type="button" aria-label="下一张装备">下一张 →</button>
+    </div>
+    <div class="preview-footer"><span id="previewPosition"></span><span class="keyboard-hint">← → 切换 · F 翻面 · Esc 关闭</span></div>
+  </dialog>
+
+  <script src="data.js?v=2"></script>
+  <script src="catalog.js?v=3"></script>
+  <script src="app.js?v=3"></script>
+  <script src="../module-topbar.js?v=3"></script>
+</body>
+</html>
