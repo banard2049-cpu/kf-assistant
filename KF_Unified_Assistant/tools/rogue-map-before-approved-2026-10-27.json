@@ -1,0 +1,2349 @@
+{
+  "schemaVersion": 1,
+  "nodes": [
+    {
+      "id": "sunken-01",
+      "level": 5,
+      "reward": "gear",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-05"
+      ]
+    },
+    {
+      "id": "sunken-02",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-03",
+        "sunken-04"
+      ]
+    },
+    {
+      "id": "sunken-03",
+      "level": 5,
+      "reward": "class",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-02"
+      ]
+    },
+    {
+      "id": "sunken-04",
+      "level": 4,
+      "reward": "peril",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-02",
+        "sunken-07"
+      ]
+    },
+    {
+      "id": "sunken-05",
+      "level": 4,
+      "reward": "technique",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-01",
+        "sunken-07",
+        "sunken-08"
+      ]
+    },
+    {
+      "id": "sunken-06",
+      "level": 3,
+      "reward": "technique",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-09",
+        "sunken-10"
+      ]
+    },
+    {
+      "id": "sunken-07",
+      "level": 3,
+      "reward": "gear",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-04",
+        "sunken-05",
+        "sunken-09"
+      ]
+    },
+    {
+      "id": "sunken-08",
+      "level": 5,
+      "reward": "wild",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-05"
+      ]
+    },
+    {
+      "id": "sunken-09",
+      "level": 3,
+      "reward": "class",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-06",
+        "sunken-07"
+      ]
+    },
+    {
+      "id": "sunken-10",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-06",
+        "sunken-13",
+        "stone-09"
+      ]
+    },
+    {
+      "id": "sunken-11",
+      "level": 3,
+      "reward": "heroic",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-12"
+      ]
+    },
+    {
+      "id": "sunken-12",
+      "level": 2,
+      "reward": "technique",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-11",
+        "sunken-15"
+      ]
+    },
+    {
+      "id": "sunken-13",
+      "level": 1,
+      "reward": "heroic",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-10",
+        "sunken-15",
+        "stone-14"
+      ]
+    },
+    {
+      "id": "sunken-14",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-16"
+      ]
+    },
+    {
+      "id": "sunken-15",
+      "level": 1,
+      "reward": "peril",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-12",
+        "sunken-13",
+        "sunken-19"
+      ]
+    },
+    {
+      "id": "sunken-16",
+      "level": 2,
+      "reward": "sigh",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-14",
+        "sunken-18",
+        "sunken-20"
+      ]
+    },
+    {
+      "id": "sunken-17",
+      "level": 1,
+      "reward": "peril",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "S",
+        "stone-14"
+      ]
+    },
+    {
+      "id": "sunken-18",
+      "level": 2,
+      "reward": "peril",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-16",
+        "sunken-22"
+      ]
+    },
+    {
+      "id": "sunken-19",
+      "level": 1,
+      "reward": "technique",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-15",
+        "sunken-20",
+        "sunken-21"
+      ]
+    },
+    {
+      "id": "sunken-20",
+      "level": 1,
+      "reward": "class",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-16",
+        "sunken-19",
+        "sunken-23"
+      ]
+    },
+    {
+      "id": "sunken-21",
+      "level": 1,
+      "reward": "heroic",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-19",
+        "S"
+      ]
+    },
+    {
+      "id": "sunken-22",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-18",
+        "sunken-26"
+      ]
+    },
+    {
+      "id": "sunken-23",
+      "level": 2,
+      "reward": "technique",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-20",
+        "sunken-28",
+        "sunken-29"
+      ]
+    },
+    {
+      "id": "sunken-24",
+      "level": 1,
+      "reward": "technique",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-29",
+        "S"
+      ]
+    },
+    {
+      "id": "sunken-25",
+      "level": 3,
+      "reward": "technique",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-33",
+        "sunken-34"
+      ]
+    },
+    {
+      "id": "sunken-26",
+      "level": 3,
+      "reward": "peril",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-22",
+        "sunken-27",
+        "sunken-38"
+      ]
+    },
+    {
+      "id": "sunken-27",
+      "level": 4,
+      "reward": "gear",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-26",
+        "sunken-32"
+      ]
+    },
+    {
+      "id": "sunken-28",
+      "level": 3,
+      "reward": "heroic",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-23",
+        "sunken-34"
+      ]
+    },
+    {
+      "id": "sunken-29",
+      "level": 1,
+      "reward": "virtue",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-23",
+        "sunken-24",
+        "sunken-35"
+      ]
+    },
+    {
+      "id": "sunken-30",
+      "level": 1,
+      "reward": "gear",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-35",
+        "sunken-41",
+        "stone-35",
+        "sunken-36"
+      ]
+    },
+    {
+      "id": "sunken-31",
+      "level": 5,
+      "reward": "peril",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-32"
+      ]
+    },
+    {
+      "id": "sunken-32",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-27",
+        "sunken-31"
+      ]
+    },
+    {
+      "id": "sunken-33",
+      "level": 2,
+      "reward": "heroic",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-25",
+        "sunken-35",
+        "sunken-39"
+      ]
+    },
+    {
+      "id": "sunken-34",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-25",
+        "sunken-28"
+      ]
+    },
+    {
+      "id": "sunken-35",
+      "level": 1,
+      "reward": "class",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-29",
+        "sunken-30",
+        "sunken-33"
+      ]
+    },
+    {
+      "id": "sunken-36",
+      "level": 2,
+      "reward": "wild",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-44",
+        "stone-40",
+        "stone-45",
+        "sunken-30",
+        "sunken-41"
+      ]
+    },
+    {
+      "id": "sunken-37",
+      "level": 3,
+      "reward": "peril",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-39",
+        "sunken-42"
+      ]
+    },
+    {
+      "id": "sunken-38",
+      "level": 4,
+      "reward": "sigh",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-26",
+        "sunken-40",
+        "sunken-43"
+      ]
+    },
+    {
+      "id": "sunken-39",
+      "level": 3,
+      "reward": "heroic",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-33",
+        "sunken-37"
+      ]
+    },
+    {
+      "id": "sunken-40",
+      "level": 5,
+      "reward": "virtue",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-38"
+      ]
+    },
+    {
+      "id": "sunken-41",
+      "level": 2,
+      "reward": "peril",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-30",
+        "sunken-50",
+        "sunken-36"
+      ]
+    },
+    {
+      "id": "sunken-42",
+      "level": 4,
+      "reward": "technique",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-37",
+        "sunken-45",
+        "sunken-46"
+      ]
+    },
+    {
+      "id": "sunken-43",
+      "level": 5,
+      "reward": "heroic",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-38"
+      ]
+    },
+    {
+      "id": "sunken-44",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-36",
+        "sunken-50"
+      ]
+    },
+    {
+      "id": "sunken-45",
+      "level": 4,
+      "reward": "gear",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-42",
+        "sunken-48"
+      ]
+    },
+    {
+      "id": "sunken-46",
+      "level": 4,
+      "reward": "heroic",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-42",
+        "sunken-49",
+        "sunken-51"
+      ]
+    },
+    {
+      "id": "sunken-47",
+      "level": 5,
+      "reward": "heroic",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-48"
+      ]
+    },
+    {
+      "id": "sunken-48",
+      "level": 4,
+      "reward": "peril",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-45",
+        "sunken-47"
+      ]
+    },
+    {
+      "id": "sunken-49",
+      "level": 5,
+      "reward": "technique",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-46"
+      ]
+    },
+    {
+      "id": "sunken-50",
+      "level": 3,
+      "reward": "sigh",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-41",
+        "sunken-44"
+      ]
+    },
+    {
+      "id": "sunken-51",
+      "level": 5,
+      "reward": "class",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "sunken-46"
+      ]
+    },
+    {
+      "id": "stone-01",
+      "level": 5,
+      "reward": "peril",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-04"
+      ]
+    },
+    {
+      "id": "stone-02",
+      "level": 5,
+      "reward": "heroic",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-04"
+      ]
+    },
+    {
+      "id": "stone-03",
+      "level": 3,
+      "reward": "wild",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-07",
+        "stone-09"
+      ]
+    },
+    {
+      "id": "stone-04",
+      "level": 4,
+      "reward": "peril",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-01",
+        "stone-02",
+        "stone-06"
+      ]
+    },
+    {
+      "id": "stone-05",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-06",
+        "stone-08"
+      ]
+    },
+    {
+      "id": "stone-06",
+      "level": 3,
+      "reward": "virtue",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-04",
+        "stone-05",
+        "stone-10"
+      ]
+    },
+    {
+      "id": "stone-07",
+      "level": 2,
+      "reward": "technique",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-03",
+        "stone-12"
+      ]
+    },
+    {
+      "id": "stone-08",
+      "level": 4,
+      "reward": "heroic",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-05",
+        "stone-13"
+      ]
+    },
+    {
+      "id": "stone-09",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-03",
+        "sunken-10"
+      ]
+    },
+    {
+      "id": "stone-10",
+      "level": 3,
+      "reward": "technique",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-06",
+        "stone-11"
+      ]
+    },
+    {
+      "id": "stone-11",
+      "level": 3,
+      "reward": "peril",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-10",
+        "stone-15"
+      ]
+    },
+    {
+      "id": "stone-12",
+      "level": 2,
+      "reward": "gear",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-07",
+        "stone-14",
+        "stone-16"
+      ]
+    },
+    {
+      "id": "stone-13",
+      "level": 5,
+      "reward": "technique",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-08"
+      ]
+    },
+    {
+      "id": "stone-14",
+      "level": 1,
+      "reward": "technique",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-12",
+        "sunken-13",
+        "sunken-17"
+      ]
+    },
+    {
+      "id": "stone-15",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-11",
+        "stone-16",
+        "stone-20"
+      ]
+    },
+    {
+      "id": "stone-16",
+      "level": 1,
+      "reward": "sigh",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-12",
+        "stone-15",
+        "stone-21"
+      ]
+    },
+    {
+      "id": "stone-17",
+      "level": 3,
+      "reward": "technique",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-20",
+        "stone-25"
+      ]
+    },
+    {
+      "id": "stone-18",
+      "level": 1,
+      "reward": "virtue",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-21",
+        "S"
+      ]
+    },
+    {
+      "id": "stone-19",
+      "level": 5,
+      "reward": "class",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-22"
+      ]
+    },
+    {
+      "id": "stone-20",
+      "level": 2,
+      "reward": "heroic",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-15",
+        "stone-17"
+      ]
+    },
+    {
+      "id": "stone-21",
+      "level": 1,
+      "reward": "class",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-16",
+        "stone-18",
+        "stone-24"
+      ]
+    },
+    {
+      "id": "stone-22",
+      "level": 4,
+      "reward": "wild",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-19",
+        "stone-26",
+        "stone-27"
+      ]
+    },
+    {
+      "id": "stone-23",
+      "level": 1,
+      "reward": "gear",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-29",
+        "S"
+      ]
+    },
+    {
+      "id": "stone-24",
+      "level": 2,
+      "reward": "gear",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-21",
+        "stone-25",
+        "stone-30"
+      ]
+    },
+    {
+      "id": "stone-25",
+      "level": 2,
+      "reward": "peril",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-17",
+        "stone-24"
+      ]
+    },
+    {
+      "id": "stone-26",
+      "level": 5,
+      "reward": "technique",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-22"
+      ]
+    },
+    {
+      "id": "stone-27",
+      "level": 3,
+      "reward": "heroic",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-22",
+        "stone-31",
+        "stone-32"
+      ]
+    },
+    {
+      "id": "stone-28",
+      "level": 1,
+      "reward": "technique",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-35",
+        "S"
+      ]
+    },
+    {
+      "id": "stone-29",
+      "level": 1,
+      "reward": "peril",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-23",
+        "stone-30",
+        "stone-34"
+      ]
+    },
+    {
+      "id": "stone-30",
+      "level": 2,
+      "reward": "virtue",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-24",
+        "stone-29",
+        "stone-33"
+      ]
+    },
+    {
+      "id": "stone-31",
+      "level": 3,
+      "reward": "peril",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-27",
+        "stone-36"
+      ]
+    },
+    {
+      "id": "stone-32",
+      "level": 4,
+      "reward": "technique",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-27",
+        "stone-37"
+      ]
+    },
+    {
+      "id": "stone-33",
+      "level": 2,
+      "reward": "heroic",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-30",
+        "stone-36",
+        "stone-38"
+      ]
+    },
+    {
+      "id": "stone-34",
+      "level": 1,
+      "reward": "wild",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-29",
+        "stone-40",
+        "stone-42"
+      ]
+    },
+    {
+      "id": "stone-35",
+      "level": 1,
+      "reward": "heroic",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-28",
+        "stone-40",
+        "sunken-30"
+      ]
+    },
+    {
+      "id": "stone-36",
+      "level": 2,
+      "reward": "technique",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-31",
+        "stone-33"
+      ]
+    },
+    {
+      "id": "stone-37",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-32",
+        "stone-41"
+      ]
+    },
+    {
+      "id": "stone-38",
+      "level": 3,
+      "reward": "virtue",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-33",
+        "stone-39"
+      ]
+    },
+    {
+      "id": "stone-39",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-38",
+        "stone-42"
+      ]
+    },
+    {
+      "id": "stone-40",
+      "level": 1,
+      "reward": "class",
+      "resurrection": 1,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-34",
+        "stone-35",
+        "stone-45",
+        "sunken-36"
+      ]
+    },
+    {
+      "id": "stone-41",
+      "level": 5,
+      "reward": "virtue",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-37"
+      ]
+    },
+    {
+      "id": "stone-42",
+      "level": 2,
+      "reward": "class",
+      "resurrection": 2,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-34",
+        "stone-39"
+      ]
+    },
+    {
+      "id": "stone-43",
+      "level": 3,
+      "reward": "class",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-45",
+        "stone-48"
+      ]
+    },
+    {
+      "id": "stone-44",
+      "level": 4,
+      "reward": "virtue",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-46",
+        "stone-48",
+        "stone-49"
+      ]
+    },
+    {
+      "id": "stone-45",
+      "level": 3,
+      "reward": "gear",
+      "resurrection": 3,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-40",
+        "stone-43",
+        "sunken-36"
+      ]
+    },
+    {
+      "id": "stone-46",
+      "level": 5,
+      "reward": "peril",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-44"
+      ]
+    },
+    {
+      "id": "stone-47",
+      "level": 4,
+      "reward": "class",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-48",
+        "stone-51"
+      ]
+    },
+    {
+      "id": "stone-48",
+      "level": 4,
+      "reward": "technique",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-43",
+        "stone-44",
+        "stone-47"
+      ]
+    },
+    {
+      "id": "stone-49",
+      "level": 5,
+      "reward": "gear",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-44"
+      ]
+    },
+    {
+      "id": "stone-50",
+      "level": 5,
+      "reward": "sigh",
+      "resurrection": 5,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-51"
+      ]
+    },
+    {
+      "id": "stone-51",
+      "level": 4,
+      "reward": "heroic",
+      "resurrection": 4,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-47",
+        "stone-50"
+      ]
+    },
+    {
+      "id": "S",
+      "level": 0,
+      "reward": "start",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "stone-18",
+        "stone-23",
+        "stone-28",
+        "sunken-17",
+        "sunken-21",
+        "sunken-24"
+      ]
+    },
+    {
+      "id": "wither-sunken-01",
+      "level": 12,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-04"
+      ]
+    },
+    {
+      "id": "wither-sunken-02",
+      "level": 9,
+      "reward": "mastery",
+      "resurrection": 0,
+      "devotion": 3,
+      "withered": true,
+      "links": [
+        "wither-sunken-05"
+      ]
+    },
+    {
+      "id": "wither-sunken-03",
+      "level": 10,
+      "reward": "sigh",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-sunken-06"
+      ]
+    },
+    {
+      "id": "wither-sunken-04",
+      "level": 11,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-01",
+        "wither-sunken-08",
+        "wither-sunken-07"
+      ]
+    },
+    {
+      "id": "wither-sunken-05",
+      "level": 9,
+      "reward": "sigh",
+      "resurrection": 0,
+      "devotion": 3,
+      "withered": true,
+      "links": [
+        "wither-sunken-02",
+        "wither-sunken-09"
+      ]
+    },
+    {
+      "id": "wither-sunken-06",
+      "level": 9,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-sunken-03",
+        "wither-sunken-09"
+      ]
+    },
+    {
+      "id": "wither-sunken-07",
+      "level": 10,
+      "reward": "stat",
+      "resurrection": 20,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-04",
+        "wither-sunken-11"
+      ]
+    },
+    {
+      "id": "wither-sunken-08",
+      "level": 12,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-04"
+      ]
+    },
+    {
+      "id": "wither-sunken-09",
+      "level": 8,
+      "reward": "mastery",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-05",
+        "wither-sunken-06",
+        "wither-sunken-12"
+      ]
+    },
+    {
+      "id": "wither-sunken-10",
+      "level": 6,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-13",
+        "wither-stone-08"
+      ]
+    },
+    {
+      "id": "wither-sunken-11",
+      "level": 8,
+      "reward": "sigh",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-07",
+        "wither-sunken-16"
+      ]
+    },
+    {
+      "id": "wither-sunken-12",
+      "level": 7,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 1,
+      "withered": true,
+      "links": [
+        "wither-sunken-09",
+        "wither-sunken-15"
+      ]
+    },
+    {
+      "id": "wither-sunken-13",
+      "level": 6,
+      "reward": "stat",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-10",
+        "wither-sunken-15",
+        "wither-stone-12"
+      ]
+    },
+    {
+      "id": "wither-sunken-14",
+      "level": 8,
+      "reward": "stat",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-16"
+      ]
+    },
+    {
+      "id": "wither-sunken-15",
+      "level": 6,
+      "reward": "sigh",
+      "resurrection": 0,
+      "devotion": 1,
+      "withered": true,
+      "links": [
+        "wither-sunken-12",
+        "wither-sunken-13",
+        "wither-sunken-18"
+      ]
+    },
+    {
+      "id": "wither-sunken-16",
+      "level": 7,
+      "reward": "mastery",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-11",
+        "wither-sunken-14",
+        "wither-sunken-17"
+      ]
+    },
+    {
+      "id": "wither-sunken-17",
+      "level": 6,
+      "reward": "princess",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-16",
+        "wither-sunken-21",
+        "wither-sunken-22"
+      ]
+    },
+    {
+      "id": "wither-sunken-18",
+      "level": 6,
+      "reward": "stat",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-15",
+        "wither-sunken-21",
+        "wither-S"
+      ]
+    },
+    {
+      "id": "wither-sunken-19",
+      "level": 9,
+      "reward": "stat",
+      "resurrection": 15,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-25"
+      ]
+    },
+    {
+      "id": "wither-sunken-20",
+      "level": 11,
+      "reward": "stat",
+      "resurrection": 20,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-24",
+        "wither-sunken-27"
+      ]
+    },
+    {
+      "id": "wither-sunken-21",
+      "level": 6,
+      "reward": "stat",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-17",
+        "wither-sunken-18",
+        "wither-sunken-32",
+        "wither-S",
+        "wither-stone-40"
+      ]
+    },
+    {
+      "id": "wither-sunken-22",
+      "level": 7,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-17",
+        "wither-sunken-25",
+        "wither-sunken-26"
+      ]
+    },
+    {
+      "id": "wither-sunken-23",
+      "level": 10,
+      "reward": "stat",
+      "resurrection": 20,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-24",
+        "wither-sunken-30"
+      ]
+    },
+    {
+      "id": "wither-sunken-24",
+      "level": 10,
+      "reward": "princess",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-20",
+        "wither-sunken-23",
+        "wither-sunken-28"
+      ]
+    },
+    {
+      "id": "wither-sunken-25",
+      "level": 8,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-19",
+        "wither-sunken-22",
+        "wither-sunken-30"
+      ]
+    },
+    {
+      "id": "wither-sunken-26",
+      "level": 7,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-22",
+        "wither-sunken-32",
+        "wither-sunken-29"
+      ]
+    },
+    {
+      "id": "wither-sunken-27",
+      "level": 12,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-20"
+      ]
+    },
+    {
+      "id": "wither-sunken-28",
+      "level": 11,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-24",
+        "wither-sunken-33"
+      ]
+    },
+    {
+      "id": "wither-sunken-29",
+      "level": 7,
+      "reward": "stat",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-26",
+        "wither-sunken-31"
+      ]
+    },
+    {
+      "id": "wither-sunken-30",
+      "level": 9,
+      "reward": "princess",
+      "resurrection": 0,
+      "devotion": 3,
+      "withered": true,
+      "links": [
+        "wither-sunken-23",
+        "wither-sunken-25",
+        "wither-sunken-33",
+        "wither-sunken-34"
+      ]
+    },
+    {
+      "id": "wither-sunken-31",
+      "level": 8,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-29"
+      ]
+    },
+    {
+      "id": "wither-sunken-32",
+      "level": 7,
+      "reward": "sigh",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-26",
+        "wither-sunken-21",
+        "wither-sunken-36",
+        "wither-stone-40"
+      ]
+    },
+    {
+      "id": "wither-sunken-33",
+      "level": 10,
+      "reward": "mastery",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-sunken-28",
+        "wither-sunken-30",
+        "wither-sunken-35"
+      ]
+    },
+    {
+      "id": "wither-sunken-34",
+      "level": 10,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-30",
+        "wither-sunken-37",
+        "wither-sunken-38"
+      ]
+    },
+    {
+      "id": "wither-sunken-35",
+      "level": 11,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-33",
+        "wither-sunken-40"
+      ]
+    },
+    {
+      "id": "wither-sunken-36",
+      "level": 8,
+      "reward": "princess",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-sunken-32",
+        "wither-sunken-39"
+      ]
+    },
+    {
+      "id": "wither-sunken-37",
+      "level": 9,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-34",
+        "wither-sunken-39"
+      ]
+    },
+    {
+      "id": "wither-sunken-38",
+      "level": 11,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-34",
+        "wither-sunken-41"
+      ]
+    },
+    {
+      "id": "wither-sunken-39",
+      "level": 8,
+      "reward": "mastery",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-37",
+        "wither-sunken-36",
+        "wither-sunken-43"
+      ]
+    },
+    {
+      "id": "wither-sunken-40",
+      "level": 12,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-35"
+      ]
+    },
+    {
+      "id": "wither-sunken-41",
+      "level": 12,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-sunken-38"
+      ]
+    },
+    {
+      "id": "wither-sunken-42",
+      "level": 10,
+      "reward": "legendary",
+      "resurrection": 20,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-43"
+      ]
+    },
+    {
+      "id": "wither-sunken-43",
+      "level": 9,
+      "reward": "stat",
+      "resurrection": 15,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-sunken-39",
+        "wither-sunken-42"
+      ]
+    },
+    {
+      "id": "wither-stone-01",
+      "level": 10,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-stone-04"
+      ]
+    },
+    {
+      "id": "wither-stone-02",
+      "level": 12,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-09"
+      ]
+    },
+    {
+      "id": "wither-stone-03",
+      "level": 7,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-stone-08",
+        "wither-stone-06"
+      ]
+    },
+    {
+      "id": "wither-stone-04",
+      "level": 9,
+      "reward": "sigh",
+      "resurrection": 15,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-01",
+        "wither-stone-07"
+      ]
+    },
+    {
+      "id": "wither-stone-05",
+      "level": 10,
+      "reward": "stat",
+      "resurrection": 20,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-07",
+        "wither-stone-09"
+      ]
+    },
+    {
+      "id": "wither-stone-06",
+      "level": 8,
+      "reward": "mastery",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-03",
+        "wither-stone-13",
+        "wither-stone-10"
+      ]
+    },
+    {
+      "id": "wither-stone-07",
+      "level": 9,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 3,
+      "withered": true,
+      "links": [
+        "wither-stone-04",
+        "wither-stone-05",
+        "wither-stone-10"
+      ]
+    },
+    {
+      "id": "wither-stone-08",
+      "level": 6,
+      "reward": "princess",
+      "resurrection": 0,
+      "devotion": 1,
+      "withered": true,
+      "links": [
+        "wither-stone-03",
+        "wither-sunken-10"
+      ]
+    },
+    {
+      "id": "wither-stone-09",
+      "level": 11,
+      "reward": "legendary",
+      "resurrection": 20,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-02",
+        "wither-stone-05",
+        "wither-stone-14"
+      ]
+    },
+    {
+      "id": "wither-stone-10",
+      "level": 8,
+      "reward": "stat",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-06",
+        "wither-stone-13",
+        "wither-stone-07",
+        "wither-stone-15"
+      ]
+    },
+    {
+      "id": "wither-stone-11",
+      "level": 10,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-stone-15"
+      ]
+    },
+    {
+      "id": "wither-stone-12",
+      "level": 6,
+      "reward": "stat",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-13",
+        "wither-stone-18",
+        "wither-sunken-13"
+      ]
+    },
+    {
+      "id": "wither-stone-13",
+      "level": 7,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-stone-06",
+        "wither-stone-12",
+        "wither-stone-10"
+      ]
+    },
+    {
+      "id": "wither-stone-14",
+      "level": 12,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-09",
+        "wither-stone-17"
+      ]
+    },
+    {
+      "id": "wither-stone-15",
+      "level": 9,
+      "reward": "princess",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-10",
+        "wither-stone-11",
+        "wither-stone-16",
+        "wither-stone-17",
+        "wither-stone-20"
+      ]
+    },
+    {
+      "id": "wither-stone-16",
+      "level": 8,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 3,
+      "withered": true,
+      "links": [
+        "wither-stone-15",
+        "wither-stone-19"
+      ]
+    },
+    {
+      "id": "wither-stone-17",
+      "level": 11,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-15",
+        "wither-stone-14",
+        "wither-stone-20",
+        "wither-stone-24"
+      ]
+    },
+    {
+      "id": "wither-stone-18",
+      "level": 6,
+      "reward": "sigh",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-12",
+        "wither-S"
+      ]
+    },
+    {
+      "id": "wither-stone-19",
+      "level": 7,
+      "reward": "mastery",
+      "resurrection": 0,
+      "devotion": 1,
+      "withered": true,
+      "links": [
+        "wither-stone-16",
+        "wither-stone-22"
+      ]
+    },
+    {
+      "id": "wither-stone-20",
+      "level": 10,
+      "reward": "mastery",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-15",
+        "wither-stone-17",
+        "wither-stone-23",
+        "wither-stone-22"
+      ]
+    },
+    {
+      "id": "wither-stone-21",
+      "level": 6,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 1,
+      "withered": true,
+      "links": [
+        "wither-stone-26",
+        "wither-stone-25",
+        "wither-S"
+      ]
+    },
+    {
+      "id": "wither-stone-22",
+      "level": 8,
+      "reward": "sigh",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-19",
+        "wither-stone-20",
+        "wither-stone-23",
+        "wither-stone-27"
+      ]
+    },
+    {
+      "id": "wither-stone-23",
+      "level": 9,
+      "reward": "mastery",
+      "resurrection": 15,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-20",
+        "wither-stone-22"
+      ]
+    },
+    {
+      "id": "wither-stone-24",
+      "level": 12,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-17",
+        "wither-stone-28"
+      ]
+    },
+    {
+      "id": "wither-stone-25",
+      "level": 6,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 1,
+      "withered": true,
+      "links": [
+        "wither-stone-21",
+        "wither-stone-31",
+        "wither-S"
+      ]
+    },
+    {
+      "id": "wither-stone-26",
+      "level": 7,
+      "reward": "stat",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-21",
+        "wither-stone-27",
+        "wither-stone-32"
+      ]
+    },
+    {
+      "id": "wither-stone-27",
+      "level": 8,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-stone-22",
+        "wither-stone-26",
+        "wither-stone-32",
+        "wither-stone-30"
+      ]
+    },
+    {
+      "id": "wither-stone-28",
+      "level": 11,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-24",
+        "wither-stone-33"
+      ]
+    },
+    {
+      "id": "wither-stone-29",
+      "level": 11,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-34",
+        "wither-stone-33"
+      ]
+    },
+    {
+      "id": "wither-stone-30",
+      "level": 9,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-stone-27",
+        "wither-stone-33",
+        "wither-stone-35"
+      ]
+    },
+    {
+      "id": "wither-stone-31",
+      "level": 6,
+      "reward": "mastery",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-25",
+        "wither-stone-37"
+      ]
+    },
+    {
+      "id": "wither-stone-32",
+      "level": 7,
+      "reward": "sigh",
+      "resurrection": 0,
+      "devotion": 2,
+      "withered": true,
+      "links": [
+        "wither-stone-26",
+        "wither-stone-27",
+        "wither-stone-37",
+        "wither-stone-35"
+      ]
+    },
+    {
+      "id": "wither-stone-33",
+      "level": 10,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-28",
+        "wither-stone-30",
+        "wither-stone-29"
+      ]
+    },
+    {
+      "id": "wither-stone-34",
+      "level": 12,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-29"
+      ]
+    },
+    {
+      "id": "wither-stone-35",
+      "level": 8,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 3,
+      "withered": true,
+      "links": [
+        "wither-stone-32",
+        "wither-stone-30",
+        "wither-stone-36"
+      ]
+    },
+    {
+      "id": "wither-stone-36",
+      "level": 9,
+      "reward": "stat",
+      "resurrection": 15,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-35",
+        "wither-stone-39"
+      ]
+    },
+    {
+      "id": "wither-stone-37",
+      "level": 7,
+      "reward": "princess",
+      "resurrection": 6,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-31",
+        "wither-stone-32",
+        "wither-stone-40"
+      ]
+    },
+    {
+      "id": "wither-stone-38",
+      "level": 9,
+      "reward": "saint",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-stone-40",
+        "wither-stone-41"
+      ]
+    },
+    {
+      "id": "wither-stone-39",
+      "level": 10,
+      "reward": "sigh",
+      "resurrection": 0,
+      "devotion": 5,
+      "withered": true,
+      "links": [
+        "wither-stone-36",
+        "wither-stone-41"
+      ]
+    },
+    {
+      "id": "wither-stone-40",
+      "level": 8,
+      "reward": "princess",
+      "resurrection": 10,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-37",
+        "wither-stone-38",
+        "wither-sunken-21",
+        "wither-sunken-32"
+      ]
+    },
+    {
+      "id": "wither-stone-41",
+      "level": 10,
+      "reward": "stat",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-38",
+        "wither-stone-39",
+        "wither-stone-42"
+      ]
+    },
+    {
+      "id": "wither-stone-42",
+      "level": 11,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-41",
+        "wither-stone-43"
+      ]
+    },
+    {
+      "id": "wither-stone-43",
+      "level": 12,
+      "reward": "legendary",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": true,
+      "links": [
+        "wither-stone-42"
+      ]
+    },
+    {
+      "id": "wither-S",
+      "level": 0,
+      "reward": "start",
+      "resurrection": 0,
+      "devotion": 0,
+      "withered": false,
+      "links": [
+        "wither-stone-18",
+        "wither-stone-21",
+        "wither-stone-25",
+        "wither-sunken-18",
+        "wither-sunken-21"
+      ]
+    }
+  ]
+}

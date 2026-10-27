@@ -2616,3 +2616,31 @@ label,
   border-radius: 0;
   object-fit: contain;
 }
+
+.postgame-replacements { margin: 12px 0; padding: 8px 12px; border-left: 3px solid #c8a966; background: #c8a96612; }
+.postgame-replacements p { margin: 5px 0; line-height: 1.5; }
+.postgame-reference-card { display: flex; flex-direction: column; min-width: 0; gap: 6px; }
+.postgame-reference-card .card-button { width: 100%; }
+.postgame-reference-card .crop-card { background-color: #f4eee4; }
+.postgame-card-note { color: #d5bc8e; font-size: 12px; line-height: 1.5; }
+.postgame-reference-gallery { display: block; columns: 220px; column-gap: 12px; max-height: none; overflow: visible; }
+.postgame-reference-gallery > * { break-inside: avoid; margin: 0 0 12px; }
+.postgame-reference-gallery .postgame-reference-card { display: inline-flex; width: 100%; }
+.postgame-preview-modal { width: min(880px, 94vw); }
+.sheet-trait-tools { margin: 8px 0 12px; }
+.sheet-trait-tools > p { font-size: 12px; line-height: 1.5; }
+.sheet-trait-choices { display: grid; gap: 6px; }
+.sheet-trait-choice { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.sheet-trait-choice > span { min-width: 0; font-size: 12px; overflow-wrap: anywhere; }
+.sheet-trait-choice > button { flex-shrink: 0; }
+.sheet-trait-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.sheet-trait { position: absolute; transform: translate(-50%, -50%); padding: 0; border: 1px solid #b79b63; background: #f4eee4; box-shadow: 0 2px 8px #0008; cursor: grab; touch-action: none; pointer-events: auto; }
+.sheet-trait > img { display: block; width: 100%; height: auto; user-select: none; }
+.sheet-trait.level-reference { background: transparent; border: 0; box-shadow: none; }
+.sheet-trait.dragging { z-index: 2; cursor: grabbing; }
+.sheet-trait:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+.sheet-trait-actions { position: absolute; top: 0; right: 0; display: flex; gap: 1px; opacity: 0; background: #171b18ed; }
+.sheet-trait:hover .sheet-trait-actions, .sheet-trait:focus-within .sheet-trait-actions { opacity: 1; }
+.sheet-trait-actions button { min-width: 20px; min-height: 24px; padding: 2px 4px; border: 0; background: #171b18ed; color: #fff; font-size: 11px; cursor: pointer; touch-action: manipulation; }
+.sheet-trait-actions button:hover, .sheet-trait-actions button:focus-visible { background: #5c4a2c; }
+@media (hover: none) { .sheet-trait-actions { opacity: 1; } }

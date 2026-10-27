@@ -37,7 +37,10 @@ test('campaign import remaps module/history references and display ETags follow 
   const api = async (route, method = 'GET', body) => {
     const response = await fetch(url(route), { method, headers: { 'Content-Type': 'application/json', Cookie: cookie }, body: body === undefined ? undefined : JSON.stringify(body) });
     const session = response.headers.get('set-cookie'); if (session) cookie = session.split(';')[0];
-    const json = await response.json();
+    const responseText = await response.text();
+    let json;
+    try { json = JSON.parse(responseText); }
+    catch { throw new Error(`${route}: non-JSON response ${response.status}: ${responseText.slice(0, 2000)}\n${log}`); }
     assert.ok(response.ok, `${route}: ${response.status} ${JSON.stringify(json)}\n${log}`);
     return json;
   };
@@ -54,7 +57,7 @@ test('campaign import remaps module/history references and display ETags follow 
       op('leader_operation', 'leaderSheetId', sheet.id), op('party_operation_', 'party', [sheet.id]),
       op('map_operation___', 'modules.map', { round: 6, mainKnightId: 'piece-1', knights: [{ id: 'piece-1', sheetId: sheet.id, clues: { martial: 3 } }], maps: { SK: { history: [{ knights: [{ id: 'piece-1', sheetId: sheet.id }] }] } } }),
       op('enc_operation___', 'modules.encounter', { knights: [{ id: 'piece-2', sheetId: sheet.id, space: '7', done: true }], history: [{ knights: [{ id: 'piece-2', sheetId: sheet.id }] }] }),
-      op('rogue_operation_', 'modules.roguePath', { schemaVersion: 2, campaignId, activeSlotId: 'run-1', slots: [{ id: 'run-1', state: { schemaVersion: 1, partyName: 'saved run' } }] }),
+      op('rogue_operation_', 'modules.roguePath', { schemaVersion: 2, campaignId, activeSlotId: 'run-1', slots: [{ id: 'run-1', state: { schemaVersion: 2, partyName: 'saved run', stage: 'withergraal', sharedRevives: 20, postgame: true, roster: [{ id: 'rogue-knight', devotion: 3, growth: { maxVigor: 1 } }] } }] }),
     ] });
     const juraRecord = { enabled: true, level: 2, shards: 4, built: ['saints-sanctuary'], quests: { fragments: 'completed' }, loadouts: [{ name: '测试配装', level: 2, facilities: [], chants: [] }] };
     await api('user-settings', 'PATCH', { jura: juraRecord });
@@ -75,6 +78,9 @@ test('campaign import remaps module/history references and display ETags follow 
     assert.equal(imported.modules.encounter.history[0].knights[0].sheetId, newId);
     assert.equal(imported.modules.roguePath.campaignId, importedId);
     assert.equal(imported.modules.roguePath.slots[0].state.partyName, 'saved run');
+    assert.equal(imported.modules.roguePath.slots[0].state.stage, 'withergraal');
+    assert.equal(imported.modules.roguePath.slots[0].state.sharedRevives, 20);
+    assert.equal(imported.modules.roguePath.slots[0].state.roster[0].devotion, 3);
     const copyId = (await api('campaigns/' + campaignId + '/copy', 'POST')).id;
     const copied = (await api('campaigns/' + copyId)).campaign.state;
     assert.equal(copied.modules.roguePath.campaignId, copyId);
@@ -156,6 +162,23 @@ test('campaign import remaps module/history references and display ETags follow 
     await api('health');
     assert.deepEqual(fs.readdirSync(path.join(scratch, 'backups')).filter(name => name.includes('-operation-history.jsonl')), historyFiles,
       'Repeated maintenance must not create another archive');
+
+    for (const level of [9, 10]) {
+      const started = await api('encounters/start', 'POST', { campaignId, monster: 'postgame boss', level });
+      assert.equal(started.state.encounter.level, level, 'The legacy start endpoint must preserve postgame levels');
+      assert.equal(started.state.aibp.level, level);
+    }
+    const sheetTraits = [{ cardId: 'postgame-eggknight-5-traits', x: 67.5, y: 42.25, width: 34 }];
+    const latestRevision = (await api('campaigns/' + campaignId)).campaign.revision;
+    await api('campaign-sync', 'POST', { campaignId, operations: [
+      op('sheet_traits_display', 'modules.aibp', { battle: {
+        monsterId: 'M_Eggknight', level: 9, sheetTraits,
+        aiDeck: ['hidden-ai-card'], bpDeck: ['hidden-bp-card'],
+      } }, latestRevision),
+    ] });
+    const publicBattle = (await api(displayRoute)).modules.aibp.battle;
+    assert.deepEqual(publicBattle.sheetTraits, sheetTraits, 'The second screen must receive placed trait coordinates and size');
+    assert.ok(!('aiDeck' in publicBattle) && !('bpDeck' in publicBattle), 'Public traits must not expose hidden deck contents');
   } finally {
     const stopped = once(server, 'exit'); server.kill(); await stopped;
     // The directory contains only this test's newly created database and backups.

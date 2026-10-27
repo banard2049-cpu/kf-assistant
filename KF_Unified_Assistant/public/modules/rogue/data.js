@@ -26,47 +26,193 @@
   // (149,705); the right-page ordinary circle at (200,491) remains in the
   // manifest separately.
   const stonePoints = [[439,182],[621,230],[250,260],[454,290],[692,316],[563,362],[363,364],[804,368],[198,370],[492,433],[687,437],[335,490],[812,490],[200,491],[608,504],[473,527],[727,569],[222,600],[859,606],[608,614],[433,621],[760,664],[319,674],[470,708],[608,720],[863,751],[735,757],[246,795],[380,801],[501,811],[651,822],[815,850],[586,898],[382,916],[216,920],[728,926],[851,945],[504,971],[637,1019],[268,1024],[791,1053],[494,1070],[369,1086],[642,1124],[207,1162],[772,1174],[364,1189],[542,1193],[674,1278],[245,1284],[415,1290]];
-  const lv = [5,4,5,4,4,3,3,5,3,2,3,2,1,2,1,2,1,2,1,1,1,2,2,1,3,3,4,3,1,1,5,4,2,4,1,2,3,4,3,5,2,4,5,2,4,4,5,4,5,3,5];
-  const rewards = ["gear","class","heroic","peril","technique","technique","gear","wild","class","class","heroic","technique","heroic","heroic","peril","sigh","peril","peril","technique","class","heroic","heroic","technique","technique","technique","peril","virtue","heroic","virtue","virtue","peril","heroic","heroic","heroic","heroic","wild","peril","virtue","heroic","virtue","peril","technique","heroic","heroic","virtue","heroic","heroic","peril","technique","virtue","class"];
-  const makeExact = (points, kingdom, prefix, page, levels, rewardList) => points.map((p,i) => ({ id:`${prefix}-${String(i+1).padStart(2,"0")}`, kingdom, level:levels[i], resurrection:levels[i], reward:rewardList[i], x:p[0]/993, y:p[1]/1404, page, cleared:false, links:[] }));
-  const stoneLv = [5,4,5,4,5,3,4,5,3,2,3,2,1,1,1,2,1,2,1,1,2,2,3,1,1,5,3,1,1,2,2,5,3,4,1,1,2,4,3,4,1,5,2,3,4,3,5,4,4,5,4];
-  const stoneRewards = ["peril","heroic","wild","peril","class","virtue","peril","heroic","class","technique","technique","peril","gear","technique","technique","class","sigh","virtue","class","gear","class","class","class","technique","peril","class","virtue","peril","heroic","gear","peril","class","class","class","class","virtue","heroic","peril","class","virtue","class","virtue","class","gear","class","class","technique","class","virtue","gear","class"];
-  const nodes = [...makeExact(sunkenPoints,"sunken","sunken",0,lv,rewards), ...makeExact(stonePoints,"stone","stone",1,stoneLv,stoneRewards)];
-  // The audit page stores corrections in localStorage so the main route can
-  // use them immediately without rewriting this bundled manifest.  Keep the
-  // source manifest as the fallback for tests, exports, and fresh browsers.
-  const LABEL_OVERRIDES_KEY = "kf-rogue-label-overrides-v1";
-  const sourceNodes = nodes.map(node => ({ ...node }));
-  function readLabelOverrides() {
-    try {
-      const raw = globalThis.localStorage?.getItem(LABEL_OVERRIDES_KEY);
-      const parsed = raw ? JSON.parse(raw) : null;
-      return parsed && typeof parsed === "object" ? parsed : {};
-    } catch { return {}; }
-  }
-  const labelOverrides = readLabelOverrides();
-  nodes.forEach(node => {
-    const override = labelOverrides[node.id];
-    if (!override || typeof override !== "object") return;
-    const level = Number(override.level);
-    if (Number.isInteger(level) && level >= 1 && level <= 5) {
-      node.level = level;
-      node.resurrection = level;
-    }
-    const reward = String(override.reward || "");
-    if (["heroic", "class", "peril", "technique", "gear", "virtue", "wild", "sigh"].includes(reward)) node.reward = reward;
+  // User-approved basic map. Copy values exactly; do not infer branch links.
+  const BASIC_MAP_SOURCE=Object.freeze({file:"kf-rogue-map-2026-10-27 (3).json",sha256:"b4c5cf37623f3471d7da5ff3e8825da8f9ce927d59401d8f8751bb4bfbe7c55c"});
+  const BASIC_LINKS_REVISION=2;
+  const ADVANCED_MAP_REVISION=1;
+  const LABEL_OVERRIDES_KEY="kf-rogue-label-overrides-v1";
+  const approvedBasicRows=[
+    ["sunken-01",5,"gear",5,0,false,["sunken-05"]],
+    ["sunken-02",4,"class",4,0,false,["sunken-03","sunken-04"]],
+    ["sunken-03",5,"class",5,0,false,["sunken-02"]],
+    ["sunken-04",4,"peril",4,0,false,["sunken-02","sunken-07"]],
+    ["sunken-05",4,"technique",4,0,false,["sunken-01","sunken-07","sunken-08"]],
+    ["sunken-06",3,"technique",3,0,false,["sunken-09","sunken-10"]],
+    ["sunken-07",3,"gear",3,0,false,["sunken-04","sunken-05","sunken-09"]],
+    ["sunken-08",5,"wild",5,0,false,["sunken-05"]],
+    ["sunken-09",3,"class",3,0,false,["sunken-06","sunken-07"]],
+    ["sunken-10",2,"class",2,0,false,["sunken-06","sunken-13","stone-09"]],
+    ["sunken-11",3,"heroic",3,0,false,["sunken-12","sunken-14"]],
+    ["sunken-12",2,"technique",2,0,false,["sunken-11","sunken-15"]],
+    ["sunken-13",1,"heroic",1,0,false,["sunken-10","sunken-15","stone-14"]],
+    ["sunken-14",2,"class",2,0,false,["sunken-16","sunken-11"]],
+    ["sunken-15",1,"peril",1,0,false,["sunken-12","sunken-13","sunken-19"]],
+    ["sunken-16",2,"sigh",2,0,false,["sunken-14","sunken-18","sunken-20"]],
+    ["sunken-17",1,"peril",1,0,false,["S","stone-14"]],
+    ["sunken-18",2,"peril",2,0,false,["sunken-16","sunken-22"]],
+    ["sunken-19",1,"technique",1,0,false,["sunken-15","sunken-20","sunken-21"]],
+    ["sunken-20",1,"class",1,0,false,["sunken-16","sunken-19","sunken-23"]],
+    ["sunken-21",1,"heroic",1,0,false,["sunken-19","S"]],
+    ["sunken-22",2,"class",2,0,false,["sunken-18","sunken-26"]],
+    ["sunken-23",2,"technique",2,0,false,["sunken-20","sunken-28","sunken-29"]],
+    ["sunken-24",1,"technique",1,0,false,["sunken-29","S"]],
+    ["sunken-25",3,"technique",3,0,false,["sunken-33","sunken-34"]],
+    ["sunken-26",3,"peril",3,0,false,["sunken-22","sunken-27","sunken-38"]],
+    ["sunken-27",4,"gear",4,0,false,["sunken-26","sunken-32"]],
+    ["sunken-28",3,"heroic",3,0,false,["sunken-23","sunken-34"]],
+    ["sunken-29",1,"virtue",1,0,false,["sunken-23","sunken-24","sunken-35"]],
+    ["sunken-30",1,"gear",1,0,false,["sunken-35","sunken-41","stone-35"]],
+    ["sunken-31",5,"peril",5,0,false,["sunken-32"]],
+    ["sunken-32",4,"class",4,0,false,["sunken-27","sunken-31"]],
+    ["sunken-33",2,"heroic",2,0,false,["sunken-25","sunken-35","sunken-39"]],
+    ["sunken-34",4,"class",4,0,false,["sunken-25","sunken-28"]],
+    ["sunken-35",1,"class",1,0,false,["sunken-29","sunken-30","sunken-33"]],
+    ["sunken-36",2,"wild",2,0,false,["sunken-44","stone-40","stone-45"]],
+    ["sunken-37",3,"peril",3,0,false,["sunken-39","sunken-42"]],
+    ["sunken-38",4,"sigh",4,0,false,["sunken-26","sunken-40","sunken-43"]],
+    ["sunken-39",3,"heroic",3,0,false,["sunken-33","sunken-37"]],
+    ["sunken-40",5,"virtue",5,0,false,["sunken-38"]],
+    ["sunken-41",2,"peril",2,0,false,["sunken-30","sunken-50"]],
+    ["sunken-42",4,"technique",4,0,false,["sunken-37","sunken-45","sunken-46"]],
+    ["sunken-43",5,"heroic",5,0,false,["sunken-38"]],
+    ["sunken-44",2,"class",2,0,false,["sunken-36","sunken-50"]],
+    ["sunken-45",4,"gear",4,0,false,["sunken-42","sunken-48"]],
+    ["sunken-46",4,"heroic",4,0,false,["sunken-42","sunken-49","sunken-51"]],
+    ["sunken-47",5,"heroic",5,0,false,["sunken-48"]],
+    ["sunken-48",4,"peril",4,0,false,["sunken-45","sunken-47"]],
+    ["sunken-49",5,"technique",5,0,false,["sunken-46"]],
+    ["sunken-50",3,"sigh",3,0,false,["sunken-41","sunken-44"]],
+    ["sunken-51",5,"class",5,0,false,["sunken-46"]],
+    ["stone-01",5,"peril",5,0,false,["stone-04"]],
+    ["stone-02",5,"heroic",5,0,false,["stone-04"]],
+    ["stone-03",3,"wild",3,0,false,["stone-07","stone-09"]],
+    ["stone-04",4,"peril",4,0,false,["stone-01","stone-02","stone-06"]],
+    ["stone-05",4,"class",4,0,false,["stone-06","stone-08"]],
+    ["stone-06",3,"virtue",3,0,false,["stone-04","stone-05","stone-10"]],
+    ["stone-07",2,"technique",2,0,false,["stone-03","stone-12"]],
+    ["stone-08",4,"heroic",4,0,false,["stone-05","stone-13"]],
+    ["stone-09",2,"class",2,0,false,["stone-03","sunken-10"]],
+    ["stone-10",3,"technique",3,0,false,["stone-06","stone-11"]],
+    ["stone-11",3,"peril",3,0,false,["stone-10","stone-15"]],
+    ["stone-12",2,"gear",2,0,false,["stone-07","stone-14","stone-16"]],
+    ["stone-13",5,"technique",5,0,false,["stone-08"]],
+    ["stone-14",1,"technique",1,0,false,["stone-12","sunken-13","sunken-17"]],
+    ["stone-15",2,"class",2,0,false,["stone-11","stone-16","stone-20"]],
+    ["stone-16",1,"sigh",1,0,false,["stone-12","stone-15","stone-21"]],
+    ["stone-17",3,"technique",3,0,false,["stone-20","stone-25"]],
+    ["stone-18",1,"virtue",1,0,false,["stone-21","S"]],
+    ["stone-19",5,"class",5,0,false,["stone-22"]],
+    ["stone-20",2,"heroic",2,0,false,["stone-15","stone-17"]],
+    ["stone-21",1,"class",1,0,false,["stone-16","stone-18","stone-24"]],
+    ["stone-22",4,"wild",4,0,false,["stone-19","stone-26","stone-27"]],
+    ["stone-23",1,"gear",1,0,false,["stone-29","S"]],
+    ["stone-24",2,"gear",2,0,false,["stone-21","stone-25","stone-30"]],
+    ["stone-25",2,"peril",2,0,false,["stone-17","stone-24"]],
+    ["stone-26",5,"technique",5,0,false,["stone-22"]],
+    ["stone-27",3,"heroic",3,0,false,["stone-22","stone-31","stone-32"]],
+    ["stone-28",1,"technique",1,0,false,["stone-35","S"]],
+    ["stone-29",1,"peril",1,0,false,["stone-23","stone-30","stone-34"]],
+    ["stone-30",2,"virtue",2,0,false,["stone-24","stone-29","stone-33"]],
+    ["stone-31",3,"peril",3,0,false,["stone-27","stone-36"]],
+    ["stone-32",4,"technique",4,0,false,["stone-27","stone-37"]],
+    ["stone-33",2,"heroic",2,0,false,["stone-30","stone-36","stone-38"]],
+    ["stone-34",1,"wild",1,0,false,["stone-29","stone-40","stone-42"]],
+    ["stone-35",1,"heroic",1,0,false,["stone-28","stone-40","sunken-30"]],
+    ["stone-36",2,"technique",2,0,false,["stone-31","stone-33"]],
+    ["stone-37",4,"class",4,0,false,["stone-32","stone-41"]],
+    ["stone-38",3,"virtue",3,0,false,["stone-33","stone-39"]],
+    ["stone-39",4,"class",4,0,false,["stone-38","stone-42"]],
+    ["stone-40",1,"class",1,0,false,["stone-34","stone-35","sunken-36"]],
+    ["stone-41",5,"virtue",5,0,false,["stone-37"]],
+    ["stone-42",2,"class",2,0,false,["stone-34","stone-39"]],
+    ["stone-43",3,"class",3,0,false,["stone-45","stone-48"]],
+    ["stone-44",4,"virtue",4,0,false,["stone-46","stone-48","stone-49"]],
+    ["stone-45",3,"gear",3,0,false,["stone-43","sunken-36"]],
+    ["stone-46",5,"peril",5,0,false,["stone-44"]],
+    ["stone-47",4,"class",4,0,false,["stone-48","stone-51"]],
+    ["stone-48",4,"technique",4,0,false,["stone-43","stone-44","stone-47"]],
+    ["stone-49",5,"gear",5,0,false,["stone-44"]],
+    ["stone-50",5,"sigh",5,0,false,["stone-51"]],
+    ["stone-51",4,"heroic",4,0,false,["stone-47","stone-50"]],
+    ["S",0,"start",0,0,false,["stone-18","stone-23","stone-28","sunken-17","sunken-21","sunken-24"]]
+  ];
+  const approvedBasicById=new Map(approvedBasicRows.map(([id,level,reward,resurrection,devotion,withered,links])=>[id,{id,level,reward,resurrection,devotion,withered,links}]));
+  const makeExact=(points,kingdom)=>points.map((point,index)=>{
+    const id=`${kingdom}-${String(index+1).padStart(2,"0")}`,value=approvedBasicById.get(id);
+    if(!value)throw new Error(`Missing approved basic node: ${id}`);
+    return {...value,stage:"rosegraal",kingdom,page:kingdom==="sunken"?0:1,x:point[0]/993,y:point[1]/1404,cleared:false,links:[...value.links]};
   });
-  // Connections detected from the brown branch artwork between the measured
-  // circle centres. Each pair is an index into the 102 ordinary-node manifest.
-  const tracedEdges = [[0,4],[0,7],[1,2],[1,3],[1,6],[2,9],[3,6],[3,10],[4,6],[4,7],[5,8],[5,9],[5,12],[6,8],[6,9],[6,13],[8,15],[9,12],[9,16],[10,11],[10,14],[11,16],[11,19],[12,14],[12,18],[13,21],[14,22],[15,19],[16,19],[16,23],[18,28],[19,20],[19,24],[20,28],[20,29],[21,25],[22,27],[22,28],[22,34],[23,35],[24,29],[24,32],[24,36],[26,31],[26,37],[27,28],[27,33],[27,36],[28,40],[32,38],[34,41],[35,43],[35,45],[35,49],[36,41],[36,48],[37,39],[37,42],[40,50],[41,45],[42,46],[43,49],[44,47],[44,50],[45,48],[45,50],[51,54],[51,60],[52,54],[52,58],[53,57],[53,59],[53,64],[54,56],[55,56],[55,58],[55,60],[56,60],[56,66],[56,70],[57,62],[58,63],[58,65],[58,69],[59,68],[60,71],[61,65],[61,66],[62,64],[62,74],[63,69],[63,70],[65,70],[65,75],[66,71],[67,70],[67,75],[67,76],[67,77],[68,71],[68,79],[69,72],[69,82],[70,81],[71,74],[71,80],[72,76],[72,77],[72,81],[73,79],[73,84],[74,80],[74,83],[75,82],[75,86],[76,86],[77,83],[77,87],[79,84],[80,81],[80,83],[80,89],[81,86],[81,88],[82,87],[82,89],[83,88],[83,92],[83,94],[84,90],[85,90],[85,93],[87,91],[87,96],[88,89],[88,98],[93,95],[93,98],[93,101],[94,96],[94,98],[97,98],[97,101]];
-  tracedEdges.forEach(([a,b])=>{ const left=nodes[a], right=nodes[b]; if(left&&!left.links.includes(right.id))left.links.push(right.id); if(right&&!right.links.includes(left.id))right.links.push(left.id); });
-  // The printed S hub is an additional node (the right page has 51 ordinary
-  // circles plus S). Four branches visibly leave it toward the upper-right,
-  // right, lower-right and lower-left printed circles respectively.
-  const start = { id:"S", kingdom:"stone", level:0, resurrection:0, reward:"start", x:149/993, y:705/1404, page:1, cleared:false, links:[] };
-  start.links = ["stone-18", "stone-23", "stone-28", "stone-35"];
-  start.links.forEach(id=>{ const other=nodes.find(n=>n.id===id); if(other&&!other.links.includes(start.id))other.links.push(start.id); });
-  nodes.push(start);
+  const nodes=[...makeExact(sunkenPoints,"sunken"),...makeExact(stonePoints,"stone"),{...approvedBasicById.get("S"),stage:"rosegraal",kingdom:"stone",page:1,x:149/993,y:705/1404,cleared:false,links:[...approvedBasicById.get("S").links]}];
+  const sourceNodes=nodes.map(node=>({...node,links:[...node.links]}));
+  const WITHER = window.KF_WITHERGRAAL_DATA || {NODES:[],TABLE:{},REWARDS:[],GROWTH_LABELS:{},GROWTH_ICONS:{}};
+  const ALL_NODES = [...nodes,...WITHER.NODES];
+  const STAGES = Object.freeze({
+    rosegraal:{id:"rosegraal",title:"玫瑰圣杯路径",image:"/assets/rogue/rosegraal-tree.jpg",startNodeId:"S",pageCount:2},
+    withergraal:{id:"withergraal",title:"枯萎圣杯 · 进阶肉鸽",image:"/assets/rogue/withergraal-tree.jpg?v=2",startNodeId:"wither-S",pageCount:2},
+  });
+  const stageMeta = stage => STAGES[stage] || STAGES.rosegraal;
+  const getStageNodes = (state, stage=state?.stage||"rosegraal") => (state?.nodes||ALL_NODES).filter(n=>(n.stage||"rosegraal")===stage);
+  // These are the printed V endpoints. Keep their identity independent of
+  // editable node labels and links: reaching any one ends the basic path.
+  const ROSEGRAAL_FINISH_NODE_IDS = Object.freeze([
+    "sunken-01","sunken-03","sunken-08","sunken-31","sunken-40","sunken-43","sunken-47","sunken-49","sunken-51",
+    "stone-01","stone-02","stone-13","stone-19","stone-26","stone-41","stone-46","stone-49","stone-50",
+  ]);
+  const stageComplete = (state,stage=state.stage||"rosegraal") => {
+    const list=getStageNodes(state,stage).filter(n=>n.reward!=="start");
+    return stage==="rosegraal"
+      ? list.some(n=>n.cleared&&ROSEGRAAL_FINISH_NODE_IDS.includes(n.id))
+      : list.length>0&&list.every(n=>n.cleared);
+  };
+  const isAvailable = (state,node) => Boolean(node && (node.stage||"rosegraal")===(state.stage||"rosegraal") && node.reward!=="start" && !node.cleared && !state.pendingBattle && !state.pendingRewardChoice && state.status==="active" && node.links.some(id=>state.nodes.some(other=>other.id===id&&other.cleared)));
+  const canEnterWithergraal = state => state.stage!=="withergraal" && !state.postgame && !state.pendingBattle && !state.pendingRewardChoice && WITHER.NODES.length>0 && (state.status==="won"||stageComplete(state,"rosegraal"));
+  function enterWithergraal(state) {
+    if(!canEnterWithergraal(state))return false;
+    state.stage="withergraal";state.postgame=true;state.status="active";state.sharedRevives=20;
+    state.nodes.forEach(n=>{if(n.id==="wither-S")n.cleared=true;});
+    state.roster.forEach(m=>{m.postgame=true;});
+    state.history.push({at:Date.now(),type:"withergraal-start",sharedRevives:20});
+    return true;
+  }
+  // The core Rogue's Path reward rule permits the node's level or lower;
+  // Withergraal changes the recipient to the party, not this level range.
+  const advancedRewardOptions = (state,node) => WITHER.REWARDS.filter(r=>r.level<=Number(node?.level)&&r.category===node?.reward&&!state.advancedClaims?.[r.id]);
+  const advancedRewardBoon = (option,choice={}) => {
+    if(!option?.alternatives)return option;
+    const index=Number(choice.alternative??0);
+    return Number.isInteger(index)?option.alternatives[index]:null;
+  };
+  const advancedRewardNeedsMember = (option,choice={}) => Boolean(option&&(!["princess","saint"].includes(option.category)||advancedRewardBoon(option,choice)?.gold));
+  function claimAdvancedReward(state,node,choice) {
+    const option=advancedRewardOptions(state,node).find(r=>r.id===choice?.rewardId);
+    if(!option)return {ok:false,message:"请选择尚未领取的奖励。"};
+    const boon=advancedRewardBoon(option,choice);
+    if(!boon)return {ok:false,message:"请选择有效的奖励选项。"};
+    const needsMember=advancedRewardNeedsMember(option,choice);
+    const member=needsMember?state.roster.find(m=>m.id===choice.memberId):null;
+    if(needsMember&&!member)return {ok:false,message:"请选择领取奖励的骑士。"};
+    const actualName=String(choice.name||"").trim().slice(0,120);
+    if(option.requiresName){
+      if(!actualName)return {ok:false,message:"请填写实际抽到的精通名称。"};
+      const key=actualName.toLocaleLowerCase().replace(/\s+/g," ");
+      if(Object.values(state.advancedClaims||{}).some(c=>c.category==="mastery"&&c.name?.toLocaleLowerCase().replace(/\s+/g," ")===key))return {ok:false,message:"队伍已经获得这项精通，请重新抽取。"};
+    }
+    const text=option.requiresName?`精通：${actualName}`:boon.text;
+    if(member){
+      member.growth=member.growth||{};
+      Object.entries(boon.bonuses||{}).forEach(([key,value])=>{member.growth[key]=(Number(member.growth[key])||0)+value;});
+      if(boon.gold)member.gold=(Number(member.gold)||0)+boon.gold;
+      const canonical = value => String(value || "").toLocaleLowerCase().replace(/[’‘]/g,"'").replace(/[^\p{L}\p{N}]/gu,"");
+      const catalogName = option.text === "Sword of a Sunken Legacy" ? "Sword Of A Sunked Legacy" : option.text;
+      const equipment = option.category === "legendary" ? window.KF_EQUIPMENT_DATA?.cards?.find(card => card.tier === "Legendary" && canonical(card.name) === canonical(catalogName)) : null;
+      member.rewards.push({key:option.id,stage:"withergraal",level:option.level,nodeLevel:node.level,category:option.category,text,icon:boon.icon||"",...(equipment?{equipmentId:equipment.id,cardId:equipment.cardId}:{})});
+    }
+    if(option.category==="princess"&&!boon.gold)state.unlockedPrincesses=[...new Set([...(state.unlockedPrincesses||[]),boon.unlockPrincess||boon.text])];
+    if(option.category==="saint")state.unlockedSaints=[...new Set([...(state.unlockedSaints||[]),option.text])];
+    state.advancedClaims=state.advancedClaims||{};
+    state.advancedClaims[option.id]={nodeId:node.id,level:option.level,nodeLevel:node.level,memberId:member?.id||null,category:option.category,name:option.requiresName?actualName:boon.text,text,...(option.alternatives?{alternative:Number(choice.alternative??0)}:{}),at:Date.now()};
+    return {ok:true,text:`${member?`${member.name}：`:"队伍解锁："}${text}`};
+  }
 
   const entry = (id, level) => ({ id, level });
   const table = {
@@ -126,8 +272,8 @@
     "kara": { class:["Oathbreaker Portrait and Talent","Dice with the Devil Technique","Knight in Shining Armor Technique","Steadfast Portrait and Talent","Oath of Valor Technique","Just Like We Practised Technique"], heroic:["Oathbreaker","Steadfast"], peril:["Oathbreaker","Steadfast"], technique:["Act on Instinct","Master the Terrain"], virtue:"+2 Tenacity", gear:"Wilder Plate", wild:"+2 Rapport with a chosen Knight" },
     "ser-sonch": { class:["Hero to the People Portrait and Talent","Tag Team Technique","Friend Indeed Technique","Fameseeker Portrait and Talent","Knowing Is Half the Battle Technique","Know Thine Enemy Technique"], heroic:["Hero to the People","Fameseeker"], peril:["Hero to the People","Fameseeker"], technique:["Lead by Example","Chaos Monkey"], virtue:"+2 Tenacity", gear:"Gloryseeker's Cape", wild:"+2 Rapport with a chosen Knight" },
     "renholder": { class:["Harmonized Soul Portrait and Talent","Chiaroscuro Technique","Blackfire Technique","Luxfire Magus Portrait and Talent","The Maelstrom Within Technique","Doublestrike Enchantment Technique"], heroic:["Harmonized Soul","Luxfire Magus"], peril:["Harmonized Soul","Luxfire Magus"], technique:["Soulscorch","Incandescent Aura"], virtue:"+2 Sagacity", gear:"Torchbearer's Swordstaff", wild:"Tier 3 Mage Mercenary" },
-    "paracelsa": { class:["Inquisitor Portrait and Talent","The Just Blade of Kain Technique","Through the Fires of Anatiocha Technique","Apostate Portrait and Talent","Inquisitor’s Pursuit Technique","Power of the Pious Technique"], heroic:["Inquisitor","Apostate"], peril:["Inquisitor","Apostate"], technique:["Mind over Body","Fist of the Firstmen"], virtue:"+2 Bravery", gear:"The Bastard of the Church", wild:"+2 Rapport with a chosen Knight" },
-    "ser-ubar": { class:["Rising Ape Portrait and Talent","Eye of the Storm Technique","Adrenaline Rush Technique","Beast Tamer Portrait and Talent","Untouchable Technique","Skull Crack Technique"], heroic:["Rising Ape","Beast Tamer"], peril:["Rising Ape","Beast Tamer"], technique:["Become a Stumbling Block","Spare Not The Rod"], virtue:"+1 Tenacity & +1 Sagacity", gear:"Uncompromising Justice", wild:"Tier 3 Warrior Mercenary" },
+    "paracelsa": { class:["Inquisitor Portrait and Talent","The Just Blade of Kain Technique","Through the Fires of Anatiocha Technique","Apostate Portrait and Talent","Inquisitor’s Pursuit Technique","Power of the Pious Technique"], heroic:["Inquisitor","Apostate"], peril:["Inquisitor","Apostate"], technique:["Become a Stumbling Block","Spare Not The Rod"], virtue:"+2 Bravery", gear:"The Bastard of the Church", wild:"+2 Rapport with a chosen Knight" },
+    "ser-ubar": { class:["Rising Ape Portrait and Talent","Eye of the Storm Technique","Adrenaline Rush Technique","Beast Tamer Portrait and Talent","Untouchable Technique","Skull Crack Technique"], heroic:["Rising Ape","Beast Tamer"], peril:["Rising Ape","Beast Tamer"], technique:["Mind over Body","Fist of the Firstmen"], virtue:"+1 Tenacity & +1 Sagacity", gear:"Uncompromising Justice", wild:"Tier 3 Warrior Mercenary" },
     "stoneface": { class:["No Strings on Me Portrait and Talent","I’ll Be Your Rock Technique","Skipping Stone Technique","Mangiarovina Portrait and Talent","Rock, Meet Hard Place Technique","Memories of Who I Was Technique"], heroic:["No Strings on Me","Mangiarovina"], peril:["No Strings on Me","Mangiarovina"], technique:["Solid Outside, Human Inside","Unassailable"], virtue:"+2 Fortitude", gear:"Shield of the Defiant", wild:"Tier 3 Rogue Mercenary" },
   };
   rewardRows[5] = {
@@ -140,27 +286,120 @@
     "stoneface": { class:"My Turn Technique", heroic:"Tableau Vivant", peril:"Tableau Vivant", technique:["Vita Ex Mortis","Split the Heavens"], virtue:"+2 Tenacity", gear:"Terracotta Emblem", wild:"+2 Rapport with a chosen Knight" },
   };
   const genericReward = (level, id, category) => {
+    if (Number(level) > 5) throw new RangeError("进阶奖励必须使用团队奖励池");
     const row = rewardRows[level]?.[id] || rewardRows[2]?.[id] || rewardRows[1].fleischritter;
     const value = row[category];
     return (Array.isArray(value) ? value[0] : value) || `Level ${level} ${category} reward`;
   };
   const rewardOptions = (level, id, category) => {
+    if (Number(level) > 5) throw new RangeError("进阶奖励必须使用团队奖励池");
     const row = rewardRows[level]?.[id] || rewardRows[2]?.[id] || rewardRows[1].fleischritter;
     const value = row[category];
     return Array.isArray(value) ? [...value] : (value ? [value] : [`Level ${level} ${category} reward`]);
   };
+  function basicRewardOptions(state,node,member) {
+    if(!member||node?.reward==="sigh")return [];
+    const options=[];
+    for(let level=Math.min(5,Math.trunc(Number(node?.level)||0));level>=1;level--){
+      const value=rewardRows[level]?.[member.knightId]?.[node.reward];
+      if(!value)continue;
+      const values=Array.isArray(value)?value:[value];
+      // Rigid/Pliant are two forms under one printed Gear checkbox.
+      const groups=node.reward==="gear"?[values]:values.map(text=>[text]);
+      for(const group of groups){
+        const key=text=>`${member.id}:${level}:${node.reward}:${text}`;
+        // Earlier builds swapped these two Knights' IV technique cells.
+        // Respect the already-consumed checkbox without rewriting inventories.
+        const priorNames=level===4&&node.reward==="technique"?{
+          paracelsa:{"Become a Stumbling Block":"Mind over Body","Spare Not The Rod":"Fist of the Firstmen"},
+          "ser-ubar":{"Mind over Body":"Become a Stumbling Block","Fist of the Firstmen":"Spare Not The Rod"},
+        }[member.knightId]:null;
+        const claimed=group.some(text=>[text,priorNames?.[text]].filter(Boolean).some(name=>state.claimedRewards?.[key(name)]||member.rewards?.some(reward=>reward.key===key(name))));
+        if(!claimed)options.push({id:key(group[0]),level,text:group.join(" / "),rewards:group,keys:group.map(key)});
+      }
+    }
+    return options;
+  }
 
   function randomResult(level, kingdom, roll) {
-    const list = table[level]?.[kingdom] || table[1][kingdom] || table[1].sunken;
-    const value = Math.max(1, Math.min(10, Number(roll) || Math.floor(Math.random() * 10) + 1));
+    const list = table[level]?.[kingdom] || WITHER.TABLE[level]?.[kingdom];
+    if(!list)throw new RangeError(`没有等级 ${level} / ${kingdom} 的肉鸽遭遇表`);
+    const value = Math.max(1, Math.min(10, Math.trunc(Number(roll) || Math.floor(Math.random() * 10) + 1)));
     const [id, resultLevel] = list[value - 1];
     return { roll: value, monsterId: id, level: resultLevel };
   }
 
+  // A map configuration contains no campaign progress, party or rewards.
+  function createMapConfig(mapNodes) {
+    return {schemaVersion:1,nodes:(Array.isArray(mapNodes)?mapNodes:[]).map(node=>({
+      id:node.id,level:node.level,reward:node.reward,resurrection:node.resurrection,
+      devotion:node.devotion??0,
+      withered:node.reward==="start"||node.stage!=="withergraal"?false:(typeof node.withered==="boolean"?node.withered:node.resurrection===0),
+      links:Array.isArray(node.links)?[...node.links]:[],
+    }))};
+  }
+  function validateMapConfig(raw) {
+    const errors=[];
+    const fail=message=>({ok:false,config:null,errors:[message]});
+    if(!raw||typeof raw!=="object"||Array.isArray(raw)||raw.schemaVersion!==1)return fail("地图配置版本无效。");
+    if(!Array.isArray(raw.nodes)||raw.nodes.length!==ALL_NODES.length)return fail(`地图配置必须包含完整的 ${ALL_NODES.length} 个节点。`);
+    const defaults=new Map(ALL_NODES.map(node=>[node.id,node])),provided=new Map();
+    const basicRewards=new Set(["heroic","class","peril","technique","gear","virtue","wild","sigh"]);
+    const advancedRewards=new Set(["stat","mastery","princess","saint","legendary","sigh"]);
+    for(const node of raw.nodes){
+      if(!node||typeof node!=="object"||Array.isArray(node)||typeof node.id!=="string"||!defaults.has(node.id)){errors.push("地图配置含未知节点。");continue;}
+      if(provided.has(node.id)){errors.push(`${node.id} 重复出现。`);continue;}
+      provided.set(node.id,node);
+      const base=defaults.get(node.id),start=base.reward==="start",advanced=base.stage==="withergraal";
+      if(start){
+        if(node.level!==0||node.reward!=="start"||node.resurrection!==0||node.devotion!==0||node.withered!==false)errors.push(`${node.id} 起点的等级、奖励和资源固定。`);
+      }else{
+        if(!Number.isInteger(node.level)||node.level<(advanced?6:1)||node.level>(advanced?12:5))errors.push(`${node.id} 等级超出当前阶段范围。`);
+        if(!(advanced?advancedRewards:basicRewards).has(node.reward))errors.push(`${node.id} 奖励类型与阶段不符。`);
+        if(typeof node.withered!=="boolean"||(!advanced&&node.withered))errors.push(`${node.id} 枯萎状态无效。`);
+      }
+      for(const key of ["resurrection","devotion"])if(!Number.isSafeInteger(node[key])||node[key]<0)errors.push(`${node.id} ${key==="resurrection"?"复活":"虔信"}必须是非负整数。`);
+      if(!advanced&&node.devotion!==0)errors.push(`${node.id} 基础节点不能发放虔信。`);
+      if(!Array.isArray(node.links)||node.links.length>=ALL_NODES.length){errors.push(`${node.id} 连线列表无效。`);continue;}
+      const seen=new Set();
+      for(const id of node.links){
+        if(typeof id!=="string"||!defaults.has(id)){errors.push(`${node.id} 连接了未知节点。`);continue;}
+        if(id===node.id)errors.push(`${node.id} 不能连接自身。`);
+        if(seen.has(id))errors.push(`${node.id} 连线重复。`);
+        seen.add(id);
+        if(defaults.get(id).stage!==base.stage)errors.push(`${node.id} 不能跨基础、进阶阶段连线。`);
+      }
+    }
+    if(provided.size!==defaults.size)errors.push("地图配置缺少节点或含重复节点。");
+    for(const [id,node] of provided){
+      if(!Array.isArray(node.links)||node.links.length>=ALL_NODES.length)continue;
+      for(const target of node.links)if(provided.has(target)&&Array.isArray(provided.get(target).links)&&!provided.get(target).links.includes(id))errors.push(`${id} ↔ ${target} 必须双向连接。`);
+    }
+    if(errors.length)return {ok:false,config:null,errors};
+    return {ok:true,config:{schemaVersion:1,nodes:ALL_NODES.map(base=>{
+      const node=provided.get(base.id);
+      return {id:node.id,level:node.level,reward:node.reward,resurrection:node.resurrection,devotion:node.devotion,withered:node.withered,links:[...node.links]};
+    })},errors:[]};
+  }
+  function applyMapConfig(state,raw) {
+    const checked=validateMapConfig(raw);
+    if(!checked.ok||!state||typeof state!=="object"||!Array.isArray(state.nodes))return false;
+    const byId=new Map(state.nodes.map(node=>[node?.id,node]));
+    if(byId.size!==ALL_NODES.length||state.nodes.length!==ALL_NODES.length||checked.config.nodes.some(node=>!byId.has(node.id)))return false;
+    for(const node of checked.config.nodes)Object.assign(byId.get(node.id),{...node,links:[...node.links]});
+    state.mapConfig=checked.config;
+    state.linksEdited=true;
+    state.basicLinksRevision=BASIC_LINKS_REVISION;
+    state.advancedMapRevision=ADVANCED_MAP_REVISION;
+    state.defaultLinks=state.nodes.map(node=>({id:node.id,links:[...node.links]}));
+    return true;
+  }
+
   function freshState() {
-    const graph = nodes.map(node => ({ ...node, links: [...node.links], cleared: node.id === "S" }));
+    const graph = ALL_NODES.map(node => ({ ...node, links: [...node.links], cleared: node.id === "S" }));
     return {
-      schemaVersion: 1, status: "setup", roster: [], sharedRevives: 5, graalSighs: 0, nodes: graph, linksEdited: false,
+      schemaVersion: 2, stage:"rosegraal", postgame:false, status: "setup", roster: [], sharedRevives: 5, graalSighs: 0, nodes: graph, linksEdited: false, basicLinksRevision:BASIC_LINKS_REVISION,advancedMapRevision:ADVANCED_MAP_REVISION,
+      advancedClaims:{},unlockedPrincesses:[],unlockedSaints:[],
       pendingBattle: null, pendingRewardChoice: null, currentNodeId: null, claimedRewards: {}, rewards: [], history: [],
       createdAt: Date.now(), updatedAt: Date.now(), lastResolution: null,
     };
@@ -170,19 +409,47 @@
     const base = freshState();
     if (!raw || typeof raw !== "object") return base;
     const result = { ...base, ...raw };
-    // Coordinates, page, rewards, levels and links belong to the printed map
-    // and must never be restored from an older browser save.  Older saves may
-    // contain the pre-extraction positions, which otherwise make the hitboxes
-    // drift away from the artwork after a coordinate update.
-    const savedNodes = Array.isArray(raw.nodes) ? raw.nodes : [];
+    result.schemaVersion=2;
+    result.stage=raw.stage==="withergraal"?"withergraal":"rosegraal";
+    result.postgame=result.stage==="withergraal"||raw.postgame===true;
+    // Adopt the user's approved maps once, including old saved templates.
+    // Each stage tracks adoption separately; later deliberate edits remain.
+    const migrateBasicMap=!(Number(raw.basicLinksRevision)>=BASIC_LINKS_REVISION);
+    const migrateAdvancedMap=!(Number(raw.advancedMapRevision)>=ADVANCED_MAP_REVISION);
+    const savedNodes=Array.isArray(raw.nodes)?raw.nodes:[];
+    result.basicLinksRevision=BASIC_LINKS_REVISION;
+    result.advancedMapRevision=ADVANCED_MAP_REVISION;
+    const savedById = new Map(savedNodes.filter(node=>node&&typeof node.id==="string").map(node=>[node.id,node]));
+    const baseById = new Map(base.nodes.map(node=>[node.id,node]));
+    const useSavedLinks=node=>raw.linksEdited&&!(migrateAdvancedMap&&node.stage==="withergraal")&&!(migrateBasicMap&&node.stage==="rosegraal");
     result.nodes = base.nodes.map(node => {
-      const saved = savedNodes.find(item => item.id === node.id);
-      const links = raw.linksEdited && Array.isArray(saved?.links)
-        ? [...new Set(saved.links.filter(link => base.nodes.some(item => item.id === link) && link !== node.id))]
+      const saved = savedById.get(node.id);
+      const links=useSavedLinks(node)&&Array.isArray(saved?.links)
+        ? [...new Set(saved.links.filter(id=>id!==node.id&&baseById.get(id)?.stage===node.stage))]
         : [...node.links];
-      return { ...node, cleared: Boolean(saved?.cleared), links };
+      return { ...node, cleared: node.reward==="start" ? (node.stage==="rosegraal"||result.postgame) : Boolean(saved?.cleared), links };
     });
+    // Normalize undirected custom paths once. A saved endpoint also controls
+    // edges to nodes missing from an older save (for example the new stage).
+    result.nodes.forEach((left,index)=>result.nodes.slice(index+1).forEach(right=>{
+      if(left.stage!==right.stage)return;
+      const savedLeft=savedById.get(left.id),savedRight=savedById.get(right.id);
+      const hasLeft=useSavedLinks(left)&&Array.isArray(savedLeft?.links);
+      const hasRight=useSavedLinks(right)&&Array.isArray(savedRight?.links);
+      const linked=hasLeft||hasRight
+        ? (hasLeft&&savedLeft.links.includes(right.id))||(hasRight&&savedRight.links.includes(left.id))
+        : base.nodes[index].links.includes(right.id);
+      if(linked){
+        if(!left.links.includes(right.id))left.links.push(right.id);
+        if(!right.links.includes(left.id))right.links.push(left.id);
+      }else{
+        left.links=left.links.filter(id=>id!==right.id);
+        right.links=right.links.filter(id=>id!==left.id);
+      }
+    }));
     result.linksEdited = Boolean(raw.linksEdited);
+    if(result.linksEdited)result.defaultLinks=result.nodes.map(node=>({id:node.id,links:[...node.links]}));
+    else delete result.defaultLinks;
     result.roster = Array.isArray(raw.roster) ? raw.roster.slice(0, 4).map(member => ({
       ...member,
       player: String(member?.player || ""),
@@ -190,16 +457,52 @@
       alive: member?.alive !== false,
       rewards: Array.isArray(member?.rewards) ? member.rewards : [],
       notes: String(member?.notes || ""),
+      postgame:result.postgame||member?.postgame===true,
+      devotion:Math.max(0,Math.trunc(Number(member?.devotion)||0)),
+      growth:Object.fromEntries(Object.keys(WITHER.GROWTH_LABELS).map(key=>[key,Math.max(0,Number(member?.growth?.[key])||0)])),
       attributes: Object.fromEntries(ATTRIBUTE_KEYS.map(key => [key, Math.max(0, Number(member?.attributes?.[key]) || 0)])),
     })) : [];
     result.sharedRevives = Math.max(0, Math.min(999, Number(raw.sharedRevives) || 0));
     result.graalSighs = Math.max(0, Math.min(999, Number(raw.graalSighs) || 0));
     result.claimedRewards = raw.claimedRewards && typeof raw.claimedRewards === "object" ? raw.claimedRewards : {};
+    result.advancedClaims=raw.advancedClaims&&typeof raw.advancedClaims==="object"&&!Array.isArray(raw.advancedClaims)?raw.advancedClaims:{};
+    result.unlockedPrincesses=Array.isArray(raw.unlockedPrincesses)?raw.unlockedPrincesses.filter(s=>typeof s==="string"):[];
+    result.unlockedSaints=Array.isArray(raw.unlockedSaints)?raw.unlockedSaints.filter(s=>typeof s==="string"):[];
+    // Clarify earlier symbol-only entries without re-applying any growth or
+    // money. The existing checkbox IDs and saved numeric values stay intact.
+    const rewardById=new Map(WITHER.REWARDS.map(option=>[option.id,option]));
+    const refreshRewardRecord=(record,option,claim=record)=>{
+      if(!record||!option)return record;
+      const alternative=option.alternatives
+        ? (Number.isInteger(claim?.alternative)?claim.alternative:(option.id==="wither-9-stat-4"&&/魔法|魔力|magic/i.test(claim?.text||record.text||"")?1:0))
+        : undefined;
+      const boon=advancedRewardBoon(option,{alternative})||option;
+      return {...record,level:option.level,...(option.requiresName?{}:{text:boon.text,...(Object.hasOwn(record,"name")?{name:boon.text}:{})}),...(option.alternatives?{alternative}:{})};
+    };
+    result.advancedClaims=Object.fromEntries(Object.entries(result.advancedClaims).map(([id,claim])=>[id,refreshRewardRecord(claim,rewardById.get(id))]));
+    result.roster.forEach(member=>{
+      member.rewards=member.rewards.map(record=>refreshRewardRecord(record,rewardById.get(record?.key),result.advancedClaims[record?.key]||record));
+    });
     result.pendingRewardChoice = raw.pendingRewardChoice && typeof raw.pendingRewardChoice === "object" ? raw.pendingRewardChoice : null;
     result.rewards = Array.isArray(raw.rewards) ? raw.rewards.slice(-100) : [];
     result.history = Array.isArray(raw.history) ? raw.history.slice(-100) : [];
+    // A saved, validated configuration is authoritative over bundled defaults,
+    // legacy label overrides and old inferred-link migrations on both screens.
+    if(Object.hasOwn(raw,"mapConfig")){
+      const checked=validateMapConfig(raw.mapConfig);
+      if(checked.ok){
+        const config=checked.config;
+        if(migrateBasicMap||migrateAdvancedMap){
+          const approved=new Map(createMapConfig(ALL_NODES).nodes.map(node=>[node.id,node]));
+          config.nodes=config.nodes.map(node=>(node.id.startsWith("wither-")?migrateAdvancedMap:migrateBasicMap)?approved.get(node.id):node);
+        }
+        applyMapConfig(result,config);
+      }else delete result.mapConfig;
+    }
+    if(result.stage==="rosegraal"&&result.status!=="setup"&&!result.pendingBattle&&!result.pendingRewardChoice&&stageComplete(result,"rosegraal"))result.status="won";
     return result;
   }
 
-  window.KF_ROGUE_RULES = Object.freeze({ KNIGHTS, NODES: nodes, SOURCE_NODES: sourceNodes, TABLE: table, ATTRIBUTE_KEYS, rewardRows, genericReward, rewardOptions, randomResult, freshState, normalizeState, LABEL_OVERRIDES_KEY });
+  window.KF_ROGUE_RULES = Object.freeze({ KNIGHTS, NODES: nodes, ALL_NODES, WITHER_NODES:WITHER.NODES, SOURCE_NODES: sourceNodes, BASIC_MAP_SOURCE, BASIC_LINKS_REVISION, ADVANCED_MAP_REVISION, TABLE:{...table,...WITHER.TABLE}, ATTRIBUTE_KEYS, rewardRows, genericReward, rewardOptions, basicRewardOptions, randomResult, freshState, normalizeState, LABEL_OVERRIDES_KEY,createMapConfig,validateMapConfig,applyMapConfig,
+    STAGES,ROSEGRAAL_FINISH_NODE_IDS,stageMeta,getStageNodes,stageComplete,isAvailable,canEnterWithergraal,enterWithergraal,advancedRewardOptions,advancedRewardBoon,advancedRewardNeedsMember,claimAdvancedReward,GROWTH_LABELS:WITHER.GROWTH_LABELS,GROWTH_HELP:WITHER.GROWTH_HELP||{},GROWTH_ICONS:WITHER.GROWTH_ICONS });
 })();

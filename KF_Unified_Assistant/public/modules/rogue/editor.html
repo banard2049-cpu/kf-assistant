@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>KF 肉鸽地图编辑</title>
+  <link rel="stylesheet" href="styles.css?v=14">
+  <link rel="stylesheet" href="editor.css?v=1">
+  <link rel="stylesheet" href="../module-bridge.css?v=19">
+</head>
+<body class="map-editor-body" data-kf-module="rogue" data-storage-key="kf-rogue-path-v2" data-original-app="editor.js?v=3">
+  <header class="rogue-head" data-unified-topbar="rogue">
+    <div data-topbar-title><h1>肉鸽地图编辑</h1></div>
+    <div class="rogue-actions" data-topbar-actions>
+      <span id="mapEditorStatus" role="status" aria-live="polite">载入地图…</span>
+      <button id="saveMap" class="primary" type="button" disabled>保存地图</button>
+      <a class="button" href="./">返回肉鸽</a>
+    </div>
+  </header>
+  <main class="editor-shell">
+    <section class="editor-toolbar panel" aria-label="地图编辑工具">
+      <div class="editor-toolbar-row">
+        <label>阶段<select id="editorStage"><option value="rosegraal">基础肉鸽</option><option value="withergraal">进阶肉鸽</option></select></label>
+        <label>存档<select id="editorSlotSelect" aria-label="编辑哪个肉鸽存档"></select></label>
+        <label>保存范围<select id="applyScope"><option value="slot">当前存档及后续新存档</option><option value="all">当前战役全部肉鸽存档</option></select></label>
+        <div class="editor-file-actions"><button id="exportMap" type="button">导出 JSON</button><label class="button editor-file-button">导入 JSON<input id="importMap" type="file" accept="application/json,.json"></label></div>
+      </div>
+      <div class="editor-toolbar-row editor-modes">
+        <div class="editor-mode-buttons" role="group" aria-label="操作模式">
+          <button data-mode="inspect" type="button" aria-pressed="true">查看 / 改节点</button>
+          <button data-mode="add" type="button" aria-pressed="false">＋ 添加连线</button>
+          <button data-mode="remove" type="button" aria-pressed="false">− 删除连线</button>
+        </div>
+        <div class="editor-history"><button id="undoEdit" type="button" disabled>撤销</button><button id="redoEdit" type="button" disabled>重做</button></div>
+        <label class="editor-check"><input id="toggleConnections" type="checkbox" checked>显示连线</label>
+        <label class="editor-check"><input id="showNodeIds" type="checkbox" checked>节点编号</label>
+        <div class="editor-zoom"><button id="zoomOut" type="button" aria-label="缩小地图">−</button><output id="editorZoom">100%</output><button id="zoomIn" type="button" aria-label="放大地图">＋</button></div>
+      </div>
+      <p id="editorModeHint" class="editor-mode-hint">点击节点查看等级、资源和奖励。</p>
+      <p id="draftNotice" class="editor-draft-notice" hidden></p>
+    </section>
+    <div class="editor-layout">
+      <section class="panel editor-map-panel" aria-label="原图与可编辑连线">
+        <div class="editor-map-heading"><h2 id="editorMapTitle">基础肉鸽</h2><span id="editorCounts"></span></div>
+        <div id="editorViewport" class="editor-viewport">
+          <div id="editorCanvas" class="editor-canvas">
+            <img id="editorMapImage" src="/assets/rogue/rosegraal-tree.jpg" alt="肉鸽地图原图" draggable="false">
+            <svg id="editorLinkLayer" class="editor-link-layer" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div id="editorNodeLayer" class="editor-node-layer"></div>
+          </div>
+        </div>
+        <p class="editor-map-note">直线表示当前连接关系；底图保留原文，修改值以右侧节点面板为准。添加或删除均为双向。</p>
+      </section>
+      <aside class="editor-inspector panel">
+        <label class="editor-find-label">定位节点<select id="nodeFind" aria-label="按编号定位节点"></select></label>
+        <div class="editor-node-heading"><h2 id="selectedNodeTitle">选择一个节点</h2><span id="selectedNodeCode"></span></div>
+        <form id="nodeForm" class="editor-node-form">
+          <label>节点等级<input id="nodeLevel" type="number" min="1" max="5" step="1" required disabled></label>
+          <label>复活次数<input id="nodeRevives" type="number" min="0" max="999" step="1" required disabled></label>
+          <label class="editor-reward-field">奖励类型<select id="nodeReward" disabled></select></label>
+          <label id="nodeDevotionField" hidden>每名骑士的虔信<input id="nodeDevotion" type="number" min="0" max="999" step="1" value="0" required disabled></label>
+          <label id="nodeWitheredField" class="editor-check" hidden><input id="nodeWithered" type="checkbox" disabled>枯萎节点</label>
+          <button id="applyNode" class="primary" type="submit" disabled>应用节点修改</button>
+        </form>
+        <section class="editor-neighbors" aria-label="选中节点的连接">
+          <h3>相邻节点 <span id="neighborCount">0</span></h3>
+          <div id="neighborList"><p class="muted">选中节点后可逐条删除连接。</p></div>
+        </section>
+        <details class="editor-changes"><summary>未保存的改动 <span id="editCount">0</span></summary><div id="editList"></div></details>
+        <div id="editorWarnings" class="editor-warnings" role="status"></div>
+        <button id="resetStage" type="button" class="editor-reset danger">恢复本阶段默认地图</button>
+      </aside>
+    </div>
+  </main>
+  <script src="withergraal-data.js?v=4"></script>
+  <script src="data.js?v=19"></script>
+  <script src="../module-topbar.js?v=3"></script>
+  <script src="editor-boot.js?v=3"></script>
+</body>
+</html>

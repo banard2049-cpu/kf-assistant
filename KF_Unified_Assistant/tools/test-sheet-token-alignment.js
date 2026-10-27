@@ -145,7 +145,7 @@ assert.equal(stageContext.sheetStageAspect({ sheet: { face: "/f", cellWidth: 240
 
 const stackStart = display.indexOf("  function publicTokenStacks(");
 const stackEnd = display.indexOf("  function markerStacks(", stackStart);
-const stackContext = { tokenSrc: () => "/token.png", tokenShapeClass: () => "", esc: String, clamp: (n, min, max) => Math.max(min, Math.min(max, n)), aibpAsset: value => value, monsterLabel: () => "witch" };
+const stackContext = { tokenSrc: () => "/token.png", tokenShapeClass: () => "", esc: String, clamp: (n, min, max) => Math.max(min, Math.min(max, n)), aibpAsset: value => value, monsterLabel: () => "witch", sheetTraitPlacements: () => [] };
 vm.createContext(stackContext);
 vm.runInContext(display.slice(stackStart, stackEnd), stackContext);
 const secondScreen = stackContext.publicTokenStacks(publicTokens[2]);

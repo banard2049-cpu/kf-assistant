@@ -61,6 +61,12 @@ test('ordinary tile travel refuses unfinished resolutions, later phases and ille
 function rogueHarness(entries, bootstrap = { campaignId: 'B', serverState: {}, offline: false }) {
   const storage = new Map([['kfActiveCampaign', 'B'], ...entries]);
   const source = read('modules/rogue/app.js');
+  const functions = (first, next) => {
+    const start = source.indexOf(`  function ${first}(`);
+    const end = source.indexOf(`\n  function ${next}(`, start);
+    assert.ok(start >= 0 && end > start, `Rogue harness function boundaries: ${first} → ${next}`);
+    return source.slice(start, end);
+  };
   const c = vm.createContext({
     window: { KF_MODULE_BOOTSTRAP: bootstrap },
     localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
@@ -72,10 +78,10 @@ function rogueHarness(entries, bootstrap = { campaignId: 'B', serverState: {}, o
     const campaignId=()=>window.KF_MODULE_BOOTSTRAP?.campaignId||localStorage.getItem('kfActiveCampaign')||'';
     const slotsKey=()=>SLOTS_KEY+':'+campaignId(),activeSlotKey=()=>ACTIVE_SLOT_KEY+':'+campaignId();
     let slots=[],activeSlotId='';
-    ${source.slice(source.indexOf('  function load()'),source.indexOf('\n  function refreshLabelOverrides()'))}
-    ${source.slice(source.indexOf('  function save()'),source.indexOf('\n  function renderSaveSlots()'))}
-    ${source.slice(source.indexOf('  function switchSlot('),source.indexOf('\n  function createNewSlot()'))}
-    let state=load(),linkEditorOpen=false,linkAnchorId=null,selectedNodeId=null;
+    ${functions('load', 'refreshLabelOverrides')}
+    ${functions('save', 'renderSaveSlots')}
+    ${functions('switchSlot', 'createNewSlot')}
+    let state=load(),linkEditorOpen=false,linkAnchorId=null,selectedNodeId=null,viewStage='rosegraal';
     getState=()=>state; changeSlot=id=>switchSlot(id);
   `, c);
   return { c, storage };

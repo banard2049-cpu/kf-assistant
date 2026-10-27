@@ -240,7 +240,9 @@
   function applyAibpHandoff() {
     const handoff = readHandoff();
     if (!handoff || handoff.appliedAibp) return;
-    const monster = window.KF_MONSTER_DATA?.monsters?.find(item => item.name === handoff.monster);
+    const monsters = window.KF_MONSTER_DATA?.monsters || [];
+    const monster = monsters.find(item => item.id === handoff.monsterId)
+      || monsters.find(item => item.name === handoff.monster);
     const button = monster && document.querySelector(`[data-monster="${monster.id}"]`);
     if (!button) return;
     button.click();

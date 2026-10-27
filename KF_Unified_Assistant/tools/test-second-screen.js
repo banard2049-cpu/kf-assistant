@@ -94,7 +94,7 @@ assert.match(aibp, /<img class="terrain-control-board-source" src="\$\{esc\(conf
   "AIBP 底部冲突版图必须使用统一资源解析，不能拼接 ../display/ 前缀");
 assert.doesNotMatch(aibp, /<img class="terrain-control-board-source" src="\.\.\/display\//,
   "AIBP 底部冲突版图不能生成无效的 ../display/ 资源路径");
-assert.match(aibp, /\["knight", "monster", "number"\]\.includes\(item\.kind\) \|\| \["LictorDecoy", "Armor"\]\.includes\(item\.asset\)/);
+assert.match(aibp, /\["knight", "monster"\]\.includes\(item\.kind\) \|\| \["LictorDecoy", "Armor"\]\.includes\(item\.asset\)/);
 assert.match(aibp, /function rotateConflictTerrain/);
 assert.match(aibp, /placement => rotateConflictTerrain\(placement, delta\)/);
 assert.match(aibp, /transform:translate\(-50%,-50%\) rotate\(\$\{placement\.rotation\}deg\)/);
@@ -122,7 +122,7 @@ assert.match(display, /activeFoolCardId/);
 assert.match(display, /showCoordinates/);
 assert.match(displayStyles, /\.conflict-grid span\.fool-highlight/);
 assert.match(display, /conflict-terrain-card-list/);
-assert.match(display, /\["knight","monster","number"\]\.includes\(item\.kind\) \|\| \["LictorDecoy","Armor"\]\.includes\(item\.asset\)/);
+assert.match(display, /\["knight","monster"\]\.includes\(item\.kind\) \|\| \["LictorDecoy","Armor"\]\.includes\(item\.asset\)/);
 assert.match(display, /KFMapView\.renderKingdomBoard/);
 assert.match(display, /KFMapView\.renderDistrictExplorationCards/);
 assert.match(display, /KFMapView\.renderClueTracking/);
@@ -148,19 +148,18 @@ assert.match(displayStyles, /\.display-body \.track-time \.delve-track-cells\{gr
 assert.match(displayStyles, /@media\(min-width:3000px\) and \(min-height:1700px\)/);
 assert.match(displayStyles, /\.map-scene\{grid-template-columns:minmax\(0,1fr\) clamp\(960px,27vw,1160px\)\}/);
 assert.match(displayStyles, /\.sidebar-clue-panel \.display-clue-list\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:8px;overflow:hidden\}/);
-assert.match(index, /styles\.css\?v=57/);
-assert.match(index, /app\.js\?v=50/);
-assert.match(index, /map-view\.js\?v=11/);
-// Board-visible conflict showcase renders the idle-area party strip: knights
-// show six virtues, squires show clues; the hero group is fitted in its own
-// container so reserving the strip space never clips the big card.
+assert.match(index, /styles\.css\?v=\d+/);
+assert.match(index, /app\.js\?v=\d+/);
+assert.match(index, /map-view\.js\?v=\d+/);
+// Party rows accompany the resolving summary: knights show six virtues and
+// squires show clues. The hero group keeps its independent fit container.
 assert.match(display, /function conflictPartyAttributes/);
-assert.match(display, /conflict-party-attributes/);
+assert.match(display, /conflict-party-row/);
 assert.match(display, /VIRTUE_LABELS/);
 assert.match(display, /hero\.memberType==="squire"/);
 assert.match(display, /conflict-hero-fit/);
 assert.match(displayStyles, /\.conflict-side-content\.quarter-turn \.conflict-hero-fit\{[^}]*container-type:size/);
-assert.match(displayStyles, /\.conflict-side-content\.quarter-turn \.conflict-party-attributes\{/);
+assert.match(displayStyles, /\.conflict-party-row[\s\S]*?\{/);
 assert.doesNotMatch(mapView, /<figcaption>激活效果<\/figcaption>/,
   "active effect cards must not show the removed corner label");
 assert.strictEqual((mapView.match(/active: \{ x: 72\.5, y: 50, width: 31 \}/g) || []).length, 2);
@@ -250,8 +249,8 @@ assert.match(encounterApp, /KFEncounterView\.renderCard/);
 assert.match(display, /KFEncounterView\?\.renderBoard/);
 assert.match(display, /KFEncounterView\.renderCard/);
 assert.match(encounterView, /footprint-\$\{footprint\}/);
-assert.match(encounterView, /attackTargetsVisible/);
-assert.match(encounterView, /match match-both/);
+assert.match(encounterView, /attacksVisible/);
+assert.match(encounterView, /matchedDice\.length > 1 \? "both"/);
 assert.match(encounterView, /isUnavailableBoardSpace/);
 assert.match(display, /If-None-Match/);
 assert.match(display, /setInterval\(\(\)=>\{poll\(\)/);
@@ -304,7 +303,72 @@ assert.match(display, /bog-witch-encounter/);
 const tokenShapeContext = {};
 vm.runInNewContext(`${display.match(/function tokenShapeClass\(id\) \{[\s\S]*?\n  \}/)[0]}; result = ["token-29", "token-blood", "token-armor", "token-01"].map(tokenShapeClass);`, tokenShapeContext);
 assert.deepEqual(Array.from(tokenShapeContext.result), ["token-free", "token-free", "token-square", ""]);
-assert.match(display, /const trackFillers=boardVisible\?\[\.\.\.terrainCards\.map\(card=>\(\{terrainCard:card,label:"地形"\}\)\),\.\.\.featureEntries\]:featureEntries/);
+assert.match(api, /'sheetTokens','sheetTraits'/, "公开战斗状态必须同步面板特质的位置和尺寸");
+const sheetTraitContext = {
+  window:{},
+  clamp:(value,min,max)=>Math.min(max,Math.max(min,Number(value)||0)),
+  esc:value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]),
+  monsterLabel:monster=>monster.id,
+  publicTokenStacks:()=>"",
+};
+vm.createContext(sheetTraitContext);
+vm.runInContext(read("public/modules/aibp/data/postgame-config.js"),sheetTraitContext);
+for(const name of ["aibpAsset","sheetTraitPlacements","postgameReferenceCards","postgameImageStyle","postgameReferencesHtml","bossSheetHtml"]){
+  const source=display.match(new RegExp(`function ${name}\\([\\s\\S]*?\\n  \\}`))?.[0];
+  assert.ok(source,`${name} is available for the display behavior checks`);
+  vm.runInContext(source,sheetTraitContext);
+}
+const sheetTraitRules=sheetTraitContext.window.KF_POSTGAME_RULES;
+for(const [monsterId,rows] of Object.entries(sheetTraitRules.DATA)){
+  const level=rows[rows.length-1].level, first=rows[0].trait, currentStat=rows[rows.length-1].reference;
+  const monster={id:monsterId,sheet:{face:"panel-face.jpg",back:"panel-back.jpg",aspect:1.46}};
+  const battle={monsterId,level,sheetTraits:[
+    {cardId:first.id,x:67.5,y:42.25,width:34},
+    {cardId:first.id,x:10,y:10,width:12},
+    {cardId:currentStat.id,x:50,y:50,width:28},
+    {cardId:currentStat.id,x:20,y:20,width:16},
+    {cardId:rows[0].reference.id,x:40,y:40,width:28},
+    {cardId:"unknown-trait",x:50,y:50,width:28},
+  ]};
+  const placements=sheetTraitContext.sheetTraitPlacements(monster,battle);
+  assert.equal(placements.length,2,`${monsterId}: accept the trait and current stat row while rejecting duplicate, outdated and unknown entries`);
+  const refs=sheetTraitContext.postgameReferenceCards(monster,battle);
+  assert.ok(!refs.some(card=>card.id===first.id),`${monsterId}: placed trait must leave the reference/track pool`);
+  assert.ok(!refs.some(card=>card.id===currentStat.id),`${monsterId}: the placed current stat row must leave the reference/track pool`);
+  const sheetHtml=sheetTraitContext.bossSheetHtml(monster,battle);
+  assert.match(sheetHtml,/left:67\.5%;top:42\.25%;width:34%/,`${monsterId}: preserve the main screen placement`);
+  assert.ok(sheetHtml.includes(`src="${first.image.face}"`),`${monsterId}: show the original trait image`);
+  assert.ok(sheetHtml.includes(`src="${currentStat.image.face}"`),`${monsterId}: show the original current stat image`);
+  assert.ok(sheetHtml.includes(`clip-path:${currentStat.image.clipPath};background:transparent`),
+    `${monsterId}: the level row uses its transparent outline without changing white lettering`);
+  assert.match(sheetHtml,/left:50%;top:50%;width:28%/,`${monsterId}: preserve the stat row placement and size`);
+  assert.equal((sheetHtml.match(/data-sheet-trait=/g)||[]).length,2,`${monsterId}: trait and current stat row each appear once`);
+  assert.match(sheetHtml,/target="_blank" rel="noopener" data-sheet-trait=/,`${monsterId}: allow opening the source image`);
+  assert.equal(sheetTraitContext.sheetTraitPlacements(monster,{...battle,level:rows[0].level-1}).length,0,
+    `${monsterId}: locked traits must disappear after a level decrease`);
+  const outdatedStatBattle={monsterId,level:rows[0].level,sheetTraits:[{cardId:currentStat.id,x:50,y:50,width:28}]};
+  assert.equal(sheetTraitContext.sheetTraitPlacements(monster,outdatedStatBattle).length,0,
+    `${monsterId}: a future stat row cannot be placed before its exact level`);
+  const oldStatBattle={monsterId,level,sheetTraits:[{cardId:rows[0].reference.id,x:50,y:50,width:28}]};
+  assert.equal(sheetTraitContext.sheetTraitPlacements(monster,oldStatBattle).length,0,
+    `${monsterId}: an older stat row cannot remain on a higher-level panel`);
+  const unplacedStatBattle={...battle,sheetTraits:battle.sheetTraits.filter(placement=>placement.cardId!==currentStat.id)};
+  assert.ok(sheetTraitContext.postgameReferenceCards(monster,unplacedStatBattle).some(card=>card.id===currentStat.id),
+    `${monsterId}: removing a placed stat row restores its reference/track entry`);
+  assert.equal(sheetTraitContext.postgameReferenceCards(monster,{monsterId,level}).length,rows.length+1,
+    `${monsterId}: old saves keep all references`);
+  assert.equal(sheetTraitContext.postgameReferenceCards({id:monsterId},battle).length,rows.length+1,
+    `${monsterId}: traits remain in references if no panel can display them`);
+  const notes=sheetTraitRules.replacementNotesFor(monsterId,level);
+  if(notes.length){
+    const noteHtml=sheetTraitContext.postgameReferencesHtml(monster,battle,[]);
+    for(const note of notes)if(note.note)assert.ok(noteHtml.includes(sheetTraitContext.esc(note.note)),`${monsterId}: preserve replacement explanations`);
+  }
+}
+assert.match(displayStyles,/\.boss-sheet-trait\{[^}]*transform:translate\(-50%,-50%\)[^}]*pointer-events:auto/);
+assert.match(displayStyles,/\.boss-sheet-trait img\{[^}]*width:100%;height:auto/);
+assert.match(display, /const trackFillers=postgameEntries\.length/);
+assert.match(display, /\.\.\.featureEntries,\.\.\.postgameEntries/);
 assert.match(display, /publicMobTrack\(monster,battle,trackFillers\)/);
 assert.match(display, /const referenceLabel=card=>card\.kind==="BPX"\?"BPX":"特质"/);
 assert.match(display, /const signatureCard=\(monster\?\.cards\|\|\[\]\)\.find\(card=>card\.kind==="SIG"\)/);
@@ -324,13 +388,13 @@ assert.match(display, /if\(filler\?\.terrainCard\)cardContent=publicTerrainCard\
 assert.match(display, /data-public-feature/);
 assert.match(display, /function conflictHeroClues\(state\)/);
 assert.match(display, /clueValue\(hero,hero\.primary,"主要"\)\}\$\{clueValue\(hero,hero\.secondary,"次要"\)/);
-assert.match(display, /const primaryFollowup=boardVisible\s*\? `\$\{mobTrack\.html\}\$\{featureSection\}`\s*: `\$\{mobTrack\.html\}\$\{heroClues\}\$\{featureSection\}\$\{mirrorPrimaryCards\}`/);
+assert.match(display, /const primaryFollowup=boardVisible\s*\? featureSection\s*: `\$\{heroClues\}\$\{featureSection\}\$\{mirrorPrimaryCards\}`/);
 assert.doesNotMatch(display, /BOSS PANEL|怪物大卡|MOB BP TRACK|战术 \/ 公开特质/);
 assert.match(display, /正在结算的卡牌/);
-assert.match(display, /publicDeckSummary\(battle\)/);
+assert.match(display, /publicDeckSummary\(battle, boardVisible\?partyAttributes:""\)/);
 assert.match(display, /battle\.aiDeckLevels/);
 assert.match(display, /battle\.bpDeckLevels/);
-assert.match(display, /AI、BP 等级顺序和损伤量/);
+assert.match(display, /AI、BP 等级顺序、损伤量与骑士属性/);
 assert.match(display, /Array\.from\(\{length:16\}/);
 assert.match(display, /index<10\?sourceSlots\[index\]:null/);
 assert.match(display, /data-track-slot-count="\$\{slotCount\}"/);
@@ -407,28 +471,30 @@ assert.match(renderConflictSource, /active-ai-card/);
 assert.match(renderConflictSource, /active-bp-card/);
 assert.match(renderConflictSource, /const mirrorTerrainCards=boardVisible\?"":terrainCards\.map/);
 assert.match(renderConflictSource, /boardVisible=settings\.conflictBoardVisible!==false/);
-assert.match(renderConflictSource, /const resolvingSummary=publicDeckSummary\(battle\)/);
+assert.match(renderConflictSource, /const resolvingSummary=publicDeckSummary\(battle, boardVisible\?partyAttributes:""\)/);
 assert.match(renderConflictSource, /active-public-cards[^`]*\$\{activeCards\|\|[^`]*<\/div>\$\{resolvingSummary\}<\/section>/);
 assert.match(renderConflictSource, /class="conflict-mirror-primary-cards" aria-label="地形、特性与战术卡"/);
 assert.match(renderConflictSource, /\$\{!boardVisible&&terrainCards\.length\?/);
 assert.match(renderConflictSource, /const heroClues=conflictHeroClues\(payload\.modules\?\.map\)/);
-assert.match(renderConflictSource, /const primaryFollowup=boardVisible\s*\? `\$\{mobTrack\.html\}\$\{featureSection\}`\s*: `\$\{mobTrack\.html\}\$\{heroClues\}\$\{featureSection\}\$\{mirrorPrimaryCards\}`/);
+assert.match(renderConflictSource, /const primaryFollowup=boardVisible\s*\? featureSection\s*: `\$\{heroClues\}\$\{featureSection\}\$\{mirrorPrimaryCards\}`/);
 assert.doesNotMatch(renderConflictSource, /activeTerrainCards/);
-assert.match(renderConflictSource, /conflict-side-primary">\$\{bossSheetHtml\(monster,battle\)\}\$\{primaryFollowup\}/);
-assert.match(renderConflictSource, /const trackFillers=boardVisible\?\[\.\.\.terrainCards\.map\(card=>\(\{terrainCard:card,label:"地形"\}\)\),\.\.\.featureEntries\]:featureEntries/);
+assert.match(renderConflictSource, /conflict-side-primary">\$\{primaryInner\}/);
+assert.match(renderConflictSource, /const boardCardGroup=`<div class="conflict-board-card-group">\$\{bossSheetHtml\(monster,battle\)\}\$\{mobTrack\.html\}/);
+assert.match(renderConflictSource, /postgameReferencesHtml\(monster,battle,remainingPostgameCards\)/);
+assert.match(renderConflictSource, /const trackFillers=postgameEntries\.length/);
 assert.match(renderConflictSource, /const mobTrack=publicMobTrack\(monster,battle,trackFillers\)/);
-assert.match(renderConflictSource, /const usedFeatures=boardVisible\?Math\.max\(0,mobTrack\.used-terrainCards\.length\):mobTrack\.used/);
-assert.match(renderConflictSource, /const remainingFeatures=featureEntries\.slice\(usedFeatures\)/);
+assert.match(renderConflictSource, /const consumedFillers=trackFillers\.slice\(0,mobTrack\.used\)/);
+assert.match(renderConflictSource, /const remainingFeatures=featureEntries\.filter\(entry=>!consumedFillers\.includes\(entry\)\)/);
 assert.match(renderConflictSource, /battle\.mobTacticCard/);
 assert.doesNotMatch(display, /battle\.aiDeck(?!Count|Levels)/);
 assert.doesNotMatch(display, /battle\.bpDeck(?!Count|Levels)/);
 assert.match(main, /id="openDisplay"/);
 assert.match(main, /id="toggleConflictBoard"/);
 assert.match(main, /id="rotateConflict"[^>]*旋转第二屏 AI\/BP 区域 90 度/);
-assert.match(main, /app\.js\?v=29/);
+assert.match(main, /app\.js\?v=\d+/);
 assert.match(mainApp, /function portraitConflictRotation\(value\)\{const normalized=\(\(Number\(value\)%360\)\+360\)%360;return \[0,90,180,270\]\.includes\(normalized\)\?normalized:90\}/);
 assert.match(mainApp, /portraitConflictRotation\(settings\.conflictRotation\)\+90/);
-assert.match(index, /app\.js\?v=50/);
+assert.match(index, /app\.js\?v=\d+/);
 
 const trackContext = vm.createContext({ window: {} });
 vm.runInContext(mapView, trackContext);

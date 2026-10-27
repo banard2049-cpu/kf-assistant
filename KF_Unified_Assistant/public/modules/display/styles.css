@@ -461,3 +461,26 @@ body{height:100vh;overflow:hidden}
 /* Keep the Bog Witch marker in the same printed circle at every sheet scale. */
 .boss-sheet-token.bog-position-token{width:6.4%;container-type:inline-size;filter:none}
 .boss-sheet-token.bog-position-token img{box-sizing:border-box;border:9.5cqw solid #a53c36;object-fit:cover}
+
+/* Appendix references keep their source proportions and open at full resolution. */
+.postgame-reference-block{flex:0 0 auto;min-width:0;padding:8px;border:1px solid #6a5840;background:#211c17}
+.postgame-reference-block h3{margin:0 0 7px;color:var(--gold);font-size:13px}
+.postgame-replacement-notes{margin:0 0 7px;color:#e9c69a;font-size:11px;line-height:1.4}
+.postgame-reference-cards{columns:210px;column-gap:10px;min-width:0}
+.postgame-reference-card{display:inline-flex;flex-direction:column;align-items:center;width:100%;min-width:0;gap:4px;margin:0 0 10px;break-inside:avoid;color:var(--ink);text-decoration:none}
+.postgame-reference-card img{display:block;width:100%;height:auto;object-fit:contain;background:#eee8de}
+.postgame-reference-card span{font-size:10px;text-align:center;line-height:1.35}
+.postgame-reference-card.superseded{opacity:.65}
+.boss-sheet-trait-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.boss-sheet-trait{position:absolute;display:block;transform:translate(-50%,-50%);pointer-events:auto;cursor:zoom-in;filter:drop-shadow(0 2px 3px #000);line-height:0}
+.boss-sheet-trait img{display:block;width:100%;height:auto;object-fit:contain;background:#eee8de}
+.boss-sheet-trait:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.boss-sheet-trait.superseded{opacity:.65}
+.has-postgame-references .conflict-side-content .conflict-side-primary{overflow:auto}
+.has-postgame-references .conflict-side-content.aibp-mirror .conflict-board-card-group{flex:0 0 auto}
+.has-postgame-references .conflict-hero-fit{flex:1 0 230px}
+.display-track-postgame-stack{position:absolute;inset:5% 3% 2%;display:flex;flex-direction:column;gap:4px;overflow:auto;scrollbar-width:thin}
+.display-track-postgame-card{display:flex;flex:0 0 auto;min-width:0;flex-direction:column;gap:2px;color:var(--ink);text-decoration:none}
+.display-track-postgame-card img{display:block;width:100%;height:auto;background:#eee8de}
+.display-track-postgame-card span{overflow:hidden;font-size:clamp(5px,6cqw,9px);line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
+.display-track-postgame-card.superseded{opacity:.65}

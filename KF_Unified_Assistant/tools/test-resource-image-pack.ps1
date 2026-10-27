@@ -65,7 +65,7 @@ try {
 
   # Build a Unicode filename without depending on the test script's encoding in Windows PowerShell 5.1.
   $unicodeName = ([string][char]0x5E95) + [char]0x56FE + '.png'
-  foreach ($relative in @('map/ignored.jpg', ('cards/' + $unicodeName), 'tokens/untracked.webp', '.hidden.jpg')) {
+  foreach ($relative in @('map/ignored.jpg', ('cards/' + $unicodeName), 'tokens/untracked.webp', 'rogue/withergraal-tree.jpg', 'aibp/postgame/level-9.png', '.hidden.jpg')) {
     $entryName = $prefix + $relative
     $expected[$entryName] = Write-FixtureFile $entryName ('asset:' + $relative)
   }

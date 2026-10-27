@@ -248,7 +248,7 @@ function public_aibp_auto_sheet_tokens(array $battle,array $rule): array {
 function public_aibp_display_state(mixed $module): ?array {
     if(!is_array($module))return null;
     $battle=is_array($module['battle']??null)?$module['battle']:[];
-    $publicKeys=['monsterId','level','clashPhase','mobCount','aiDiscard','aiRemoved','bpDiscard','bpDamage','bpRemoved','activeAI','activeBP','mobTacticCard','lastMobWoundRank','mobActivations','activeMobActivationId','sheetTokens','singleWounds','doubleWounds','conflictStatus','failureReason','conflictLocation','conflictType','conflictBoard','accursed'];
+    $publicKeys=['monsterId','level','clashPhase','mobCount','aiDiscard','aiRemoved','bpDiscard','bpDamage','bpRemoved','activeAI','activeBP','mobTacticCard','lastMobWoundRank','mobActivations','activeMobActivationId','sheetTokens','sheetTraits','singleWounds','doubleWounds','conflictStatus','failureReason','conflictLocation','conflictType','conflictBoard','accursed'];
     $public=[];
     foreach($publicKeys as $key)if(array_key_exists($key,$battle))$public[$key]=$battle[$key];
     if(is_array($public['conflictBoard']??null))unset($public['conflictBoard']['foolDeckOrder']);
@@ -777,7 +777,8 @@ try {
     }
     if ($route === 'encounters/start' && $method === 'POST') {
         $data=request_data();$row=owned_campaign($db,(string)($data['campaignId']??''),$user['id']);if(!$row)respond(404,['error'=>'战役不存在']);$state=json_decode($row['state_json'],true);
-        $monster=text_value($data['monster']??'',80);$level=max(1,min(4,(int)($data['level']??1)));$type=in_array($data['type']??'normal',['normal','ambush','special'],true)?$data['type']:'normal';
+        $monster=text_value($data['monster']??'',80);$level=max(1,min(10,(int)($data['level']??1)));
+        $requestedType=$data['type']??'normal';$type=in_array($requestedType,['normal','ambush','special'],true)?$requestedType:'normal';
         $state['encounter']=['active'=>true,'monster'=>$monster,'level'=>$level,'type'=>$type,'phase'=>'setup','board'=>(object)[],'result'=>''];$state['aibp']=['monster'=>$monster,'level'=>$level,'ai'=>[],'bp'=>[],'discard'=>[],'wounds'=>[],'promotion'=>0,'history'=>[]];
         $q=$db->prepare('UPDATE campaigns SET state_json=?,revision=revision+1,updated_at=? WHERE id=?');$q->execute([json_encode($state,JSON_UNESCAPED_UNICODE),stamp(),$row['id']]);respond(200,['state'=>$state]);
     }

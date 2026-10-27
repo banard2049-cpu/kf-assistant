@@ -170,27 +170,33 @@
   }
 
   function renderRogue(payload) {
-    const state = payload.modules?.roguePath || window.KF_ROGUE_RULES?.freshState?.();
+    const rules = window.KF_ROGUE_RULES;
+    const saved = payload.modules?.roguePath;
+    const activeSlot = saved?.slots?.find(slot => slot.id === saved.activeSlotId);
+    const state = rules?.normalizeState?.(activeSlot?.state || saved) || saved;
     if (!state || !Array.isArray(state.nodes) || !state.nodes.length) {
       return stateView("肉鸽地图尚未建立", "在主屏进入肉鸽之路并创建战役后会自动显示。", "ROGUE");
     }
-    const cleared = new Set(state.nodes.filter(node => node.cleared).map(node => node.id));
-    const canChoose = node => node && !node.cleared && !state.pendingBattle && !state.pendingRewardChoice
-      && state.status === "active" && (node.links || []).some(id => cleared.has(id));
-    const rewardNames = { heroic:"英勇曲线", class:"职业", peril:"危险曲线", technique:"招数", gear:"装备", virtue:"美德", wild:"万能", sigh:"圣杯叹息", start:"起点" };
-    const nodes = state.nodes.filter(node => node.id !== "S").map(node => {
-      const available = canChoose(node);
+    const stage = state.stage || "rosegraal";
+    const meta = rules?.stageMeta?.(stage) || { title:"玫瑰圣杯路径", image:"/assets/rogue/rosegraal-tree.jpg", pageCount:2 };
+    const stageNodes = rules?.getStageNodes?.(state, stage) || state.nodes;
+    const cleared = new Set(stageNodes.filter(node => node.cleared && node.reward !== "start").map(node => node.id));
+    const rewardNames = { heroic:"英勇曲线", class:"职业", peril:"危险曲线", technique:"招数", gear:"装备", virtue:"美德", wild:"万能", sigh:"圣杯叹息", princess:"公主", saint:"圣徒", mastery:"精通", stat:"属性提升", upgrade:"属性提升", legendary:"传奇装备", start:"起点" };
+    const pages = Math.max(1, Number(meta.pageCount) || 2);
+    const nodes = stageNodes.filter(node => node.reward !== "start").map(node => {
+      const available = rules?.isAvailable?.(state, node) || false;
       const status = node.cleared ? "cleared" : available ? "available" : "locked";
-      const title = node.id === "S" ? "起点 S" : `等级 ${node.level} · ${node.kingdom === "stone" ? "巨石公国" : "沉没王国"} · ${rewardNames[node.reward] || node.reward}`;
-      return `<span class="display-rogue-node ${status}" data-node="${esc(node.id)}" style="left:${(Number(node.page) * 50 + Number(node.x) * 50)}%;top:${Number(node.y) * 100}%" title="${esc(title)}"></span>`;
+      const resource = node.devotion ? `虔信 ${node.devotion}` : node.resurrection ? `复活 ${node.resurrection}` : "无额外复活或虔信";
+      const title = `等级 ${node.level} · ${node.kingdom === "stone" ? "巨石公国" : "沉没王国"} · ${rewardNames[node.reward] || node.reward} · ${resource}`;
+      return `<span class="display-rogue-node ${status}" data-node="${esc(node.id)}" style="left:${(Number(node.page) + Number(node.x)) * 100 / pages}%;top:${Number(node.y) * 100}%" title="${esc(title)}"></span>`;
     }).join("");
     const roster = Array.isArray(state.roster) ? state.roster : [];
     const alive = roster.filter(member => member.alive !== false).length;
     const statusLabel = ({ setup:"未开始", active:"进行中", won:"战役胜利", lost:"战役失败" })[state.status] || state.status || "—";
     const pending = state.pendingBattle;
     root.innerHTML = `<section class="rogue-display-scene">
-      <div class="rogue-display-map-area"><div class="rogue-display-map-frame"><img src="/assets/rogue/rosegraal-tree.jpg" alt="玫瑰圣杯路径图"><div class="display-rogue-node-layer">${nodes}</div></div></div>
-      <aside class="rogue-display-side"><p class="side-subtitle">ROSEGRAAL · ROGUE'S PATH</p><h1 class="side-title">肉鸽之路</h1><dl class="fact-list"><dt>状态</dt><dd>${esc(statusLabel)}</dd><dt>队伍</dt><dd>${roster.length ? `${alive} / ${roster.length} 存活` : "尚未选择"}</dd><dt>共享复活</dt><dd>${esc(state.sharedRevives ?? 0)}</dd><dt>圣杯叹息</dt><dd>${esc(state.graalSighs ?? 0)}</dd><dt>已完成节点</dt><dd>${cleared.size}</dd></dl>${pending ? `<section class="rogue-display-pending"><strong>待结算冲突</strong><span>${esc(pending.nodeId || "")} · ${esc(pending.monster || "")}</span><small>请在主屏 AI / BP 完成结算</small></section>` : ""}<section class="rogue-display-party"><h2>队伍</h2>${roster.length ? roster.map(member => `<div class="rogue-party-row"><span>${esc(member.name || member.knightId)}</span><small>${member.alive === false ? "死亡" : "存活"} · ${esc(member.gold ?? 0)} 金币</small></div>`).join("") : '<p class="display-empty-copy">尚未开始肉鸽战役。</p>'}</section></aside>
+      <div class="rogue-display-map-area"><div class="rogue-display-map-frame"><img src="${esc(meta.image)}" alt="${esc(meta.title)}"><div class="display-rogue-node-layer">${nodes}</div></div></div>
+      <aside class="rogue-display-side"><p class="side-subtitle">${stage === "withergraal" ? "WITHERGRAAL · POSTGAME" : "ROSEGRAAL · ROGUE'S PATH"}</p><h1 class="side-title">${esc(meta.title)}</h1><dl class="fact-list"><dt>状态</dt><dd>${esc(statusLabel)}</dd><dt>队伍</dt><dd>${roster.length ? `${alive} / ${roster.length} 存活` : "尚未选择"}</dd><dt>共享复活</dt><dd>${esc(state.sharedRevives ?? 0)}</dd><dt>圣杯叹息</dt><dd>${esc(state.graalSighs ?? 0)}</dd><dt>已完成节点</dt><dd>${cleared.size} / ${stageNodes.filter(node => node.reward !== "start").length}</dd></dl>${pending ? `<section class="rogue-display-pending"><strong>待结算冲突</strong><span>${esc(pending.nodeId || "")} · ${esc(pending.monster || "")}</span><small>请在主屏 AI / BP 完成结算</small></section>` : ""}<section class="rogue-display-party"><h2>队伍</h2>${roster.length ? roster.map(member => `<div class="rogue-party-row"><span>${esc(member.name || member.knightId)}</span><small>${member.alive === false ? "死亡" : "存活"} · ${esc(member.gold ?? 0)} 金钱${stage === "withergraal" ? ` · 虔信 ${esc(member.devotion ?? 0)}` : ""}</small></div>`).join("") : '<p class="display-empty-copy">尚未开始肉鸽战役。</p>'}</section></aside>
     </section>`;
   }
 
@@ -260,6 +266,55 @@
   function publicCard(monster,id,label,side="face",className="") { const card=cardById(monster,id); return card ? `<figure class="public-card ${esc(className)}" data-public-card="${esc(id)}"><div class="public-card-art" style="${cardArt(card,side)}"></div><figcaption>${esc(label)} · ${esc(card.name)}</figcaption></figure>` : ""; }
   function publicFeatureCard(entry) {
     return entry?.card ? `<figure class="public-card feature-card" data-public-card="${esc(entry.key || entry.card.id)}" aria-label="${esc(entry.label)} · ${esc(entry.card.name)}" title="${esc(entry.card.name)}"><div class="public-card-art" style="${cardArt(entry.card,entry.side||"face")}"></div><figcaption>${esc(entry.label)} · ${esc(entry.card.name)}</figcaption></figure>` : "";
+  }
+  function sheetTraitPlacements(monster, battle) {
+    if (!monster?.sheet?.face && !monster?.sheet?.back) return [];
+    const level = Math.max(1, Math.trunc(Number(battle?.level) || 1));
+    const rules = window.KF_POSTGAME_RULES;
+    const id = monster?.id || battle?.monsterId;
+    const traits = new Map([rules?.levelReferenceFor?.(id, level), ...(rules?.traitsFor?.(id, level) || [])].filter(Boolean).map(card => [card.id, card]));
+    const seen = new Set();
+    const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
+    return (Array.isArray(battle?.sheetTraits) ? battle.sheetTraits : []).flatMap(placement => {
+      const card = traits.get(placement?.cardId);
+      if (!card?.image?.face || seen.has(card.id)) return [];
+      seen.add(card.id);
+      return [{ card, x:clamp(finite(placement.x ?? 50,50),0,100), y:clamp(finite(placement.y ?? 50,50),0,100), width:clamp(finite(placement.width ?? 28,28),12,60) }];
+    });
+  }
+  function postgameReferenceCards(monster, battle) {
+    const rules = window.KF_POSTGAME_RULES;
+    const level = Math.max(1, Math.trunc(Number(battle?.level) || 1));
+    const id = monster?.id || battle?.monsterId;
+    const placedIds = new Set(sheetTraitPlacements(monster, battle).map(placement => placement.card.id));
+    return [rules?.levelReferenceFor?.(id, level), ...(rules?.traitsFor?.(id, level) || [])].filter(card => card && !placedIds.has(card.id));
+  }
+  function packPostgameReferences(cards) {
+    const groups = [];
+    let current = [], height = 0;
+    for (const card of cards) {
+      // A track slot is 1/.7 units tall for each unit of width. Leave room
+      // for small level labels and gaps; never split one source image.
+      const required = 1 / Math.max(.1, Number(card.image?.aspect) || .7) + .14;
+      if (current.length && height + required > 1.36) { groups.push(current); current = []; height = 0; }
+      current.push(card); height += required;
+    }
+    if (current.length) groups.push(current);
+    return groups.map(group => ({ card:group[0], cards:group, label:"高等级特质", key:`postgame-stack:${group[0].id}` }));
+  }
+  function postgameImageStyle(card) {
+    return card.image?.clipPath ? ` style="clip-path:${esc(card.image.clipPath)};background:transparent"` : "";
+  }
+  function postgameTrackStackHtml(cards) {
+    return `<div class="display-track-postgame-stack">${cards.map(card => `<a class="display-track-postgame-card${card.supersededBy ? " superseded" : ""}" href="${esc(aibpAsset(card.image?.face))}" target="_blank" rel="noopener" data-postgame-card="${esc(card.id)}" title="${esc(card.name)}${card.note ? ` · ${esc(card.note)}` : ""}"><img src="${esc(aibpAsset(card.image?.face))}" alt="${esc(card.name)}"${postgameImageStyle(card)}><span>${esc(card.name)}</span></a>`).join("")}</div>`;
+  }
+  function postgameReferencesHtml(monster, battle, cards = postgameReferenceCards(monster, battle)) {
+    const rules = window.KF_POSTGAME_RULES;
+    const level = Math.max(1, Math.trunc(Number(battle?.level) || 1));
+    const id = monster?.id || battle?.monsterId;
+    const notes = rules?.replacementNotesFor?.(id, level) || [];
+    if (!cards.length && !notes.length) return "";
+    return `<section class="postgame-reference-block" aria-label="高等级特质"><h3>等级 ${level} · 高等级特质</h3>${notes.length ? `<p class="postgame-replacement-notes">${notes.map(note => esc(note.note || `${(note.replaces || []).join("、")} 已由 ${note.name} 替换`)).join("；")}</p>` : ""}<div class="postgame-reference-cards">${cards.map(card => `<a class="postgame-reference-card${card.supersededBy ? " superseded" : ""}" href="${esc(aibpAsset(card.image?.face))}" target="_blank" rel="noopener" data-postgame-card="${esc(card.id)}" aria-label="放大 ${esc(card.name)}"><img src="${esc(aibpAsset(card.image?.face))}" alt="${esc(card.name)}" width="${Number(card.width) || 600}" height="${Number(card.height) || 600}" loading="lazy"${postgameImageStyle(card)}><span>${esc(card.name)}${card.supersededBy ? `（已由 ${esc(card.supersededBy)} 替换）` : ""}</span></a>`).join("")}</div></section>`;
   }
   function publicDeckLevelText(levels) {
     const normalized=(Array.isArray(levels)?levels:[]).map(Number).filter(level=>Number.isInteger(level)&&level>=0&&level<=3);
@@ -387,7 +442,8 @@
     const tokens=[...(Array.isArray(battle.sheetTokens)?battle.sheetTokens:[]),...(Array.isArray(battle.sheetAutoTokens)?battle.sheetAutoTokens:[])];
     const panelAspect = Number(monster.sheet.cellWidth) / Number(monster.sheet.cellHeight) || Number(monster.sheet.aspect) || 2405 / 1649;
     const sheetAspect = panelAspect * (Number(Boolean(monster.sheet.face)) + Number(Boolean(monster.sheet.back)) || 1);
-    return `<section class="boss-sheet-block boss-sheet-display-bar" data-layout="big-card" aria-label="Boss 大卡"><div class="boss-sheet-stage" style="aspect-ratio:${sheetAspect};height:auto;flex:none"><div class="boss-sheet-spread">${monster.sheet.face?`<img src="${esc(aibpAsset(monster.sheet.face))}" alt="${esc(monsterLabel(monster))} 怪物面板正面">`:""}${monster.sheet.back?`<img src="${esc(aibpAsset(monster.sheet.back))}" alt="${esc(monsterLabel(monster))} 怪物面板背面">`:""}</div><div class="boss-sheet-token-layer">${publicTokenStacks(tokens)}</div></div></section>`;
+    const traits = sheetTraitPlacements(monster,battle).map(({card,x,y,width}) => `<a class="boss-sheet-trait${card.supersededBy ? " superseded" : ""}" href="${esc(aibpAsset(card.image.face))}" target="_blank" rel="noopener" data-sheet-trait="${esc(card.id)}" data-postgame-card="${esc(card.id)}" style="left:${x}%;top:${y}%;width:${width}%" aria-label="放大 ${esc(card.name)}" title="${esc(card.name)}${card.note ? ` · ${esc(card.note)}` : ""}"><img src="${esc(aibpAsset(card.image.face))}" alt="${esc(card.name)}" width="${Number(card.width) || 600}" height="${Number(card.height) || 600}"${postgameImageStyle(card)}></a>`).join("");
+    return `<section class="boss-sheet-block boss-sheet-display-bar" data-layout="big-card" aria-label="Boss 大卡"><div class="boss-sheet-stage" style="aspect-ratio:${sheetAspect};height:auto;flex:none"><div class="boss-sheet-spread">${monster.sheet.face?`<img src="${esc(aibpAsset(monster.sheet.face))}" alt="${esc(monsterLabel(monster))} 怪物面板正面">`:""}${monster.sheet.back?`<img src="${esc(aibpAsset(monster.sheet.back))}" alt="${esc(monsterLabel(monster))} 怪物面板背面">`:""}</div><div class="boss-sheet-trait-layer">${traits}</div><div class="boss-sheet-token-layer">${publicTokenStacks(tokens)}</div></div></section>`;
   }
   function markerStacks(markerTokens) {
     return Object.entries(markerTokens||{}).map(([assetId,count])=>{const src=tokenSrc(assetId);return src&&count?`<span class="display-bp-marker"><img class="${tokenShapeClass(assetId)}" src="${esc(src)}" alt=""></span>`:""}).join("");
@@ -409,7 +465,8 @@
       const occupied=slot.occupied===true||Boolean(slot.id);
       const filler=!occupied&&(fillers[used]?.card||fillers[used]?.terrainCard)?fillers[used++]:null;
       let cardContent="";
-      if(filler?.terrainCard)cardContent=publicTerrainCard(filler);
+      if(filler?.cards?.length)cardContent=postgameTrackStackHtml(filler.cards);
+      else if(filler?.terrainCard)cardContent=publicTerrainCard(filler);
       else if(filler?.card)cardContent=`<div class="display-track-card" data-public-feature="${esc(filler.key || filler.card.id)}" aria-label="${esc(filler.label)} · ${esc(filler.card.name)}" title="${esc(filler.card.name)}" style="${cardArt(filler.card,filler.side||"face")}"></div>`;
       else if(trackType==="standard"&&card)cardContent=`<div class="display-track-card" data-public-bp="${esc(slot.id)}" style="${cardArt(card,slot.side)}"></div>`;
       else if(trackType==="standard"&&occupied&&backCard)cardContent=`<div class="display-track-card" style="${cardArt(backCard,"back")}"></div>`;
@@ -711,10 +768,16 @@
       ...references.map(card=>({card,label:referenceLabel(card)})),
       signatureCard?{card:signatureCard,label:"标志",side:"back",key:`${signatureCard.id}:signature`}:null,
     ].filter(Boolean);
-    const trackFillers=boardVisible?[...terrainCards.map(card=>({terrainCard:card,label:"地形"})),...featureEntries]:featureEntries;
+    const postgameCards=postgameReferenceCards(monster,battle);
+    const postgameEntries=packPostgameReferences(postgameCards);
+    const trackFillers=postgameEntries.length
+      ? [...featureEntries,...postgameEntries,...(boardVisible?terrainCards.map(card=>({terrainCard:card,label:"地形"})):[])]
+      : boardVisible?[...terrainCards.map(card=>({terrainCard:card,label:"地形"})),...featureEntries]:featureEntries;
     const mobTrack=publicMobTrack(monster,battle,trackFillers);
-    const usedFeatures=boardVisible?Math.max(0,mobTrack.used-terrainCards.length):mobTrack.used;
-    const remainingFeatures=featureEntries.slice(usedFeatures);
+    const consumedFillers=trackFillers.slice(0,mobTrack.used);
+    const remainingFeatures=featureEntries.filter(entry=>!consumedFillers.includes(entry));
+    const remainingPostgameCards=postgameEntries.filter(entry=>!consumedFillers.includes(entry)).flatMap(entry=>entry.cards);
+    const remainingTerrainCards=boardVisible?terrainCards.filter(card=>!consumedFillers.some(entry=>entry.terrainCard===card)):[];
     const featureCards=remainingFeatures.map(publicFeatureCard).join("");
     const partyAttributes=conflictPartyAttributes(payload);
     // Board-visible showcase groups the party attributes with the AI/BP order +
@@ -723,6 +786,8 @@
     const resolvingSummary=publicDeckSummary(battle, boardVisible?partyAttributes:"");
     const resolvingSection=`<section class="conflict-card-block conflict-resolving-block"><div class="conflict-block-title"><span>RESOLVING</span><strong>正在结算的卡牌</strong></div><div class="public-card-row active-public-cards">${activeCards||'<p class="conflict-empty-state">当前没有正在结算的卡牌</p>'}</div>${resolvingSummary}</section>`;
     const featureSection=featureCards?`<section class="conflict-card-block conflict-feature-block" aria-label="战术与公开特质"><div class="public-card-row feature-card-row">${featureCards}</div></section>`:"";
+    const postgameSection=postgameReferencesHtml(monster,battle,remainingPostgameCards);
+    const overflowTerrainSection=remainingTerrainCards.length?`<section class="conflict-terrain-card-block" aria-label="轨道外地形参考"><div class="conflict-terrain-card-list">${remainingTerrainCards.map(card=>`<figure class="conflict-terrain-card">${terrainCardFace(card)}<figcaption>${esc(card.label)}</figcaption></figure>`).join("")}</div></section>`:"";
     const mirrorTerrainCards=boardVisible?"":terrainCards.map(card=>`<figure class="conflict-terrain-card" aria-label="${esc(card.label)}" title="${esc(card.label)}">${terrainCardFace(card)}</figure>`).join("");
     const mirrorPrimaryCards=mirrorTerrainCards||featureCards?`<section class="conflict-mirror-primary-cards" aria-label="地形、特性与战术卡"><div class="conflict-mirror-primary-row">${mirrorTerrainCards}${featureCards}</div></section>`:"";
     const heroClues=conflictHeroClues(payload.modules?.map);
@@ -737,8 +802,8 @@
     // attributes now live in the resolving summary, so the hero cell reclaims
     // the full idle area. Board-hidden mirror keeps its original flat structure.
     const primaryInner=boardVisible
-      ? `<div class="conflict-hero-fit">${boardCardGroup}</div>${featureSection}`
-      : `${boardCardGroup}${primaryFollowup}`;
+      ? `<div class="conflict-hero-fit">${boardCardGroup}</div>${featureSection}${overflowTerrainSection}${postgameSection}`
+      : `${boardCardGroup}${primaryFollowup}${postgameSection}`;
     const boardDefinition = belly ? BELLY_BOARD.board : window.KF_CONFLICT_BOARD_DATA.board;
     applyBoardCrop(boardDefinition);
     const digestiveTrack = boardState.digestiveTrack || {};
@@ -751,7 +816,7 @@
       ? `<div class="display-digestive-marker" aria-label="消化轨通用标记位置 ${digestivePosition}" style="left:91.1%;top:${DIGESTIVE_TRACK_POSITIONS[digestivePosition - 1]}%"><img src="/assets/tokens/generic.png" alt="通用标记"></div>`
       : "";
     const boardAlign=["top","center","bottom"].includes(settings.conflictBoardAlign)?settings.conflictBoardAlign:"center";
-    const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"} board-align-${boardAlign}`;
+    const sceneClass=`conflict-scene ${settings.conflictSwapped?"swapped":""} ${boardVisible?"":"board-hidden"} ${postgameCards.length?"has-postgame-references":""} board-align-${boardAlign}`;
     root.innerHTML=`<section class="${sceneClass}" style="--board-scale:${scale/100}">
       <div class="conflict-board-area"><div class="conflict-board-shell" style="--board-scale:${scale/100}"><div class="conflict-board"><img class="conflict-board-source" src="${esc(displayAsset(boardDefinition.asset))}" alt="${belly ? "巨兽之腹版图" : "TTS 高清冲突版图"}"><div class="conflict-grid">${grid}</div>${conflictOverlayMarkersHtml(overlay)}${placements}${digestiveMarkerMarkup}${digestiveMarkup}</div></div></div>
       <aside class="conflict-side"><div class="conflict-side-content"><header class="conflict-side-head"><div><p class="side-subtitle">CLASH · ${esc(kingdomLabel(layout.kingdom))}</p><h2 class="side-title">${esc(monsterLabel(monster) || battle.monsterId)}</h2></div><dl class="conflict-quick-facts"><div><dt>等级</dt><dd>${esc(monsterRank(monster))} · ${esc(battle.level)}</dd></div><div><dt>AI</dt><dd>${esc(battle.aiDeckCount||0)}</dd></div><div><dt>BP</dt><dd>${esc(battle.bpDeckCount||0)}</dd></div><div><dt>损伤</dt><dd>${esc((battle.singleWounds||0)+(battle.doubleWounds||0)*2)}</dd></div></dl></header>

@@ -50,7 +50,7 @@ async function bridgeHarness(entries) {
   c.dispatchEvent = event => events.push(event);
   c.KF_MONSTER_DATA = { monsters: [{ id: 'old', name: 'Rogue boss' }, { id: 'new', name: 'Normal boss' }] };
   vm.runInContext(source, c); await tick(); await tick();
-  return { c, storage, setups, events };
+  return { c, storage, setups, events, inputs };
 }
 
 test('a new normal conflict wins over a consumed rogue handoff and keeps the campaign roster after reload', async () => {
@@ -78,6 +78,18 @@ test('a newer rogue request uses the rogue roster instead of an older ordinary h
   const reloaded = await bridgeHarness([...h.storage.entries()]);
   assert.deepEqual(reloaded.setups, []);
   assert.deepEqual(plain(reloaded.c.KF_CAMPAIGN_PARTY), rogue().rogueRoster);
+});
+
+test('postgame handoffs use the stable monster ID and preserve the full level and stage', async () => {
+  const request = rogue({ monster: 'old translated name', level: 9, stage: 'withergraal', postgame: true });
+  const h = await bridgeHarness([['kfRogueHandoff', JSON.stringify(request)]]);
+  assert.deepEqual(h.setups, ['[data-monster="old"]']);
+  assert.equal(h.inputs.get('[data-level]').value, '9');
+  const applied = JSON.parse(h.storage.get('kfRogueHandoff'));
+  assert.equal(applied.stage, 'withergraal');
+  assert.equal(applied.postgame, true);
+  assert.equal(applied.level, 9);
+  assert.equal(h.events.find(event => event.type === 'kf:aibp-handoff').detail.stage, 'withergraal');
 });
 
 test('the newest of two pending sources is selected consistently for both battle and roster', async () => {

@@ -116,7 +116,9 @@
   }
 
   function cardById(monster, id) {
-    return monster?.cards.find(card => card.id === id);
+    return monster?.cards.find(card => card.id === id)
+      || window.KF_POSTGAME_RULES?.cardById(monster?.id, maxMonsterLevel(monster), id)
+      || null;
   }
 
   function cardByAnyId(id) {
@@ -282,7 +284,22 @@
 
   function levelInfo(monster, level = 1) {
     const levels = LEVELS[monster?.id] || [];
-    return levels.find(item => item.level === Number(level)) || levels[0] || null;
+    return levels.find(item => item.level === Number(level)) || null;
+  }
+
+  function maxMonsterLevel(monster) {
+    const levels = LEVELS[monster?.id] || [];
+    return Math.max(1, ...levels.map(item => Number(item.level) || 1),
+      Number(window.KF_POSTGAME_RULES?.maxLevel(monster?.id)) || 1,
+      levels.length ? 1 : (MOB_ACTIVATIONS[monster?.id]?.length || 4));
+  }
+
+  function normalizeMonsterLevel(monster, value) {
+    return Math.trunc(clamp(value, 1, maxMonsterLevel(monster)));
+  }
+
+  function exhibitionWoundsUnspecified(monster, level, phase) {
+    return phase === "preliminary" && !Number.isFinite(levelInfo(monster, level)?.exhibitionWounds);
   }
 
   function exhibitionStartingWounds(monster, level, clashPhase) {
@@ -626,6 +643,13 @@
   }
 
   function mobActivationTypes(monster, level = 1) {
+    const configured = levelInfo(monster, level)?.activations;
+    if (Array.isArray(configured)) {
+      return configured.flatMap(value => {
+        const match = /^(\d+)\s+(AI|Signature|SG)$/i.exec(String(value).trim());
+        return match ? Array(Number(match[1])).fill(match[2].toUpperCase() === "AI" ? "AI" : "SG") : [];
+      });
+    }
     const levels = MOB_ACTIVATIONS[monster?.id] || [];
     return levels[clamp(level, 1, levels.length) - 1] || [];
   }
@@ -1119,6 +1143,7 @@
       mobSpawn: { pending: [], nextMangrove: 1, notices: [], signatures: [] },
       mobActivations: [], activeMobActivationId: "",
       sheetTokens: [],
+      sheetTraits: [],
       singleWounds: 0, doubleWounds: 0,
       ruleState: defaultRuleState(monster, 1, suggestedClashPhase()),
       conflictStatus: "active", failureReason: "",
@@ -1214,8 +1239,7 @@
     for (const kind of Object.keys(setupCounts)) {
       setupCounts[kind] = clamp(raw?.setupCounts?.[kind] ?? setupCounts[kind], 0, Number(monster.pools[kind] || 0));
     }
-    const maxLevel = Math.max(1, (LEVELS[monster.id] || []).length || 4);
-    const level = clamp(raw?.level ?? base.level, 1, maxLevel);
+    const level = normalizeMonsterLevel(monster, raw?.level ?? base.level);
     const storedMobTacticCard = raw?.mobTacticCard || raw?.lictorTacticCard || "";
     const mobTacticCard = mobTacticIds(monster, level).includes(storedMobTacticCard)
       ? storedMobTacticCard : "";
@@ -1232,7 +1256,8 @@
     }
     const normalized = {
       ...base, ...raw, monsterId: monster.id, setupCounts,
-      mobActivations: winged ? [] : mobActivations, sheetTokens, ruleState,
+      mobActivations: winged ? [] : mobActivations, sheetTokens,
+      sheetTraits: normalizeSheetTraits({ ...raw, monsterId: monster.id, level }), ruleState,
       mobTacticCard, lictorTacticCard: undefined,
       level,
       clashPhase,
@@ -1400,6 +1425,7 @@
   let mobMarkerAssetId = DEFAULT_MOB_MARKER_ASSET_IDS[state.battle.monsterId] || "token-01";
   let deckConfigOpen = false;
   let sheetTokenToolsOpen = false;
+  let sheetTraitToolsOpen = false;
   let selectedTerrainId = "";
   let overlayPlacementMode = "";
   // Keep the legacy local preference as the initial value, then persist it in
@@ -1418,6 +1444,7 @@
   }
 
   function save(render = true) {
+    state.battle.sheetTraits = normalizeSheetTraits(state.battle);
     const wingedDiscard = ensureWingedAiDiscard();
     if (wingedDiscard) {
       const card = cardById(monsterById(state.battle.monsterId), wingedDiscard);
@@ -1524,6 +1551,7 @@
 
   function initializeBattle(monster, options = {}) {
     const battle = state.battle;
+    battle.level = normalizeMonsterLevel(monster, battle.level);
     const mobSetup = isMob(monster) ? mobSetupResult(monster) : null;
     if (mobSetup?.error) {
       Object.assign(battle, {
@@ -1597,6 +1625,7 @@
       mobSpawn: { pending: [], nextMangrove: 1, notices: [], signatures: [] },
       mobActivations: isMob(monster) ? battle.mobActivations : [], activeMobActivationId: "",
       sheetTokens: [],
+      sheetTraits: [],
       singleWounds: 0, doubleWounds: 0,
       accursed: fivePlayerMode() ? { side: "active", lastKnight: false } : null,
       aiView: "discard", bpView: "damage", log: []
@@ -1617,6 +1646,9 @@
       }
     }
     if (initialSw) log(`初步冲突：加入 SW ×${initialSw}，不触发晋升`);
+    if (exhibitionWoundsUnspecified(monster, battle.level, battle.clashPhase)) {
+      log("等级附录未列展览初伤，请按规则手动设置初始损伤。");
+    }
     return true;
   }
 
@@ -2329,6 +2361,12 @@
     const finger = bossRule(monster)?.fingers?.[id];
     if (!finger) return false;
     const b = state.battle;
+    // Hand of the Master replaces the entire Five Fingers exception. At
+    // level 5+ the BP follows the normal wound path, not the old removal path.
+    if (b.level >= 5) {
+      b.ruleState.ruleNotice = "Hand of the Master 已替换 Five Fingers：本次按普通 BP 击伤结算，另按进阶能力贴图领取附加效果。";
+      return false;
+    }
     if (finger.effect === "single" || finger.effect === "double") {
       addWound(finger.effect, id);
       if (finger.promote) promoteAfterSpecialWound(monster, bpRank(cardById(monster, id)));
@@ -2815,7 +2853,9 @@
     armor.field = previous.remnant;
     armor.dragon = previous.field;
     armor.remnant = previous.dragon;
-    state.battle.ruleState.ruleNotice = "盔甲已按 虫阵 → 巨龙 → 残余 → 虫阵 循环迁移。";
+    state.battle.ruleState.ruleNotice = "盔甲已按 虫阵 → 巨龙 → 残余 → 虫阵 循环迁移。"
+      + (state.battle.level >= 5 ? " Scouring Scurries：另将每名骑士向装甲巨龙拉近 3，再执行 Germinate（虫阵）。" : "")
+      + (state.battle.level >= 7 ? " Despiser of Man：残余按新贴图移动，不再自动回到巨龙相邻格。" : "");
     log("装甲巨龙：循环迁移盔甲");
     save();
   }
@@ -3042,13 +3082,13 @@
         b.ruleState.ruleNotice = `Patient A：${target}移入囚牢；全部抽牌弃置并将 Patient 弃牌洗回牌组。`;
       } else {
         const armorLoss = ({ C: 3, D: 2, E: 1 })[letter] || (letter === "F" && choice === "accept" ? 1 : 0);
-        if (armorLoss) b.ruleState.smeltedFears.ironTitheArmor += armorLoss;
+        if (armorLoss && b.level < 10) b.ruleState.smeltedFears.ironTitheArmor += armorLoss;
         if (letter === "F" && choice === "accept") {
           b.ruleState.severityByKnight[target] = clamp((b.ruleState.severityByKnight[target] ?? 9) + 1, 0, 9);
         }
         const effect = letter === "B" ? "随机弃一张手牌"
           : letter === "F" ? (choice === "accept" ? "烈度 +1，弃置 1 枚盔甲" : "拒绝以烈度换取弃甲")
-            : `弃置 ${armorLoss} 枚盔甲并放到 Iron Tithe`;
+            : `弃置 ${armorLoss} 枚盔甲${b.level >= 10 ? "，不放入窖牢（The Bowels of Hell）" : "并放到 Iron Tithe"}`;
         b.ruleState.ruleNotice = `Patient ${letter}：${effect}。${patient.queue.length ? `下一项 ${patient.queue[0]}` : "结算完成"}`;
         if (!patient.queue.length) finishSmeltedBargain(b.ruleState.ruleNotice);
       }
@@ -3088,7 +3128,8 @@
 
   function smeltedFerrobaptism() {
     remember();
-    const gain = state.battle.level >= 3 ? 3 : 2;
+    const baseGain = state.battle.level >= 3 ? 3 : 2;
+    const gain = baseGain * (state.battle.level >= 7 ? 2 : 1);
     state.battle.ruleState.smeltedFears.devilArmor += gain;
     state.battle.ruleState.ruleNotice = `铁之洗礼 ${gain}：恶魔获得 ${gain} 枚盔甲。`;
     log(`铁之洗礼 ${gain}`);
@@ -3110,9 +3151,10 @@
     if (!smelted.devilArmor) return toast("当前没有可讲价弃置的盔甲指示物");
     remember();
     smelted.devilArmor--;
-    smelted.ironTitheArmor++;
-    state.battle.ruleState.ruleNotice = "";
-    log("熔怖恶魔：讲价弃置 1 枚盔甲到窖牢");
+    if (state.battle.level < 10) smelted.ironTitheArmor++;
+    state.battle.ruleState.ruleNotice = state.battle.level >= 10
+      ? "The Bowels of Hell：本次讲价弃置的盔甲不放入窖牢。" : "";
+    log(state.battle.level >= 10 ? "熔怖恶魔：讲价弃置 1 枚盔甲（不放入窖牢）" : "熔怖恶魔：讲价弃置 1 枚盔甲到窖牢");
     save();
   }
 
@@ -3195,6 +3237,19 @@
     changeEggArmor(slot, -1, true);
   }
 
+  function eggJackedText(value, level) {
+    const effects = [];
+    if (value >= 2) effects.push("2+：闪避难度 +1");
+    if (value >= 5) effects.push("5+：怪物攻击 +1 闪避");
+    if (value >= 9) effects.push("9+：攻击额外造成 3 活力损失");
+    if (level >= 5) {
+      if (value >= 14) effects.push("14+：Braced 与 Rocksteady 失效");
+      if (value >= 20) effects.push("20+：禁用 Overjacked 贴图所列关键词");
+      if (value >= 27) effects.push("27+：被攻击命中时立即死亡");
+    }
+    return effects.join("；") || "尚未达到阈值";
+  }
+
   function changeEggArmor(slot, delta, headbutt = false) {
     slot = clamp(slot, 1, 3);
     const egg = state.battle.ruleState.eggknight;
@@ -3204,8 +3259,7 @@
     egg.armor[slot] = clamp(before + delta, 0, 20);
     const removed = Math.max(0, before - egg.armor[slot]);
     egg.jacked += removed;
-    const threshold = egg.jacked >= 9 ? "9+：攻击额外造成 3 活力损失"
-      : egg.jacked >= 5 ? "5+：怪物攻击获得 +1 闪避" : egg.jacked >= 2 ? "2+：闪避难度 +1" : "尚未达到阈值";
+    const threshold = eggJackedText(egg.jacked, state.battle.level);
     const headbuttDetail = headbutt && removed ? `已从护甲最少的 BP${slot} 弃置 1 枚盔甲。请抽取致命伤卡，按坐标放置石柱，再将该伤卡放回牌堆底。` : "";
     state.battle.ruleState.ruleNotice = `${slot} 阶槽盔甲 ${delta > 0 ? "+" : ""}${delta}；Jacked ${egg.jacked}（${threshold}）。${headbuttDetail}`;
     log(`蛋蛋骑士盔甲槽 ${slot}：${delta > 0 ? "+" : ""}${delta}`);
@@ -3301,7 +3355,7 @@
   function resolveWolfDown(priorityTarget = "") {
     const b = state.battle;
     const eater = b.ruleState.knighteater;
-    const amount = b.level;
+    const amount = b.level >= 5 ? 4 : b.level;
     remember();
     const spent = Math.min(amount, eater.meat);
     eater.meat -= spent;
@@ -3316,7 +3370,9 @@
       message = "肉块足够：获得 1 枚盔甲，不开始暴走。";
     } else if (eater.berserk && !enough && b.level >= 3) {
       setKnighteaterBerserk(false, priorityTarget);
-      message = "肉块不足：随机一名相邻骑士死亡，食士师停止暴走。";
+      message = b.level >= 6
+        ? "Profane Hunger：忽略活力损失，先向最近骑士移动 3 格或直到相邻；再按贴图处理随机相邻骑士被吞噬，食士师停止暴走。"
+        : "肉块不足：随机一名相邻骑士死亡，食士师停止暴走。";
     } else if (eater.berserk && !enough) {
       message = `肉块不足：随机一名相邻骑士失去 ${amount} 活力，食士师维持暴走。`;
     } else {
@@ -3984,7 +4040,8 @@
     const x = crop.x ?? (cols > 1 ? ((index % cols) / (cols - 1)) * 100 : 0);
     const y = crop.y ?? (rows > 1 ? (Math.floor(index / cols) / (rows - 1)) * 100 : 0);
     const aspect = Number(crop.aspect) || (Number(crop.cellWidth) / Number(crop.cellHeight)) || 0.7;
-    return `--cols:${cols};--rows:${rows};--x:${x}%;--y:${y}%;--card-aspect:${aspect};background-image:url("${image[side] || image.face}")`;
+    const levelMask = image.clipPath ? `;clip-path:${image.clipPath};background-color:transparent;border:0;box-shadow:none` : "";
+    return `--cols:${cols};--rows:${rows};--x:${x}%;--y:${y}%;--card-aspect:${aspect};background-image:url("${image[side] || image.face}")${levelMask}`;
   }
 
   function cardLabel(card, side = "face") {
@@ -4227,6 +4284,154 @@
     return `<div class="segmented">${entries.map(([value, label]) =>
       `<button class="${value === active ? "active" : ""}" data-view="${type}:${value}">${label}</button>`
     ).join("")}</div>`;
+  }
+
+  function sheetTraitCards(battle) {
+    const rules = window.KF_POSTGAME_RULES;
+    return [rules?.levelReferenceFor(battle.monsterId, battle.level),
+      ...(rules?.traitsFor(battle.monsterId, battle.level) || [])].filter(Boolean);
+  }
+
+  function sheetTraitGeometry(monster, card, placement) {
+    const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
+    const aspect = Number(card.image?.aspect) || Number(card.width) / Number(card.height) || 1;
+    const stageAspect = sheetStageAspect(monster);
+    const width = clamp(finite(placement.width ?? 28, 28), 12, Math.min(60, 96 * aspect / stageAspect));
+    const halfHeight = width * stageAspect / aspect / 2;
+    return {
+      cardId: card.id,
+      x: clamp(finite(placement.x ?? 50, 50), width / 2, 100 - width / 2),
+      y: clamp(finite(placement.y ?? 50, 50), halfHeight, 100 - halfHeight),
+      width
+    };
+  }
+
+  function normalizeSheetTraits(battle) {
+    const monster = monsterById(battle.monsterId);
+    if (!monster?.sheet?.face && !monster?.sheet?.back) return [];
+    const cards = new Map(sheetTraitCards(battle).map(card => [card.id, card]));
+    const seen = new Set();
+    return (Array.isArray(battle.sheetTraits) ? battle.sheetTraits : []).flatMap(placement => {
+      const card = cards.get(placement?.cardId);
+      if (!card || seen.has(card.id)) return [];
+      seen.add(card.id);
+      return [sheetTraitGeometry(monster, card, placement)];
+    });
+  }
+
+  function setSheetTrait(cardId, placed) {
+    const battle = state.battle;
+    const card = sheetTraitCards(battle).find(item => item.id === cardId);
+    const monster = monsterById(battle.monsterId);
+    if (!card || (!monster?.sheet?.face && !monster?.sheet?.back)) return;
+    const existing = battle.sheetTraits.find(item => item.cardId === cardId);
+    if (Boolean(existing) === Boolean(placed)) return;
+    remember();
+    if (placed) {
+      const index = battle.sheetTraits.length;
+      battle.sheetTraits.push(sheetTraitGeometry(monster, card, {
+        x: 18 + (index % 2) * 32, y: 18 + (Math.floor(index / 2) % 4) * 20, width: 28
+      }));
+    } else {
+      battle.sheetTraits = battle.sheetTraits.filter(item => item.cardId !== cardId);
+    }
+    save();
+  }
+
+  function resizeSheetTrait(cardId, delta) {
+    const battle = state.battle;
+    const placement = battle.sheetTraits.find(item => item.cardId === cardId);
+    const card = sheetTraitCards(battle).find(item => item.id === cardId);
+    if (!placement || !card) return;
+    const next = sheetTraitGeometry(monsterById(battle.monsterId), card, {
+      ...placement, width: placement.width + (Number(delta) || 0)
+    });
+    if (next.width === placement.width) return;
+    remember();
+    Object.assign(placement, next);
+    save();
+  }
+
+  function startSheetTraitDrag(event) {
+    if ((event.button !== undefined && event.button !== 0) || event.target.closest("button")) return;
+    const node = event.currentTarget;
+    const stage = node.closest("[data-sheet-stage]");
+    const battle = state.battle;
+    const placement = battle.sheetTraits.find(item => item.cardId === node.dataset.sheetTrait);
+    const card = sheetTraitCards(battle).find(item => item.id === placement?.cardId);
+    if (!stage || !placement || !card) return;
+    const before = clone(battle);
+    const initial = { x: placement.x, y: placement.y, clientX: event.clientX, clientY: event.clientY };
+    let moved = false;
+    const move = pointerEvent => {
+      if (pointerEvent.pointerId !== event.pointerId) return;
+      const dx = pointerEvent.clientX - initial.clientX;
+      const dy = pointerEvent.clientY - initial.clientY;
+      if (!moved && Math.hypot(dx, dy) < 3) return;
+      const rect = stage.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      Object.assign(placement, sheetTraitGeometry(monsterById(battle.monsterId), card, {
+        ...placement,
+        x: Math.round((initial.x + dx / rect.width * 100) * 100) / 100,
+        y: Math.round((initial.y + dy / rect.height * 100) * 100) / 100
+      }));
+      node.style.left = `${placement.x}%`;
+      node.style.top = `${placement.y}%`;
+      node.classList.add("dragging");
+      moved = true;
+    };
+    const finish = pointerEvent => {
+      if (pointerEvent.pointerId !== event.pointerId) return;
+      node.removeEventListener("pointermove", move);
+      node.removeEventListener("pointerup", finish);
+      node.removeEventListener("pointercancel", finish);
+      node.classList.remove("dragging");
+      if (node.hasPointerCapture?.(pointerEvent.pointerId)) node.releasePointerCapture(pointerEvent.pointerId);
+      if (!moved) return;
+      state.history.push(before);
+      state.history = state.history.slice(-30);
+      save();
+    };
+    event.preventDefault();
+    node.setPointerCapture?.(event.pointerId);
+    node.addEventListener("pointermove", move);
+    node.addEventListener("pointerup", finish);
+    node.addEventListener("pointercancel", finish);
+  }
+
+  function sheetTraitLayer(battle) {
+    const cards = new Map(sheetTraitCards(battle).map(card => [card.id, card]));
+    return `<div class="sheet-trait-layer">${normalizeSheetTraits(battle).map(placement => {
+      const card = cards.get(placement.cardId);
+      return `<div class="sheet-trait${card.image.clipPath ? " level-reference" : ""}${card.supersededBy ? " superseded" : ""}" data-sheet-trait="${esc(card.id)}"
+        tabindex="0" role="group" aria-label="${esc(card.name)}；可拖动，方向键微调位置"
+        title="${esc(card.name)}${card.note ? ` · ${esc(card.note)}` : ""} · 拖动调整位置"
+        style="left:${placement.x}%;top:${placement.y}%;width:${placement.width}%">
+        <img src="${esc(card.image.face)}" alt="${esc(card.name)}" draggable="false" width="${card.width}" height="${card.height}"${card.image.clipPath ? ` style="clip-path:${esc(card.image.clipPath)}"` : ""}>
+        <div class="sheet-trait-actions">
+          <button type="button" data-sheet-trait-preview="${esc(card.id)}" aria-label="放大查看 ${esc(card.name)}">查看</button>
+          <button type="button" data-sheet-trait-resize="${esc(card.id)}" data-delta="-4" aria-label="缩小 ${esc(card.name)}">−</button>
+          <button type="button" data-sheet-trait-resize="${esc(card.id)}" data-delta="4" aria-label="增大 ${esc(card.name)}">＋</button>
+          <button type="button" data-sheet-trait-remove="${esc(card.id)}" aria-label="从面板移除 ${esc(card.name)}">×</button>
+        </div>
+      </div>`;
+    }).join("")}</div>`;
+  }
+
+  function sheetTraitToggleHtml(card, battle) {
+    const placed = battle.sheetTraits.some(item => item.cardId === card.id);
+    return `<button type="button" class="button secondary small" data-sheet-trait-toggle="${esc(card.id)}"
+      aria-pressed="${placed}">${placed ? "从面板移除" : "放到面板"}</button>`;
+  }
+
+  function sheetTraitTools(battle) {
+    const cards = sheetTraitCards(battle);
+    if (!cards.length) return "";
+    return `<details class="sheet-trait-tools" data-sheet-trait-tools ${sheetTraitToolsOpen ? "open" : ""}>
+      <summary>等级属性与特质 · 放到面板 (${normalizeSheetTraits(battle).length}/${cards.length})</summary>
+      <p class="muted">选择当前等级属性图或特质，拖动调整位置；面板上的 − / ＋ 可调节大小，第二屏同步显示。</p>
+      <div class="sheet-trait-choices">${cards.map(card => `<div class="sheet-trait-choice"><span>${esc(card.name)}</span>${sheetTraitToggleHtml(card, battle)}</div>`).join("")}</div>
+    </details>`;
   }
 
   function sheetTokenCounts(battle) {
@@ -4857,6 +5062,7 @@
     if (rule.kind === "smelted-fears") {
       const smelted = rs.smeltedFears;
       const armorAsset = TOKEN_ASSETS.find(asset => asset.id === "token-armor");
+      const bargainArmorLabel = b.level >= 10 ? "讲价弃置 1 枚盔甲（不放入窖牢）" : "讲价弃置 1 枚盔甲到窖牢";
       body = `<div class="smelted-armor-layout">
         <div class="smelted-armor-display">
           <span>盔甲指示物</span>
@@ -4869,7 +5075,7 @@
             <button class="smelted-armor-step" aria-label="增加盔甲指示物" data-p2-counter="smelted:devilArmor" data-delta="1">+</button>
           </div>
         </div>
-        <button class="button secondary smelted-bargain-button" aria-label="讲价弃置 1 枚盔甲到窖牢" title="讲价弃置 1 枚盔甲到窖牢" data-rule-action="smelted-bargain-armor" ${smelted.devilArmor ? "" : "disabled"}>&#8594;</button>
+        <button class="button secondary smelted-bargain-button" aria-label="${bargainArmorLabel}" title="${bargainArmorLabel}" data-rule-action="smelted-bargain-armor" ${smelted.devilArmor ? "" : "disabled"}>&#8594;</button>
         <div class="smelted-armor-display">
           <span>窖牢</span>
           <span class="smelted-armor-token">
@@ -4883,11 +5089,11 @@
     if (rule.kind === "eggknight") {
       const egg = rs.eggknight;
       const counterReady = egg.counter >= 3;
-      const jackedText = egg.jacked >= 9 ? "攻击额外造成 3 活力损失" : egg.jacked >= 5 ? "怪物攻击 +1 闪避" : egg.jacked >= 2 ? "闪避难度 +1" : "未激活";
+      const jackedText = eggJackedText(egg.jacked, b.level);
       const headbuttSlot = leastEggArmorSlot(egg);
       body = `<div class="egg-rule-line">${[1, 2, 3].map(slot => `<div class="egg-armor-inline"><span>BP${slot} 盔甲 / +AT</span><div class="counter"><button data-egg-armor="${slot}">-</button><strong>${egg.armor[slot]}</strong><button data-egg-add="${slot}">+</button></div></div>`).join("")}
         <button class="button secondary small egg-headbutt" data-egg-headbutt title="${headbuttSlot ? `从护甲最少的 BP${headbuttSlot} 弃置 1 枚盔甲（Jacked +1）` : "三处盔甲均已弃置，无法头槌弃甲"}" ${headbuttSlot ? "" : "disabled"}>头槌弃甲</button>
-        <span class="badge ${counterReady ? "danger-badge" : ""}">还击 ${egg.counter}/3${counterReady ? " · 立即处理" : ""}</span><span class="badge gold">Jacked ${egg.jacked}：${jackedText}</span></div>`;
+        <span class="badge ${counterReady ? "danger-badge" : ""}">还击 ${egg.counter}/3${counterReady ? " · 立即处理" : ""}</span><span class="badge gold">Jacked ${egg.jacked}：${jackedText}</span>${b.level >= 6 ? '<p class="rule-notice">Humpty Supercharge 已禁用 Humpty Fate 与 Hardboiled；冲撞路径和转向按进阶贴图执行。</p>' : ""}</div>`;
     }
 
     if (rule.kind === "knighteater") {
@@ -4940,7 +5146,7 @@
     const setup = mobConflictSetup(monster);
     const conditional = new Map((setup?.conditionalCards || []).map(item => [item.id, item]));
     const kingdomTrait = window.KF_CAMPAIGN_KINGDOM === "stone" ? "Trait_POS" : "Trait_SK";
-    return monster.cards.filter(card => {
+    const base = monster.cards.filter(card => {
       if (!["SIG", "Trait", "Trait_SK", "Trait_POS", "BPX"].includes(card.kind)) return false;
       if (allMobTacticIds(monster).includes(card.id)) return false;
       if (["Trait_SK", "Trait_POS"].includes(card.kind) && card.kind !== kingdomTrait) return false;
@@ -4952,6 +5158,22 @@
       return battle.level >= Number(rule.minLevel || 1)
         && (!rule.maxLevel || battle.level <= Number(rule.maxLevel));
     });
+    const postgame = window.KF_POSTGAME_RULES;
+    const extra = postgame?.traitsFor(monster.id, battle.level) || [];
+    const reference = postgame?.levelReferenceFor(monster.id, battle.level);
+    return [...base, ...extra, ...(reference ? [reference] : [])];
+  }
+
+  function referenceCardsHtml(monster, battle, cards) {
+    const notes = window.KF_POSTGAME_RULES?.replacementNotesFor(monster.id, battle.level) || [];
+    const replacements = notes.length ? `<div class="postgame-replacements" role="note">${notes.map(item =>
+      `<p><strong>等级 ${esc(item.minLevel)} · ${esc(item.name)}</strong>：${esc(item.note || `${(item.replaces || []).join("、")} 已失效，请按新能力结算。`)}</p>`
+    ).join("")}</div>` : "";
+    return `${replacements}<div class="card-gallery reference-gallery ${cards.some(card => card.source) ? "postgame-reference-gallery" : ""}">${cards.map(card => {
+      if (!card.source) return pileGrid([card.id], monster);
+      const status = card.supersededBy ? `<span class="postgame-card-note">${esc(Array.isArray(card.supersededBy) ? card.supersededBy.join("、") : card.supersededBy)} 已替换本组相应能力</span>` : "";
+      return `<div class="postgame-reference-card">${cardHtml(card)}${sheetTraitToggleHtml(card, battle)}${status}${card.note ? `<span class="postgame-card-note">${esc(card.note)}</span>` : ""}</div>`;
+    }).join("")}</div>`;
   }
 
   function conflictBoardLayout(battle = state.battle) {
@@ -5526,12 +5748,12 @@
     const gallery = monster.cards.filter(card => b.galleryKind === "ALL" || card.kind === b.galleryKind);
     const totalDamage = b.singleWounds + b.doubleWounds * 2;
     const setupKinds = ["AI1", "AI2", "AI3", "BP1", "BP2", "BP3", "BPS", "BPX"];
-    const monsterLevels = LEVELS[monster.id] || [];
     const currentLevel = levelInfo(monster, b.level);
     const automaticCounts = defaultCounts(monster, b.level);
     const currentMobSetup = mob ? mobSetupResult(monster) : null;
     const initialSw = exhibitionStartingWounds(monster, b.level, b.clashPhase);
-    const maxLevel = monsterLevels.length || MOB_ACTIVATIONS[monster.id]?.length || 4;
+    const maxLevel = maxMonsterLevel(monster);
+    const missingExhibition = exhibitionWoundsUnspecified(monster, b.level, b.clashPhase);
     const specialMobBp = mob && isPumpkinhead(monster);
     const puppetAiChoices = bossRule(monster)?.kind === "puppet-king" && b.level >= 4
       ? b.ruleState.aiChoiceIds.map(id => cardById(monster, id)).filter(Boolean)
@@ -5561,7 +5783,7 @@
             ${b.conflictStatus === "failed" ? `<div class="conflict-alert">${esc(b.failureReason)}</div>` : ""}
             <details class="deck-config-tools" data-deck-config ${deckConfigOpen ? "open" : ""}><summary>牌组配置</summary>
               <div class="setup-grid ${mob ? "mob-setup-grid" : ""}">
-                <label>怪物等级<input type="number" min="1" max="${maxLevel}" data-level value="${clamp(b.level, 1, maxLevel)}"></label>
+                <label>怪物等级<input type="number" min="1" max="${maxLevel}" step="1" data-level value="${normalizeMonsterLevel(monster, b.level)}"></label>
                 <label>冲突阶段<select data-clash-phase><option value="full" ${b.clashPhase === "full" ? "selected" : ""}>完全冲突</option><option value="preliminary" ${b.clashPhase === "preliminary" ? "selected" : ""}>初步冲突</option></select></label>
                 ${mob ? `<div class="automatic-deck-summary"><span>冲突设置固定数量</span><strong>${b.mobCount} 个杂兵</strong></div>` : ""}
                 <div class="automatic-deck-summary">
@@ -5572,14 +5794,15 @@
                     .join("　")}</strong>
                 </div>
                 ${mob && currentMobSetup?.fixedCards.length ? `<div class="automatic-deck-summary"><span>固定 BP</span><strong>${currentMobSetup.fixedCards.map(item => `${item.slot + 1}号位 · ${esc(cardById(monster, item.id)?.name || item.id)}`).join("　")}</strong></div>` : ""}
-                <div class="automatic-deck-summary"><span>初始损伤</span><strong>${b.clashPhase === "preliminary" ? `初步冲突 · SW ×${initialSw}` : "完全冲突 · 无初步损伤"}</strong></div>
+                <div class="automatic-deck-summary"><span>初始损伤</span><strong>${missingExhibition ? "等级附录未列展览初伤，请按规则手动设置" : b.clashPhase === "preliminary" ? `初步冲突 · SW ×${initialSw}` : "完全冲突 · 无初步损伤"}</strong></div>
               </div>
               ${currentLevel?.hit ? `<div class="auto-config-note">
-                <strong>等级 ${currentLevel.level} 自动配置已人工复核</strong>
-                <span>命中 ${esc(currentLevel.hit)} · 损伤阈值 ${currentLevel.wounds} · 初步冲突 SW ${currentLevel.exhibitionWounds} · 初始晋升 ${currentLevel.promotion} · 激活 ${esc(currentLevel.activations.join(" + "))}</span>
+                <strong>等级 ${currentLevel.level} 配置</strong>
+                <span>命中 ${esc(currentLevel.hit)} · 损伤阈值 ${esc(currentLevel.wounds)}${Number.isFinite(currentLevel.exhibitionWounds) ? ` · 初步冲突 SW ${currentLevel.exhibitionWounds}` : ""} · 初始晋升 ${currentLevel.promotion ?? "见原图"}${mob && currentLevel.promotion ? "（按原图手动执行）" : ""} · 激活 ${esc((currentLevel.activations || []).join(" + "))}${currentLevel.level > 4 ? " · 其他加值及能力见下方等级原图" : ""}</span>
               </div>` : ""}
             </details>
             ${sheetTokenTools(b)}
+            ${sheetTraitTools(b)}
             <div class="monster-sheet-display ${b.conflictLocation === "巨兽之腹" ? "has-devour-dragon-trait" : ""}">
               <div class="monster-sheet-stage" data-sheet-stage style="aspect-ratio:${sheetStageAspect(monster)};height:auto">
                 <div class="monster-sheet-spread">
@@ -5587,6 +5810,7 @@
                   ${monster.sheet?.back ? `<img src="${esc(monster.sheet.back)}" alt="怪物面板右侧">` : ""}
                 </div>
                 ${youngDevourStageOverlay(monster, b)}
+                ${sheetTraitLayer(b)}
                 ${sheetTokenLayer(b)}
               </div>
               ${b.conflictLocation === "巨兽之腹" ? `<figure class="devour-dragon-trait">
@@ -5668,7 +5892,7 @@
           </section>
           <section class="panel">
             <details open><summary>标志行为与特质 (${references.length})</summary>
-              <div class="card-gallery reference-gallery">${pileGrid(references.map(card => card.id), monster)}</div>
+              ${referenceCardsHtml(monster, b, references)}
             </details>
           </section>
           <section class="panel">
@@ -5695,6 +5919,7 @@
   function bindEvents(monster) {
     $("[data-deck-config]")?.addEventListener("toggle", event => { deckConfigOpen = event.currentTarget.open; });
     $("[data-sheet-token-tools]")?.addEventListener("toggle", event => { sheetTokenToolsOpen = event.currentTarget.open; });
+    $("[data-sheet-trait-tools]")?.addEventListener("toggle", event => { sheetTraitToolsOpen = event.currentTarget.open; });
     $("[data-grid-coordinates]")?.addEventListener("click", toggleConflictCoordinates);
     $("[data-fool-deck]")?.addEventListener("click", drawOrResetFoolCard);
     $$('[data-terrain-id]').forEach(button => button.addEventListener('click', event => {
@@ -5796,8 +6021,7 @@
       $$(".monster-item").forEach(item => { item.hidden = Boolean(query) && !(window.KFMonsterLabels ? window.KFMonsterLabels.matches(monsterById(item.dataset.monster), query) : item.textContent.toLowerCase().includes(query)); });
     });
     $("[data-level]").addEventListener("input", event => {
-      const max = Number(event.target.max) || 4;
-      state.battle.level = clamp(event.target.value, 1, max);
+      state.battle.level = normalizeMonsterLevel(monster, event.target.value);
       if (!isMob(monster) && levelInfo(monster, state.battle.level)) {
         state.battle.setupCounts = defaultCounts(monster, state.battle.level);
         toast("已套用人工复核的等级配置；点击“开始冲突 / 重建牌组”生效");
@@ -5825,6 +6049,36 @@
     }));
     $("[data-clear-sheet-tokens]")?.addEventListener("click", clearSheetTokens);
     $$('[data-sheet-token]').forEach(token => token.addEventListener("pointerdown", startSheetTokenDrag));
+    $$('[data-sheet-trait-toggle]').forEach(button => button.addEventListener("click", () => {
+      const id = button.dataset.sheetTraitToggle;
+      setSheetTrait(id, !state.battle.sheetTraits.some(item => item.cardId === id));
+    }));
+    $$('[data-sheet-trait-remove]').forEach(button => button.addEventListener("click", () => {
+      setSheetTrait(button.dataset.sheetTraitRemove, false);
+    }));
+    $$('[data-sheet-trait-resize]').forEach(button => button.addEventListener("click", () => {
+      resizeSheetTrait(button.dataset.sheetTraitResize, button.dataset.delta);
+    }));
+    $$('[data-sheet-trait-preview]').forEach(button => button.addEventListener("click", () => {
+      showPreview(sheetTraitCards(state.battle).find(card => card.id === button.dataset.sheetTraitPreview));
+    }));
+    $$('[data-sheet-trait]').forEach(node => {
+      node.addEventListener("pointerdown", startSheetTraitDrag);
+      node.addEventListener("keydown", event => {
+        if (event.target !== node) return;
+        const direction = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
+        if (!direction) return;
+        event.preventDefault();
+        const placement = state.battle.sheetTraits.find(item => item.cardId === node.dataset.sheetTrait);
+        if (!placement) return;
+        remember();
+        const step = event.shiftKey ? 5 : 1;
+        placement.x += direction[0] * step;
+        placement.y += direction[1] * step;
+        save();
+        $(`[data-sheet-trait="${node.dataset.sheetTrait}"]`)?.focus();
+      });
+    });
     $$('[data-bog-position]').forEach(button => button.addEventListener("click", () => {
       const selected = Number(button.dataset.bogPosition);
       const current = state.battle.ruleState.bogWitch.position;
@@ -6044,7 +6298,7 @@
     const fixedWingedBp = isWingedNightmare(monster) && isWingedFixedBpId(card.id);
     const type = fixedWarriorCompanion || fixedWingedBp || !allowMoves ? "" : aibpDeckType(card);
     const previewSide = card.kind === "SIG" && side === "back" ? "back" : "face";
-    modal.innerHTML = `<div class="modal-backdrop" data-close-modal></div><div class="modal-card">
+    modal.innerHTML = `<div class="modal-backdrop" data-close-modal></div><div class="modal-card ${card.source ? "postgame-preview-modal" : ""}">
       <button class="modal-close" data-close-modal aria-label="关闭卡牌预览">×</button>
       ${cardHtml(card, "preview-card", previewSide, false, false)}
       <h3>${esc(cardLabel(card, previewSide))}</h3>
@@ -6169,6 +6423,8 @@
   }
 
   window.addEventListener?.("kf:aibp-handoff", event => {
+    state.battle.postgame = event.detail?.postgame === true || event.detail?.stage === "withergraal";
+    state.battle.rogueStage = event.detail?.stage || "";
     const location = String(event.detail?.mapWheel?.conflictLocation || "");
     const currentMonster = monsterById(state.battle.monsterId);
     const bellyLocation = location === "巨兽之腹" && currentMonster?.id !== "M_YoungDevour";
@@ -6232,6 +6488,10 @@
       toggleConflictCoordinates, drawOrResetFoolCard, conflictGridCellRef, conflictGridHtml,
       conflictOverlay, conflictOverlaySettings, updateConflictOverlay,
       validateState, renderApp, showPreview, showGuardedPreview, remember, commit: () => save(false),
+      setSheetTrait, resizeSheetTrait, startSheetTraitDrag,
+      levelInfo: level => levelInfo(monsterById(state.battle.monsterId), level),
+      maxLevel: () => maxMonsterLevel(monsterById(state.battle.monsterId)),
+      normalizeLevel: level => normalizeMonsterLevel(monsterById(state.battle.monsterId), level),
       activeReferenceIds: () => activeReferenceCards(
         monsterById(state.battle.monsterId), state.battle
       ).map(card => card.id),
