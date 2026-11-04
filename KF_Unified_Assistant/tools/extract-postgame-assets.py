@@ -19,6 +19,17 @@ SOURCES = {
     "stone": "斯托恩公国（70.pdf",
     "fear": "万种多肉恐惧（76.pdf",
 }
+BONUS_REVIEWS = json.loads((ROOT / "tools/monster-level-bonus-reviews.json").read_text(encoding="utf-8"))
+
+
+def reviewed_level_bonuses(monster, level, promotion):
+    """Keep reviewed icon values when rebuilding appendix data from the PDFs."""
+    values = next(row for row in BONUS_REVIEWS["monsters"][monster] if row[0] == level)
+    if values[1] != promotion:
+        raise ValueError(f"Promotion mismatch in reviewed row: {monster} level {level}")
+    return dict(zip(BONUS_REVIEWS["columns"][2:], values[2:]))
+
+
 GROUPS: list[dict] = []
 
 
@@ -389,11 +400,11 @@ def main():
                     card["note"] = "原文 Panzerschale 段落引用 Pumpkin Plague；贴图保留原文。"
                 record["trait"] = card
             else:
-                card["note"] = "蓝行全部加值按原图应用；附录未列展览模式初始损伤。"
                 record["reference"] = card
         data.setdefault(monster, []).append(record)
         levels.setdefault(monster, []).append({key: group[key] for key in ["level","hit","wounds","promotion","activations"]} |
-            {"exhibitionWoundsUnspecified": True, "source": {"file": SOURCES[group["source"]], "page": group["page"]}})
+            {"exhibitionWoundsUnspecified": True, "source": {"file": SOURCES[group["source"]], "page": group["page"]},
+             "bonuses": reviewed_level_bonuses(monster, level, group["promotion"])})
     for value in data.values():
         value.sort(key=lambda row: row["level"])
     replacements = {monster: [dict(minLevel=l, name=n, replaces=r, note=t) for l,n,r,t in items] for monster,items in REPLACEMENTS.items()}

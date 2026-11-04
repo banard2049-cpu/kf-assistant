@@ -485,4 +485,4 @@ body{height:100vh;overflow:hidden}
 .display-track-postgame-card span{overflow:hidden;font-size:clamp(5px,6cqw,9px);line-height:1.2;text-overflow:ellipsis;white-space:nowrap}
 .display-track-postgame-card.superseded{opacity:.65}
 
-.conflict-placement[data-kind="knight"] .board-marker.knight, .conflict-placement[data-kind="monster"] .board-marker.monster.monster-token-frame { inset: 6%; }
+.conflict-placement[data-kind="knight"] .board-marker.knight, .conflict-placement[data-kind="monster"] .board-marker.monster.monster-token-frame, .conflict-placement[data-kind="monster"] .board-marker.monster.boss-token-frame { inset: 6%; }

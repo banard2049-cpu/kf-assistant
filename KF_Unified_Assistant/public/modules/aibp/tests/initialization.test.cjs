@@ -1294,7 +1294,7 @@ assert.equal(initialScabArmorSlots.length, 4, "三级苍血蠕虫测试应有 4 
 assert.ok(initialScabArmorSlots.every(slot => slot.markerTokens["token-blood"] === 1),
   "三级以上冲突开始时应在所有初始 BP 上各放置 1 枚血液指示物");
 api.renderApp();
-assert.match(nodes.get("#app").innerHTML, /血痂护甲.*每枚血液使该 BP 的 AT 降低 1/,
+assert.match(nodes.get("#app").innerHTML, /血痂护甲.*每枚血液使该 BP 的 AT 提高 1/,
   "三级以上应在杂兵轨上方显示血痂护甲规则摘要");
 
 const defeatedScabArmorIndex = state().bpTrack.findIndex(slot => slot.id);
@@ -1357,7 +1357,7 @@ assert.equal(state().singleWounds, ratWoundsBeforeRebirth + 1,
   "新生狼鼠生成前应照常完成原狼鼠的损伤结算");
 assert.equal(state().ruleState.ratwolves.pendingSignature, true,
   "生成新狼鼠后应进入待执行标志行为状态");
-assert.match(state().ruleState.ruleNotice, /随机一名骑士相邻同伴.*最靠近场边且无障碍.*位移其他模型.*标志行为/,
+assert.match(state().ruleState.ruleNotice, /随机一名骑士相邻四格中.*最靠近场边且无障碍.*位移其他模型.*标志行为/,
   "新生狼鼠提示应包含完整的模型放置和标志行为规则");
 api.renderApp();
 assert.match(nodes.get("#app").innerHTML, /class="mob-rule-note ratwolf-rebirth-note"[\s\S]*data-ratwolf-signature-complete/,
@@ -1659,11 +1659,44 @@ assert.equal(api.validateState(exported).battle.clashPhase, "preliminary");
 exported.version = 9;
 assert.throws(() => api.validateState(exported), /旧版存档不兼容/);
 
+api.selectMonster("M_Ratwolves");
+rebuild("preliminary", 1);
+api.renderApp();
+const mobLevelHtml = nodes.get("#app").innerHTML;
+assert.match(mobLevelHtml, /data-level-stat="hit"[\s\S]*?<strong>6\+<\/strong>/);
+assert.match(mobLevelHtml, /data-level-stat="wounds"[\s\S]*?<strong>1 \/ 4<\/strong>/);
+assert.match(mobLevelHtml, /<span>初步冲突<\/span><strong>SW 1<\/strong>/);
+assert.match(mobLevelHtml, /<span>初始晋升<\/span><strong>0<\/strong>/);
+assert.match(mobLevelHtml, /<span>激活<\/span><strong>2 AI<\/strong>/);
+
+// Every localized mob stat row must render actual scanned values. Adding the
+// full rows must also preserve the independently verified activation sequence.
+for (const [monsterId, activationRows] of Object.entries(context.window.KF_MOB_ACTIVATIONS)) {
+  api.selectMonster(monsterId);
+  for (let level = 1; level <= 4; level++) {
+    rebuild("preliminary", level);
+    const info = api.levelInfo(level);
+    assert.match(info.hit, /^\d+\+!?$/, `${monsterId} level ${level} hit`);
+    assert.ok(Number.isFinite(info.wounds), `${monsterId} level ${level} wounds`);
+    assert.ok(Number.isInteger(info.promotion), `${monsterId} level ${level} promotion`);
+    if (monsterId !== "M_WingedNightmare") {
+      assert.deepEqual(Array.from(state().mobActivations, item => item.type), Array.from(activationRows[level - 1]),
+        `${monsterId} level ${level} activation sequence`);
+    }
+    api.renderApp();
+    const cards = nodes.get("#app").innerHTML.match(/class="level-config-cards"[\s\S]*?<\/div>\s*<\/div>\s*<\/details>/)?.[0];
+    assert.ok(cards, `${monsterId} level ${level} stat cards`);
+    assert.doesNotMatch(cards, /见大卡|undefined|NaN/);
+  }
+}
+
 api.selectMonster("M_BogWitch");
 rebuild("preliminary", 1);
 api.renderApp();
 const rendered = nodes.get("#app").innerHTML;
-assert.match(rendered, /初步冲突 · SW ×2/);
+assert.match(rendered, /<select data-level><option value="1" selected>1<\/option>/);
+assert.match(rendered, /<span>初步冲突<\/span><strong>SW 2<\/strong>/);
+assert.doesNotMatch(rendered, /<span>初始损伤<\/span>/);
 assert.match(rendered, /value="preliminary" selected/);
 assert.match(rendered, /data-rule-action="cookie-crumbs" disabled/,
   "等级 1 的沼地女巫不应激活 Cookie Crumbs");
@@ -1848,26 +1881,41 @@ assert.equal(state().ruleState.panzerRetributionArmor, 0, "增加三处盔甲不
 for (const target of ["field", "dragon", "remnant"]) api.changePanzerArmor(target, -1);
 assert.equal(state().ruleState.panzerRetributionArmor, 3, "从三处弃置的盔甲都应自动放到现行现报上");
 panzerRules = api.renderBossRules();
-assert.match(panzerRules, /data-panzer-trait="dragon"[\s\S]*class="panzer-retribution-token "[\s\S]*class="smelted-armor-count">3<\/strong>/,
-  "现行现报卡上应显示累计弃置的盔甲堆");
+assert.match(panzerRules, /data-panzer-trait="dragon"[\s\S]*class="panzer-retribution-token sheet-token auto-token "[\s\S]*class="sheet-token-quantity">x3<\/span>/,
+  "现行现报应使用 Boss 大卡同款堆叠及数量角标样式");
+const panzerCounterHtml = panzerRules.match(/class="panzer-retribution-token[\s\S]*?<\/span>\s*<span class="sheet-token-quantity">/)[0];
+const panzerArmorSrc = panzerRules.match(/class="smelted-armor-icon" src="([^"]+)"/)[1];
+assert.ok(panzerCounterHtml.includes(`src="${panzerArmorSrc}"`), "现行现报应保留原有盔甲图标");
+assert.doesNotMatch(panzerCounterHtml, /generic\.png/, "调整累计样式不应替换图标");
 api.migratePanzerArmor();
 assert.equal(state().ruleState.panzerRetributionArmor, 3, "循环迁移盔甲不应计入弃置");
 api.changePanzerArmor("field", 5);
 for (let index = 0; index < 5; index++) api.changePanzerArmor("field", -1);
 assert.equal(state().ruleState.panzerRetributionArmor, 8, "现行现报弃甲堆应累计到 8 枚");
 panzerRules = api.renderBossRules();
-assert.match(panzerRules, /class="panzer-retribution-token ready"[\s\S]*data-rule-action="clear-panzer-retribution"/,
-  "现行现报满 8 枚后，盔甲堆应变为可点击的清空按钮");
+assert.match(panzerRules, /class="panzer-retribution-token sheet-token auto-token ready interactive-auto-token must-resolve"[\s\S]*data-rule-action="clear-panzer-retribution"/,
+  "现行现报满 8 枚后应使用同款醒目发光提示，并可点击清空");
 assert.notEqual(state().ruleState.ruleNotice, "", "测试前提：装甲巨龙操作已生成规则提示内容");
 assert.doesNotMatch(panzerRules, /class="rule-notice"/,
   "装甲巨龙 Boss 专用操作区无论提示内容为何都不应显示黄色框");
 const fieldArmorAtCapacity = state().ruleState.panzerArmor.field;
 api.changePanzerArmor("field", -1);
-assert.equal(state().ruleState.panzerArmor.field, fieldArmorAtCapacity,
-  "现行现报满 8 枚时不应继续从三处弃置盔甲");
+assert.equal(state().ruleState.panzerArmor.field, fieldArmorAtCapacity - 1,
+  "现行现报满 8 枚时仍应正常从三处弃置盔甲");
+assert.equal(state().ruleState.panzerRetributionArmor, 8,
+  "现行现报满额后应停止累计，保持 8 枚");
 api.clearPanzerRetributionArmor();
 assert.equal(state().ruleState.panzerRetributionArmor, 0, "点击满 8 枚的盔甲堆应一次弃置全部指示物");
 assert.equal(state().ruleState.ruleNotice, "", "弃置现行现报的 8 枚盔甲后不应显示黄色提示框");
+api.changePanzerArmor("dragon", 10);
+const dragonArmorBeforeBatchDiscard = state().ruleState.panzerArmor.dragon;
+api.changePanzerArmor("dragon", -10);
+assert.equal(state().ruleState.panzerArmor.dragon, dragonArmorBeforeBatchDiscard - 10,
+  "批量弃置盔甲不应受累计上限截断");
+assert.equal(state().ruleState.panzerRetributionArmor, 8, "清空后应重新累计，批量弃置最多累计 8 枚");
+api.clearPanzerRetributionArmor();
+api.changePanzerArmor("remnant", -1);
+assert.equal(state().ruleState.panzerRetributionArmor, 1, "清空后再次弃置盔甲应从 1 枚重新累计");
 
 const bosses = context.window.KF_MONSTER_DATA.monsters.filter(item => item.type === "boss");
 for (const boss of bosses) {
@@ -2053,5 +2101,29 @@ const cleanedOverlay = api.validateState(stale).battle.conflictBoard.overlay;
 assert.equal("sourceId" in cleanedOverlay, false, "旧固定视点 id 应被清空");
 assert.equal("range" in cleanedOverlay, false, "旧射程开关应被清空");
 assert.equal("bandId" in cleanedOverlay, false, "旧射程带应被清空");
+
+// 结算后即使关键词数据稍后加载完成，也不能重新显示已处理卡牌的提示。
+api.selectMonster("M_Toadragon");
+rebuild("full", 1);
+const keywordCallbacks = [];
+const keywordNotices = [];
+context.window.KFKeywords = {
+  notify(words) { keywordNotices.push(Array.from(words)); },
+  setPersistent() {}, setCardDataError() {}, mount() {},
+};
+context.window.KFCardKeywords = {
+  ready: { then(callback) { keywordCallbacks.push(callback); } },
+  words() { return ["测试关键词"]; },
+};
+api.draw("ai");
+for (const callback of keywordCallbacks) callback(true);
+assert.ok(keywordNotices.some(words => words.length > 0), "抽牌后应显示关键词提示");
+api.settle("ai", "discard");
+assert.equal(keywordNotices.at(-1).length, 0, "结算后应隐藏关键词提示");
+const noticesAfterSettle = keywordNotices.length;
+for (const callback of keywordCallbacks) callback(true);
+assert.ok(keywordNotices.slice(noticesAfterSettle).every(words => words.length === 0), "结算后的异步结果不能重新显示关键词提示");
+delete context.window.KFKeywords;
+delete context.window.KFCardKeywords;
 
 console.log("AIBP initialization tests passed");

@@ -1724,6 +1724,7 @@
       slot.decoy = false;
       moveActivationsFromDefeated(index);
     });
+    if (b.activeAI === id || b.activeBP === id) clearDrawnKeywords(id);
     if (b.activeAI === id) b.activeAI = "";
     if (b.activeBP === id) b.activeBP = "";
 
@@ -1803,8 +1804,16 @@
   }
 
   let keywordDrawSequence = 0;
+  let keywordDrawIds = [];
+  function clearDrawnKeywords(id) {
+    if (!keywordDrawIds.includes(id)) return;
+    keywordDrawIds = [];
+    keywordDrawSequence++;
+    window.KFKeywords?.notify([]);
+  }
   function notifyDrawnKeywords(ids) {
     const sequence = ++keywordDrawSequence;
+    keywordDrawIds = [...ids];
     const battle = state.battle;
     window.KFKeywords?.notify([]);
     window.KFCardKeywords?.ready.then(data => {
@@ -1913,14 +1922,18 @@
     return true;
   }
 
-  function promoteBossAi(monster, requestedRank) {
+  function promoteBossAi(monster, requestedRank, lowestSource = false) {
     const b = state.battle;
     let rank = requestedRank;
     // 找不到等阶 AI 时，逐行采用晋升表中更高阶的处理。
-    while (rank < 3 && ![...b.aiDeck, ...b.aiDiscard]
+    while (!lowestSource && rank < 3 && ![...b.aiDeck, ...b.aiDiscard]
       .some(id => cardById(monster, id)?.kind === `AI${rank}`)) rank++;
-    const fromRank = rank === 3 ? lowestPromotionRank(monster, "ai") : rank;
+    const fromRank = lowestSource || rank === 3 ? lowestPromotionRank(monster, "ai") : rank;
     const replacement = takeSupply(monster, `AI${Math.min(rank + 1, 3)}`);
+    if (!replacement && isMob(monster)) {
+      if (placePanzergeistPromotionArmor(monster, `AI${Math.min(rank + 1, 3)} 晋升供应为空`)
+        || placePalebloodPromotionBlood(monster, `AI${Math.min(rank + 1, 3)} 晋升供应为空`)) return true;
+    }
     const removed = fromRank ? removeKind(monster, "ai", `AI${fromRank}`) : "";
     if (!replacement) {
       gainAiPromotionBonus();
@@ -1932,13 +1945,9 @@
     return true;
   }
 
-  function promoteHauntAi(monster, targetRank) {
-    const b = state.battle;
-    const lowestKind = ["AI1", "AI2", "AI3"].find(kind =>
-      [...b.aiDeck, ...b.aiDiscard].some(id => cardById(monster, id)?.kind === kind)
-    );
-    if (!lowestKind) return false;
-    return promoteSpecific(monster, "ai", lowestKind, `AI${targetRank}`);
+  function promoteHauntAi(monster, defeatedRank) {
+    // 险恶用心只替换搜索源牌的规则，不改变新加入 AI 的阶级。
+    return promoteBossAi(monster, defeatedRank, true);
   }
 
   function placePanzergeistPromotionArmor(monster, reason) {
@@ -1950,7 +1959,6 @@
       toast("装甲倾泻：杂兵轨没有可放置盔甲指示物的 BP");
       return true;
     }
-    remember();
     target.slot.markerTokens ||= {};
     target.slot.markerTokens["token-armor"] = clamp(
       (target.slot.markerTokens["token-armor"] || 0) + 1,
@@ -1960,17 +1968,35 @@
     const notice = `装甲倾泻：${reason}，已在杂兵轨最低阶 BP${target.rank}（第 ${target.index + 1} 格）放置 1 枚盔甲指示物。`;
     state.battle.ruleState.ruleNotice = notice;
     log(notice);
-    save();
-    toast(notice);
+    return true;
+  }
+
+  function placePalebloodPromotionBlood(monster, reason) {
+    if (monster?.id !== "M_PalebloodWorms") return false;
+    const slots = state.battle.bpTrack.filter(slot => slot.id);
+    for (const slot of slots) {
+      slot.markerTokens ||= {};
+      slot.markerTokens["token-blood"] = clamp(
+        (slot.markerTokens["token-blood"] || 0) + 1, 0, MAX_SHEET_TOKENS_PER_TYPE
+      );
+    }
+    const notice = `${reason}：杂兵轨全部 ${slots.length} 张 BP 各放置 1 枚血液指示物。`;
+    state.battle.ruleState.ruleNotice = notice;
+    log(notice);
     return true;
   }
 
   function promoteLowest(type) {
     const monster = monsterById(state.battle.monsterId);
     if (type === "bp" && isMob(monster)) return promoteMob(monster);
-    if (type === "ai" && !isMob(monster)) {
+    if (type === "ai") {
       const rank = lowestPromotionRank(monster, "ai");
-      if (!rank) return toast("AI 没有可晋升的卡");
+      if (!rank) {
+        if (monster.id !== "M_Panzergeists" || state.battle.level < 2) return toast("AI 没有可晋升的卡");
+        remember();
+        placePanzergeistPromotionArmor(monster, "没有 AI 可供晋升");
+        return save();
+      }
       remember();
       promoteBossAi(monster, rank);
       log(`AI${rank}：晋升 AI 卡组`);
@@ -1983,7 +2009,6 @@
         .some(id => cardById(monster, id)?.kind === from);
       if (!exists) continue;
       if (!supply(monster, to).length) {
-        if (type === "ai" && placePanzergeistPromotionArmor(monster, `${to} 晋升供应为空`)) return;
         return toast(`${to} 晋升供应为空`);
       }
       remember();
@@ -1991,7 +2016,6 @@
       log(`${from} 晋升为 ${to}`);
       return save();
     }
-    if (type === "ai" && placePanzergeistPromotionArmor(monster, "没有 AI 可供晋升")) return;
     toast(`${prefix} 没有可晋升的低阶卡`);
   }
 
@@ -2101,16 +2125,7 @@
     }
     const topAi = cardById(monster, state.battle.aiDiscard.at(-1));
     const rank = Number(String(topAi?.kind || "").match(/^AI([123])$/)?.[1] || 0);
-    let promoted = false;
-    if (rank === 1 || rank === 2) {
-      promoted = promoteSpecific(monster, "ai", `AI${rank}`, `AI${rank + 1}`);
-    } else if (rank === 3) {
-      const lowAI = ["AI1", "AI2"].find(kind =>
-        [...state.battle.aiDeck, ...state.battle.aiDiscard]
-          .some(id => cardById(monster, id)?.kind === kind)
-      );
-      if (lowAI) promoted = promoteSpecific(monster, "ai", lowAI, "AI3");
-    }
+    const promoted = rank > 0 && promoteBossAi(monster, rank);
     log(`${targetName}：击伤，加入 1 张单重损伤；按弃牌堆顶 ${topAi?.kind || "AI"}${promoted ? " 晋升 AI" : "，无可执行的 AI 晋升"}${activatesBloodyDefiance ? "；不屈顽抗生效，后续仅攻击 Bloody Defiance" : ""}`);
     if (activatesBloodyDefiance) toast("不屈顽抗生效：后续仅攻击 Bloody Defiance");
     save();
@@ -2437,6 +2452,7 @@
     remember();
     const woundValueBefore = state.battle.singleWounds + state.battle.doubleWounds * 2;
     const id = removeActive(type);
+    clearDrawnKeywords(id);
     if (resolvingAi0) state.battle.aiRemoved.push(id);
     else {
       if (action === "discard") state.battle[`${type}Discard`].push(id);
@@ -2832,11 +2848,10 @@
     if (!amount) return;
     if (amount < 0) {
       if (!armor[target]) return toast("该处盔甲已为空");
-      if (rs.panzerRetributionArmor >= 8) return toast("现行现报已有 8 枚盔甲，请先点击弃置");
-      const removed = Math.min(armor[target], Math.abs(amount), 8 - rs.panzerRetributionArmor);
+      const removed = Math.min(armor[target], Math.abs(amount));
       remember();
       armor[target] -= removed;
-      rs.panzerRetributionArmor += removed;
+      rs.panzerRetributionArmor = Math.min(8, rs.panzerRetributionArmor + removed);
       rs.ruleNotice = `从${bossRule(monsterById(state.battle.monsterId))?.labels[target] || target}弃置盔甲 ${removed} 枚；现行现报 ${rs.panzerRetributionArmor}/8。`;
       log(`装甲巨龙：${target} 弃置盔甲 ${removed}，现行现报 ${rs.panzerRetributionArmor}/8`);
       return save();
@@ -2912,6 +2927,7 @@
     if (!b.ruleState.ruleCard) return;
     remember();
     const ruleCardId = b.ruleState.ruleCard;
+    clearDrawnKeywords(ruleCardId);
     const ruleCardKind = cardById(monsterById(b.monsterId), ruleCardId)?.kind || "";
     if (ruleCardKind === "AI0") b.aiRemoved.push(ruleCardId);
     else if (/^AI[1-3]$/.test(ruleCardKind)) b.aiDiscard.push(ruleCardId);
@@ -3570,7 +3586,10 @@
       b.bpTrack[index] = spawnedMobSlot(monster, id);
       return { index, rank, id };
     }
-    noteMobSpawn(`${reason}：BP${ranks.join("、BP")} 供应均已耗尽，本次生成取消。`);
+    const failure = `${reason}：BP${ranks.join("、BP")} 供应均已耗尽，本次生成取消。`;
+    placePalebloodPromotionBlood(monster, `BP${ranks.join("、BP")} 晋升供应为空`);
+    const bloodNotice = monster.id === "M_PalebloodWorms" ? ` ${b.ruleState.ruleNotice}` : "";
+    noteMobSpawn(failure + bloodNotice);
     return null;
   }
 
@@ -3821,7 +3840,7 @@
     ratwolves.trackIndex = trackIndex;
     ratwolves.rankSource = rankSource;
     state.battle.mobSpawn.signatures.push({ trackIndex, spawnedRank, rankSource });
-    noteMobSpawn(`新生狼鼠：在杂兵轨 ${trackIndex + 1} 生成${rankSource} BP${spawnedRank}。将模型放到可作为随机一名骑士相邻同伴、最靠近场边且无障碍的格子；若格子被占据，位移其他模型。最后执行该狼鼠的标志行为。`);
+    noteMobSpawn(`新生狼鼠：在杂兵轨 ${trackIndex + 1} 生成${rankSource} BP${spawnedRank}。将模型放到随机一名骑士相邻四格中最靠近场边且无障碍的格子；若格子被占据，位移其他模型。最后执行该狼鼠的标志行为。`);
     return true;
   }
 
@@ -3847,6 +3866,7 @@
     remember();
     const { slot } = active;
     const id = slot.id;
+    clearDrawnKeywords(id);
     const card = cardById(monster, id);
     const pumpkinheadBps = isPumpkinhead(monster) && isSpecialMobBp(card);
     let immediateRank = 0;
@@ -3877,14 +3897,14 @@
       moveActivationsFromDefeated(active.index);
       recordIroncastNecrofusionWound(monster, woundValue);
       recordEtherealUnityRemoval(monster);
-      if (rank > 0 && rank < 3) {
+      if (rank > 0) {
         if (monster.id === "M_HauntOf" && state.battle.level >= 2) {
-          promoteHauntAi(monster, rank + 1);
+          promoteHauntAi(monster, rank);
         } else {
-          promoteSpecific(monster, "ai", `AI${rank}`, `AI${rank + 1}`);
+          promoteBossAi(monster, rank);
         }
-      } else if (pumpkinheadBps && markerRank < 3) {
-        promoteSpecific(monster, "ai", `AI${markerRank}`, `AI${markerRank + 1}`);
+      } else if (pumpkinheadBps) {
+        promoteBossAi(monster, markerRank);
       }
     }
     state.battle.activeBP = "";
@@ -3951,7 +3971,7 @@
     if (index >= 0 && id) {
       b.bpTrack[index] = spawnedMobSlot(monster, id);
       const armorText = ironcastSpawnArmorActive(monster, b) ? "带有盔甲指示物的" : "";
-      noteMobSpawn(`亡骸融合已结算：清除全部指示物，在杂兵轨 ${index + 1} 生成 1 只${armorText}铁铸骷髅。请将模型放到距离首要目标最近的瓦砾空格，并立刻执行一次标志行为。`);
+      noteMobSpawn(`亡骸融合已结算：清除全部指示物，在杂兵轨 ${index + 1} 生成 1 只${armorText}铁铸骷髅。请将模型放到距离首要目标最近的瓦砾空格，朝最多骑士方向，并立刻执行一次标志行为。`);
     } else {
       noteMobSpawn("亡骸融合已清除全部指示物；因杂兵轨空位或 BP 供应不足，本次未能生成铁铸骷髅。");
     }
@@ -3999,9 +4019,14 @@
 
     const spawned = spawnedSlots.length;
     const placement = spawnedSlots.map(index => index + 1).join("、");
-    noteMobSpawn(spawned === 3
-      ? `聚合灵体已结算：清除全部指示物，并在杂兵轨 ${placement} 生成 3 只新鬼影。请抽取患者牌组顶部 3 张卡，按坐标放置模型。`
-      : `聚合灵体已结算并清除全部指示物；因杂兵轨空位或 BP 供应不足，仅生成 ${spawned}/3 只新鬼影。`);
+    const placementNotice = spawned
+      ? `请抽取愚者卡组顶部 ${spawned} 张卡，按坐标放置模型，朝最多骑士方向；若格子被骑士占据，放在相邻位置。` : "";
+    const signatureNotice = spawned && b.level >= 3
+      ? " 杂兵轨最左侧的幽灵执行标志行为（第一个怪物轮忽略此效果）。" : "";
+    noteMobSpawn((spawned === 3
+      ? `聚合灵体已结算：清除全部指示物，并在杂兵轨 ${placement} 生成 3 只新鬼影。`
+      : `聚合灵体已结算并清除全部指示物；因杂兵轨空位或 BP 供应不足，仅生成 ${spawned}/3 只新鬼影。`)
+      + placementNotice + signatureNotice);
   }
 
   function spawnMob(mode = "interval") {
@@ -4024,20 +4049,9 @@
     if (!replacement) {
       if (monster.id !== "M_PalebloodWorms") return toast(`${nextKind} 晋升供应为空`);
       remember();
-      const occupiedSlots = state.battle.bpTrack.filter(slot => slot.id);
-      for (const slot of occupiedSlots) {
-        slot.markerTokens ||= {};
-        slot.markerTokens["token-blood"] = clamp(
-          (slot.markerTokens["token-blood"] || 0) + 1,
-          0,
-          MAX_SHEET_TOKENS_PER_TYPE
-        );
-      }
-      const notice = `${nextKind} 晋升供应为空：杂兵轨全部 ${occupiedSlots.length} 张 BP 各放置 1 枚血液指示物。`;
-      state.battle.ruleState.ruleNotice = notice;
-      log(notice);
+      placePalebloodPromotionBlood(monster, `${nextKind} 晋升供应为空`);
       save();
-      return toast(notice);
+      return toast(state.battle.ruleState.ruleNotice);
     }
     remember();
     state.battle.bpRemoved.push(target.slot.id);
@@ -4072,11 +4086,17 @@
   function cardHtml(card, className = "", side = "face", label = true, interactive = true) {
     if (!card) return `<div class="crop-card empty ${className}">暂无卡牌</div>`;
     const tag = interactive ? "button" : "div";
-    const preview = interactive ? ` data-preview="${esc(card.id)}" data-preview-side="${side}"` : "";
+    const preview = interactive ? ` data-preview="${esc(card.id)}" data-preview-side="${side}"${label ? "" : ` aria-label="${esc(cardLabel(card, side))}"`}` : "";
     return `<${tag} class="card-button"${preview}>
       <span class="crop-card ${className}" style='${cropStyle(card.image, side)}'></span>
       ${label ? `<span>${esc(cardLabel(card, side))}</span>` : ""}
     </${tag}>`;
+  }
+
+  function levelStatChip(icon, value, label, note = "") {
+    if (/^\+0\*?$/.test(String(value))) return "";
+    const description = `${label}：${value}${note ? `；${note}` : ""}`;
+    return `<span class="level-stat" data-level-stat="${esc(icon)}" role="img" aria-label="${esc(description)}" title="${esc(description)}"><img src="/assets/aibp/stat-icons/${esc(icon)}.svg?v=2" alt="" aria-hidden="true"><strong>${esc(value)}</strong></span>`;
   }
 
   function deckLevelOrderHtml(ids, monster, label) {
@@ -4788,13 +4808,13 @@
       ? battle.mobSpawn.signatures : [ratwolves];
     mobMarkerAssetId = selectedAsset.id;
     return `<div class="mob-track-section">
-      ${scabArmorActive ? '<div class="mob-rule-note"><strong>血痂护甲</strong><span>初始与冲突中生成的 BP 自动获得 1 枚血液；每枚血液使该 BP 的 AT 降低 1。</span></div>' : ""}
+      ${scabArmorActive ? '<div class="mob-rule-note"><strong>血痂护甲</strong><span>初始与冲突中生成的 BP 自动获得 1 枚血液；每枚血液使该 BP 的 AT 提高 1。</span></div>' : ""}
       ${mobSpawnPending(battle) ? `<div class="mob-rule-note"><strong>待生成</strong><span>${esc(battle.ruleState.ruleNotice)} 完成当前行动的响应与后效后，点击“行动完成”。</span></div>` : ""}
       ${battle.mobSpawn.notices.filter(notice => !ratwolfPending || !notice.startsWith("新生狼鼠："))
         .map(notice => `<div class="mob-rule-note"><strong>生成结算</strong><span>${esc(notice)}</span></div>`).join("")}
       ${ratwolfPending ? `<div class="mob-rule-note ratwolf-rebirth-note">
         <strong>新生狼鼠 · ${ratwolfSignatures.map(item => `${esc(item.rankSource)} BP${item.spawnedRank}`).join("、")}</strong>
-        <span>杂兵轨 ${ratwolfSignatures.map(item => item.trackIndex + 1).join("、")}：每只分别放到可作为随机一名骑士相邻同伴、最靠近场边且无障碍的格子；若被占据，位移其他模型。然后分别执行标志行为。</span>
+        <span>杂兵轨 ${ratwolfSignatures.map(item => item.trackIndex + 1).join("、")}：每只分别放到随机一名骑士相邻四格中最靠近场边且无障碍的格子；若被占据，位移其他模型。然后分别执行标志行为。</span>
         <button type="button" class="button small" data-ratwolf-signature-complete>完成标志行为</button>
       </div>` : ""}
       <div class="mob-track" aria-label="杂兵 BP 轨">${mobTactic ? `<div class="mob-slot mob-tactic-slot">
@@ -5038,14 +5058,14 @@
         <div class="panzer-trait-row">${targets.map(target => `<div class="panzer-trait-stage" data-panzer-trait="${target.id}">
           ${cardHtml(cardById(monster, target.cardId), "panzer-trait-card")}
           ${target.id === "dragon" && retributionCount ? `<${retributionCount >= 8 ? "button" : "span"}
-            class="panzer-retribution-token ${retributionCount >= 8 ? "ready" : ""}"
+            class="panzer-retribution-token sheet-token auto-token ${retributionCount >= 8 ? "ready interactive-auto-token must-resolve" : ""}"
             ${retributionCount >= 8 ? 'type="button" data-rule-action="clear-panzer-retribution" aria-label="弃置现行现报上的 8 枚盔甲" title="点击弃置全部 8 枚盔甲"' : `title="现行现报盔甲 ${retributionCount}/8"`}>
-            <span class="panzer-retribution-stack">
-              ${retributionCount > 2 && armorAsset ? `<img class="back" src="${esc(armorAsset.src)}" alt="">` : ""}
-              ${retributionCount > 1 && armorAsset ? `<img class="middle" src="${esc(armorAsset.src)}" alt="">` : ""}
-              ${armorAsset ? `<img src="${esc(armorAsset.src)}" alt="">` : ""}
+            <span class="sheet-token-stack">
+              ${retributionCount > 2 && armorAsset ? `<img class="sheet-token-copy back ${tokenShapeClass(armorAsset)}" src="${esc(armorAsset.src)}" alt="">` : ""}
+              ${retributionCount > 1 && armorAsset ? `<img class="sheet-token-copy middle ${tokenShapeClass(armorAsset)}" src="${esc(armorAsset.src)}" alt="">` : ""}
+              ${armorAsset ? `<img class="sheet-token-image ${tokenShapeClass(armorAsset)}" src="${esc(armorAsset.src)}" alt="">` : ""}
             </span>
-            <strong class="smelted-armor-count">${retributionCount}</strong>
+            ${retributionCount > 1 ? `<span class="sheet-token-quantity">x${retributionCount}</span>` : ""}
           </${retributionCount >= 8 ? "button" : "span"}>` : ""}
         </div>`).join("")}</div>
         <div class="panzer-controls-panel">
@@ -5186,10 +5206,14 @@
     const replacements = notes.length ? `<div class="postgame-replacements" role="note">${notes.map(item =>
       `<p><strong>等级 ${esc(item.minLevel)} · ${esc(item.name)}</strong>：${esc(item.note || `${(item.replaces || []).join("、")} 已失效，请按新能力结算。`)}</p>`
     ).join("")}</div>` : "";
-    return `${replacements}<div class="card-gallery reference-gallery">${cards.map(card => {
+    return `${replacements}<div class="card-gallery reference-gallery postgame-reference-gallery">${cards.map(card => {
       if (!card.source) return pileGrid([card.id], monster);
       const status = card.supersededBy ? `<span class="postgame-card-note">${esc(Array.isArray(card.supersededBy) ? card.supersededBy.join("、") : card.supersededBy)} 已替换本组相应能力</span>` : "";
-      return `<div class="postgame-reference-card">${cardHtml(card)}${sheetTraitToggleHtml(card, battle)}${status}${card.note ? `<span class="postgame-card-note">${esc(card.note)}</span>` : ""}</div>`;
+      return `<div class="postgame-reference-card">${cardHtml(card, "", "face", false)}
+        <div class="postgame-reference-heading">
+          <button type="button" class="postgame-reference-name" data-preview="${esc(card.id)}" data-preview-side="face" title="${esc(cardLabel(card, "face"))}">${esc(cardLabel(card, "face"))}</button>
+          ${sheetTraitToggleHtml(card, battle)}
+        </div>${status}${card.note ? `<span class="postgame-card-note">${esc(card.note)}</span>` : ""}</div>`;
     }).join("")}${terrainReferenceHtml(battle)}</div>`;
   }
 
@@ -5777,6 +5801,8 @@
     const monster = monsterById(b.monsterId) || DATA.monsters[0];
     if (keywordNoticeBattle !== b) {
       keywordNoticeBattle = b;
+      keywordDrawIds = [];
+      keywordDrawSequence++;
       window.KFKeywords?.notify([]);
     }
     if (window.KFCardKeywords && window.KFKeywords) {
@@ -5811,11 +5837,13 @@
     const totalDamage = b.singleWounds + b.doubleWounds * 2;
     const setupKinds = ["AI1", "AI2", "AI3", "BP1", "BP2", "BP3", "BPS", "BPX"];
     const currentLevel = levelInfo(monster, b.level);
+    const levelActivations = currentLevel?.activations || (() => {
+      const types = MOB_ACTIVATIONS[monster.id]?.[b.level - 1] || [];
+      return [...new Set(types)].map(type => `${types.filter(item => item === type).length} ${type}`);
+    })();
     const automaticCounts = defaultCounts(monster, b.level);
     const currentMobSetup = mob ? mobSetupResult(monster) : null;
-    const initialSw = exhibitionStartingWounds(monster, b.level, b.clashPhase);
     const maxLevel = maxMonsterLevel(monster);
-    const missingExhibition = exhibitionWoundsUnspecified(monster, b.level, b.clashPhase);
     const specialMobBp = mob && isPumpkinhead(monster);
     const puppetAiChoices = bossRule(monster)?.kind === "puppet-king" && b.level >= 4
       ? b.ruleState.aiChoiceIds.map(id => cardById(monster, id)).filter(Boolean)
@@ -5844,8 +5872,9 @@
             </div>
             ${b.conflictStatus === "failed" ? `<div class="conflict-alert">${esc(b.failureReason)}</div>` : ""}
             <details class="deck-config-tools" data-deck-config ${deckConfigOpen ? "open" : ""}><summary>牌组配置</summary>
+              <div class="deck-config-content">
               <div class="setup-grid ${mob ? "mob-setup-grid" : ""}">
-                <label>怪物等级<input type="number" min="1" max="${maxLevel}" step="1" data-level value="${normalizeMonsterLevel(monster, b.level)}"></label>
+                <label>怪物等级<select data-level>${Array.from({ length: maxLevel }, (_, index) => index + 1).map(level => `<option value="${level}" ${level === normalizeMonsterLevel(monster, b.level) ? "selected" : ""}>${level}</option>`).join("")}</select></label>
                 <label>冲突阶段<select data-clash-phase><option value="full" ${b.clashPhase === "full" ? "selected" : ""}>完全冲突</option><option value="preliminary" ${b.clashPhase === "preliminary" ? "selected" : ""}>初步冲突</option></select></label>
                 ${mob ? `<div class="automatic-deck-summary"><span>冲突设置固定数量</span><strong>${b.mobCount} 个杂兵</strong></div>` : ""}
                 <div class="automatic-deck-summary">
@@ -5856,12 +5885,13 @@
                     .join("　")}</strong>
                 </div>
                 ${mob && currentMobSetup?.fixedCards.length ? `<div class="automatic-deck-summary"><span>固定 BP</span><strong>${currentMobSetup.fixedCards.map(item => `${item.slot + 1}号位 · ${esc(cardById(monster, item.id)?.name || item.id)}`).join("　")}</strong></div>` : ""}
-                <div class="automatic-deck-summary"><span>初始损伤</span><strong>${missingExhibition ? "等级附录未列展览初伤，请按规则手动设置" : b.clashPhase === "preliminary" ? `初步冲突 · SW ×${initialSw}` : "完全冲突 · 无初步损伤"}</strong></div>
               </div>
-              ${currentLevel?.hit ? `<div class="auto-config-note">
-                <strong>等级 ${currentLevel.level} 配置</strong>
-                <span>命中 ${esc(currentLevel.hit)} · 损伤阈值 ${esc(currentLevel.wounds)}${Number.isFinite(currentLevel.exhibitionWounds) ? ` · 初步冲突 SW ${currentLevel.exhibitionWounds}` : ""} · 初始晋升 ${currentLevel.promotion ?? "见原图"}${mob && currentLevel.promotion ? "（按原图手动执行）" : ""} · 激活 ${esc((currentLevel.activations || []).join(" + "))}${currentLevel.level > 4 ? " · 其他加值及能力见下方等级原图" : ""}</span>
+              ${currentLevel || mob ? `<div class="level-config-cards" aria-label="等级 ${esc(b.level)} 配置">
+                <div class="automatic-deck-summary"><span>初步冲突</span><strong>${Number.isFinite(currentLevel?.exhibitionWounds) ? `SW ${currentLevel.exhibitionWounds}` : currentLevel?.exhibitionWoundsUnspecified ? "附录未列" : "见大卡"}</strong></div>
+                <div class="automatic-deck-summary"><span>初始晋升</span><strong>${esc(currentLevel?.promotion ?? "见大卡")}${mob && currentLevel?.promotion ? "（手动执行）" : ""}</strong></div>
+                <div class="automatic-deck-summary"><span>激活</span><strong>${esc(levelActivations.join(" + ").replace(/\b(?:Signature|SG)\b/g, "标志") || "见大卡")}</strong></div>
               </div>` : ""}
+              </div>
             </details>
             ${sheetTokenTools(b)}
             ${sheetTraitTools(b)}
@@ -5886,7 +5916,13 @@
           <section class="panel aibp-panel">
             <div class="aibp-columns">
               <div class="aibp-column">
-                <div class="panel-header"><div><span class="eyebrow">AI DECK</span><div class="deck-title-row"><h3>AI</h3>${deckLevelOrderHtml(b.aiDeck, monster, "AI")}</div></div><span class="badge">${b.aiDeck.length} 当前 / ${b.aiDiscard.length} 弃牌</span></div>
+                <div class="panel-header"><div><span class="eyebrow">AI DECK</span><div class="deck-title-row"><h3>AI</h3>${deckLevelOrderHtml(b.aiDeck, monster, "AI")}</div></div><div class="aibp-header-reminders">
+                ${currentLevel?.bonuses && [currentLevel.bonuses.evasionDice, currentLevel.bonuses.vigorLoss, currentLevel.bonuses.intensity].some(value => value > 0) ? `<span class="level-stat-strip" data-level-stats="ai" aria-label="等级攻击加值提醒">
+                  ${levelStatChip("evasion", `+${currentLevel.bonuses.evasionDice}`, "闪避骰加值", "每次怪物攻击的闪避骰数增加此数值")}
+                  ${levelStatChip("vigor-loss", `+${currentLevel.bonuses.vigorLoss}${currentLevel.bonuses.vigorLossPerHit ? "*" : ""}`, "伤害加值", currentLevel.bonuses.vigorLossPerHit ? "每次命中分别增加活力损失（* per hit）" : "每次攻击的活力总损失增加此数值，不按命中次数重复增加")}
+                  ${currentLevel.bonuses.intensity ? levelStatChip("intensity", `+${currentLevel.bonuses.intensity}${currentLevel.bonuses.intensityPerHit ? "*" : ""}`, "烈度加值", currentLevel.bonuses.intensityPerHit ? "每次命中分别增加烈度（* per hit）" : "烈度增加此数值") : ""}
+                </span>` : ""}
+                </div></div>
                 ${b.aiPromotionBonusStep ? `<div class="auto-config-note" data-ai-promotion-bonus><strong>永久晋升加成</strong><span>${AI_PROMOTION_BONUSES.slice(0, b.aiPromotionBonusStep).join(" · ")}</span></div>` : ""}
                 <div class="aibp-draw-box">
                   <div class="aibp-actions">
@@ -5916,7 +5952,13 @@
                 <div class="card-gallery aibp-pile-grid">${pileGridForView("ai", b.aiView, monster)}</div>
               </div>
               <div class="aibp-column">
-                <div class="panel-header"><div><span class="eyebrow">${winged ? "PERMANENT BP" : mob ? "MOB BP TRACK" : "BP DECK"}</span><div class="deck-title-row"><h3>BP</h3>${mob ? "" : deckLevelOrderHtml(b.bpDeck, monster, "BP")}</div></div><span class="badge gold">总损伤 ${totalDamage} / 单重 ${b.singleWounds} / 双重 ${b.doubleWounds}</span></div>
+                <div class="panel-header"><div><span class="eyebrow">${winged ? "PERMANENT BP" : mob ? "MOB BP TRACK" : "BP DECK"}</span><div class="deck-title-row"><h3>BP</h3>${mob ? "" : deckLevelOrderHtml(b.bpDeck, monster, "BP")}</div></div><div class="aibp-header-reminders" data-damage-status>
+                ${currentLevel ? `<span class="level-stat-strip" data-level-stats="bp" aria-label="等级命中与 AT 提醒">
+                  ${levelStatChip("hit", currentLevel.hit, "命中要求")}
+                  ${currentLevel.bonuses ? levelStatChip("at", `+${currentLevel.bonuses.at}`, "AT 加值", "每张 BP 的 AT 增加此数值") : ""}
+                </span>` : ""}
+                  ${levelStatChip("wounds", `${totalDamage} / ${currentLevel?.wounds ?? "—"}`, "当前总损伤 / 总损伤要求")}
+                </div></div>
                 <div class="aibp-draw-box">
                   <div class="aibp-actions">
                     ${winged ? `
@@ -6095,7 +6137,7 @@
       const query = event.target.value.trim().toLowerCase();
       $$(".monster-item").forEach(item => { item.hidden = Boolean(query) && !(window.KFMonsterLabels ? window.KFMonsterLabels.matches(monsterById(item.dataset.monster), query) : item.textContent.toLowerCase().includes(query)); });
     });
-    $("[data-level]").addEventListener("input", event => {
+    $("[data-level]").addEventListener("change", event => {
       state.battle.level = normalizeMonsterLevel(monster, event.target.value);
       if (!isMob(monster) && levelInfo(monster, state.battle.level)) {
         state.battle.setupCounts = defaultCounts(monster, state.battle.level);

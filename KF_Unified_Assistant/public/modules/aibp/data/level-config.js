@@ -1,132 +1,133 @@
 // Extracted from the Chinese TTS monster panels and manually verified.
-// Boss entries include their full stat row. Mob entries only provide the
-// cracked-stone Exhibition Starting Wounds value used during clash setup.
+// Boss and mob entries include their full stat row. Mob levels 1-4 were
+// transcribed from each monster's localized sheet.face/sheet.back images.
 // exhibitionWounds is the cracked-stone value in the black stat row.
 // promotion is the upward burst icon in the blue bonus row.
+// An absent promotion icon means 0; Winged Nightmare's printed dash is 0 SW.
 window.KF_LEVEL_CONFIG = {
   "M_Ratwolves": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+", wounds: 4, exhibitionWounds: 1, promotion: 0, activations: ["2 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "6+", wounds: 5, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "7+", wounds: 5, exhibitionWounds: 2, promotion: 1, activations: ["2 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "8+", wounds: 5, exhibitionWounds: 2, promotion: 1, activations: ["2 AI"], bonuses: {"at": 3, "evasionDice": 1, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_WingedNightmare": [
-    { level: 1, exhibitionWounds: 0 },
-    { level: 2, exhibitionWounds: 0 },
-    { level: 3, exhibitionWounds: 0 },
-    { level: 4, exhibitionWounds: 0 }
+    { level: 1, hit: "5+", wounds: 6, exhibitionWounds: 0, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 6, exhibitionWounds: 0, promotion: 0, activations: ["1 AI"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+", wounds: 6, exhibitionWounds: 0, promotion: 1, activations: ["1 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 6, exhibitionWounds: 0, promotion: 1, activations: ["1 AI"], bonuses: {"at": 5, "evasionDice": 1, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Pumpkinhead": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+", wounds: 5, exhibitionWounds: 1, promotion: 0, activations: ["2 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 6, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+", wounds: 6, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 5, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "9+", wounds: 6, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 6, "evasionDice": 0, "vigorLoss": 5, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_PalebloodWorms": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+", wounds: 7, exhibitionWounds: 1, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "8+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "9+", wounds: 8, exhibitionWounds: 2, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 8, exhibitionWounds: 2, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_FirstmenWarriors": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+", wounds: 7, exhibitionWounds: 1, promotion: 0, activations: ["2 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "9+", wounds: 9, exhibitionWounds: 2, promotion: 1, activations: ["2 AI"], bonuses: {"at": 6, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_HauntOf": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+", wounds: 7, exhibitionWounds: 1, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "8+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "9+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 9, exhibitionWounds: 2, promotion: 0, activations: ["2 AI"], bonuses: {"at": 5, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Panzergeists": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+!", wounds: 7, exhibitionWounds: 1, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+!", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "9+!", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+!", wounds: 8, exhibitionWounds: 2, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 4, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_FirstmenLictor": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "6+", wounds: 7, exhibitionWounds: 1, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "9+", wounds: 8, exhibitionWounds: 2, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 9, exhibitionWounds: 2, promotion: 2, activations: ["1 AI", "1 Signature"], bonuses: {"at": 5, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Ironcast": [
-    { level: 1, exhibitionWounds: 1 },
-    { level: 2, exhibitionWounds: 2 },
-    { level: 3, exhibitionWounds: 2 },
-    { level: 4, exhibitionWounds: 2 }
+    { level: 1, hit: "5+", wounds: 7, exhibitionWounds: 1, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+", wounds: 8, exhibitionWounds: 2, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "9+", wounds: 8, exhibitionWounds: 2, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 6, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_BogWitch": [
-    { level: 1, hit: "5+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "6+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"] },
-    { level: 3, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] },
-    { level: 4, hit: "10+", wounds: 10, exhibitionWounds: 4, promotion: 2, activations: ["1 AI"] }
+    { level: 1, hit: "5+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "6+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 10, exhibitionWounds: 4, promotion: 2, activations: ["1 AI"], bonuses: {"at": 5, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_DevilAncientDusk": [
-    { level: 1, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] },
-    { level: 2, hit: "11+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] },
-    { level: 3, hit: "11+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] }
+    { level: 1, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "11+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 1, "intensityPerHit": false} },
+    { level: 3, hit: "11+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 1, "intensityPerHit": false} }
   ],
   "M_DevilSmeltedFears": [
-    { level: 1, hit: "9+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] },
-    { level: 2, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] },
-    { level: 3, hit: "11+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] }
+    { level: 1, hit: "9+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 1, "intensityPerHit": false} },
+    { level: 3, hit: "11+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 1, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 1, "intensityPerHit": false} }
   ],
   "M_Eggknight": [
-    { level: 1, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"] },
-    { level: 3, hit: "9+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] },
-    { level: 4, hit: "11+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] }
+    { level: 1, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "9+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 4, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "11+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 6, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_KnightFen": [
-    { level: 1, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "8+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"] },
-    { level: 3, hit: "9+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] },
-    { level: 4, hit: "11+", wounds: 10, exhibitionWounds: 4, promotion: 2, activations: ["1 AI"] }
+    { level: 1, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "8+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "9+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "11+", wounds: 10, exhibitionWounds: 4, promotion: 2, activations: ["1 AI"], bonuses: {"at": 4, "evasionDice": 0, "vigorLoss": 4, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Knighteater": [
-    { level: 1, hit: "5+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "6+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] },
-    { level: 3, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] },
-    { level: 4, hit: "8+", wounds: 10, exhibitionWounds: 4, promotion: 2, activations: ["1 AI"] }
+    { level: 1, hit: "5+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "6+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 4, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "8+", wounds: 10, exhibitionWounds: 4, promotion: 2, activations: ["1 AI"], bonuses: {"at": 6, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Panzerdragon": [
-    { level: 1, hit: "10+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["2 AI"] },
-    { level: 2, hit: "11+", wounds: 11, exhibitionWounds: 4, promotion: 1, activations: ["2 AI"] }
+    { level: 1, hit: "10+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["2 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "11+", wounds: 11, exhibitionWounds: 4, promotion: 1, activations: ["2 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_PuppetKing": [
-    { level: 1, hit: "7+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"] },
-    { level: 2, hit: "7+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"] },
-    { level: 3, hit: "8+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"] },
-    { level: 4, hit: "9+", wounds: 10, exhibitionWounds: 3, promotion: 2, activations: ["1 AI", "1 Signature"] }
+    { level: 1, hit: "7+", wounds: 10, exhibitionWounds: 3, promotion: 0, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 2, "evasionDice": 1, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "9+", wounds: 10, exhibitionWounds: 3, promotion: 2, activations: ["1 AI", "1 Signature"], bonuses: {"at": 4, "evasionDice": 2, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Stonemason": [
-    { level: 1, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"] },
-    { level: 3, hit: "8+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] },
-    { level: 4, hit: "10+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] }
+    { level: 1, hit: "6+", wounds: 8, exhibitionWounds: 2, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 3, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 10, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 6, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_KingLaidLow": [
-    { level: 1, hit: "8+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"] },
-    { level: 2, hit: "9+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"] },
-    { level: 3, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"] },
-    { level: 4, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 2, activations: ["1 AI", "1 Signature"] }
+    { level: 1, hit: "8+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "9+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 1, activations: ["1 AI", "1 Signature"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "10+", wounds: 10, exhibitionWounds: 3, promotion: 2, activations: ["1 AI", "1 Signature"], bonuses: {"at": 3, "evasionDice": 1, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_Toadragon": [
-    { level: 1, hit: "11+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "11+", wounds: 11, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"] }
+    { level: 1, hit: "11+", wounds: 10, exhibitionWounds: 4, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "11+", wounds: 11, exhibitionWounds: 4, promotion: 1, activations: ["1 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_WhiteApe": [
-    { level: 1, hit: "6+!", wounds: 6, exhibitionWounds: 1, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "7+!", wounds: 8, exhibitionWounds: 3, promotion: 0, activations: ["1 AI"] },
-    { level: 3, hit: "8+!", wounds: 8, exhibitionWounds: 3, promotion: 0, activations: ["1 AI"] },
-    { level: 4, hit: "8+!", wounds: 8, exhibitionWounds: 3, promotion: 1, activations: ["1 AI"] }
+    { level: 1, hit: "6+!", wounds: 6, exhibitionWounds: 1, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "7+!", wounds: 8, exhibitionWounds: 3, promotion: 0, activations: ["1 AI"], bonuses: {"at": 2, "evasionDice": 0, "vigorLoss": 1, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 3, hit: "8+!", wounds: 8, exhibitionWounds: 3, promotion: 0, activations: ["1 AI"], bonuses: {"at": 3, "evasionDice": 0, "vigorLoss": 2, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 4, hit: "8+!", wounds: 8, exhibitionWounds: 3, promotion: 1, activations: ["1 AI"], bonuses: {"at": 6, "evasionDice": 0, "vigorLoss": 4, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ],
   "M_YoungDevour": [
-    { level: 1, hit: "8+", wounds: 8, exhibitionWounds: 0, promotion: 0, activations: ["1 AI"] },
-    { level: 2, hit: "8+", wounds: 10, exhibitionWounds: 0, promotion: 0, activations: ["1 AI"] }
+    { level: 1, hit: "8+", wounds: 8, exhibitionWounds: 0, promotion: 0, activations: ["1 AI"], bonuses: {"at": 0, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} },
+    { level: 2, hit: "8+", wounds: 10, exhibitionWounds: 0, promotion: 0, activations: ["1 AI"], bonuses: {"at": 1, "evasionDice": 0, "vigorLoss": 0, "vigorLossPerHit": false, "intensity": 0, "intensityPerHit": false} }
   ]
 };
 
@@ -148,6 +149,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -163,6 +172,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -178,6 +195,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -193,6 +218,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 2,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -208,6 +241,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 3,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -225,6 +266,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -240,6 +289,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -255,6 +312,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -270,6 +335,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 2,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -285,6 +358,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 3,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -302,6 +383,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -317,6 +406,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -332,6 +429,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -347,6 +452,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -362,6 +475,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 14,
+        "evasionDice": 2,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -379,6 +500,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -394,6 +523,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -409,6 +546,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -424,6 +569,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 3,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -439,6 +592,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 14,
+        "evasionDice": 3,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -456,6 +617,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -471,6 +640,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -486,6 +663,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 2,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -501,6 +686,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -516,6 +709,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 13,
+        "evasionDice": 3,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -533,6 +734,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 1,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -548,6 +757,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 1,
+        "vigorLoss": 2,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -563,6 +780,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -578,6 +803,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 2,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -593,6 +826,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -610,6 +851,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 1,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 1,
+        "intensityPerHit": false
       }
     },
     {
@@ -625,6 +874,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 6,
+        "evasionDice": 2,
+        "vigorLoss": 1,
+        "vigorLossPerHit": false,
+        "intensity": 1,
+        "intensityPerHit": true
       }
     },
     {
@@ -640,6 +897,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 2,
+        "vigorLoss": 2,
+        "vigorLossPerHit": false,
+        "intensity": 1,
+        "intensityPerHit": true
       }
     },
     {
@@ -655,6 +920,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 2,
+        "vigorLoss": 2,
+        "vigorLossPerHit": false,
+        "intensity": 2,
+        "intensityPerHit": true
       }
     },
     {
@@ -670,6 +943,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 3,
+        "vigorLoss": 2,
+        "vigorLossPerHit": false,
+        "intensity": 2,
+        "intensityPerHit": true
       }
     },
     {
@@ -685,6 +966,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 3,
+        "vigorLoss": 3,
+        "vigorLossPerHit": false,
+        "intensity": 2,
+        "intensityPerHit": true
       }
     }
   ],
@@ -701,6 +990,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 3,
+        "evasionDice": 0,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -715,6 +1012,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 1,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -730,6 +1035,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 1,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -745,6 +1058,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 2,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -760,6 +1081,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 3,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -775,6 +1104,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 3,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -790,6 +1127,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "沉没的王国（69.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 3,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -807,6 +1152,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 0,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -822,6 +1175,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -837,6 +1198,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 2,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -852,6 +1221,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 3,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -867,6 +1244,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 3,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -884,6 +1269,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 0,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -899,6 +1292,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -914,6 +1315,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -929,6 +1338,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 3,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -944,6 +1361,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 71
+      },
+      "bonuses": {
+        "at": 13,
+        "evasionDice": 3,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -961,6 +1386,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -976,6 +1409,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -991,6 +1432,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 1,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1006,6 +1455,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 2,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1021,6 +1478,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1038,6 +1503,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1053,6 +1526,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 2,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1068,6 +1549,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 1,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1083,6 +1572,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1098,6 +1595,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 72
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 3,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1114,6 +1619,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 1,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1128,6 +1641,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1143,6 +1664,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 2,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1158,6 +1687,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 2,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1173,6 +1710,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1188,6 +1733,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 13,
+        "evasionDice": 4,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1204,6 +1757,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 3,
+        "evasionDice": 1,
+        "vigorLoss": 0,
+        "vigorLossPerHit": false,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1218,6 +1779,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 1,
+        "vigorLoss": 2,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1233,6 +1802,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 1,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1248,6 +1825,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 2,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1263,6 +1848,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 73
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 3,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1278,6 +1871,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 74
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 4,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1293,6 +1894,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "万种多肉恐惧（76.pdf",
         "page": 74
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 4,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1310,6 +1919,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1325,6 +1942,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1340,6 +1965,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 1,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1355,6 +1988,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1370,6 +2011,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 13,
+        "evasionDice": 3,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1387,6 +2036,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 1,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1402,6 +2059,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 6,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1417,6 +2082,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 1,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1432,6 +2105,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1447,6 +2128,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 65
+      },
+      "bonuses": {
+        "at": 14,
+        "evasionDice": 2,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1464,6 +2153,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 0,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1479,6 +2176,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 0,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1494,6 +2199,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 0,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1509,6 +2222,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1524,6 +2245,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1541,6 +2270,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 0,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1556,6 +2293,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 1,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1571,6 +2316,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 11,
+        "evasionDice": 2,
+        "vigorLoss": 8,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1586,6 +2339,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 10,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1601,6 +2362,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 66
+      },
+      "bonuses": {
+        "at": 13,
+        "evasionDice": 2,
+        "vigorLoss": 12,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1618,6 +2387,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 1,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1633,6 +2410,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 2,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1648,6 +2433,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 2,
+        "vigorLoss": 7,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1663,6 +2456,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 12,
+        "evasionDice": 2,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1678,6 +2479,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 13,
+        "evasionDice": 3,
+        "vigorLoss": 9,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1695,6 +2504,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 2,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1710,6 +2527,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 2,
+        "vigorLoss": 2,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1725,6 +2550,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 3,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1740,6 +2573,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 3,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1755,6 +2596,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 67
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 3,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ],
@@ -1772,6 +2621,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 1,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 1,
+        "intensityPerHit": false
       }
     },
     {
@@ -1787,6 +2644,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 6,
+        "evasionDice": 2,
+        "vigorLoss": 1,
+        "vigorLossPerHit": false,
+        "intensity": 1,
+        "intensityPerHit": true
       }
     },
     {
@@ -1802,6 +2667,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 3,
+        "evasionDice": 2,
+        "vigorLoss": 2,
+        "vigorLossPerHit": false,
+        "intensity": 1,
+        "intensityPerHit": true
       }
     },
     {
@@ -1817,6 +2690,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 4,
+        "evasionDice": 2,
+        "vigorLoss": 2,
+        "vigorLossPerHit": false,
+        "intensity": 2,
+        "intensityPerHit": true
       }
     },
     {
@@ -1832,6 +2713,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 3,
+        "vigorLoss": 2,
+        "vigorLossPerHit": false,
+        "intensity": 2,
+        "intensityPerHit": true
       }
     },
     {
@@ -1847,6 +2736,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 3,
+        "vigorLoss": 3,
+        "vigorLossPerHit": false,
+        "intensity": 2,
+        "intensityPerHit": true
       }
     },
     {
@@ -1862,6 +2759,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 68
+      },
+      "bonuses": {
+        "at": 6,
+        "evasionDice": 3,
+        "vigorLoss": 3,
+        "vigorLossPerHit": false,
+        "intensity": 3,
+        "intensityPerHit": true
       }
     }
   ],
@@ -1878,6 +2783,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 3,
+        "evasionDice": 0,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1892,6 +2805,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 5,
+        "evasionDice": 1,
+        "vigorLoss": 1,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1907,6 +2828,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 1,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1922,6 +2851,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 7,
+        "evasionDice": 2,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1937,6 +2874,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 8,
+        "evasionDice": 3,
+        "vigorLoss": 3,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1952,6 +2897,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 9,
+        "evasionDice": 3,
+        "vigorLoss": 4,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     },
     {
@@ -1967,6 +2920,14 @@ window.KF_LEVEL_CONFIG = {
       "source": {
         "file": "斯托恩公国（70.pdf",
         "page": 69
+      },
+      "bonuses": {
+        "at": 10,
+        "evasionDice": 3,
+        "vigorLoss": 5,
+        "vigorLossPerHit": true,
+        "intensity": 0,
+        "intensityPerHit": false
       }
     }
   ]

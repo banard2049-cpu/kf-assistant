@@ -433,12 +433,12 @@
       "sha256": "189d5aad7d802f96d248c52600d67522b114c40e04348a50f77e63928d53fc70"
     },
     "postgame-knighteater-5-traits": {
-      "keywords": [
+      "keywords": [],
+      "add": [],
+      "remove": [
         "Fleisch"
       ],
-      "add": [],
-      "remove": [],
-      "note": "Fleisch 在此为指示物名称；弃置的是指示物而非手牌。",
+      "note": "人工复核：Fleisch 仅为被计数、弃置的指示物名称，未使用在第二技能窗口放入指示物的 Fleisch X 关键词；弃置的对象也不是随机手牌。",
       "image": "/assets/aibp/postgame/knighteater-5-traits.png",
       "sha256": "05eb3694f7a935e9cc58ef0bf47db0b0162624eec60b560e824cea973a4d22fe"
     },
@@ -463,15 +463,14 @@
       "sha256": "17477e2a91aaf7df1c071871a5b339357d1b26e49b1e297da7afe859c198b655"
     },
     "postgame-youngdevour-3-traits": {
-      "keywords": [
+      "keywords": [],
+      "add": [],
+      "remove": [
+        "Area",
         "Cooldown",
         "Delay"
       ],
-      "add": [],
-      "remove": [
-        "Area"
-      ],
-      "note": "Cooldown、Delay 是对应位置名称，非 Area（范围）关键词；弃置不同种类的卡并非随机弃手牌。",
+      "note": "人工复核：Cooldown、Delay 仅指存放技术卡的区域，未执行将随机手牌移入这些区域的同名关键词；area 也不是范围关键词。指定弃置不同种类的卡并非随机弃手牌。",
       "image": "/assets/aibp/postgame/youngdevour-3-traits.png",
       "sha256": "25e1515d447e8b6336567fdafb352bdd19ca208b41adac5bef642b4e64b293f3"
     },
@@ -568,15 +567,14 @@
       "sha256": "9de9b57226ac6a38f6f27f3e83c50a0e18fd2cfc1ffa8ab2c844eb9034cf2bd3"
     },
     "postgame-devilsmeltedfears-8-traits": {
-      "keywords": [
+      "keywords": [],
+      "add": [],
+      "remove": [
+        "Area",
         "Cooldown",
         "Delay"
       ],
-      "add": [],
-      "remove": [
-        "Area"
-      ],
-      "note": "Cooldown、Delay 是对应位置名称，非 Area（范围）关键词。",
+      "note": "人工复核：Cooldown、Delay 仅为技术卡移动途经的区域名称，未执行将随机手牌移入这些区域的同名关键词；area 也不是范围关键词。",
       "image": "/assets/aibp/postgame/devilsmeltedfears-8-traits.png",
       "sha256": "08453c37bb020251653fc8d9a7d4b87c34e73b03851712cd023d5e7cbfb64f4c"
     },

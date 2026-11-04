@@ -460,12 +460,17 @@ h3 { font-size: 19px; }
   height: auto;
 }
 .deck-config-tools { margin-top: 12px; }
+.deck-config-tools > summary { padding-bottom: 8px; }
+.deck-config-content { display: flex; align-items: stretch; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.deck-config-content .setup-grid { flex: 0 0 auto; margin: 0; overflow: visible; padding: 0; }
+.level-config-cards { display: flex; flex: 0 0 auto; gap: 8px; }
+.level-config-cards .automatic-deck-summary { min-width: 86px; white-space: nowrap; }
 .sheet-token-tools { margin: 8px 0 12px; }
 .sheet-token-toolbar { display: grid; gap: 9px; }
 .sheet-token-toolbar > .button { justify-self: end; }
 .sheet-token-palette {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
   gap: 7px;
   max-height: 300px;
   overflow-y: auto;
@@ -563,9 +568,12 @@ h3 { font-size: 19px; }
   border-radius: 50%;
   background: rgba(23, 18, 15, .52);
   color: var(--gold-bright);
-  font-size: 2.5cqw;
-  font-weight: 900;
-  line-height: 1;
+  background-image: linear-gradient(currentColor, currentColor), linear-gradient(currentColor, currentColor);
+  background-size: 28% 3%, 3% 28%;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0;
+  font-size: 0;
   cursor: pointer;
   pointer-events: auto;
   container-type: inline-size;
@@ -837,13 +845,23 @@ h3 { font-size: 19px; }
 }
 .segmented button.active { border-color: var(--gold); color: var(--gold-bright); }
 .aibp-pile-grid { min-height: 180px; max-height: 440px; }
+.aibp-column > .panel-header { align-items: center; overflow-x: auto; }
+.aibp-column > .panel-header > div:first-child { min-width: 0; }
+.aibp-header-reminders { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.level-stat-strip { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 8px; }
+.level-stat { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #111513; color: var(--gold-bright); white-space: nowrap; }
+.level-stat img { display: block; width: 28px; height: 28px; object-fit: contain; }
+.aibp-panel .level-stat strong { color: var(--gold-bright); font-size: 19px; line-height: 1; }
 .setup-grid {
   display: grid;
-  grid-template-columns: minmax(120px, 180px) 1fr;
+  grid-auto-flow: column;
+  grid-template-columns: 120px 160px;
+  grid-auto-columns: minmax(180px, max-content);
   gap: 8px;
   margin-top: 12px;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
-.setup-grid.mob-setup-grid { grid-template-columns: repeat(2, minmax(120px, 180px)) 1fr; }
 .automatic-deck-summary {
   display: flex;
   flex-direction: column;
@@ -1136,42 +1154,13 @@ h3 { font-size: 19px; }
   width: 100%;
   aspect-ratio: var(--card-aspect);
 }
-.panzer-retribution-token {
+.sheet-token.auto-token.panzer-retribution-token {
   position: absolute;
   right: 6%;
   bottom: 25px;
   z-index: 4;
-  display: block;
   width: 48px;
-  height: 48px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  padding: 0;
-  pointer-events: none;
-}
-.panzer-retribution-stack,
-.panzer-retribution-stack img {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.panzer-retribution-stack img {
-  border-radius: 6%;
-  object-fit: cover;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
-}
-.panzer-retribution-stack img.back { transform: translate(8px, 8px); opacity: .82; }
-.panzer-retribution-stack img.middle { transform: translate(4px, 4px); opacity: .9; }
-.panzer-retribution-token.ready { cursor: pointer; pointer-events: auto; }
-.panzer-retribution-token.ready::after {
-  position: absolute;
-  inset: -5px;
-  border: 2px solid var(--kf-red, var(--red));
-  content: "";
-  pointer-events: none;
+  transform: none;
 }
 .panzer-controls-panel {
   min-width: 0;
@@ -1555,7 +1544,6 @@ h3 { font-size: 19px; }
   .fields, .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .map-layout, .monster-layout, .battle-grid, .aibp-columns { grid-template-columns: 1fr; }
   .map-layout > aside { grid-template-columns: 1fr 1fr; }
-  .setup-grid, .setup-grid.mob-setup-grid { grid-template-columns: minmax(120px, 180px) 1fr; }
   .promotion-panel { grid-template-columns: 1fr; }
   .map-board { height: clamp(360px, 50vh, 480px); min-height: 0; max-height: none; }
 }
@@ -1578,7 +1566,7 @@ h3 { font-size: 19px; }
   }
   .panzer-trait-row { gap: 6px; }
   .panzer-trait-stage > .card-button > span:last-child:not(.crop-card) { font-size: 9px; }
-  .panzer-retribution-token { width: 40px; height: 40px; bottom: 22px; }
+  .sheet-token.auto-token.panzer-retribution-token { width: 40px; bottom: 22px; }
   .panzer-controls-panel { border-top: 1px solid var(--line); border-left: 0; padding-top: 14px; padding-left: 0; }
   .panzer-target-action { min-height: 48px; padding: 6px; }
   .panzer-target-action strong { font-size: 13px; }
@@ -1595,7 +1583,6 @@ h3 { font-size: 19px; }
   .panel { padding: 12px; }
   .map-board { height: clamp(320px, 46vh, 420px); min-height: 0; max-height: none; }
   .map-layout > aside, .aibp-draw-box { grid-template-columns: 1fr; }
-  .setup-grid, .setup-grid.mob-setup-grid { grid-template-columns: 1fr; }
   .rule-stage-layout,
   .rule-card-resolution,
   .rule-choice-grid,
@@ -2641,6 +2628,9 @@ label,
 .postgame-reference-card { display: flex; flex-direction: column; min-width: 0; gap: 6px; }
 .postgame-reference-card .card-button { width: 100%; }
 .postgame-reference-card .crop-card { background-color: #f4eee4; }
+.postgame-reference-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 6px; min-width: 0; }
+.postgame-reference-name { min-width: 0; padding: 0; overflow: hidden; border: 0; background: transparent; color: inherit; font-size: 11px; line-height: 1.3; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: zoom-in; }
+.postgame-reference-heading > .button { width: auto; min-height: 24px; padding: 3px 6px; font-size: 10px; line-height: 1.2; white-space: nowrap; }
 .postgame-card-note { color: #d5bc8e; font-size: 12px; line-height: 1.5; }
 .postgame-reference-gallery { display: block; columns: 220px; column-gap: 12px; max-height: none; overflow: visible; }
 .postgame-reference-gallery > * { break-inside: avoid; margin: 0 0 12px; }
@@ -2691,5 +2681,3 @@ label,
 @media (max-width: 800px) { .reference-squire-layout { flex-direction: column; } .reference-squire-layout > .panel, .squire-clues { width: 100%; box-sizing: border-box; } .squire-clues { flex-basis: auto; } .squire-clue-member { min-height: 110px; } }
 
 .squire-clue-adjust button:active { box-shadow: none; transform: none; }
-
-.terrain-control-start.monster i.boss-token-frame { width: min(88%, 52px); }

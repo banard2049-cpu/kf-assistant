@@ -87,9 +87,10 @@
         "Difficult Terrain",
         "Displace",
         "Dwell",
-        "OvercomeX+"
+        "OvercomeX+",
+        "OverpowerX+"
       ],
-      "note": "正反面人工核对：沼栖、高级穿身、位移、忽略困难地形、冲撞、过线。弃置指示物和装备不等于弃手牌关键词。",
+      "note": "正反面人工复核：沼栖、高级穿身、位移、忽略困难地形、冲撞；背面融合之力末句的“过线/压制效果”分别对应 Overcome 与 Overpower，均须收录。弃置指示物和装备不等于弃手牌关键词。",
       "images": {
         "face": {
           "path": "/assets/images/httpssteamusercontentaakamaihdnetugc142951439794369965983AF51F1EE89C77D1F88500EE3C0496DAEE16383A.jpg",

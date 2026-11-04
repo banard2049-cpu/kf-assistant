@@ -125,7 +125,7 @@ const respawned = battle().bpTrack.filter(slot => slot.id);
 assert.strictEqual(respawned.length, 3);
 assert.ok(respawned.every(slot => card(slot.id)?.kind === "BP2"));
 assert.deepStrictEqual([...battle().mobActivations.map(token => token.position)].sort((a, b) => a - b), [0, 1]);
-assert.match(battle().ruleState.ruleNotice, /患者牌组顶部 3 张卡/);
+assert.match(battle().ruleState.ruleNotice, /愚者卡组顶部 3 张卡/);
 
 for (let index = 0; index < 3; index++) {
   api.selectMob(index);

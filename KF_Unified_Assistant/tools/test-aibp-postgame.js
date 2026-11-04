@@ -103,6 +103,44 @@ for (const [id, rows] of Object.entries(context.window.KF_LEVEL_CONFIG)) {
   assert.equal(api.normalizeLevel(-1), 1);
   assert.equal(api.levelInfo(maximum + 1), null, "missing rows must never become level 1");
 
+  // Both stat rows must remain readable at every level, including the appendix
+  // per-hit footnote and the Devils' separate Intensity modifier.
+  for (const row of rows) {
+    battle().level = row.level;
+    api.renderApp();
+    const html = element("#app").innerHTML;
+    const stats = html.slice(html.indexOf('class="level-config-cards"')).split("</details>")[0];
+    const aiStats = html.match(/data-level-stats="ai"[\s\S]*?<\/div>/)?.[0] || "";
+    const bpStats = html.match(/data-level-stats="bp"[\s\S]*?<\/div>/)?.[0] || "";
+    const damage = html.match(/data-damage-status>[\s\S]*?<\/div>/)?.[0] || "";
+    assert.doesNotMatch(damage, /单重|双重|damage-breakdown/);
+    const chipValue = (region, icon) => region.match(new RegExp(`data-level-stat="${icon}"[^>]*>[\\s\\S]*?<strong>([^<]*)</strong>`))?.[1];
+    assert.equal(chipValue(bpStats, "hit"), row.hit, `${id} ${row.level}: hit belongs in BP`);
+    assert.ok(chipValue(damage, "wounds")?.endsWith(` / ${row.wounds}`), `${id} ${row.level}: threshold beside current damage`);
+    for (const key of ["at", "evasionDice", "vigorLoss", "intensity"]) {
+      assert.ok(Number.isInteger(row.bonuses?.[key]) && row.bonuses[key] >= 0,
+        `${id} ${row.level}: reviewed ${key} bonus`);
+    }
+    assert.equal(chipValue(bpStats, "at"), row.bonuses.at ? `+${row.bonuses.at}` : undefined);
+    assert.equal(chipValue(aiStats, "evasion"), row.bonuses.evasionDice ? `+${row.bonuses.evasionDice}` : undefined);
+    const vigorScope = row.bonuses.vigorLossPerHit ? "*" : "";
+    assert.equal(chipValue(aiStats, "vigor-loss"), row.bonuses.vigorLoss ? `+${row.bonuses.vigorLoss}${vigorScope}` : undefined);
+    if (row.bonuses.intensity) {
+      const intensityScope = row.bonuses.intensityPerHit ? "*" : "";
+      assert.equal(chipValue(aiStats, "intensity"), `+${row.bonuses.intensity}${intensityScope}`);
+    }
+    if (row.exhibitionWoundsUnspecified) assert.match(stats, /<span>初步冲突<\/span><strong>附录未列<\/strong>/);
+    assert.doesNotMatch(stats, /见大卡|见下方等级原图|undefined|NaN/);
+    assert.doesNotMatch(stats, /data-level-stat=/, "combat reminders must not be duplicated in deck setup");
+    assert.doesNotMatch(html.slice(html.indexOf('<section class="panel aibp-panel">')), /\d+ 当前 \/ \d+ 弃牌/);
+    for (const region of [aiStats, bpStats]) assert.doesNotMatch(region, /<strong>\+0\*?<\/strong>/);
+    for (const region of [aiStats, bpStats, damage]) {
+      for (const icon of region.matchAll(/src="\/assets\/aibp\/stat-icons\/([^"/]+\.svg)(?:\?v=\d+)?"/g)) {
+        assert.ok(fs.existsSync(path.join(root, "public/assets/aibp/stat-icons", icon[1])), `missing icon ${icon[1]}`);
+      }
+    }
+  }
+
   if (!postgame.DATA[id]?.length) continue;
   // Exercise the actual renderer at every appendix threshold, including the
   // loader path and a downward change after higher-level traits were visible.

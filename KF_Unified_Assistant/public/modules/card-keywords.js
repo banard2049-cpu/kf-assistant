@@ -1,7 +1,7 @@
 /* Card matches come from OCR of the English card faces and need verification. */
 (function () {
   'use strict';
-  const url = new URL('../keyword-data/card-keywords.json?v=4', document.currentScript.src);
+  const url = new URL('../keyword-data/card-keywords.json?v=5', document.currentScript.src);
   let cards = null;
   const ready = fetch(url).then(response => {
     if (!response.ok) throw new Error('HTTP ' + response.status);

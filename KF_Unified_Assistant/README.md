@@ -63,6 +63,7 @@ node tools/import-tts-equipment.js --save "路径/Mods/Workshop/(Don)KF 1.8.json
 ```powershell
 python tools/extract-withergraal-assets.py --source "路径/KF_Withergraal_Sheets.pdf"
 python tools/extract-postgame-assets.py --source-dir "包含沉没的王国（69.pdf、斯托恩公国（70.pdf、万种多肉恐惧（76.pdf的目录"
+python tools/extract-aibp-stat-icons.py --source "路径/Rulebook.pdf"
 ```
 
 提取脚本使用 PyMuPDF；地图拼接另外使用 Pillow。验证：`node tools/test-rogue-withergraal.js`、`node tools/test-aibp-postgame.js`、`node tools/test-postgame-assets.js`。安装 Playwright 后可运行 `node tools/test-withergraal-browser.cjs` 检查完整流程；其浏览器配置、缓存和截图均写入工作区 `tmp/`。
@@ -84,6 +85,8 @@ python tools/extract-postgame-assets.py --source-dir "包含沉没的王国（69
 ## 从 Release 运行（推荐）
 
 Windows/macOS portable 包和 Android APK 位于仓库的 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
+
+**更新到 v1.4.1 时，必须同时下载并应用新版完整资源包 [KF_Assistant_Images_v1.4.1_2026-11-05.zip](https://github.com/banard2049-cpu/kf-assistant/releases/download/v1.4.1/KF_Assistant_Images_v1.4.1_2026-11-05.zip)。** 本版新增 AI/BP 高清矢量图标，旧资源包不包含这些文件。Web/portable 解压覆盖资源，Android 重新“导入资源 ZIP”；更新前备份并保留 `data/` 与存档。
 
 ## Docker / NAS
 
