@@ -12,7 +12,7 @@
 
 版本标签会自动构建 Windows/macOS portable 包和 Android APK，文件位于 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
 
-**更新到 v1.4.1 时，请同时下载并应用新版完整资源包 [KF_Assistant_Images_v1.4.1_2026-11-05.zip](https://github.com/banard2049-cpu/kf-assistant/releases/download/v1.4.1/KF_Assistant_Images_v1.4.1_2026-11-05.zip)。** 本版新增 AI/BP 高清矢量图标，旧资源包不包含这些文件。Web/portable 解压覆盖资源，Android 在主界面重新“导入资源 ZIP”；请先备份并保留存档。
+**更新到 v1.4.1 时，请同时下载并应用新版完整资源包（2026-11-05 版）。资源包单独提供，不上传到 GitHub Release。** 本版新增 AI/BP 高清矢量图标，旧资源包不包含这些文件。Web/portable 解压覆盖资源，Android 在主界面重新“导入资源 ZIP”；请先备份并保留存档。
 
 ## Docker / NAS
 
