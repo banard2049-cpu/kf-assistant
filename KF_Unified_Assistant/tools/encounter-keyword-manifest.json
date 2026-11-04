@@ -1,0 +1,602 @@
+[
+  {
+    "id": "M_BogWitch:1",
+    "cardId": "M_BogWitch:EncounterCard:37",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/bog-witch/17e4a0c7-01.jpg"
+  },
+  {
+    "id": "M_BogWitch:2",
+    "cardId": "M_BogWitch:EncounterCard:36",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/bog-witch/17e4a0c7-02.jpg"
+  },
+  {
+    "id": "M_BogWitch:3",
+    "cardId": "M_BogWitch:EncounterCard:37",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/bog-witch/0791e12b-01.jpg"
+  },
+  {
+    "id": "M_BogWitch:4",
+    "cardId": "M_BogWitch:EncounterCard:36",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/bog-witch/0791e12b-02.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:1",
+    "cardId": "M_DevilAncientDusk:EncounterCard:19",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/17e4a0c7-03.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:2",
+    "cardId": "M_DevilAncientDusk:EncounterCard:18",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/17e4a0c7-04.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:3",
+    "cardId": "M_DevilAncientDusk:EncounterCard:19",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/devil-ancient-dusk/0791e12b-03.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:4",
+    "cardId": "M_DevilAncientDusk:EncounterCard:18",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/devil-ancient-dusk/0791e12b-04.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:1",
+    "cardId": "M_DevilSmeltedFears:EncounterCard:37",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/17e4a0c7-05.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:2",
+    "cardId": "M_DevilSmeltedFears:EncounterCard:36",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/17e4a0c7-06.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:3",
+    "cardId": "M_DevilSmeltedFears:EncounterCard:37",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/devil-smelted-fears/0791e12b-05.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:4",
+    "cardId": "M_DevilSmeltedFears:EncounterCard:36",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/devil-smelted-fears/0791e12b-06.jpg"
+  },
+  {
+    "id": "M_Eggknight:1",
+    "cardId": "M_Eggknight:EncounterCard:19",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/eggknight/17e4a0c7-07.jpg"
+  },
+  {
+    "id": "M_Eggknight:2",
+    "cardId": "M_Eggknight:EncounterCard:18",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/eggknight/17e4a0c7-08.jpg"
+  },
+  {
+    "id": "M_Eggknight:3",
+    "cardId": "M_Eggknight:EncounterCard:19",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/eggknight/0791e12b-07.jpg"
+  },
+  {
+    "id": "M_Eggknight:4",
+    "cardId": "M_Eggknight:EncounterCard:18",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/eggknight/0791e12b-08.jpg"
+  },
+  {
+    "id": "M_FirstmenLictor:1",
+    "cardId": "6b8c20",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-13.jpg"
+  },
+  {
+    "id": "M_FirstmenLictor:2",
+    "cardId": "badbeb",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-14.jpg"
+  },
+  {
+    "id": "M_FirstmenLictor:3",
+    "cardId": "6b8c20",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-13.jpg"
+  },
+  {
+    "id": "M_FirstmenLictor:4",
+    "cardId": "badbeb",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-14.jpg"
+  },
+  {
+    "id": "M_FirstmenWarriors:1",
+    "cardId": "e34543",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-11.jpg"
+  },
+  {
+    "id": "M_FirstmenWarriors:2",
+    "cardId": "f14d54",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-12.jpg"
+  },
+  {
+    "id": "M_FirstmenWarriors:3",
+    "cardId": "e34543",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-11.jpg"
+  },
+  {
+    "id": "M_FirstmenWarriors:4",
+    "cardId": "f14d54",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-12.jpg"
+  },
+  {
+    "id": "M_HauntOf:1",
+    "cardId": "19e37e",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-15.jpg"
+  },
+  {
+    "id": "M_HauntOf:2",
+    "cardId": "6750c9",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-16.jpg"
+  },
+  {
+    "id": "M_HauntOf:3",
+    "cardId": "19e37e",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-15.jpg"
+  },
+  {
+    "id": "M_HauntOf:4",
+    "cardId": "6750c9",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-16.jpg"
+  },
+  {
+    "id": "M_Ironcast:1",
+    "cardId": "M_Ironcast:EncounterCard:37",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/ironcast-dead/17e4a0c7-17.jpg"
+  },
+  {
+    "id": "M_Ironcast:2",
+    "cardId": "M_Ironcast:EncounterCard:36",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/ironcast-dead/17e4a0c7-18.jpg"
+  },
+  {
+    "id": "M_Ironcast:3",
+    "cardId": "M_Ironcast:EncounterCard:37",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/ironcast-dead/0791e12b-17.jpg"
+  },
+  {
+    "id": "M_Ironcast:4",
+    "cardId": "M_Ironcast:EncounterCard:36",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/ironcast-dead/0791e12b-18.jpg"
+  },
+  {
+    "id": "M_KnightFen:1",
+    "cardId": "M_KnightFen:EncounterCard:37",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/knight-fen/17e4a0c7-09.jpg"
+  },
+  {
+    "id": "M_KnightFen:2",
+    "cardId": "M_KnightFen:EncounterCard:36",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/knight-fen/17e4a0c7-10.jpg"
+  },
+  {
+    "id": "M_KnightFen:3",
+    "cardId": "M_KnightFen:EncounterCard:37",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/knight-fen/0791e12b-09.jpg"
+  },
+  {
+    "id": "M_KnightFen:4",
+    "cardId": "M_KnightFen:EncounterCard:36",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/knight-fen/0791e12b-10.jpg"
+  },
+  {
+    "id": "M_Knighteater:1",
+    "cardId": "M_Knighteater:EncounterCard:40",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/knighteater/17e4a0c7-21.jpg"
+  },
+  {
+    "id": "M_Knighteater:2",
+    "cardId": "M_Knighteater:EncounterCard:39",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/knighteater/17e4a0c7-22.jpg"
+  },
+  {
+    "id": "M_Knighteater:3",
+    "cardId": "M_Knighteater:EncounterCard:40",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/knighteater/0791e12b-21.jpg"
+  },
+  {
+    "id": "M_Knighteater:4",
+    "cardId": "M_Knighteater:EncounterCard:39",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/knighteater/0791e12b-22.jpg"
+  },
+  {
+    "id": "M_PalebloodWorms:1",
+    "cardId": "M_PalebloodWorms:EncounterCard:26",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/paleblood-worms/17e4a0c7-39.jpg"
+  },
+  {
+    "id": "M_PalebloodWorms:2",
+    "cardId": "M_PalebloodWorms:EncounterCard:25",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/paleblood-worms/17e4a0c7-40.jpg"
+  },
+  {
+    "id": "M_PalebloodWorms:3",
+    "cardId": "M_PalebloodWorms:EncounterCard:26",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/paleblood-worms/0791e12b-39.jpg"
+  },
+  {
+    "id": "M_PalebloodWorms:4",
+    "cardId": "M_PalebloodWorms:EncounterCard:25",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/paleblood-worms/0791e12b-40.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:1",
+    "cardId": "6bc764",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/panzerdragon/17e4a0c7-25.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:2",
+    "cardId": "6bc764",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/panzerdragon/0791e12b-25.jpg"
+  },
+  {
+    "id": "M_Panzergeists:1",
+    "cardId": "9d9ec4",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-26.jpg"
+  },
+  {
+    "id": "M_Panzergeists:2",
+    "cardId": "09a051",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-27.jpg"
+  },
+  {
+    "id": "M_Panzergeists:3",
+    "cardId": "9d9ec4",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-26.jpg"
+  },
+  {
+    "id": "M_Panzergeists:4",
+    "cardId": "09a051",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-27.jpg"
+  },
+  {
+    "id": "M_Pumpkinhead:1",
+    "cardId": "M_Pumpkinhead:EncounterCard:21",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/pumpkinhead/17e4a0c7-28.jpg"
+  },
+  {
+    "id": "M_Pumpkinhead:2",
+    "cardId": "M_Pumpkinhead:EncounterCard:20",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/pumpkinhead/17e4a0c7-29.jpg"
+  },
+  {
+    "id": "M_Pumpkinhead:3",
+    "cardId": "M_Pumpkinhead:EncounterCard:21",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/pumpkinhead/0791e12b-28.jpg"
+  },
+  {
+    "id": "M_Pumpkinhead:4",
+    "cardId": "M_Pumpkinhead:EncounterCard:20",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/pumpkinhead/0791e12b-29.jpg"
+  },
+  {
+    "id": "M_PuppetKing:1",
+    "cardId": "M_PuppetKing:EncounterCard:19",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/puppet-king/17e4a0c7-30.jpg"
+  },
+  {
+    "id": "M_PuppetKing:2",
+    "cardId": "M_PuppetKing:EncounterCard:18",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/puppet-king/17e4a0c7-31.jpg"
+  },
+  {
+    "id": "M_PuppetKing:3",
+    "cardId": "M_PuppetKing:EncounterCard:19",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/puppet-king/0791e12b-30.jpg"
+  },
+  {
+    "id": "M_PuppetKing:4",
+    "cardId": "M_PuppetKing:EncounterCard:18",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/puppet-king/0791e12b-31.jpg"
+  },
+  {
+    "id": "M_Ratwolves:1",
+    "cardId": "M_Ratwolves:EncounterCard:20",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/ratwolves/17e4a0c7-32.jpg"
+  },
+  {
+    "id": "M_Ratwolves:2",
+    "cardId": "M_Ratwolves:EncounterCard:19",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/ratwolves/17e4a0c7-33.jpg"
+  },
+  {
+    "id": "M_Ratwolves:3",
+    "cardId": "M_Ratwolves:EncounterCard:20",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/ratwolves/0791e12b-32.jpg"
+  },
+  {
+    "id": "M_Ratwolves:4",
+    "cardId": "M_Ratwolves:EncounterCard:19",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/ratwolves/0791e12b-33.jpg"
+  },
+  {
+    "id": "M_Stonemason:1",
+    "cardId": "77a812",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-34.jpg"
+  },
+  {
+    "id": "M_Stonemason:2",
+    "cardId": "509178",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-35.jpg"
+  },
+  {
+    "id": "M_Stonemason:3",
+    "cardId": "77a812",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-34.jpg"
+  },
+  {
+    "id": "M_Stonemason:4",
+    "cardId": "509178",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-35.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:1",
+    "cardId": "M_KingLaidLow:EncounterCard:19",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/king-laid-low/17e4a0c7-19.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:2",
+    "cardId": "M_KingLaidLow:EncounterCard:18",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/king-laid-low/17e4a0c7-20.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:3",
+    "cardId": "M_KingLaidLow:EncounterCard:19",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/king-laid-low/0791e12b-19.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:4",
+    "cardId": "M_KingLaidLow:EncounterCard:18",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/king-laid-low/0791e12b-20.jpg"
+  },
+  {
+    "id": "M_Toadragon:1",
+    "cardId": "b46333",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/9b0a889a-25.jpg"
+  },
+  {
+    "id": "M_Toadragon:2",
+    "cardId": "3480ee",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-36.jpg"
+  },
+  {
+    "id": "M_Toadragon:3",
+    "cardId": "b46333",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/203571f1-25.jpg"
+  },
+  {
+    "id": "M_Toadragon:4",
+    "cardId": "3480ee",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-36.jpg"
+  },
+  {
+    "id": "M_WhiteApe:1",
+    "cardId": "4ae6d8",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-37.jpg"
+  },
+  {
+    "id": "M_WhiteApe:2",
+    "cardId": "00830a",
+    "side": "face",
+    "path": "/assets/cards/encounters/face/17e4a0c7-38.jpg"
+  },
+  {
+    "id": "M_WhiteApe:3",
+    "cardId": "4ae6d8",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-37.jpg"
+  },
+  {
+    "id": "M_WhiteApe:4",
+    "cardId": "00830a",
+    "side": "back",
+    "path": "/assets/cards/encounters/back/0791e12b-38.jpg"
+  },
+  {
+    "id": "M_WingedNightmare:1",
+    "cardId": "M_WingedNightmare:EncounterCard:19",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/winged-nightmare/17e4a0c7-23.jpg"
+  },
+  {
+    "id": "M_WingedNightmare:2",
+    "cardId": "M_WingedNightmare:EncounterCard:18",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/winged-nightmare/17e4a0c7-24.jpg"
+  },
+  {
+    "id": "M_WingedNightmare:3",
+    "cardId": "M_WingedNightmare:EncounterCard:19",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/winged-nightmare/0791e12b-23.jpg"
+  },
+  {
+    "id": "M_WingedNightmare:4",
+    "cardId": "M_WingedNightmare:EncounterCard:18",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/winged-nightmare/0791e12b-24.jpg"
+  },
+  {
+    "id": "M_YoungDevour:1",
+    "cardId": "M_YoungDevour:EncounterCard:42",
+    "side": "face",
+    "path": "/assets/cards/monster-faces/young-devour/17e4a0c7-41.jpg"
+  },
+  {
+    "id": "M_YoungDevour:2",
+    "cardId": "M_YoungDevour:EncounterCard:42",
+    "side": "back",
+    "path": "/assets/cards/monster-backs/young-devour/0791e12b-41.jpg"
+  },
+  {
+    "id": "Special_F4:1",
+    "cardId": "Knightbook:F4",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/f4-hd.png"
+  },
+  {
+    "id": "Special_F3:1",
+    "cardId": "Knightbook:F3",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/f3-hd.png"
+  },
+  {
+    "id": "Special_F2:1",
+    "cardId": "Knightbook:F2",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/f2-hd.png"
+  },
+  {
+    "id": "Special_K1:1",
+    "cardId": "Knightbook:K1",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/k1-hd.png"
+  },
+  {
+    "id": "Special_K4:1",
+    "cardId": "Knightbook:K4",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/k4-hd.png"
+  },
+  {
+    "id": "Special_P2:1",
+    "cardId": "Knightbook:P2",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/p2-hd.png"
+  },
+  {
+    "id": "Special_P5:1",
+    "cardId": "Knightbook:P5",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/p5-hd.png"
+  },
+  {
+    "id": "Special_R5:1",
+    "cardId": "Knightbook:R5",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/r5-hd.png"
+  },
+  {
+    "id": "Special_S4:1",
+    "cardId": "Knightbook:S4",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/s4-hd.png"
+  },
+  {
+    "id": "Special_U1:1",
+    "cardId": "Knightbook:U1",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/u1-hd.png"
+  },
+  {
+    "id": "Special_TSF-0032:1",
+    "cardId": "Codex:TenThousandSucculentFears:0032",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/tsf-0032.png"
+  },
+  {
+    "id": "Special_TSF-0531:1",
+    "cardId": "Codex:TenThousandSucculentFears:0531",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/tsf-0531.png"
+  },
+  {
+    "id": "Special_TSF-0932:1",
+    "cardId": "Codex:TenThousandSucculentFears:0932",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/tsf-0932.png"
+  },
+  {
+    "id": "Special_TSF-7012:1",
+    "cardId": "Codex:TenThousandSucculentFears:7012",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/tsf-7012.png"
+  },
+  {
+    "id": "Special_TSF-7416:1",
+    "cardId": "Codex:TenThousandSucculentFears:7416",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/tsf-7416.png"
+  },
+  {
+    "id": "Special_TSF-7912:1",
+    "cardId": "Codex:TenThousandSucculentFears:7912",
+    "side": "face",
+    "path": "/assets/cards/special-encounters/tsf-7912.png"
+  }
+]

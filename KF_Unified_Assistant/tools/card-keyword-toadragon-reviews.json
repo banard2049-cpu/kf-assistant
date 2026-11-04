@@ -1,0 +1,360 @@
+{
+  "cards": {
+    "M_Toadragon:AI0:18": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-00.jpg",
+      "sha256": "39af9b6927c64c99993d8430682b34a6c4d77519ecd207dc5c6f72336120bd25"
+    },
+    "M_Toadragon:AI1:19": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-04.jpg",
+      "sha256": "37bdcf4a7218ef8bdf162cf20bf8b41323d27cb0b9d4f6f687546e42c0b00960"
+    },
+    "M_Toadragon:AI1:20": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-06.jpg",
+      "sha256": "a6fca7111a7de10b03293d902471c59e433b1c8f1adc866dde7f358c75d7fdfd"
+    },
+    "M_Toadragon:AI1:21": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-03.jpg",
+      "sha256": "8452c79f54809fb92c987b6234b4ae76bcba737ba16f49d1b81b3955dd40bd1c"
+    },
+    "M_Toadragon:AI1:22": {
+      "keywords": [
+        "Poison",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-05.jpg",
+      "sha256": "e56718a0140a86cb09f1a50be4db7176fa8e4fec9b1763eb4aa9c1d9c13026c6"
+    },
+    "M_Toadragon:AI1:23": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-01.jpg",
+      "sha256": "69e1e9ef06b9dfb3e0bda8b55fe22cc542f72cdfb7600511c5efd5d90e1c8993"
+    },
+    "M_Toadragon:AI1:24": {
+      "keywords": [
+        "Pull X",
+        "Knockback X",
+        "Obstacle"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-02.jpg",
+      "sha256": "b946f7b9e3c5cab308edc0f0c905ff6a101422992893a91f1fc2a71957e32f0b"
+    },
+    "M_Toadragon:AI2:25": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-12.jpg",
+      "sha256": "b5b6a60f9bca652befc597c49d9a62fb6d67a0b16e789487865ade1fcb27bced"
+    },
+    "M_Toadragon:AI2:26": {
+      "keywords": [
+        "Poison",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-10.jpg",
+      "sha256": "73fbdc637fa71329fc041dbdea0c876d172347b6c2a18a2b6b31fa5ce51d0571"
+    },
+    "M_Toadragon:AI2:27": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-11.jpg",
+      "sha256": "b2df203023f7548515420efd1846da798438fe5982723a30a916df674f667490"
+    },
+    "M_Toadragon:AI2:28": {
+      "keywords": [
+        "Jump",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-09.jpg",
+      "sha256": "e9a08f8fe2c1fd5078dfe69dd1a1ca6e25795c343e2234c6d7bcc169625775b6"
+    },
+    "M_Toadragon:AI2:29": {
+      "keywords": [
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-08.jpg",
+      "sha256": "ad0f386e04af91d1cb16aaf590bdb88658c7581c181ca9dcedf5e45a46c8c14b"
+    },
+    "M_Toadragon:AI3:30": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-07.jpg",
+      "sha256": "c2a8d3d64833c9d126df46311186a2a2d0bbbb77d80d9e2f34fc4bcce8dde3c9"
+    },
+    "M_Toadragon:AI3:31": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-13.jpg",
+      "sha256": "05d5b23da3913255e97fdefc8dd227bb17f49302e5393a3544098887a7ebc823"
+    },
+    "M_Toadragon:AI3:32": {
+      "keywords": [
+        "Knockback X",
+        "Boundless",
+        "Obstacle"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-18.jpg",
+      "sha256": "b6c3d2ab3d6301f9de65d7acd80b08f141affae1ee2d27965e75810e8f431b4a"
+    },
+    "M_Toadragon:AI3:33": {
+      "keywords": [
+        "Jump",
+        "Bane",
+        "Heal"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-14.jpg",
+      "sha256": "ee474131d6b508d80d7227ff0507e2e371ff424f6e00b4aa11ad32ad1f78f608"
+    },
+    "M_Toadragon:AI3:34": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-17.jpg",
+      "sha256": "6064df1bded296b1312e5f6564ff9358ef40fe0bed223c369bcd584bc354f048"
+    },
+    "M_Toadragon:AI3:35": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-15.jpg",
+      "sha256": "2cc84f8be108f2aa891730a4b1dd13e9585918b80c396cbc40bf9d5b6ad9e4f9"
+    },
+    "M_Toadragon:AI3:36": {
+      "keywords": [
+        "Bane",
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-16.jpg",
+      "sha256": "0e6616fd3a56ab7f04897af2a04ccfd41801efd88dbee9b168e36348d39e9fc9"
+    },
+    "M_Toadragon:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-19.jpg",
+      "sha256": "5f890f2fd0b29e3c03952daeea2e7b3726429172d58e8d04ace0a54429e1e429"
+    },
+    "M_Toadragon:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-20.jpg",
+      "sha256": "c44cd1fcaea8dc7dc766d56b73a62ec6f1c8eac625b5f8be16b64c1b7a46b271"
+    },
+    "M_Toadragon:BP1:2": {
+      "keywords": [
+        "OverpowerX+",
+        "Cumbersome",
+        "Poison",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-21.jpg",
+      "sha256": "ed63bd643065489bffb66dc43f0bae28c3f1a459503a4c6fe32891e9bbbf2382"
+    },
+    "M_Toadragon:BP1:3": {
+      "keywords": [
+        "OverpowerX+",
+        "Reposition X",
+        "Hope X",
+        "Closing X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-22.jpg",
+      "sha256": "7e5653e37aba47a77b0d83fc19eef63a489f638acc7672ad8c21f7fc11efdd86"
+    },
+    "M_Toadragon:BP1:4": {
+      "keywords": [
+        "OverpowerX+",
+        "Reposition X",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-23.jpg",
+      "sha256": "0e0102760d448b87ae50115cf533bd8e59cc2fb93147edcbc69001a27c08c7f0"
+    },
+    "M_Toadragon:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Cumbersome",
+        "Poison",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-24.jpg",
+      "sha256": "405cf81be0ae817a8236ba128265c756a74edf4ec4ab87007a653cc1f641bc70"
+    },
+    "M_Toadragon:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-29.jpg",
+      "sha256": "04ca193f470dea428799a3b2f3258615348c7bc608f907aa4b5a0b53a2c26c5c"
+    },
+    "M_Toadragon:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-30.jpg",
+      "sha256": "bf613f80efeb63bd1859f0e748c15db5804e078bb8be146c5b5bd0ae32867d68"
+    },
+    "M_Toadragon:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Crash"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-25.jpg",
+      "sha256": "453d9115e70bff8ddefc1a3165418021d3c22d0ecc8a91abce6a3030324b22fe"
+    },
+    "M_Toadragon:BP2:6": {
+      "keywords": [
+        "OverpowerX+",
+        "Cumbersome",
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-28.jpg",
+      "sha256": "ca1bfb47682271e293eabcd44a2a0612864dd39dd72a78e3e317bbd63dc9c9b6"
+    },
+    "M_Toadragon:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Scavenge X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-26.jpg",
+      "sha256": "72396212cd5910446e0f5018c10a9723969352519dfd710a8e28af94f29dcf72"
+    },
+    "M_Toadragon:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pull X",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-27.jpg",
+      "sha256": "98a7c47304a46a8c30403f53b7f9dda76b9a0d8e2dda35d6e47455df03176727"
+    },
+    "M_Toadragon:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-36.jpg",
+      "sha256": "71f47bb090f5c9245ef85c3eb502839e97e5f69b76fe39895491b8dcde2c3243"
+    },
+    "M_Toadragon:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-35.jpg",
+      "sha256": "59d4bb0f76388fbe03e8631c4cfe8c2e81a41d93a7005c01d7b994c5557925bb"
+    },
+    "M_Toadragon:BP3:14": {
+      "keywords": [
+        "Bane",
+        "Bane Limit X/+X"
+      ],
+      "note": "卡面提及获得灾祸指示物至灾祸耐限，同时提示灾祸与灾祸耐限词条。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-34.jpg",
+      "sha256": "4689c6dbc780e763d40e5addd3a81a32a6f539e346d221e80c2e6c385dfb1a7f"
+    },
+    "M_Toadragon:BP3:15": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-33.jpg",
+      "sha256": "7b0e62b62f3fc84721b860f4a3318bed6662c73b3e519d11c07479b1bb33a776"
+    },
+    "M_Toadragon:BP3:16": {
+      "keywords": [
+        "OverpowerX+",
+        "Reposition X",
+        "Poison",
+        "Choke"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-31.jpg",
+      "sha256": "8ce3853676a8ba4623914f44a5c9e3e843c28824f3cad689b44b8a5815c295b1"
+    },
+    "M_Toadragon:BP3:17": {
+      "keywords": [
+        "OverpowerX+",
+        "Cumbersome",
+        "Poison"
+      ],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-32.jpg",
+      "sha256": "1da485a7acb5b6a243bf2a60b8470d78e9d0563750c1b9a6735338a436e53889"
+    },
+    "M_Toadragon:SIG:37": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典，排除弃置 AI 卡等普通用词。",
+      "image": "/assets/cards/monster-faces/toadragon/6565fedd-37.jpg",
+      "sha256": "13337df676ea14ecd2ca32802e17ddaa636a2b96e97bab62e168e99ec2e1fabc"
+    }
+  }
+}

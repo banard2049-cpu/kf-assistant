@@ -1,0 +1,323 @@
+{
+  "cards": {
+    "M_PuppetKing:AI1:20": {
+      "keywords": [
+        "Knockback X",
+        "Knockdown"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-00.jpg",
+      "sha256": "da9069d9a3aa6d8ac417b7d4dcd4ca7c3ea59150e82968df7fc3f92624fd1a1f",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI1:21": {
+      "keywords": [
+        "Displace",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-01.jpg",
+      "sha256": "54e9a7059cd2c3bb93bd0a7971635539f24c7362c86b792b14f08d87dbf55113",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI1:22": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-02.jpg",
+      "sha256": "9246d4e82f1536bccb2ee70f8f393bec8c29c155f38df5d99f057c7b9f32bee1",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI1:23": {
+      "keywords": [
+        "Knockdown",
+        "Bane"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-03.jpg",
+      "sha256": "493614d1c8a449dc8e12eea05bfe9d8df0ba50a38a5e3cb1e08448aa37966401",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI1:24": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-05.jpg",
+      "sha256": "b7af8526c2cd493ad27a3000b445be23349ba904c19d41779cb214e978567681",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI1:25": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-04.jpg",
+      "sha256": "8684ee5259a7652e77eee865ef5043f5769ead97a71b1d131208afaa1e2c6258",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI2:26": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-06.jpg",
+      "sha256": "156b5487589dd2cbff4fd61a04e4861e164619f9ff2a219d8efcab3bc765eab7",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI2:27": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-07.jpg",
+      "sha256": "1f5f22f3c47a70d5f76ca7db01478a0cea0d178bd6fd40b6465492259e4de02f",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI2:28": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-08.jpg",
+      "sha256": "3effe9b434691259dfe3a2506142e4f795ca3cae278719c581f8cd1f4020d168",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI2:29": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-09.jpg",
+      "sha256": "0219608cc18f2b3fd4f787657d13be3191243994b46a30302d907df43f0ba741",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI2:30": {
+      "keywords": [
+        "Bane"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-11.jpg",
+      "sha256": "3ad2d17b402e170bc42b97f0fdcd1776debb3b1c5c786e656d74f87e5ce02e1a",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI2:31": {
+      "keywords": [
+        "Knockback X",
+        "Bane"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-10.jpg",
+      "sha256": "95d8a1d8df2c19a883828b81da5a3cb0001ebf949514b0518f3d533b65999e73",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI3:32": {
+      "keywords": [
+        "Choke",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-12.jpg",
+      "sha256": "9450f8eabc80eb1a0a2d956309f7cd8c1b2021a740871d6dc9691cd4dac79ad4",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI3:33": {
+      "keywords": [
+        "Knockdown",
+        "Discard",
+        "Restrain"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-13.jpg",
+      "sha256": "23dfb1f29628ecc5e1e673c2cfbb783f4d015d4405ef4f2cf5f899e49c20b4ef",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI3:34": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-14.jpg",
+      "sha256": "6a917128dc101a1ecfcbe43e3787f71a1dca49621d9a87fedabd1e9eb97017c3",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI3:35": {
+      "keywords": [
+        "Restrain",
+        "Bane"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-15.jpg",
+      "sha256": "d19136a61f6f60b51910dfd3862bcd0e3b8ee95115d0faa67f25562f26c1fce5",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI3:36": {
+      "keywords": [
+        "Knockdown",
+        "Bane"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-17.jpg",
+      "sha256": "2ff4bdbf95f1c79e2250dc3711be402a77f49b5aa3b6388df50e476fc027c12a",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:AI3:37": {
+      "keywords": [
+        "Knockback X",
+        "Bane"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-16.jpg",
+      "sha256": "3daf5ebaad1639911c9aa0648bcbe1e0f4e208b655dfa8d55206545553877524",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-23.jpg",
+      "sha256": "03db8af5a06445bdd72495ba8bd7dc3822c27edaf2257e305a88e6b7ad99ed58",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Scavenge X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-18.jpg",
+      "sha256": "03ee00b7c0f35ab92f1f047756d7e6c2ddf0acda2777108bec482119b9167733",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP1:2": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-19.jpg",
+      "sha256": "5911fb32536ac4c520e00e960880cb90e5d7ebda3ad01fde6692c05a21027a03",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-20.jpg",
+      "sha256": "04fac66d66747d81880a96d10d7cc21a1aa17da7aed3e3ba5f7d77565d113f44",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-22.jpg",
+      "sha256": "6309603f2e9d128f30ab6611991b11aa10910caac29efbc6c3a2e4c7eaa792cd",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP1:5": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-21.jpg",
+      "sha256": "ced8ba33cf97175ee101ac9d2681e32801a7167a9d4e32b73a4f5a980a355973",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP2:9": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-26.jpg",
+      "sha256": "625067144c438a49f0e896e2869146d75e66fc2da5e21bd60ca07db2b615da8e",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-25.jpg",
+      "sha256": "f3c96cecd9405231258541d0788fac7cd06c72a912e4a4c7ae479892961deb0d",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Auto-X Y"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-24.jpg",
+      "sha256": "6aca98c353f08fb77d27539b424eff5328a8a418674d246643e1af18fb174609",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。 补充卡面对应的 Auto-X Y。"
+    },
+    "M_PuppetKing:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Armor-piercing X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-29.jpg",
+      "sha256": "120c920407ed7a02ca3ec6b5dc04a377cad8c102af12b153d0c3b5dfcca77724",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-28.jpg",
+      "sha256": "24ee929fe2aa2b7084eddf2a734f47dde1e4050cc2bfbb2d712ffe3de382c5af",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Armor-piercing X",
+        "Scavenge X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-27.jpg",
+      "sha256": "baa608162f95306d67f2ab21e346d530fc9ca23997512dae5207df8057ce563d",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Scavenge X"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-35.jpg",
+      "sha256": "28d6227c59860b387e0f28451fecec6a1a7b325f3f3c5abb30bea017249131d8",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Choke"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-34.jpg",
+      "sha256": "e11bb5621f533a37d00ac87eba52f4ceca2aa28dce5f9c7d99d38c5b108be3a7",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-33.jpg",
+      "sha256": "e863487257e4d3fa57695a4c640336aaaa3eeb87c53b1d4c26175e813b8cbeed",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-32.jpg",
+      "sha256": "97994c3902bf5f446c383f3a56b76e31fdcf00d80b5addea84b865a13fad0dc7",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-31.jpg",
+      "sha256": "708702a160f37b742f9f1ddb11e77668e8f67850568666f85684c12009a64ac2",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-30.jpg",
+      "sha256": "422ef15eea81e9770b42a7867f3fae725e3e73a890ee10f0de558a5d27ea2ac0",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    },
+    "M_PuppetKing:SIG:38": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-36.jpg",
+      "sha256": "31daec89f13e6f988f90e047ea62ef29131ef3781c4c0213868871ffffbafd30",
+      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+    }
+  }
+}

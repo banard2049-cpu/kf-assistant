@@ -12,6 +12,22 @@ PHP 8.2+ / SQLite 的《Kingdoms Forlorn》本地 Web 助手，包含骑士档�
 
 检查映射覆盖与跨模块显示：`node tools/test-monster-labels.js`。
 
+## 关键词查询
+
+AI/BP 页面的关键词查询区位于冲突版图右侧（窄屏或展开怪物目录时回到版图下方），遭遇战页面的查询区位于当前遭遇面板下方；两个页面都支持按中文、英文或卡面数值（例如“击飞 3”）查询词典。AI/BP 的 Boss 大卡和特性卡关键词，以及遭遇战当前等级的遭遇卡关键词，显示在各自查询区下方，可展开释义或折叠整个区域；抽到有关键词的 AI/BP 卡时会显示提醒。
+
+词典数据位于 `public/keyword-data/keywords.json`，Boss 卡牌与遭遇卡索引分别位于同目录的 `card-keywords.json` 和 `encounter-keywords.json`。146 个关键词的英文释义已按英文核心规则书补齐，内嵌图标以英文名称表示，并记录出处页码。拖拽、包围、聚拢、游身、击飞、拉近和顶推保留完整说明，中文末尾附“详见规则书文本框。”提示。中英文说明分别遵循各自来源版本，规则有差异时请核对所用规则书。
+
+更新 Boss 卡校对数据后，可运行 `python tools/scan-boss-keywords.py --match-only` 重新生成索引，再运行 `node tools/test-keyword-manual-reviews.cjs` 检查覆盖和一致性。`convert-kf-keywords.py` 是原始词典导入工具，再次导入会覆盖当前已补全的释义，应先备份当前 JSON。
+
+持有原始 `A4 KF Keyword 修订版（导入到欧路词典APP）.eudic` 时，可运行以下命令将当前词典导回原生欧路格式，生成 146 个关键词的 292 个中英文查询入口，同时导出 `单词@HTML释义` 格式的可编辑制作源文件。导出过程会逐条回读校验，并检查词条间跳转目标：
+
+```powershell
+python tools/export-eudic-keywords.py "路径/A4 KF Keyword 修订版（导入到欧路词典APP）.eudic"
+```
+
+默认结果位于仓库的 `output/dictionary/`；命令的第二个参数可指定输出目录。新版 `.eudic` 与制作源文件也可从 Release 附件下载。
+
 ## 装备预览
 
 主界面侧栏和各模块顶栏的“装备预览”打开独立页面 `/modules/equipment/`，无需选择战役即可浏览。目录包含 27 个来源分类和 6 张阶级说明卡；同名、同来源和同阶级的复数卡牌叠放，放大时仍可逐张查看不同卡面。支持来源筛选、多选阶级、名称/来源搜索，以及点击卡面放大、翻面和前后切换。键盘 `←` / `→` 切换、`F` 翻面、`Esc` 关闭；筛选条件保留在网址中，刷新后可继续浏览。

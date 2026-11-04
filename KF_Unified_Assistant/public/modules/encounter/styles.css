@@ -107,6 +107,19 @@ h3 { font-size: .94rem; color: var(--gold); margin-bottom: .5rem; }
 .monster-rail.collapsed h2 { writing-mode: vertical-rl; text-orientation: mixed; white-space: nowrap; font-size: .88rem; margin: 0; }
 #toggleMonsterRail { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; font-size: 1.25rem; line-height: 1; }
 .action-log-panel { margin-top: 1rem; }
+.encounter-keywords-panel .kf-keywords {
+  --kf-line: #5c5148;
+  --kf-ink: #f4eadb;
+  --kf-muted: #b9aa98;
+  --kf-gold: #a82932;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+.encounter-keywords-panel .kf-keywords > details { background: #24201e; }
+.encounter-keywords-panel .kf-keywords > details > summary:hover { background: #342b28; }
+.encounter-keywords-panel .kf-keywords-content input { background: #191716; }
+.encounter-keywords-panel .kf-keyword-definition { color: #f4eadb; }
 .muted { color: var(--muted); }
 .field { display: grid; gap: .3rem; margin-bottom: .75rem; }
 .field label { font-size: .78rem; color: var(--muted); font-weight: 700; }

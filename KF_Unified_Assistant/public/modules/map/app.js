@@ -18,10 +18,10 @@
   const TRACK_NOTE_MAX_LENGTH = 24;
   const STEPS = ["旅行", "王国板块", "探索", "故事"];
   const TOOL_TABS = [
-    ["tile", "板块"],
     ["travel", "旅行"],
-    ["encounter", "遭遇"],
     ["exploration", "探索"],
+    ["tile", "板块"],
+    ["encounter", "遭遇"],
     ["mercenary", "佣兵"],
     ["party", "队伍"]
   ];
@@ -173,7 +173,7 @@
     if (!Array.isArray(fog.peek.cards)) fog.peek.cards = [];
     if (!Array.isArray(fog.peek.destinations)) fog.peek.destinations = [];
     fog.peek.destinations = fog.peek.cards.map((_, index) =>
-      ["bottom", "shuffle"].includes(fog.peek.destinations[index]) ? fog.peek.destinations[index] : "top"
+      ["bottom", "shuffle", "discard"].includes(fog.peek.destinations[index]) ? fog.peek.destinations[index] : "top"
     );
     return fog.peek;
   }
@@ -185,6 +185,7 @@
   function fogPeekDestinationLabel(destination) {
     if (destination === "bottom") return "牌底";
     if (destination === "shuffle") return "洗回牌库";
+    if (destination === "discard") return "弃牌堆";
     return "牌顶";
   }
 
@@ -192,7 +193,8 @@
     const top = peek.destinations.filter(destination => destination === "top").length;
     const bottom = peek.destinations.filter(destination => destination === "bottom").length;
     const shuffled = peek.destinations.filter(destination => destination === "shuffle").length;
-    return `确认放置（顶 ${top} · 底 ${bottom} · 洗 ${shuffled}）`;
+    const discarded = peek.destinations.filter(destination => destination === "discard").length;
+    return `确认放置（顶 ${top} · 底 ${bottom} · 洗 ${shuffled} · 弃 ${discarded}）`;
   }
 
   function explorationEffectType(item) {
@@ -539,7 +541,7 @@
         if (!Array.isArray(fog.peek.cards)) fog.peek.cards = [];
         if (!Array.isArray(fog.peek.destinations)) fog.peek.destinations = [];
         fog.peek.destinations = fog.peek.cards.map((_, index) =>
-          ["bottom", "shuffle"].includes(fog.peek.destinations[index]) ? fog.peek.destinations[index] : "top"
+          ["bottom", "shuffle", "discard"].includes(fog.peek.destinations[index]) ? fog.peek.destinations[index] : "top"
         );
         const expectedPeekCards = FOG_RULES.peekCards(fog.deck, fog.peek.cards.length, fog.peek.source);
         if (fog.peek.cards.some((cardId, index) => expectedPeekCards[index] !== cardId)) {
@@ -552,7 +554,7 @@
         fog.hazardPending = fog.hazardPending === true;
         fog.correctedEver = fog.correctedEver === true;
         fog.started = fog.started === true;
-        if (fog.active && fog.started && fog.current) {
+        if (fog.active && fog.started && fog.current && !fog.pendingDraw) {
           if (!fog.deck.includes(fog.current)) fog.deck.unshift(fog.current);
           fog.current = null;
         }
@@ -1253,12 +1255,6 @@
     if (state.trackers.curse > limits.curse) failures.push("诅咒轨溢出");
     if (state.trackers.time > limits.time) failures.push("时间轨溢出");
     current.failed = failures.join("；");
-    if (!state.taskMode && state.trackers.time >= 8 && !current.storyQueue.some(item => item.code === "TIME-8")) {
-      current.storyQueue.push({ id: uid(), code: "TIME-8", text: "时间 8：检查初步冲突", read: false });
-    }
-    if (!state.taskMode && state.trackers.time >= 16 && !current.storyQueue.some(item => item.code === "TIME-16")) {
-      current.storyQueue.push({ id: uid(), code: "TIME-16", text: "时间 16：检查完全冲突", read: false });
-    }
   }
 
   function tileSize(item) {
@@ -1883,12 +1879,8 @@
     );
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">TRAVEL</div><h3>旅行</h3></div><span class="badge gold">当前位置 ${esc(tileLabel(tile(current.current)))}</span></div>
-      <div class="fields">
-        <label>起始板块<select id="startingTileSelect">${startTiles.map(item => `<option value="${esc(item.id)}" ${item.id === startId ? "selected" : ""}>${esc(tileLabel(item))}${item.id === startId ? " · 当前起点" : ""}</option>`).join("")}</select></label>
-        <button id="applyStartingTile" class="secondary">以此板块重新开局</button>
-      </div>
-      <p class="tiny">更换起点会以所选板块为已探索板块，只生成它和相邻板块；不会作为游戏中的任意传送。</p>
-      <p class="muted">绿色高亮板块可直接前往。单击只选中，双击才启动板块结算。</p>
+      <strong>正常移动</strong>
+      <p class="muted">绿色高亮板块可双击直接前往。</p>
       <div class="legend">${legal.map(id => `<button class="small" data-begin="${esc(id)}">${esc(tileLabel(tile(id)))}</button>`).join("") || '<span class="muted">没有可直接前往的未探索板块</span>'}</div>
       <div class="travel-action-list">
         <div class="travel-action-row">
@@ -1902,6 +1894,13 @@
       </div>
       <div class="toolbar"><button id="skipTravelButton" class="secondary" ${canSkipTravelStep() ? "" : "disabled"}>跳过移动</button></div>
       ${current.travelRoute.length ? `<p class="tiny">最近路线：${current.travelRoute.map(id => esc(tileLabel(tile(id)))).join(" → ")}</p>` : ""}
+      <details class="travel-start-settings">
+        <summary>起始板块设置</summary>
+        <div class="fields">
+          <label>起始板块<select id="startingTileSelect">${startTiles.map(item => `<option value="${esc(item.id)}" ${item.id === startId ? "selected" : ""}>${esc(tileLabel(item))}${item.id === startId ? " · 当前起点" : ""}</option>`).join("")}</select></label>
+          <button id="applyStartingTile" class="secondary">以此板块重新开局</button>
+        </div>
+      </details>
     </section>`;
   }
 
@@ -2143,9 +2142,7 @@
     const current = mapState();
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">MARKERS</div><h3>阻挡、捷径与板块标记</h3></div></div>
-      <p class="muted tiny">从地图右侧标记栏把标记拖到地图上：装甲门、弥雾和其他阻挡会吸附到两张板块之间的通道，线索等板块标记可随意摆放。地图上的标记拖回标记栏即删除。</p>
       <div class="fields">
-        <button id="addShortcutMarker" class="secondary">在当前板块添加已解锁捷径</button>
         <label>自定义标记文字<input id="customMarkerText" maxlength="${CUSTOM_MARKER_MAX_LENGTH}" placeholder="例如：宝箱"></label>
         <button id="addCustomTileMarker" class="secondary">添加文字标记</button>
       </div>
@@ -2431,9 +2428,7 @@
         ${rules().districts.map(d => `<label>${esc(d.name)}${Number.isFinite(current.districtWheelLevels[d.id]) ? `<small class="muted">上层等级 ${current.districtWheelLevels[d.id]}${current.districtWheelLocations[d.id] ? ` · ${esc(current.districtWheelLocations[d.id])}` : ""}</small>` : ""}<select data-wheel="${d.id}"><option value="">未指定</option>${DATA.monsters.map(monster => `<option value="${monster.id}" ${current.districtWheel[d.id] === monster.id ? "selected" : ""}>${esc(monsterLabel(monster))} · ${esc(monsterRank(monster))}</option>`).join("")}</select></label>`).join("")}
       </div>
       ${source?.unresolved?.length ? `<div class="alert danger">未匹配怪物：${source.unresolved.map(esc).join("、")}</div>` : ""}
-      <div class="toolbar"><button id="syncDistrictWheel" class="small secondary" ${upstreamAvailable ? "" : "disabled"}>从上层刷新</button><label>轮换格数<input id="rotateCount" type="number" min="1" value="1" style="width:72px"></label><button class="small secondary" data-rotate="-1">逆时针</button><button class="small secondary" data-rotate="1">顺时针</button><button id="huntButton" class="small">追击 1 格</button></div>
-      <div class="toolbar"><span class="badge ${current.threatSevenSpawned ? "green" : current.threatSevenPending ? "gold" : ""}">首次 7+：${current.threatSevenSpawned ? "已生成" : current.threatSevenPending ? "等待步骤 d" : "未触发"}</span><button id="resetThreatSeven" class="small secondary" ${current.threatSevenSpawned || current.threatSevenPending || state.trackers.threat >= 7 ? "" : "disabled"}>重新结算 7+ 生成</button></div>
-      <p class="tiny">威胁 3、7、8：追猎 1；威胁 4、9：追猎 2。生成和追击只使用正面朝上的王国板块；无法沿正面板块接近队伍时，随机移到队伍相邻的正面板块。</p>
+      <div class="toolbar"><button id="syncDistrictWheel" class="small secondary" ${upstreamAvailable ? "" : "disabled"}>从上层刷新</button><label class="rotate-count-label">轮换<input id="rotateCount" type="number" min="1" value="1" style="width:72px"></label><button class="small secondary" data-rotate="-1">逆时针</button><button class="small secondary" data-rotate="1">顺时针</button><button id="huntButton" class="small">追击 1 格</button></div>
       <div class="fields">
         <label>怪物<select id="monsterSelect">${DATA.monsters.map(monster => `<option value="${monster.id}">${esc(monsterLabel(monster))}</option>`).join("")}</select></label>
         <button id="spawnMonster" class="secondary" ${selectedTileIsFaceUp ? "" : "disabled"}>在所选正面板块生成</button>
@@ -2464,12 +2459,30 @@
         const gridX = (Number(item.x) || 0) - minX + 1;
         const gridY = (Number(item.y) || 0) - minY + 1;
         return `<div class="fog-board-card ${isActive ? "active" : "flipped"} ${isCurrent ? "current" : ""}" style="grid-column:${gridX};grid-row:${gridY}" title="${isActive ? "当前直线路径" : "修正方向后翻回卡背"}">
-          <span class="tiny">值 ${item.value}${item.hazard ? " · 侵害" : ""}</span>
           ${cardView(card(item.cardId)?.image, isActive ? "face" : "back", "fog-mini")}
           ${isCurrent ? '<span class="fog-party" title="队伍位置">队</span>' : ""}
         </div>`;
       }).join("")}
     </div></div>`;
+  }
+
+  function focusFogPath() {
+    requestAnimationFrame(() => {
+      const shell = $(".fog-board-shell");
+      if (!shell) return;
+      const currentCard = shell.querySelector(".fog-board-card.current");
+      if (currentCard && shell.scrollWidth > shell.clientWidth) {
+        const shellRect = shell.getBoundingClientRect();
+        const cardRect = currentCard.getBoundingClientRect();
+        shell.scrollLeft += (cardRect.left + cardRect.right - shellRect.left - shellRect.right) / 2;
+      }
+      const sticky = $(".delve-tracks-sticky");
+      const topInset = sticky ? sticky.getBoundingClientRect().height + 12 : 12;
+      const rect = shell.getBoundingClientRect();
+      const available = Math.max(0, window.innerHeight - topInset - 12);
+      const desiredTop = topInset + Math.max(0, (available - rect.height) / 2);
+      window.scrollBy({ top: rect.top - desiredTop, behavior: "smooth" });
+    });
   }
 
   function fogPanel() {
@@ -2486,14 +2499,16 @@
     const lowest = lowestFogEntries(fog);
     const hazardEntry = fog.hazardPending ? fog.used.at(-1) : null;
     const hazardCard = card(hazardEntry?.cardId);
-    const actionDisabled = fog.hazardPending || peekActive ? "disabled" : "";
+    const actionDisabled = fog.hazardPending || peekActive || fog.pendingDraw ? "disabled" : "";
     const stayBlocked = fog.started && !FOG_RULES.canPlace(fog, false);
     const headingLabel = ["东", "南", "西", "北"][Number(fog.heading) || 0];
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">DEEP FOG</div><h3>弥雾路径</h3></div><span class="badge">牌堆 ${fog.deck.length} · 弃牌 ${fog.discard.length}</span></div>
       <div class="toolbar"><button id="fogDiscardTop" class="small danger" ${fog.deck.length && !peekActive ? "" : "disabled"}>弃置牌堆顶 1 张</button><button id="fogReshuffleDeck" class="small secondary" ${(fog.discard.length || fog.deck.length > 1) && !peekActive ? "" : "disabled"}>重洗牌组</button><span class="tiny">弃牌洗回未抽牌堆；当前牌与路径牌保持不变。</span></div>
       ${fog.active ? `
-        <p>目标 <strong>${esc(tileLabel(tile(fog.target)))}</strong> · 直线路径 ${fog.route.length}/${fog.intensity} 张 · 当前方向 ${headingLabel} · 弥雾值 ${pathValue} + 满杯 ${fog.baneFull} = <strong>${fog.total}</strong></p>
+        <div class="fog-section-divider" aria-hidden="true"></div>
+        <p>目标 <strong>${esc(tileLabel(tile(fog.target)))}</strong> · 直线路径 ${fog.route.length}/${fog.intensity} 张 · 当前方向 ${headingLabel}<br>弥雾值 ${pathValue} + 满杯 ${fog.baneFull} = <strong>${fog.total}</strong></p>
+        <div class="fog-section-divider" aria-hidden="true"></div>
         <div class="fields fog-peek-fields">
           <label>查看数量<input id="fogPeekCount" type="number" min="1" max="${Math.max(1, fog.deck.length)}" step="1" value="${defaultPeekCount}" ${peekActive ? "disabled" : ""}></label>
           <button id="fogStartPeekTop" class="secondary" ${fog.deck.length && !fog.hazardPending && !peekActive ? "" : "disabled"}>查看牌顶</button>
@@ -2509,25 +2524,27 @@
               <button type="button" class="small secondary" data-fog-peek-index="${index}" data-fog-peek-destination="top" aria-pressed="${peek.destinations[index] === "top"}">盖回牌顶</button>
               <button type="button" class="small secondary" data-fog-peek-index="${index}" data-fog-peek-destination="bottom" aria-pressed="${peek.destinations[index] === "bottom"}">放到牌底</button>
               <button type="button" class="small secondary" data-fog-peek-index="${index}" data-fog-peek-destination="shuffle" aria-pressed="${peek.destinations[index] === "shuffle"}">洗回牌库</button>
+              <button type="button" class="small secondary" data-fog-peek-index="${index}" data-fog-peek-destination="discard" aria-pressed="${peek.destinations[index] === "discard"}">弃置</button>
             </div>
           </div>`).join("")}</div>
           <div class="toolbar scouting-peek-actions"><button id="fogConfirmPeek" class="small">${fogPeekConfirmationLabel(peek)}</button><button id="fogCancelPeek" class="small secondary">全部放回牌${peek.source === "bottom" ? "底" : "顶"}</button></div>
         ` : ""}
-        ${fog.started ? fogBoard(fog) : ""}
-        ${!fog.started && active ? `<div class="fog-current">${cardView(active.image, "face")}<div class="alert">起始弥雾卡 · 值 ${fogCardValue(active)}${active.hazard ? " · 有侵害（起始牌不结算）" : ""}</div><button id="fogStartCard" ${peekActive ? "disabled" : ""}>建立起始弥雾卡</button></div>` : ""}
+        ${active && (!fog.started || fog.pendingDraw) ? `<div class="fog-section-divider" aria-hidden="true"></div><div class="fog-current">${cardView(active.image, "face")}<div class="alert">${fog.started ? "新抽弥雾卡" : "起始弥雾卡"} · 值 ${fogCardValue(active)}${active.hazard ? " · 有侵害" : ""}</div><div class="fog-current-actions"><button id="${fog.started ? "fogConfirmDraw" : "fogStartCard"}" ${peekActive ? "disabled" : ""}>使用此牌</button><button id="fogRedraw" class="secondary" ${peekActive || !fog.deck.length ? "disabled" : ""}>弃置重抽</button><button id="fogBottomRedraw" class="secondary" ${peekActive || !fog.deck.length ? "disabled" : ""}>放底重抽</button></div></div>` : ""}
         ${fog.started ? `
+          <div class="fog-section-divider" aria-hidden="true"></div>
           <div class="fields">
             <label class="check"><input id="fogBaneHalf" type="checkbox" ${fog.baneHalf ? "checked" : ""}>半杯侵害指示物</label>
             <label>满杯侵害指示物<input id="fogBaneFull" type="number" min="0" step="1" value="${fog.baneFull}"></label>
           </div>
           ${fog.hazardPending ? `<div class="alert danger"><strong>侵害待结算：</strong>${esc(hazardCard?.name || hazardEntry?.cardId || "当前弥雾卡")}。完成卡面效果并更新侵害指示物后确认。<div class="toolbar"><button id="fogHazardResolved">确认侵害已结算</button></div></div>` : `<p class="tiny">${fog.correctedEver ? "已修正过方向，之后抽到的侵害效果均需结算。" : "首次修正方向后，才开始结算新抽弥雾卡的侵害效果。"}</p>`}
+          <div class="fog-section-divider" aria-hidden="true"></div>
           ${lowest.length ? `<label>离开时弃置的最低值牌<select id="fogLowestCard">${lowest.map(item => `<option value="${esc(item.cardId)}">${esc(card(item.cardId)?.name || item.cardId)} · 值 ${item.value}</option>`).join("")}</select></label>` : ""}
           ${fog.route.length < fog.intensity ? `
             <div class="fields">
               <label>修正方向保留的枢轴卡<select id="fogPivot">${fog.route.map((item, index) => `<option value="${index}">第 ${index + 1} 张 · 值 ${item.value}</option>`).join("")}</select></label>
               <label>转向<select id="fogTurn"><option value="left">向左转</option><option value="right">向右转</option></select></label>
             </div>
-            <div class="toolbar"><button id="fogStay" ${fog.hazardPending || peekActive || stayBlocked ? "disabled" : ""}>${stayBlocked ? "前方已有弥雾卡" : "保持方向并抽牌"}</button><button id="fogCorrect" class="secondary" ${actionDisabled}>修正方向并抽牌</button><button id="fogWithdraw" class="danger" ${actionDisabled}>撤回</button></div>
+            <div class="toolbar fog-direction-actions"><button id="fogStay" ${fog.hazardPending || peekActive || stayBlocked || fog.pendingDraw ? "disabled" : ""}>${stayBlocked ? "前方已有弥雾卡" : "保持方向并抽牌"}</button><button id="fogCorrect" class="secondary" ${actionDisabled}>修正方向并抽牌</button><button id="fogWithdraw" class="danger" ${actionDisabled}>撤回</button></div>
           ` : `
             <div class="alert">已达到目标浓度。最终弥雾值 ${fog.total}：<strong>${outcomeLabel}</strong></div>
             ${outcome === "minor" ? `<label>选择结算一项严重惩罚的牌<select id="fogPenaltyCard">${fog.route.map(item => `<option value="${esc(item.cardId)}">${esc(card(item.cardId)?.name || item.cardId)} · 值 ${item.value}</option>`).join("")}</select></label>` : ""}
@@ -2546,7 +2563,7 @@
     const selectableMainKnights = state.knights.filter(knight => knight.memberType !== "squire");
     const clueKnights = clueAssignmentKnights();
     return `<section class="panel">
-      <div class="panel-header"><div><div class="eyebrow">CLUES & STORY</div><h3>队伍线索与故事队列</h3></div><span class="badge">自选未分配 ${state.trackers.unassignedClues}</span></div>
+      <div class="panel-header"><div><div class="eyebrow">CLUES</div><h3>队伍线索</h3></div><span class="badge">自选未分配 ${state.trackers.unassignedClues}</span></div>
       <div class="fields">
         <label>主线骑士（可选）<select id="mainKnightSelect"><option value="">未指定</option>${selectableMainKnights.map(knight => `<option value="${esc(knight.id)}" ${knight.id === state.mainKnightId ? "selected" : ""}>${esc(knight.name)}</option>`).join("")}</select></label>
         <button id="autoAssignClueRequirements" type="button" class="secondary">自动分配可分配队员主次线索</button>
@@ -2555,7 +2572,7 @@
       ${lastClue ? `<div class="alert"><strong>最近自动线索：</strong>${directionName(lastClue.direction)}向 · ${clueName(lastClue.clueType)} · ${lastClue.recipients.length ? `${lastClue.recipients.map(esc).join("、")}各获得 1 枚` : "无人需求匹配"}</div>` : ""}
       ${pendingCluePanel()}
       ${clueKnights.map(knight => `<div class="clue-row">
-        <div><span class="badge ${knight.memberType === "squire" ? "gold" : ""}">${knight.memberType === "squire" ? "侍从" : "骑士"}</span><select data-knight-name="${knight.id}">${memberOptions(knight)}</select>${knight.fivePlayerTarget && knight.primary ? `<span class="badge gold" title="五人模式：队长的目标线索，远征结束时需至少 4 枚">队长目标${esc(clueName(knight.primary))} ${Math.max(0, Number(knight.clues[knight.primary]) || 0)}/4</span>` : ""}</div>
+        <div><select data-knight-name="${knight.id}">${memberOptions(knight)}</select>${knight.fivePlayerTarget && knight.primary ? `<span class="badge gold" title="五人模式：队长的目标线索，远征结束时需至少 4 枚">队长目标${esc(clueName(knight.primary))} ${Math.max(0, Number(knight.clues[knight.primary]) || 0)}/4</span>` : ""}</div>
         <div class="legend clue-records">${CLUES.map(([id, name, icon]) => `<span class="badge clue-record" title="${esc(name)}线索"><img class="clue-token-icon" src="${esc(icon)}" alt="${esc(name)}线索"><strong>${knight.clues[id]}</strong><button class="inline-step" data-clue="${knight.id}|${id}|-1">−</button><button class="inline-step" data-clue="${knight.id}|${id}|1">＋</button></span>`).join("")}</div>
         <div class="fields three">
           <label>主要需求<select data-requirement="${knight.id}|primary"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.primary === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
@@ -2563,12 +2580,6 @@
           <label>任务需求<select data-requirement="${knight.id}|task"><option value="">无</option>${CLUES.map(([id, name]) => `<option value="${id}" ${knight.task === id ? "selected" : ""}>${name}</option>`).join("")}</select></label>
         </div>
       </div>`).join("")}
-      <div class="fields">
-        <label>段落／提醒<input id="storyText" placeholder="段落编号或人工说明"></label><button id="addStory" class="secondary">加入队列</button>
-        <label>探索密码<input id="storyCode" placeholder="密码"></label><button id="addCode" class="secondary">记录密码</button>
-      </div>
-      <div class="list">${current.storyQueue.map(item => `<label class="list-row check"><input type="checkbox" data-story="${item.id}" ${item.read ? "checked" : ""}><span>${esc(item.code ? `${item.code} · ${item.text}` : item.text)}</span></label>`).join("") || '<span class="muted">没有待阅读段落</span>'}</div>
-      <p class="tiny">探索密码：${current.explorationCodes.map(esc).join("、") || "无"}。规则：第一枚线索按旅行方向读取顶部探索卡；每枚额外线索各抽一张轻型伤亡牌确认方向。主线骑士可不指定；每名队员按任务、主要或次要需求匹配线索。</p>
     </section>`;
   }
 
@@ -2820,6 +2831,7 @@
 
   function render() {
     const current = mapState();
+    const sidebarScrollTop = $(".sidebar-scroll")?.scrollTop || 0;
     if (!TOOL_TABS.some(([id]) => id === activeTool)) activeTool = STEP_TOOL[state.step] || "tile";
 
     $("#campaignKingdom").textContent = state.kingdom === "POS" ? "石之公国" : "沉没王国";
@@ -2831,6 +2843,7 @@
     $("#app").innerHTML = `<div class="host-layout">
       <div class="map-column stack">
         <div class="delve-tracks-sticky">${tracksPanel()}</div>
+        ${current.fog.active && current.fog.started ? `<section class="panel"><div class="panel-header"><h3>弥雾路径</h3></div>${fogBoard(current.fog)}</section>` : ""}
         <section class="panel map-shell">
           <div class="map-heading">
             <div class="map-title">
@@ -2859,6 +2872,7 @@
       <aside class="host-sidebar" aria-label="主持工具">
         <div class="sidebar-scroll stack">
           ${current.tileResolution ? `<div class="sidebar-priority">${tileResolutionPanel()}</div>` : ""}
+          ${current.fog.active ? `<div class="sidebar-priority">${fogPanel()}</div>` : ""}
           <section class="panel history-panel">
             <div class="history-actions">
               <details class="history-details">
@@ -2875,10 +2889,10 @@
               <span class="badge gold">第 ${state.round} 轮 · ${esc(STEPS[state.step])}</span>
             </div>
             <div class="tool-tabs" role="tablist" aria-label="主持工具">${toolTabs}</div>
-            ${toolPanel("tile", `${selectedTilePanel()}${markerPanel()}${showKingdomTilesPanel()}`)}
-            ${toolPanel("travel", `${travelPanel()}${fogPanel()}`)}
-            ${toolPanel("encounter", wheelAndMonsterPanel())}
+            ${toolPanel("travel", `${travelPanel()}${current.fog.active ? "" : fogPanel()}`)}
             ${toolPanel("exploration", explorationToolsPanel())}
+            ${toolPanel("tile", `${selectedTilePanel()}${markerPanel()}${showKingdomTilesPanel()}`)}
+            ${toolPanel("encounter", wheelAndMonsterPanel())}
             ${toolPanel("mercenary", mercenaryPanel())}
             ${toolPanel("party", cluesAndStoryPanel())}
           </section>
@@ -2886,6 +2900,8 @@
       </aside>
     </div>`;
     bind();
+    const sidebar = $(".sidebar-scroll");
+    if (sidebar) sidebar.scrollTop = sidebarScrollTop;
     if (kingdomPanelDialogOpen) openKingdomPanelDialog();
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
@@ -2921,6 +2937,7 @@
       </section>
       <div class="layout">
         <div class="stack">
+          ${current.fog.active && current.fog.started ? fogBoard(current.fog) : ""}
           <div class="map-workspace">
             <section class="map-board"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
           </div>
@@ -3464,17 +3481,13 @@
       changeThreat(1);
       addLog(`进入弥雾：威胁 +1，目标 ${tileLabel(tile(target))}，浓度 ${intensity}`);
       save(true);
+      const sidebar = $(".sidebar-scroll");
+      if (sidebar) sidebar.scrollTop = 0;
     });
     $("#advanceTileButton")?.addEventListener("click", () => { readResolutionFields(); advanceTileResolution(); });
     $("#cancelTileButton")?.addEventListener("click", undo);
     $("#skipTravelButton")?.addEventListener("click", skipTravelStep);
 
-    $("#addShortcutMarker")?.addEventListener("click", () => {
-      snapshot("添加已解锁捷径");
-      current.pathMarkers.push({ id: uid(), from: current.selected, type: "shortcut" });
-      addLog(`添加已解锁捷径：${tileLabel(tile(current.selected))}`);
-      save(true);
-    });
     const addCustomTileMarker = () => {
       const text = customMarkerText($("#customMarkerText")?.value);
       if (!text) return toast("请输入自定义标记文字");
@@ -3743,13 +3756,6 @@
       save(true);
     }));
     $("#huntButton")?.addEventListener("click", () => { snapshot("追击怪物移动"); moveHunt(1); save(true); });
-    $("#resetThreatSeven")?.addEventListener("click", () => {
-      snapshot("重新结算首次威胁 7+ 生成");
-      current.threatSevenSpawned = false;
-      current.threatSevenPending = true;
-      addLog("已重置首次威胁 7+ 生成；将在下一次王国板块步骤 d 按当前地区轮盘重新结算");
-      save(true);
-    });
     $("#spawnMonster")?.addEventListener("click", () => {
       const monsterId = $("#monsterSelect").value;
       if (!tileIsFaceUp(current.selected, current)) {
@@ -4038,6 +4044,7 @@
         active: false,
         target: "",
         current: null,
+        pendingDraw: null,
         route: [],
         used: [],
         total: 0,
@@ -4063,6 +4070,7 @@
 
     $("#fogDiscardTop")?.addEventListener("click", () => {
       const fog = current.fog;
+      if (fog.pendingDraw) return toast("请先确认或重抽当前弥雾卡");
       if (fogPeekState(fog).cards.length) return toast("请先确认或取消弥雾牌查看");
       if (!fog.deck.length) return toast("弥雾牌堆为空");
       snapshot("弃置弥雾牌堆顶 1 张");
@@ -4108,7 +4116,7 @@
       const peek = fogPeekState(fog);
       const index = Number(button.dataset.fogPeekIndex);
       const destination = button.dataset.fogPeekDestination;
-      if (!Number.isInteger(index) || !peek.cards[index] || !["top", "bottom", "shuffle"].includes(destination)) return;
+      if (!Number.isInteger(index) || !peek.cards[index] || !["top", "bottom", "shuffle", "discard"].includes(destination)) return;
       peek.destinations[index] = destination;
       const group = button.closest(".fog-peek-choice");
       $$('[data-fog-peek-destination]', group).forEach(option => {
@@ -4136,8 +4144,9 @@
       }
       snapshot(`放置查看的弥雾牌 ${peek.cards.length} 张`);
       fog.deck = result.deck;
+      fog.discard.push(...result.discardedCards);
       clearFogPeek(fog);
-      addLog(`弥雾：查看的牌中 ${result.topCards.length} 张盖回牌顶，${result.bottomCards.length} 张放到牌底，${result.shuffledCards.length} 张洗回牌库`);
+      addLog(`弥雾：查看的牌中 ${result.topCards.length} 张盖回牌顶，${result.bottomCards.length} 张放到牌底，${result.shuffledCards.length} 张洗回牌库，${result.discardedCards.length} 张弃置`);
       save(true);
     });
 
@@ -4161,11 +4170,50 @@
       checkFogDeckExhaustion(fog);
       addLog(`弥雾：建立起始卡，路径 ${fog.route.length}/${fog.intensity}，牌面值 ${entry.value}`);
       save(true);
+      focusFogPath();
+    });
+
+    $("#fogRedraw")?.addEventListener("click", () => {
+      const fog = current.fog;
+      if (!fog.active || !fog.current || (fog.started && !fog.pendingDraw) || fogPeekState(fog).cards.length || !fog.deck.length) return;
+      snapshot("弃置弥雾卡并重抽");
+      fog.discard.push(fog.current);
+      fog.current = fog.deck.shift();
+      addLog("弥雾：弃置刚抽取的牌并重抽 1 张");
+      save(true);
+      focusFogPath();
+    });
+
+    $("#fogBottomRedraw")?.addEventListener("click", () => {
+      const fog = current.fog;
+      if (!fog.active || !fog.current || (fog.started && !fog.pendingDraw) || fogPeekState(fog).cards.length || !fog.deck.length) return;
+      snapshot("将弥雾卡放到牌底并重抽");
+      fog.deck.push(fog.current);
+      fog.current = fog.deck.shift();
+      addLog("弥雾：将刚抽取的牌放到牌底并重抽 1 张");
+      save(true);
+      focusFogPath();
+    });
+
+    $("#fogConfirmDraw")?.addEventListener("click", () => {
+      const fog = current.fog;
+      if (!fog.active || !fog.started || !fog.current || !fog.pendingDraw || fogPeekState(fog).cards.length) return;
+      const { corrected, pivotIndex, turn } = fog.pendingDraw;
+      if (!FOG_RULES.canPlace(fog, corrected, pivotIndex, turn)) return toast("放置位置已变化，无法使用此牌");
+      snapshot("放置抽取的弥雾卡");
+      const entry = makeFogEntry(fog.current, corrected);
+      FOG_RULES.place(fog, entry, corrected, pivotIndex, turn);
+      fog.current = null;
+      fog.pendingDraw = null;
+      checkFogDeckExhaustion(fog);
+      addLog(`弥雾：放置抽取的牌，路径 ${fog.route.length}/${fog.intensity}，弥雾值 ${fog.total}${fog.hazardPending ? "，等待结算侵害" : ""}`);
+      save(true);
+      focusFogPath();
     });
 
     const drawFogCard = corrected => {
       const fog = current.fog;
-      if (!fog.active || !fog.started) return;
+      if (!fog.active || !fog.started || fog.pendingDraw) return;
       if (fogPeekState(fog).cards.length) return toast("请先确认或取消弥雾牌查看");
       if (fog.hazardPending) return toast("请先完成当前侵害效果");
       if (fog.route.length >= fog.intensity) return toast("已达到目标弥雾浓度，请结算出现");
@@ -4179,11 +4227,11 @@
         return toast(corrected ? "该转向位置已有弥雾卡，请改选枢轴或转向" : "前方已有弥雾卡，不能保持方向");
       }
       snapshot(corrected ? "弥雾修正方向" : "弥雾保持方向");
-      const entry = makeFogEntry(fog.deck.shift(), corrected);
-      FOG_RULES.place(fog, entry, corrected, pivotIndex, turn);
-      checkFogDeckExhaustion(fog);
-      addLog(`弥雾：${corrected ? "修正方向" : "保持方向"}并抽取 1 张，路径 ${fog.route.length}/${fog.intensity}，弥雾值 ${fog.total}${fog.hazardPending ? "，等待结算侵害" : ""}`);
+      fog.current = fog.deck.shift();
+      fog.pendingDraw = { corrected, pivotIndex, turn };
+      addLog(`弥雾：${corrected ? "修正方向" : "保持方向"}并抽取 1 张，等待确认或重抽`);
       save(true);
+      focusFogPath();
     };
     $("#fogStay")?.addEventListener("click", () => drawFogCard(false));
     $("#fogCorrect")?.addEventListener("click", () => drawFogCard(true));
@@ -4322,24 +4370,6 @@
       checkLimits();
       save(true);
     });
-    $("#addStory")?.addEventListener("click", () => {
-      const text = $("#storyText").value.trim();
-      if (!text) return;
-      current.storyQueue.push({ id: uid(), code: "", text, read: false });
-      save(true);
-    });
-    $("#addCode")?.addEventListener("click", () => {
-      const code = $("#storyCode").value.trim();
-      if (!code) return;
-      current.explorationCodes.push(code);
-      current.storyQueue.push({ id: uid(), code, text: `读取探索密码 ${code} 对应段落`, read: false });
-      save(true);
-    });
-    $$("[data-story]").forEach(input => input.addEventListener("change", () => {
-      const item = current.storyQueue.find(row => row.id === input.dataset.story);
-      if (item) item.read = input.checked;
-      save(true);
-    }));
     $$('[data-track-note-text]').forEach(input => input.addEventListener("input", () => {
       const form = input.closest("[data-track-note-form]");
       if (form) form.dataset.noteDirty = "true";

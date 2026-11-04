@@ -1101,7 +1101,37 @@ button.delve-track-cell.active .track-cell-note {
   overflow-wrap: anywhere;
 }
 .scouting-peek-actions { margin-top: 10px; }
-.fog-peek-fields { margin-top: 10px; }
+.fields.fog-peek-fields {
+  grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  margin-top: 10px;
+}
+.fog-peek-fields input { width: 100%; min-width: 0; }
+.fog-direction-actions { margin-top: 10px; }
+.rotate-count-label { display: inline-flex; align-items: center; gap: 5px; }
+.fog-current-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.fog-current-actions button { min-width: 0; padding-inline: 3px; white-space: nowrap; }
+.fog-section-divider { border-top: 1px solid var(--line-soft); margin: 12px 0; }
+/* Separate distinct operations inside the map's host panels. */
+.tool-panel > .panel:has(#startingTileSelect) > .travel-action-list,
+.tool-panel > .panel:has(#startingTileSelect) > .toolbar,
+.tool-panel > .panel > .travel-start-settings,
+.tool-panel > .panel:has(#selectedBeginButton) > .toolbar,
+.tool-panel > .panel:has(#addCustomTileMarker) > .list,
+.tool-panel .kingdom-tile-show-group + .kingdom-tile-show-group,
+.tool-panel > .panel:has(#scoutRevealNeighbor) > .toolbar,
+.tool-panel > .panel:has(#scoutRevealNeighbor) > .scouting-reorder-fields,
+.tool-panel > .panel:has(#shuffleExploration) > .alert,
+.tool-panel > .panel:has(#shuffleExploration) > .toolbar,
+.tool-panel > .panel:has(#shuffleExploration) > .fields,
+.tool-panel > .panel:has(#syncDistrictWheel) > .fields:has(#monsterSelect),
+.tool-panel > .panel > .mercenary-section {
+  border-top: 1px solid var(--line-soft);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.travel-start-settings summary { cursor: pointer; }
+.travel-start-settings[open] > .fields { margin-top: 10px; }
 .fog-peek-card { align-content: start; }
 .fog-peek-choice {
   display: grid;
@@ -1134,21 +1164,23 @@ button.delve-track-cell.active .track-cell-note {
   background: rgba(0, 0, 0, .16);
 }
 .fog-board {
+  --fog-card-width: 170px;
   display: grid;
-  grid-template-columns: repeat(var(--fog-columns), 100px);
+  grid-template-columns: repeat(var(--fog-columns), var(--fog-card-width));
   grid-template-rows: repeat(var(--fog-rows), auto);
-  gap: 12px;
+  gap: 0;
   width: max-content;
   min-width: 100%;
   align-items: start;
-  justify-content: center;
+  justify-content: safe center;
 }
 .fog-board-card {
   position: relative;
   display: grid;
   gap: 4px;
-  width: 100px;
+  width: var(--fog-card-width);
 }
+.fog-board-card .rule-card.fog-mini { width: var(--fog-card-width); }
 .fog-board-card.active .rule-card { border-color: var(--gold); }
 .fog-board-card.flipped { opacity: .72; }
 .fog-party {
@@ -1672,6 +1704,16 @@ main { padding: 12px 18px 24px; }
   height: 20px;
   flex-basis: 20px;
 }
+.tool-panel .clue-row { gap: 5px; }
+.tool-panel .clue-row { border-top: 1px solid var(--line); }
+.tool-panel .clue-row + .clue-row { border-top: 0; }
+.tool-panel .clue-row .clue-records { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+.tool-panel .clue-row .clue-record { justify-content: center; gap: 2px; min-width: 0; padding: 3px 1px; }
+.tool-panel .clue-row .clue-token-icon { width: 16px; height: 16px; flex-basis: 16px; }
+.tool-panel .clue-row .inline-step { min-width: 22px; min-height: 28px; padding: 1px 3px; }
+.tool-panel .clue-row .fields.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+.tool-panel .clue-row .fields.three label { min-width: 0; gap: 2px; font-size: 12px; }
+.tool-panel .clue-row .fields.three select { min-width: 0; padding-inline: 4px; }
 .party-resource strong {
   color: var(--gold-soft);
   font-size: 22px;

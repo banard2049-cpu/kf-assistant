@@ -1,0 +1,359 @@
+{
+  "cards": {
+    "M_WhiteApe:AI1:19": {
+      "keywords": [
+        "Knockback X",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-01.jpg",
+      "sha256": "35702d631905d032321ad63928f39cc8be8800f4fac8c76c6434878506d31f45"
+    },
+    "M_WhiteApe:AI1:20": {
+      "keywords": [
+        "Jump",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-02.jpg",
+      "sha256": "375c817ebccafaf13c232234723a37b47f7e03e33a231649018e225d24ac6ce5"
+    },
+    "M_WhiteApe:AI1:21": {
+      "keywords": [
+        "Pushback X",
+        "Cooldown",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-03.jpg",
+      "sha256": "d7b9b5d098e3844e0fb32c333e5766763d2d2cc9a5dddf35b900eda6756cd397"
+    },
+    "M_WhiteApe:AI1:22": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-05.jpg",
+      "sha256": "61a78e622b337426e4336d9282b91e4c79b64ece3b2dec9723264e3672eeb706"
+    },
+    "M_WhiteApe:AI1:23": {
+      "keywords": [
+        "Pushback X",
+        "Knockdown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-00.jpg",
+      "sha256": "c8aeeadaf7a01d61a7b17e821bee7dac8fe7461c6a6904fe073656c06b41ffb2"
+    },
+    "M_WhiteApe:AI1:24": {
+      "keywords": [],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-04.jpg",
+      "sha256": "865c38e0e6843b86065f6b300fba575f6fbd73e70093a59466f4e41bb602fbe2"
+    },
+    "M_WhiteApe:AI2:25": {
+      "keywords": [
+        "Pushback X",
+        "Knockdown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-06.jpg",
+      "sha256": "1090593e31a15b5598d624ec87e7f436a31908bb673accf2657dc0a90c11147d"
+    },
+    "M_WhiteApe:AI2:26": {
+      "keywords": [],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-10.jpg",
+      "sha256": "cfba6e43c7fd8f5653251f6e1a45a1f6facaddd53239c694f8024e38afff2974"
+    },
+    "M_WhiteApe:AI2:27": {
+      "keywords": [
+        "Choke",
+        "Forced Vault",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-07.jpg",
+      "sha256": "072aa3e2950c60e4b11834326cfed304adbe8a82de3c6f63447e983911897757"
+    },
+    "M_WhiteApe:AI2:28": {
+      "keywords": [
+        "Jump",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-08.jpg",
+      "sha256": "489a7fa69ebd7449f0980431a935f3a49ade89e253574a31b196e6f260e17843"
+    },
+    "M_WhiteApe:AI2:29": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-11.jpg",
+      "sha256": "450fa6bec926ac303dd381e82f119b236319783ded1a7b3447473d684315c0c6"
+    },
+    "M_WhiteApe:AI2:30": {
+      "keywords": [
+        "Pushback X",
+        "Delay",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-09.jpg",
+      "sha256": "181432e683804f9b83de9d6f3718a84dd325fa773b285be2be88aba584803995"
+    },
+    "M_WhiteApe:AI3:31": {
+      "keywords": [],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-16.jpg",
+      "sha256": "db9c11756bd466197e0f843bfc8855543dfd3ed87561aea962245e0184cba391"
+    },
+    "M_WhiteApe:AI3:32": {
+      "keywords": [
+        "Pushback X",
+        "Discard",
+        "Knockback X",
+        "Knockdown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-15.jpg",
+      "sha256": "24a947c6a4f24351df2f0f6ac452da07477cb44f05673d66c20747ee07f72162"
+    },
+    "M_WhiteApe:AI3:33": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-17.jpg",
+      "sha256": "ad4f576fc4807880e11fadccad1a3c1456d09dd4c5c620dc161a3d4071f8ada1"
+    },
+    "M_WhiteApe:AI3:34": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-14.jpg",
+      "sha256": "488742fab471febd66dcc9d1ae178efc64a8235775ad57f15ec57272f899cd4e"
+    },
+    "M_WhiteApe:AI3:35": {
+      "keywords": [
+        "Choke",
+        "Forced Vault",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-13.jpg",
+      "sha256": "4c63197f0c476dcbe381a886ead23589222abdf8d7d847ee18742be27daee189"
+    },
+    "M_WhiteApe:AI3:36": {
+      "keywords": [
+        "Knockdown",
+        "Knockback X",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-12.jpg",
+      "sha256": "bbd8417a1fab3f31abcf0911cf120ffe931f23076bd4e922999d5789868cb782"
+    },
+    "M_WhiteApe:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-23.jpg",
+      "sha256": "5c8e8e1bebc628859815473ddd93a2b99dfbb334cfd414362235c53fbb4dca6e"
+    },
+    "M_WhiteApe:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-22.jpg",
+      "sha256": "3b45e593247c4536b2f0c8c2d3657724893b7d297fddc4f4b3d79eef2886acea"
+    },
+    "M_WhiteApe:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-21.jpg",
+      "sha256": "f38440eeaf8e5c1407953456cc75a5a4db864fe8aa7b6d8ce93ea26b8220af21"
+    },
+    "M_WhiteApe:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Cooldown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-20.jpg",
+      "sha256": "6449aee45eb613b64ca4eba0f0b96e635d5448ddf21d4bc47fa742ea0cbdfeb1"
+    },
+    "M_WhiteApe:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-19.jpg",
+      "sha256": "bbb976ceb1f18866869b31bcbb0dd257b90fd476536abb976a6eedd0e5932047"
+    },
+    "M_WhiteApe:BP1:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-24.jpg",
+      "sha256": "650627d9fb1825716772b2090f8f0fd6dc46d1b634d89b408eaf1c6d910639b7"
+    },
+    "M_WhiteApe:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-28.jpg",
+      "sha256": "44450206920b4045195fb4ef23c6f7248dd7d58c2b8a913afd698911492d7c7c"
+    },
+    "M_WhiteApe:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Delay",
+        "Knockdown",
+        "Scavenge X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-27.jpg",
+      "sha256": "2588f70707fbc8cce30407652b1212f866e34f9baf448493d896f5ae974b7b87"
+    },
+    "M_WhiteApe:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Auto-X Y"
+      ],
+      "note": "卡面 Auto-break 2 对应自动 X Y 词条；弃置状态卡和 Break 指示物不等于破甲 X。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-26.jpg",
+      "sha256": "6238f1ad6106a3c9da4ab070ae17d85e76ae1c615dae343b4ee9556aa6220dbe"
+    },
+    "M_WhiteApe:BP2:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X",
+        "Auto-X Y"
+      ],
+      "note": "卡面 Auto-break 2 对应自动 X Y 词条；弃置状态卡和 Break 指示物不等于破甲 X。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-25.jpg",
+      "sha256": "1a73b7ced841c13c421c4c0b4f2b98e526e2087f242bd883d082cea98f30a90f"
+    },
+    "M_WhiteApe:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-30.jpg",
+      "sha256": "1dd567ab8f3f025af0f0450b8c73c875e59f157f8ea90ef9ceae2bafbbf2250e"
+    },
+    "M_WhiteApe:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-29.jpg",
+      "sha256": "041abd2437bd84e358605e3d5a9470478ecdf5157aef61acbe5ec112078eee32"
+    },
+    "M_WhiteApe:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-36.jpg",
+      "sha256": "eaaa39f8eac7d289483382d52bb10bd5eba304431f7612518088442e54ce034c"
+    },
+    "M_WhiteApe:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-35.jpg",
+      "sha256": "0f8fc4ff8950ff0f9c85cfe5a20ecb31138fbefe1a36119dcf47b52e366bf56c"
+    },
+    "M_WhiteApe:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-34.jpg",
+      "sha256": "2ce5e0d4d86689793ae947b3ca0d98c7006f08bd44b0a5657a63e803b99e96cb"
+    },
+    "M_WhiteApe:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Discard"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-33.jpg",
+      "sha256": "c1bdc35b902865abe179bdf899f40f8cd744db7e01d9c483524645f256a96657"
+    },
+    "M_WhiteApe:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-32.jpg",
+      "sha256": "b134fcb10dbae662a05868cf143ceed183fcdc5a332b2b107da6b952e204c443"
+    },
+    "M_WhiteApe:BP3:18": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X",
+        "Knockdown"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-31.jpg",
+      "sha256": "360bcbfff17f8ae8f2f8bd97c00b7ca988039367848547f539172ca835f0091a"
+    },
+    "M_WhiteApe:BPS:0": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-18.jpg",
+      "sha256": "122ea925e0812bf1f7503571ccfc6a446006e50349822353fd610156ae6d8329"
+    },
+    "M_WhiteApe:SIG:37": {
+      "keywords": [
+        "Heal",
+        "Escalate X"
+      ],
+      "note": "目视核对卡面，仅列原词典中可对应的规则关键词；弃置状态卡及 Break 指示物不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-37.jpg",
+      "sha256": "a35a3c3f0343e658b7a3da9b8d11b7a67cc49c67cd2d83bde2872204ed420266"
+    }
+  }
+}

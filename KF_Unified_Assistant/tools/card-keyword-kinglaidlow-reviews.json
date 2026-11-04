@@ -1,0 +1,311 @@
+{
+  "cards": {
+    "M_KingLaidLow:AI1:20": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-00.jpg",
+      "sha256": "ad2ba18c841f565814e2c490151036fde62285fad275ea0392d744943ad84985"
+    },
+    "M_KingLaidLow:AI1:21": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-01.jpg",
+      "sha256": "02236962935233b7516fe890c22cc6281f0d4a588747c817c2fd3a53c933819c"
+    },
+    "M_KingLaidLow:AI1:22": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-05.jpg",
+      "sha256": "8d101a2567ba3623be1b3d98482029702b17f885f12edce10d9f71143761f439"
+    },
+    "M_KingLaidLow:AI1:23": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-04.jpg",
+      "sha256": "43a8b453618d47d0777b8ab12a2db0ca2f3612a67814386255ac5394bcc5251a"
+    },
+    "M_KingLaidLow:AI1:24": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-03.jpg",
+      "sha256": "93313654332846f538bb9aa9388254f1d7083b347a9a586ba335f70769cb538d"
+    },
+    "M_KingLaidLow:AI1:25": {
+      "keywords": [
+        "Doomed"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-02.jpg",
+      "sha256": "7bfa472710e79380a1d1322f09ddf207942b8e9457f344a2b99fa7e51a3f08d3"
+    },
+    "M_KingLaidLow:AI2:26": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-06.jpg",
+      "sha256": "8686269404a8c3ea964a4ad4b945d48a3689f4347bc3db983cd6851d6ff4a179"
+    },
+    "M_KingLaidLow:AI2:27": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-07.jpg",
+      "sha256": "8d955ff4f705073b410e05e05139481c85b33211e40cb1c224312bf07b750d25"
+    },
+    "M_KingLaidLow:AI2:28": {
+      "keywords": [
+        "Choke"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-08.jpg",
+      "sha256": "721b80028c16c9f2f85bdb63f1a55756e6a1c5a73f066d96084af2a08b3a0022"
+    },
+    "M_KingLaidLow:AI2:29": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-09.jpg",
+      "sha256": "01aa862523a60987eaa77b8bc3a4e63c43cea1429474fac961bc1cf35df5811e"
+    },
+    "M_KingLaidLow:AI2:30": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-11.jpg",
+      "sha256": "e8af1020652973f31df660969ffcc42304b7ac1f5296b9ccc10c1298d6bbbcdc"
+    },
+    "M_KingLaidLow:AI2:31": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-10.jpg",
+      "sha256": "e686988b56acafbbdbde982f1e8aadb3217a13aff14d44834b5c5f61456a32e2"
+    },
+    "M_KingLaidLow:AI3:32": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-13.jpg",
+      "sha256": "8896bacb73de701f566ba1ba7fbb374056ee5b3d0401ef687a4e73592544b9c0"
+    },
+    "M_KingLaidLow:AI3:33": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-14.jpg",
+      "sha256": "ae39a03ad8f6060df07bcafc30769d503ce436c6c5108806e41b7d58acb49a7d"
+    },
+    "M_KingLaidLow:AI3:34": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-15.jpg",
+      "sha256": "9cef95636df1bd48e7ffa3990a232a38596fe3aa6b76ba61d142ff81912e1ec4"
+    },
+    "M_KingLaidLow:AI3:35": {
+      "keywords": [
+        "Knockdown",
+        "Doomed",
+        "Heal"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-17.jpg",
+      "sha256": "b82669d5090b7ce5edb02c7b9cbcdab5270815675120d348bb2fff2d60d4f682"
+    },
+    "M_KingLaidLow:AI3:36": {
+      "keywords": [
+        "Jump",
+        "Knockdown",
+        "Choke"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-16.jpg",
+      "sha256": "91663b7082fe3f626d85c84b506168fe1e800eebf5546fe5ea02cae1a179825f"
+    },
+    "M_KingLaidLow:AI3:37": {
+      "keywords": [
+        "Jump"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-12.jpg",
+      "sha256": "4c5ef150a709e87b798357be13ec9c004c2c434170d08821b332c60ace2515c7"
+    },
+    "M_KingLaidLow:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-18.jpg",
+      "sha256": "58573af05a3f0dff106e1661ea79d9c988265356fe31bd5c9245ec4e74853549"
+    },
+    "M_KingLaidLow:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pull X",
+        "Drag X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-20.jpg",
+      "sha256": "a18375aa166cb227d1c0a0d1b9f394492fb151d0fc0d45e4445f06a90e4103ce"
+    },
+    "M_KingLaidLow:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Auto-X Y"
+      ],
+      "note": "Auto-hope 1 对应词典 Auto-X Y；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-19.jpg",
+      "sha256": "829d9d87e7d6ce27e65a847a16eee7fa60005968d3337a661c9520f19d77c831"
+    },
+    "M_KingLaidLow:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-21.jpg",
+      "sha256": "b114329d4c4f37320a441ad3761be9860fce3f73e609415c49b752be2fd1814e"
+    },
+    "M_KingLaidLow:BP1:4": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-22.jpg",
+      "sha256": "92c499682f538c8d5149ec84a0064fb52be463790beac9fbf3dc04261eab759f"
+    },
+    "M_KingLaidLow:BP1:5": {
+      "keywords": [
+        "OverpowerX+",
+        "Drag X",
+        "Scavenge X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-23.jpg",
+      "sha256": "323a1d047c58948d58b1fdbef90fd0c537e123b407d2da03a717bbfee5576665"
+    },
+    "M_KingLaidLow:BP2:9": {
+      "keywords": [
+        "OverpowerX+",
+        "Pull X",
+        "Drag X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-27.jpg",
+      "sha256": "038a85b9efc2cb676f00328ea1fc6b84b77b74eef9d69259d96fd39e7bace087"
+    },
+    "M_KingLaidLow:BP2:10": {
+      "keywords": [
+        "OverpowerX+",
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-28.jpg",
+      "sha256": "c174341fedce04d66feeb8e4fe342fcebfbae695f5a1dbbe32dbd2b1f60cc6a4"
+    },
+    "M_KingLaidLow:BP2:11": {
+      "keywords": [
+        "OverpowerX+",
+        "Drag X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-29.jpg",
+      "sha256": "4a7523b4e0bcab449b836078588cf6113cb2c2b64abbebfaeca572d5c41c54d0"
+    },
+    "M_KingLaidLow:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-24.jpg",
+      "sha256": "e515849af78870296c96cdb3bb7b951ae1f1edafceb095601f2851a896eba1a6"
+    },
+    "M_KingLaidLow:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Cumbersome"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-25.jpg",
+      "sha256": "2cbf484cd5313a9b731856371fadf8b5e74238467b6fd334afad508231a1b3e2"
+    },
+    "M_KingLaidLow:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pull X",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-26.jpg",
+      "sha256": "ea41dab97ebde09ee5ee8b656526bc4e26977da95b1888bfd88fa11539ea5384"
+    },
+    "M_KingLaidLow:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-31.jpg",
+      "sha256": "a8747963cc8c29c14a6bfc0eef0ca65d1a53231d479316737150c5caffc32050"
+    },
+    "M_KingLaidLow:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-32.jpg",
+      "sha256": "4239c1c21f69bf4554ae859b275f4f76dc6987e8a443a0830f2dbf9520b78510"
+    },
+    "M_KingLaidLow:BP3:14": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-33.jpg",
+      "sha256": "a36d9ec05817196b71c0b65559dafea2c924beedd06b0c776b870b66abea0749"
+    },
+    "M_KingLaidLow:BP3:15": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-34.jpg",
+      "sha256": "d3957019797cdff8d7bad03ae1b309d2a10844a13abc7b81807b1bb7a35f3ea1"
+    },
+    "M_KingLaidLow:BP3:16": {
+      "keywords": [
+        "OverpowerX+",
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-35.jpg",
+      "sha256": "df4c103873aa99e4f113d7789980e8a7466197ebc980c5fb2cdc218c599e3ba0"
+    },
+    "M_KingLaidLow:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-30.jpg",
+      "sha256": "22eb96b2d4e1866b8a4c424c359405e70e97c905c2a147eeaf7514027f93bc44"
+    },
+    "M_KingLaidLow:SIG:38": {
+      "keywords": [
+        "Knockback X",
+        "Escalate X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和 Auto-hope 与词典弃手牌或 Hope 不同；Drill 不在词典。",
+      "image": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-36.jpg",
+      "sha256": "f6d79189faeec7a41031ed881b519e3fc58b33c6518e63c8f119d7b71ab5792a"
+    }
+  }
+}

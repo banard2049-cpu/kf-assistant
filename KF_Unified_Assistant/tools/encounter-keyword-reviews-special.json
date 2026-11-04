@@ -1,0 +1,107 @@
+{
+  "cards": {
+    "M_WhiteApe:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_WhiteApe:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Delay"
+    ],
+    "M_WingedNightmare:1": [
+      "Scavenge X"
+    ],
+    "M_WingedNightmare:2": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_WingedNightmare:3": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_WingedNightmare:4": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_YoungDevour:1": [
+      "OverpowerX+",
+      "Fleisch",
+      "Scavenge X",
+      "Restrain",
+      "Refresh",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_YoungDevour:2": [
+      "OverpowerX+",
+      "Fleisch",
+      "Scavenge X",
+      "Restrain",
+      "Refresh",
+      "Devote",
+      "Lumbering"
+    ],
+    "Special_F4:1": [
+      "OverpowerX+",
+      "Kingdom Scavenge",
+      "Bane",
+      "Refresh"
+    ],
+    "Special_F3:1": [
+      "Bane"
+    ],
+    "Special_F2:1": [
+      "Consumable Scavenge"
+    ],
+    "Special_K1:1": [],
+    "Special_K4:1": [],
+    "Special_P2:1": [
+      "Zeal X",
+      "Refresh"
+    ],
+    "Special_P5:1": [
+      "Bane"
+    ],
+    "Special_R5:1": [
+      "Scavenge X",
+      "Bane"
+    ],
+    "Special_S4:1": [
+      "OverpowerX+"
+    ],
+    "Special_U1:1": [],
+    "Special_TSF-0032:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "Special_TSF-0531:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "Special_TSF-0932:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "Special_TSF-7012:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Cooldown",
+      "Refresh"
+    ],
+    "Special_TSF-7416:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "Special_TSF-7912:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ]
+  }
+}

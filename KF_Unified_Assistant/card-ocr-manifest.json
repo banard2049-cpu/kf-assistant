@@ -1,0 +1,2498 @@
+[
+  {
+    "id": "M_BogWitch",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc177853664662533489616A2E93FA44F3FE04648EB4C206473F62F72A0D96.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI1:18",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-05.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI1:19",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-04.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI1:20",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-03.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI1:21",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-02.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI1:22",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-01.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI1:23",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-00.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI2:24",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-10.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI2:25",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-09.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI2:26",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-08.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI2:27",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-07.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI2:28",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-06.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI2:29",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-11.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI3:30",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-17.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI3:31",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-16.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI3:32",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-15.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI3:33",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-14.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI3:34",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-13.jpg"
+  },
+  {
+    "id": "M_BogWitch:AI3:35",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-12.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP1:0",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-19.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP1:1",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-20.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP1:2",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-23.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP1:3",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-22.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP1:4",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-21.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP1:5",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-18.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP2:9",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-29.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP2:10",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-28.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP2:11",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-27.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP2:6",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-24.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP2:7",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-25.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP2:8",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-26.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP3:12",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-30.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP3:13",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-31.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP3:14",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-32.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP3:15",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-34.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP3:16",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-33.jpg"
+  },
+  {
+    "id": "M_BogWitch:BP3:17",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-35.jpg"
+  },
+  {
+    "id": "M_BogWitch:SIG:38",
+    "path": "/assets/cards/monster-faces/bog-witch/0fba6df6-36.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc125028195194065419432BDD3D74E1CE800FC53844BECFCC7D0EFAF00DA6.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI1:20",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-00.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI1:21",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-01.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI1:22",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-04.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI1:23",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-03.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI1:24",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-02.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI1:25",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-05.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:26",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-06.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:27",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-07.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:28",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-08.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:29",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-09.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:30",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-11.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:31",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-10.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:32",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-12.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:33",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-13.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:34",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-14.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:35",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-15.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:36",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-16.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:AI2:37",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-17.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP1:0",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-18.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP1:1",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-19.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP1:2",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-21.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP1:3",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-22.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP1:4",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-23.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP1:5",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-20.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP2:9",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-29.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP2:10",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-28.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP2:11",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-26.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP2:6",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-24.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP2:7",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-25.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP2:8",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-27.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP3:12",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-30.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP3:13",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-31.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP3:14",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-35.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP3:15",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-34.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP3:16",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-33.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:BP3:17",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-32.jpg"
+  },
+  {
+    "id": "M_DevilAncientDusk:SIG:38",
+    "path": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-36.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc152051189910188540546E515CE3655B17EC7504380424C942CD554FBC0D.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI1:18",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-03.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI1:19",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-01.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI1:20",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-02.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI1:21",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-04.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI1:22",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-05.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI1:23",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-00.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI2:24",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-08.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI2:25",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-07.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI2:26",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-06.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI2:27",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-09.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI2:28",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-11.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI2:29",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-10.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI3:30",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-12.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI3:31",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-13.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI3:32",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-14.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI3:33",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-15.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI3:34",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-16.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:AI3:35",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-17.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP1:0",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-22.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP1:1",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-21.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP1:2",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-20.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP1:3",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-19.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP1:4",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-18.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP1:5",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-23.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP2:9",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-27.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP2:10",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-28.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP2:11",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-29.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP2:6",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-24.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP2:7",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-26.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP2:8",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-25.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP3:12",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-30.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP3:13",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-35.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP3:14",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-31.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP3:15",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-34.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP3:16",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-32.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:BP3:17",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-33.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:SIG:38",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-36.jpg"
+  },
+  {
+    "id": "M_DevilSmeltedFears:Trait:39",
+    "path": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-37.jpg"
+  },
+  {
+    "id": "M_Eggknight",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc17144757389909982074C30CA36215A79FEF1B2298890A95752A6931EE19.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI1:20",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-02.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI1:21",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-05.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI1:22",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-00.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI1:23",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-03.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI1:24",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-01.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI1:25",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-04.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI2:26",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-07.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI2:27",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-08.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI2:28",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-10.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI2:29",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-06.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI2:30",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-11.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI2:31",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-09.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI3:32",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-14.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI3:33",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-16.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI3:34",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-13.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI3:35",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-15.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI3:36",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-17.jpg"
+  },
+  {
+    "id": "M_Eggknight:AI3:37",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-12.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP1:0",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-23.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP1:1",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-20.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP1:2",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-19.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP1:3",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-18.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP1:4",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-22.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP1:5",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-21.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP2:9",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-28.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP2:10",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-24.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP2:11",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-27.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP2:6",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-25.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP2:7",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-29.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP2:8",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-26.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP3:12",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-35.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP3:13",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-33.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP3:14",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-32.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP3:15",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-31.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP3:16",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-30.jpg"
+  },
+  {
+    "id": "M_Eggknight:BP3:17",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-34.jpg"
+  },
+  {
+    "id": "M_Eggknight:SIG:38",
+    "path": "/assets/cards/monster-faces/eggknight/6d1c98de-36.jpg"
+  },
+  {
+    "id": "M_KnightFen",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc142951439794369965983AF51F1EE89C77D1F88500EE3C0496DAEE16383A.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI1:18",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-01.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI1:19",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-04.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI1:20",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-02.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI1:21",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-03.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI1:22",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-00.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI1:23",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-05.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI2:24",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-06.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI2:25",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-10.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI2:26",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-11.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI2:27",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-09.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI2:28",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-08.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI2:29",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-07.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI3:30",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-17.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI3:31",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-16.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI3:32",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-15.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI3:33",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-13.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI3:34",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-12.jpg"
+  },
+  {
+    "id": "M_KnightFen:AI3:35",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-14.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP1:0",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-19.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP1:1",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-18.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP1:2",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-20.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP1:3",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-23.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP1:4",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-21.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP1:5",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-22.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP2:9",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-27.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP2:10",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-28.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP2:11",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-29.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP2:6",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-24.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP2:7",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-25.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP2:8",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-26.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP3:12",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-34.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP3:13",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-35.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP3:14",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-33.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP3:15",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-32.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP3:16",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-31.jpg"
+  },
+  {
+    "id": "M_KnightFen:BP3:17",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-30.jpg"
+  },
+  {
+    "id": "M_KnightFen:SIG:38",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-36.jpg"
+  },
+  {
+    "id": "M_KnightFen:Trait:39",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-38.jpg"
+  },
+  {
+    "id": "M_KnightFen:Trait_POS:41",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-37.jpg"
+  },
+  {
+    "id": "M_KnightFen:Trait_SK:40",
+    "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-39.jpg"
+  },
+  {
+    "id": "M_Knighteater",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc157218921590585702374C6696ED899DDD916AA0B45E395100E8D2ADE534.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI1:18",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-05.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI1:19",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-04.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI1:20",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-03.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI1:21",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-02.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI1:22",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-01.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI1:23",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-00.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI2:24",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-11.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI2:25",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-10.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI2:26",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-09.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI2:27",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-08.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI2:28",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-07.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI2:29",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-06.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI3:30",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-17.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI3:31",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-16.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI3:32",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-15.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI3:33",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-14.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI3:34",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-13.jpg"
+  },
+  {
+    "id": "M_Knighteater:AI3:35",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-12.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP1:0",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-23.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP1:1",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-22.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP1:2",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-21.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP1:3",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-20.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP1:4",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-19.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP1:5",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-18.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP2:9",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-26.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP2:10",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-25.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP2:11",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-24.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP2:6",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-29.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP2:7",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-28.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP2:8",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-27.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP3:12",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-34.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP3:13",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-33.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP3:14",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-32.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP3:15",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-31.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP3:16",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-30.jpg"
+  },
+  {
+    "id": "M_Knighteater:BP3:17",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-35.jpg"
+  },
+  {
+    "id": "M_Knighteater:SIG:38",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-36.jpg"
+  },
+  {
+    "id": "M_Knighteater:Trait_POS:37",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-37.jpg"
+  },
+  {
+    "id": "M_Knighteater:Trait_SK:36",
+    "path": "/assets/cards/monster-faces/knighteater/a64da226-38.jpg"
+  },
+  {
+    "id": "M_Panzerdragon",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc1340670956645217954531A09AFA69E66C1D0C28F91DE5B031BDEBF42441.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI0:18",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-00.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI1:19",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-01.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI1:20",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-02.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI1:21",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-06.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI1:22",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-05.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI1:23",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-04.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI1:24",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-03.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI2:25",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-10.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI2:26",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-11.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI2:27",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-12.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI2:28",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-07.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI2:29",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-08.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI2:30",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-09.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI3:31",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-18.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI3:32",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-17.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI3:33",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-16.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI3:34",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-15.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI3:35",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-14.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:AI3:36",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-13.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP1:0",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-19.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP1:1",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-20.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP1:2",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-21.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP1:3",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-22.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP1:4",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-23.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP1:5",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-24.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP2:9",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-28.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP2:10",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-29.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP2:11",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-30.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP2:6",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-25.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP2:7",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-26.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP2:8",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-27.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP3:12",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-31.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP3:13",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-36.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP3:14",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-35.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP3:15",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-33.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP3:16",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-32.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:BP3:17",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-34.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:SIG:37",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-37.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:Trait:38",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-38.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:Trait:39",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-40.jpg"
+  },
+  {
+    "id": "M_Panzerdragon:Trait:40",
+    "path": "/assets/cards/monster-faces/panzerdragon/e2495b11-39.jpg"
+  },
+  {
+    "id": "M_PuppetKing",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc12744880351446918615B705B59EE1A4001DFAC6EAF66EFBEBE01686613D.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI1:20",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-00.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI1:21",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-01.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI1:22",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-02.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI1:23",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-03.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI1:24",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-05.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI1:25",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-04.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI2:26",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-06.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI2:27",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-07.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI2:28",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-08.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI2:29",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-09.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI2:30",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-11.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI2:31",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-10.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI3:32",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-12.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI3:33",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-13.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI3:34",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-14.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI3:35",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-15.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI3:36",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-17.jpg"
+  },
+  {
+    "id": "M_PuppetKing:AI3:37",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-16.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP1:0",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-23.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP1:1",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-18.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP1:2",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-19.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP1:3",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-20.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP1:4",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-22.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP1:5",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-21.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP2:9",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-26.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP2:10",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-25.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP2:11",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-24.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP2:6",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-29.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP2:7",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-28.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP2:8",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-27.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP3:12",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-35.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP3:13",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-34.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP3:14",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-33.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP3:15",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-32.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP3:16",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-31.jpg"
+  },
+  {
+    "id": "M_PuppetKing:BP3:17",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-30.jpg"
+  },
+  {
+    "id": "M_PuppetKing:SIG:38",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-36.jpg"
+  },
+  {
+    "id": "M_PuppetKing:Trait:39",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-37.jpg"
+  },
+  {
+    "id": "M_PuppetKing:Trait:40",
+    "path": "/assets/cards/monster-faces/puppet-king/c05af5a0-38.jpg"
+  },
+  {
+    "id": "M_Stonemason",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc14939262049913592045A8A8BBA6B0958161C1A5033B1A954C880A7ABB22.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI1:18",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-00.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI1:19",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-01.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI1:20",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-03.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI1:21",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-04.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI1:22",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-05.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI1:23",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-02.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:24",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-06.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:25",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-07.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:26",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-08.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:27",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-09.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:28",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-11.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:29",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-10.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:30",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-12.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:31",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-13.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:32",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-14.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:33",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-16.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:34",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-17.jpg"
+  },
+  {
+    "id": "M_Stonemason:AI2:35",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-15.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP1:0",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-23.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP1:1",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-22.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP1:2",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-21.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP1:3",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-20.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP1:4",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-19.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP1:5",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-18.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP2:9",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-27.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP2:10",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-29.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP2:11",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-28.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP2:6",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-24.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP2:7",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-25.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP2:8",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-26.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP3:12",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-34.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP3:13",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-33.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP3:14",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-32.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP3:15",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-31.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP3:16",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-35.jpg"
+  },
+  {
+    "id": "M_Stonemason:BP3:17",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-30.jpg"
+  },
+  {
+    "id": "M_Stonemason:SIG:36",
+    "path": "/assets/cards/monster-faces/stonemason/b767e87b-36.jpg"
+  },
+  {
+    "id": "M_KingLaidLow",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc1097423247185101681261BA534266C8CC4688A0E8B66792216BA931ACE5.png"
+  },
+  {
+    "id": "M_KingLaidLow:AI1:20",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-00.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI1:21",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-01.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI1:22",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-05.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI1:23",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-04.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI1:24",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-03.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI1:25",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-02.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI2:26",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-06.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI2:27",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-07.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI2:28",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-08.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI2:29",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-09.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI2:30",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-11.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI2:31",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-10.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI3:32",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-13.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI3:33",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-14.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI3:34",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-15.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI3:35",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-17.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI3:36",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-16.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:AI3:37",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-12.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP1:0",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-18.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP1:1",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-20.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP1:2",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-19.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP1:3",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-21.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP1:4",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-22.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP1:5",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-23.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP2:9",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-27.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP2:10",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-28.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP2:11",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-29.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP2:6",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-24.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP2:7",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-25.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP2:8",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-26.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP3:12",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-31.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP3:13",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-32.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP3:14",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-33.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP3:15",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-34.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP3:16",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-35.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:BP3:17",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-30.jpg"
+  },
+  {
+    "id": "M_KingLaidLow:SIG:38",
+    "path": "/assets/cards/monster-faces/king-laid-low/cd4e6b62-36.jpg"
+  },
+  {
+    "id": "M_Toadragon",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc16599658008364925414543CD896E4DCEEC81B1255A04DBA5C1AD67E57ED.png"
+  },
+  {
+    "id": "M_Toadragon:AI0:18",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-00.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI1:19",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-04.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI1:20",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-06.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI1:21",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-03.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI1:22",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-05.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI1:23",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-01.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI1:24",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-02.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI2:25",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-12.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI2:26",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-10.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI2:27",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-11.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI2:28",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-09.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI2:29",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-08.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:30",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-07.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:31",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-13.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:32",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-18.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:33",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-14.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:34",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-17.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:35",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-15.jpg"
+  },
+  {
+    "id": "M_Toadragon:AI3:36",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-16.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP1:0",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-19.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP1:1",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-20.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP1:2",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-21.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP1:3",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-22.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP1:4",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-23.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP1:5",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-24.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP2:9",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-29.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP2:10",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-30.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP2:11",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-25.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP2:6",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-28.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP2:7",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-26.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP2:8",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-27.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP3:12",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-36.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP3:13",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-35.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP3:14",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-34.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP3:15",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-33.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP3:16",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-31.jpg"
+  },
+  {
+    "id": "M_Toadragon:BP3:17",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-32.jpg"
+  },
+  {
+    "id": "M_Toadragon:SIG:37",
+    "path": "/assets/cards/monster-faces/toadragon/6565fedd-37.jpg"
+  },
+  {
+    "id": "M_WhiteApe",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc13594900721377243184AC9B42E416E577E6672DAB69DC13AF20CCAEB6D1.png"
+  },
+  {
+    "id": "M_WhiteApe:AI1:19",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-01.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI1:20",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-02.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI1:21",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-03.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI1:22",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-05.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI1:23",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-00.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI1:24",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-04.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI2:25",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-06.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI2:26",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-10.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI2:27",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-07.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI2:28",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-08.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI2:29",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-11.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI2:30",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-09.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI3:31",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-16.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI3:32",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-15.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI3:33",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-17.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI3:34",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-14.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI3:35",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-13.jpg"
+  },
+  {
+    "id": "M_WhiteApe:AI3:36",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-12.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP1:1",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-23.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP1:2",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-22.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP1:3",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-21.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP1:4",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-20.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP1:5",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-19.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP1:6",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-24.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP2:9",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-28.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP2:10",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-27.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP2:11",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-26.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP2:12",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-25.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP2:7",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-30.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP2:8",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-29.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP3:13",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-36.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP3:14",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-35.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP3:15",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-34.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP3:16",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-33.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP3:17",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-32.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BP3:18",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-31.jpg"
+  },
+  {
+    "id": "M_WhiteApe:BPS:0",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-18.jpg"
+  },
+  {
+    "id": "M_WhiteApe:SIG:37",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-37.jpg"
+  },
+  {
+    "id": "M_WhiteApe:Trait:38",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-38.jpg"
+  },
+  {
+    "id": "M_WhiteApe:Trait:39",
+    "path": "/assets/cards/monster-faces/white-ape/799e1d2b-39.jpg"
+  },
+  {
+    "id": "M_YoungDevour",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc10451908990900552077B51C81AB529DE0A4CB2EC62AD1427BF5F3DB4809.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI0:19",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-00.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI1:20",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-01.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI1:21",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-02.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI1:22",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-03.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI1:23",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-04.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI1:24",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-05.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI1:25",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-06.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI2:26",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-07.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI2:27",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-08.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI2:28",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-09.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI2:29",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-12.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI2:30",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-11.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI2:31",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-10.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI3:32",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-13.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI3:33",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-14.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI3:34",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-15.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI3:35",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-16.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI3:36",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-17.jpg"
+  },
+  {
+    "id": "M_YoungDevour:AI3:37",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-18.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP1:1",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-19.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP1:2",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-20.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP1:3",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-21.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP1:4",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-24.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP1:5",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-23.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP1:6",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-22.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP2:9",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-29.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP2:10",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-30.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP2:11",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-25.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP2:12",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-26.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP2:7",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-27.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP2:8",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-28.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP3:13",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-36.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP3:14",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-35.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP3:15",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-34.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP3:16",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-32.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP3:17",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-33.jpg"
+  },
+  {
+    "id": "M_YoungDevour:BP3:18",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-31.jpg"
+  },
+  {
+    "id": "M_YoungDevour:SIG:0",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-37.jpg"
+  },
+  {
+    "id": "M_YoungDevour:Trait:38",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-38.jpg"
+  },
+  {
+    "id": "M_YoungDevour:Trait:39",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-39.jpg"
+  },
+  {
+    "id": "M_YoungDevour:Trait:40",
+    "path": "/assets/cards/monster-faces/young-devour/d8eeaf1a-40.jpg"
+  },
+  {
+    "id": "postgame-whiteape-5-traits",
+    "path": "/assets/aibp/postgame/whiteape-5-traits.png",
+    "monsterId": "M_WhiteApe"
+  },
+  {
+    "id": "postgame-whiteape-6-traits",
+    "path": "/assets/aibp/postgame/whiteape-6-traits.png",
+    "monsterId": "M_WhiteApe"
+  },
+  {
+    "id": "postgame-whiteape-7-traits",
+    "path": "/assets/aibp/postgame/whiteape-7-traits.png",
+    "monsterId": "M_WhiteApe"
+  },
+  {
+    "id": "postgame-whiteape-8-traits",
+    "path": "/assets/aibp/postgame/whiteape-8-traits.png",
+    "monsterId": "M_WhiteApe"
+  },
+  {
+    "id": "postgame-whiteape-9-traits",
+    "path": "/assets/aibp/postgame/whiteape-9-traits.png",
+    "monsterId": "M_WhiteApe"
+  },
+  {
+    "id": "postgame-kinglaidlow-5-traits",
+    "path": "/assets/aibp/postgame/kinglaidlow-5-traits.png",
+    "monsterId": "M_KingLaidLow"
+  },
+  {
+    "id": "postgame-kinglaidlow-6-traits",
+    "path": "/assets/aibp/postgame/kinglaidlow-6-traits.png",
+    "monsterId": "M_KingLaidLow"
+  },
+  {
+    "id": "postgame-kinglaidlow-7-traits",
+    "path": "/assets/aibp/postgame/kinglaidlow-7-traits.png",
+    "monsterId": "M_KingLaidLow"
+  },
+  {
+    "id": "postgame-kinglaidlow-8-traits",
+    "path": "/assets/aibp/postgame/kinglaidlow-8-traits.png",
+    "monsterId": "M_KingLaidLow"
+  },
+  {
+    "id": "postgame-kinglaidlow-9-traits",
+    "path": "/assets/aibp/postgame/kinglaidlow-9-traits.png",
+    "monsterId": "M_KingLaidLow"
+  },
+  {
+    "id": "postgame-devilancientdusk-4-traits",
+    "path": "/assets/aibp/postgame/devilancientdusk-4-traits.png",
+    "monsterId": "M_DevilAncientDusk"
+  },
+  {
+    "id": "postgame-devilancientdusk-5-traits",
+    "path": "/assets/aibp/postgame/devilancientdusk-5-traits.png",
+    "monsterId": "M_DevilAncientDusk"
+  },
+  {
+    "id": "postgame-devilancientdusk-6-traits",
+    "path": "/assets/aibp/postgame/devilancientdusk-6-traits.png",
+    "monsterId": "M_DevilAncientDusk"
+  },
+  {
+    "id": "postgame-devilancientdusk-7-traits",
+    "path": "/assets/aibp/postgame/devilancientdusk-7-traits.png",
+    "monsterId": "M_DevilAncientDusk"
+  },
+  {
+    "id": "postgame-devilancientdusk-8-traits",
+    "path": "/assets/aibp/postgame/devilancientdusk-8-traits.png",
+    "monsterId": "M_DevilAncientDusk"
+  },
+  {
+    "id": "postgame-devilancientdusk-9-traits",
+    "path": "/assets/aibp/postgame/devilancientdusk-9-traits.png",
+    "monsterId": "M_DevilAncientDusk"
+  },
+  {
+    "id": "postgame-toadragon-3-traits",
+    "path": "/assets/aibp/postgame/toadragon-3-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-toadragon-4-traits",
+    "path": "/assets/aibp/postgame/toadragon-4-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-toadragon-5-traits",
+    "path": "/assets/aibp/postgame/toadragon-5-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-toadragon-6-traits",
+    "path": "/assets/aibp/postgame/toadragon-6-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-toadragon-7-traits",
+    "path": "/assets/aibp/postgame/toadragon-7-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-toadragon-8-traits",
+    "path": "/assets/aibp/postgame/toadragon-8-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-toadragon-9-traits",
+    "path": "/assets/aibp/postgame/toadragon-9-traits.png",
+    "monsterId": "M_Toadragon"
+  },
+  {
+    "id": "postgame-stonemason-5-traits",
+    "path": "/assets/aibp/postgame/stonemason-5-traits.png",
+    "monsterId": "M_Stonemason"
+  },
+  {
+    "id": "postgame-stonemason-6-traits",
+    "path": "/assets/aibp/postgame/stonemason-6-traits.png",
+    "monsterId": "M_Stonemason"
+  },
+  {
+    "id": "postgame-stonemason-7-traits",
+    "path": "/assets/aibp/postgame/stonemason-7-traits.png",
+    "monsterId": "M_Stonemason"
+  },
+  {
+    "id": "postgame-stonemason-8-traits",
+    "path": "/assets/aibp/postgame/stonemason-8-traits.png",
+    "monsterId": "M_Stonemason"
+  },
+  {
+    "id": "postgame-stonemason-9-traits",
+    "path": "/assets/aibp/postgame/stonemason-9-traits.png",
+    "monsterId": "M_Stonemason"
+  },
+  {
+    "id": "postgame-knighteater-5-traits",
+    "path": "/assets/aibp/postgame/knighteater-5-traits.png",
+    "monsterId": "M_Knighteater"
+  },
+  {
+    "id": "postgame-knighteater-6-traits",
+    "path": "/assets/aibp/postgame/knighteater-6-traits.png",
+    "monsterId": "M_Knighteater"
+  },
+  {
+    "id": "postgame-knighteater-7-traits",
+    "path": "/assets/aibp/postgame/knighteater-7-traits.png",
+    "monsterId": "M_Knighteater"
+  },
+  {
+    "id": "postgame-knighteater-8-traits",
+    "path": "/assets/aibp/postgame/knighteater-8-traits.png",
+    "monsterId": "M_Knighteater"
+  },
+  {
+    "id": "postgame-knighteater-9-traits",
+    "path": "/assets/aibp/postgame/knighteater-9-traits.png",
+    "monsterId": "M_Knighteater"
+  },
+  {
+    "id": "postgame-bogwitch-5-traits",
+    "path": "/assets/aibp/postgame/bogwitch-5-traits.png",
+    "monsterId": "M_BogWitch"
+  },
+  {
+    "id": "postgame-bogwitch-6-traits",
+    "path": "/assets/aibp/postgame/bogwitch-6-traits.png",
+    "monsterId": "M_BogWitch"
+  },
+  {
+    "id": "postgame-bogwitch-7-traits",
+    "path": "/assets/aibp/postgame/bogwitch-7-traits.png",
+    "monsterId": "M_BogWitch"
+  },
+  {
+    "id": "postgame-bogwitch-8-traits",
+    "path": "/assets/aibp/postgame/bogwitch-8-traits.png",
+    "monsterId": "M_BogWitch"
+  },
+  {
+    "id": "postgame-bogwitch-9-traits",
+    "path": "/assets/aibp/postgame/bogwitch-9-traits.png",
+    "monsterId": "M_BogWitch"
+  },
+  {
+    "id": "postgame-bogwitch-10-traits",
+    "path": "/assets/aibp/postgame/bogwitch-10-traits.png",
+    "monsterId": "M_BogWitch"
+  },
+  {
+    "id": "postgame-youngdevour-3-traits",
+    "path": "/assets/aibp/postgame/youngdevour-3-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-youngdevour-4-traits",
+    "path": "/assets/aibp/postgame/youngdevour-4-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-youngdevour-5-traits",
+    "path": "/assets/aibp/postgame/youngdevour-5-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-youngdevour-6-traits",
+    "path": "/assets/aibp/postgame/youngdevour-6-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-youngdevour-7-traits",
+    "path": "/assets/aibp/postgame/youngdevour-7-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-youngdevour-8-traits",
+    "path": "/assets/aibp/postgame/youngdevour-8-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-youngdevour-9-traits",
+    "path": "/assets/aibp/postgame/youngdevour-9-traits.png",
+    "monsterId": "M_YoungDevour"
+  },
+  {
+    "id": "postgame-knightfen-5-traits",
+    "path": "/assets/aibp/postgame/knightfen-5-traits.png",
+    "monsterId": "M_KnightFen"
+  },
+  {
+    "id": "postgame-knightfen-6-traits",
+    "path": "/assets/aibp/postgame/knightfen-6-traits.png",
+    "monsterId": "M_KnightFen"
+  },
+  {
+    "id": "postgame-knightfen-7-traits",
+    "path": "/assets/aibp/postgame/knightfen-7-traits.png",
+    "monsterId": "M_KnightFen"
+  },
+  {
+    "id": "postgame-knightfen-8-traits",
+    "path": "/assets/aibp/postgame/knightfen-8-traits.png",
+    "monsterId": "M_KnightFen"
+  },
+  {
+    "id": "postgame-knightfen-9-traits",
+    "path": "/assets/aibp/postgame/knightfen-9-traits.png",
+    "monsterId": "M_KnightFen"
+  },
+  {
+    "id": "postgame-eggknight-5-traits",
+    "path": "/assets/aibp/postgame/eggknight-5-traits.png",
+    "monsterId": "M_Eggknight"
+  },
+  {
+    "id": "postgame-eggknight-6-traits",
+    "path": "/assets/aibp/postgame/eggknight-6-traits.png",
+    "monsterId": "M_Eggknight"
+  },
+  {
+    "id": "postgame-eggknight-7-traits",
+    "path": "/assets/aibp/postgame/eggknight-7-traits.png",
+    "monsterId": "M_Eggknight"
+  },
+  {
+    "id": "postgame-eggknight-8-traits",
+    "path": "/assets/aibp/postgame/eggknight-8-traits.png",
+    "monsterId": "M_Eggknight"
+  },
+  {
+    "id": "postgame-eggknight-9-traits",
+    "path": "/assets/aibp/postgame/eggknight-9-traits.png",
+    "monsterId": "M_Eggknight"
+  },
+  {
+    "id": "postgame-puppetking-5-traits",
+    "path": "/assets/aibp/postgame/puppetking-5-traits.png",
+    "monsterId": "M_PuppetKing"
+  },
+  {
+    "id": "postgame-puppetking-6-traits",
+    "path": "/assets/aibp/postgame/puppetking-6-traits.png",
+    "monsterId": "M_PuppetKing"
+  },
+  {
+    "id": "postgame-puppetking-7-traits",
+    "path": "/assets/aibp/postgame/puppetking-7-traits.png",
+    "monsterId": "M_PuppetKing"
+  },
+  {
+    "id": "postgame-puppetking-8-traits",
+    "path": "/assets/aibp/postgame/puppetking-8-traits.png",
+    "monsterId": "M_PuppetKing"
+  },
+  {
+    "id": "postgame-puppetking-9-traits",
+    "path": "/assets/aibp/postgame/puppetking-9-traits.png",
+    "monsterId": "M_PuppetKing"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-4-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-4-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-5-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-5-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-6-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-6-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-7-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-7-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-8-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-8-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-9-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-9-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-devilsmeltedfears-10-traits",
+    "path": "/assets/aibp/postgame/devilsmeltedfears-10-traits.png",
+    "monsterId": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "postgame-panzerdragon-3-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-3-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "postgame-panzerdragon-4-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-4-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "postgame-panzerdragon-5-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-5-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "postgame-panzerdragon-6-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-6-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "postgame-panzerdragon-7-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-7-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "postgame-panzerdragon-8-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-8-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "postgame-panzerdragon-9-traits",
+    "path": "/assets/aibp/postgame/panzerdragon-9-traits.png",
+    "monsterId": "M_Panzerdragon"
+  },
+  {
+    "id": "M_BogWitch:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc11928981325399441797A644C396D1A550750F8991C98900E33B26E7D588.jpg",
+    "mergeInto": "M_BogWitch"
+  },
+  {
+    "id": "M_DevilAncientDusk:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc12638820949434652906844AECB4DA1D46FA601929D90D76BE9DBEC953CD.jpg",
+    "mergeInto": "M_DevilAncientDusk"
+  },
+  {
+    "id": "M_DevilSmeltedFears:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc14609179362298498799FDF6B6441C5879157BE712E609A859081450E636.jpg",
+    "mergeInto": "M_DevilSmeltedFears"
+  },
+  {
+    "id": "M_Eggknight:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc16444574865403854141DF69F8F63CF773EA89953DB0F6E339B5C083B35F.jpg",
+    "mergeInto": "M_Eggknight"
+  },
+  {
+    "id": "M_KnightFen:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc18257081341481220730CA4B2722D73F3663DA23CCE3C8F9910B545A8E49.jpg",
+    "mergeInto": "M_KnightFen"
+  },
+  {
+    "id": "M_Knighteater:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc157231062189447375381A4A4465A07D5795144E7D5758A6452182C0C258.jpg",
+    "mergeInto": "M_Knighteater"
+  },
+  {
+    "id": "M_Panzerdragon:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc1020598660653325748242F1EDD481BCC3CB052439CC97A6313763A36A98.jpg",
+    "mergeInto": "M_Panzerdragon"
+  },
+  {
+    "id": "M_PuppetKing:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc180363853422431823642D56A56647E7C35E02275C18017A904EED37005B.jpg",
+    "mergeInto": "M_PuppetKing"
+  },
+  {
+    "id": "M_Stonemason:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc123948202570044274322024BCE8566EBE6C7E6DF891758BC1FB06D2E46D.jpg",
+    "mergeInto": "M_Stonemason"
+  },
+  {
+    "id": "M_KingLaidLow:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc116036237629551107885829F99F2235289EBF8DDF189724A74E1701FAFE.png",
+    "mergeInto": "M_KingLaidLow"
+  },
+  {
+    "id": "M_Toadragon:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc10479593780224804498886ADDE77A6631A03AC9764E52077A157512688B.png",
+    "mergeInto": "M_Toadragon"
+  },
+  {
+    "id": "M_WhiteApe:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc14123832493297780780B22F22191E2B557DC31E99C9122A2054F35DB83D.png",
+    "mergeInto": "M_WhiteApe"
+  },
+  {
+    "id": "M_YoungDevour:sheet-back",
+    "path": "/assets/images/httpssteamusercontentaakamaihdnetugc10464441490947983110EB54C4C24DACDAE3F71633EFDA88C8B8ABD278F3.jpg",
+    "mergeInto": "M_YoungDevour"
+  }
+]

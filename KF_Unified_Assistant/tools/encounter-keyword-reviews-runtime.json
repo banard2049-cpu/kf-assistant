@@ -1,0 +1,108 @@
+{
+  "cards": {
+    "M_PuppetKing:3": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_PuppetKing:4": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_Ratwolves:1": [
+      "Scavenge X"
+    ],
+    "M_Ratwolves:2": [
+      "Scavenge X",
+      "Poison"
+    ],
+    "M_Ratwolves:3": [
+      "Scavenge X",
+      "Poison"
+    ],
+    "M_Ratwolves:4": [
+      "Scavenge X",
+      "Poison"
+    ],
+    "M_Stonemason:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_KingLaidLow:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Toadragon:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Stonemason:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_KingLaidLow:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Toadragon:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Stonemason:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_KingLaidLow:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Toadragon:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Stonemason:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_KingLaidLow:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Toadragon:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_WhiteApe:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_WhiteApe:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ]
+  }
+}

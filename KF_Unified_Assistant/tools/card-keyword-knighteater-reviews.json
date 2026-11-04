@@ -1,0 +1,322 @@
+{
+  "cards": {
+    "M_Knighteater:AI1:18": {
+      "keywords": [
+        "Forced Vault"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-05.jpg",
+      "sha256": "2888189db007feb3ec43f54d4566e315cb1251e267137457bcb80d1871928bf5",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI1:19": {
+      "keywords": [
+        "Drag X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-04.jpg",
+      "sha256": "b6181afa884961a4379da5699823e1ab2ea16e8552d09e6dd2463cec6a6acd46",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI1:20": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-03.jpg",
+      "sha256": "2877c92edc76781537eb7064871ecfa46ff60709b89a67c214d45afbf5f6f28d",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI1:21": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-02.jpg",
+      "sha256": "ed27e18d202fa958c98bf52c87431d91d867eacb5600a1dae15ad3e536a21c1b",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI1:22": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-01.jpg",
+      "sha256": "7e212ed2cac1a3ca93ff3b92b111c58f97dda0cdb84d40d664784c1fc1917108",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI1:23": {
+      "keywords": [
+        "Drag X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-00.jpg",
+      "sha256": "1c2791def7d561dcfb5d2b9c0b3f1e8c3a48ac608d3148150e74319f4302c315",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI2:24": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-11.jpg",
+      "sha256": "36a0b8dab662f43d4ee5f27b9cb448097a6b76ffb7e3d50fbed93a669401b9fd",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI2:25": {
+      "keywords": [
+        "Forced Vault",
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-10.jpg",
+      "sha256": "1f419c17f21763fbbb63a942de45d5758e255f47cdbcc178a551037e0082ee0b",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI2:26": {
+      "keywords": [
+        "Drag X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-09.jpg",
+      "sha256": "dc980324cfde04a8779e9900bd10ba58c5edcc6afe3144de5473aeaf17db3e81",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI2:27": {
+      "keywords": [
+        "Forced Vault"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-08.jpg",
+      "sha256": "80d8533c0f5f9e21c19a3cf74211db19353677ee7a3b043db32cc0d19cd87cf8",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI2:28": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-07.jpg",
+      "sha256": "10b26320e94b1478d20e2b03422c4f89a9161cd6f17d510e979f75a8825a4fb0",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI2:29": {
+      "keywords": [
+        "Forced Vault",
+        "Crash"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-06.jpg",
+      "sha256": "98ad6b015ef036c9a901c0f6c6828bff494332dcdef8728872a5b9051952d828",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI3:30": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-17.jpg",
+      "sha256": "e83fed91087fc8ce009465b7783db5397c3d9f1878d84e6a1c02bfdfd19b6025",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI3:31": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-16.jpg",
+      "sha256": "6307ec95f79d056698e47602549e3a97f6b982f93f36db9dfa236f9354eb36df",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI3:32": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-15.jpg",
+      "sha256": "bad7d5d86fac8d37cacc00abe97352e6018b3cde386040e56d1acf004ec48a38",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI3:33": {
+      "keywords": [
+        "Forced Vault"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-14.jpg",
+      "sha256": "3ef19faf102702a15778fb962bd71995082074328463ecd1585e4d8ccb0a39a7",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI3:34": {
+      "keywords": [
+        "Drag X",
+        "Forced Vault",
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-13.jpg",
+      "sha256": "48f391c084765201b8219f3ab34b7d16dd39261e651dc9488a4fbc5524b4a083",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:AI3:35": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-12.jpg",
+      "sha256": "9b6031302fbe21430eafe45406193e2c113b4bcdbc042f478be7dd4d79ff67bb",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Obstacle",
+        "Tumble"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-23.jpg",
+      "sha256": "7c29835a4410c8e42740d196b51c960a1006cd22a5dd25675e4c25b8db306359",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP1:1": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-22.jpg",
+      "sha256": "638e3787ab95118cb3d7e5088887fa7b3107790b665bea0d5b0131a977ac6b89",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Obstacle"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-21.jpg",
+      "sha256": "19fc2825bbb9ae8ac9fd500797f840de021694d66e677b5e1295ed25b96bb89b",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Fleisch",
+        "Forced Vault"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-20.jpg",
+      "sha256": "913a525a629208fb48f474952675609e827a9d47e78e912ac746dd13c807ebcc",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Fleisch"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-19.jpg",
+      "sha256": "96f802c9ccffce6dbafdbeaf0f13406560d2c6380e555a1d5404c31892706195",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP1:5": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Drag X",
+        "Forced Vault"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-18.jpg",
+      "sha256": "a8e787d2946af93f8cb0f0f3daf5cd2fddfe3033d673e602dfbfdf64453f838b",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP2:9": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Obstacle"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-26.jpg",
+      "sha256": "acda40b4337f593b0876b3e8d61fbf9ac26049a86a9896e15097f4fc796725a2",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Pushback X",
+        "Obstacle",
+        "Scavenge X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-25.jpg",
+      "sha256": "c9482b56ac9491b49829df8fa7dd5102d6031d4164db093ecac4eb466833e9a7",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP2:11": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Forced Vault",
+        "Crash"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-24.jpg",
+      "sha256": "679f4276b76e1abbeeb81f0950de618624035a1f27ba15d1135fcd336331caa7",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Obstacle",
+        "Drag X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-29.jpg",
+      "sha256": "075c36275869c03303ec76c4b1ee10413e5bc50adad6777a9e1673b51a71b591",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP2:7": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Drag X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-28.jpg",
+      "sha256": "5bb8216a93a5faba36e69206b01e7ce5f7faab87ad172303cdff2833da539a97",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Fleisch"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-27.jpg",
+      "sha256": "b0ab855a5b2590ea32aa54a669906a3ff1d2602ded87de3b74dfd9ee2752ac78",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP3:12": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Pushback X",
+        "Obstacle",
+        "Forced Vault",
+        "Crash",
+        "Scavenge X"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-34.jpg",
+      "sha256": "99f6b364e12bb0f4c1d6388ce1b104281784e1cf7476498fb121baf709fa7361",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP3:13": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Parasitize"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-33.jpg",
+      "sha256": "ad4e78c4e6d76b0a7bf356b7356cff5d9943517603dd1700e25a84734e3d0560",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP3:14": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-32.jpg",
+      "sha256": "993df4b00784becc5904795bf60bb26f2aa6e7c41ba3829ddbb76672aae23912",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Obstacle"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-31.jpg",
+      "sha256": "64939c1edf9d44c525ceea58a1ede91fcb8b968c38f070db662b6ef27824829b",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP3:16": {
+      "keywords": [
+        "OverpowerX+",
+        "Fleisch",
+        "Pushback X",
+        "Obstacle",
+        "Forced Vault"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-30.jpg",
+      "sha256": "bce836079853ff1345b0a7b34047921ec5e8f9e2291e6be607f3df8eb574b899",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Obstacle",
+        "Fleisch"
+      ],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-35.jpg",
+      "sha256": "94fe69e310af295d2c7d937caacca8231aa871798808b64b37e71dc3f25ba05c",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    },
+    "M_Knighteater:SIG:38": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-36.jpg",
+      "sha256": "96b1ac1820f7fb40d37529b9cae0b080e3f288351924a1fa3c287afa65aa44f5",
+      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+    }
+  }
+}

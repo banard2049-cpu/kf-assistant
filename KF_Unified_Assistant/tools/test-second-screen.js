@@ -103,7 +103,7 @@ assert.match(terrainBindingSource, /if \(selectedTerrainId !== button\.dataset\.
 assert.match(terrainBindingSource, /\[data-terrain-board\][\s\S]*?if \(selectedTerrainId\) return editSelectedTerrain/);
 assert.doesNotMatch(terrainBindingSource, /event\.target\.closest\('\[data-terrain-id\]'\)/);
 const renderAibpSource = aibp.match(/function renderApp\(\)[\s\S]*?\n  function bindEvents/)?.[0] || "";
-assert.ok(renderAibpSource.indexOf("操作日志") < renderAibpSource.indexOf("conflictBoardEditorHtml(monster, b)"), "冲突版图必须位于 AIBP 最底部");
+assert.ok(renderAibpSource.indexOf("referenceCardsHtml(monster, b, references)") < renderAibpSource.indexOf("conflictBoardEditorHtml(monster, b)") && renderAibpSource.indexOf("conflictBoardEditorHtml(monster, b)") < renderAibpSource.indexOf("全部怪物牌"), "地形卡应位于特质区域，冲突版图应位于全部怪物牌之前");
 assert.ok(renderAibpSource.indexOf('id="undo"') < renderAibpSource.indexOf('data-scry="ai"'), "AI 观星按钮必须位于 AI 操作按钮末尾");
 assert.ok(renderAibpSource.indexOf('data-wound="double"') < renderAibpSource.indexOf('data-scry="bp"'), "BP 观星按钮必须位于 BP 操作按钮末尾");
 
@@ -415,7 +415,9 @@ assert.match(displayStyles, /\.display-track-stack\{position:absolute;inset:2px\
 assert.match(displayStyles, /\.display-guardian-figure\{position:absolute/);
 assert.match(display, /slot\.occupied===true/);
 assert.match(display, /slot\.revealed&&slot\.id/);
-assert.match(display, /\/assets\/heroes\/\$\{esc\(knight\.heroId\)\}-avatar\.jpg/);
+assert.match(display, /class="knight-start-marker"/);
+assert.match(aibp, /const singleCell = item.kind === "knight"/);
+assert.match(display, /item.kind === "monster" && monster\?\.type !== "boss"/);
 assert.match(display, /function applyBoardCrop/);
 assert.match(display, /imageWidth\/cropWidth\*100/);
 assert.match(displayStyles, /--board-image-width/);

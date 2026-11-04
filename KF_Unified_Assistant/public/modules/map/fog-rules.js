@@ -202,9 +202,10 @@
     if (!Array.isArray(deck) || !Array.isArray(peeked) || !peeked.length) return null;
     const expected = peekCards(deck, peeked.length, source);
     if (peeked.some((cardId, index) => expected[index] !== cardId)) return null;
-    const topCards = peeked.filter((_, index) => !["bottom", "shuffle"].includes(destinations?.[index]));
+    const topCards = peeked.filter((_, index) => !["bottom", "shuffle", "discard"].includes(destinations?.[index]));
     const bottomCards = peeked.filter((_, index) => destinations?.[index] === "bottom");
     const shuffledCards = peeked.filter((_, index) => destinations?.[index] === "shuffle");
+    const discardedCards = peeked.filter((_, index) => destinations?.[index] === "discard");
     const remaining = source === "bottom"
       ? deck.slice(0, deck.length - peeked.length)
       : deck.slice(peeked.length);
@@ -217,7 +218,8 @@
       deck: [...topCards, ...shuffledMiddle, ...orderedBottomCards],
       topCards,
       bottomCards,
-      shuffledCards
+      shuffledCards,
+      discardedCards
     };
   }
 

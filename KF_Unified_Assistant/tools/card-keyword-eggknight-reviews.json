@@ -1,0 +1,475 @@
+{
+  "description": "蛋骑士 AI、BP 与标志卡人工目视核对；其他 Boss 的 AI/BP 不在本分片。",
+  "cards": {
+    "M_Eggknight:AI1:22": {
+      "keywords": [
+        "Pushback X",
+        "Cooldown",
+        "Knockdown"
+      ],
+      "add": [
+        "Pushback X",
+        "Cooldown",
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-00.jpg",
+      "sha256": "f7e8309bd37d904143b277da5f7a8efcabb647b0931a785f6b0175e36142fd34"
+    },
+    "M_Eggknight:AI1:24": {
+      "keywords": [
+        "Cooldown",
+        "Knockdown"
+      ],
+      "add": [
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-01.jpg",
+      "sha256": "474516c9e7405788257029ee113053179a46d40473e0174ae0e46c213969e348"
+    },
+    "M_Eggknight:AI1:20": {
+      "keywords": [
+        "Choke"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-02.jpg",
+      "sha256": "b7138074361ea12940ef46c28048bdd0d9e0a5d0a810153a312d692a98b550c4"
+    },
+    "M_Eggknight:AI1:23": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-03.jpg",
+      "sha256": "df1eb8edb2cb8be4939b49c0c06afbcf1fdbb12012b3a9030a69edf949544adb"
+    },
+    "M_Eggknight:AI1:25": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-04.jpg",
+      "sha256": "f5a1df6ab3a0200bf22635898d3df68016b25977c89cf5454fcd0d57947f60df"
+    },
+    "M_Eggknight:AI1:21": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-05.jpg",
+      "sha256": "9651a17c2b483a69aef70d5ab3db6146e9ee84a46e93315cf8d70481d058a775"
+    },
+    "M_Eggknight:AI2:29": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-06.jpg",
+      "sha256": "3939368d8382291af5fb544140d5a3c2cc1f4a185dc1022ad74b19bab2c09ae6"
+    },
+    "M_Eggknight:AI2:26": {
+      "keywords": [
+        "Discard",
+        "Restrain",
+        "Knockdown"
+      ],
+      "add": [
+        "Discard"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-07.jpg",
+      "sha256": "1384b596ba884ebfb5f4b7a635715804eb64564b16a88643d76d1e94303f5de8"
+    },
+    "M_Eggknight:AI2:27": {
+      "keywords": [
+        "Pushback X",
+        "Cooldown",
+        "Restrain",
+        "Choke"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-08.jpg",
+      "sha256": "89c7f497f80b1aa90f28dd974df3bee321675334c8eaeb794e10a4d8be2992a0"
+    },
+    "M_Eggknight:AI2:31": {
+      "keywords": [
+        "Discard",
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-09.jpg",
+      "sha256": "96a32edb488038575f92a1f212439a1d9c534b1ee4692931615be72a33c3805d"
+    },
+    "M_Eggknight:AI2:28": {
+      "keywords": [
+        "Pushback X",
+        "Cooldown",
+        "Restrain",
+        "Knockdown"
+      ],
+      "add": [
+        "Pushback X",
+        "Restrain"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-10.jpg",
+      "sha256": "df5b26af8bc48cc1ed14ef27bb07fdfd6de1666ebb4f6ce9f370aeb258ffc43e"
+    },
+    "M_Eggknight:AI2:30": {
+      "keywords": [
+        "Choke"
+      ],
+      "add": [
+        "Choke"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-11.jpg",
+      "sha256": "635b45b63b2515b1de792eb0eef85632bcf60bc6ee986e8e4945a8c288a71f3f"
+    },
+    "M_Eggknight:AI3:37": {
+      "keywords": [
+        "Choke",
+        "Discard",
+        "Knockdown"
+      ],
+      "add": [
+        "Choke",
+        "Discard",
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-12.jpg",
+      "sha256": "732351e3556543ab907b690b9c10d87a58424b6aa3cb1d458b8ca88a425b51f7"
+    },
+    "M_Eggknight:AI3:34": {
+      "keywords": [
+        "Choke",
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-13.jpg",
+      "sha256": "98f8035985c50a6a6b6dc6c044aa3a4f088259291a792afabd8896d82765f021"
+    },
+    "M_Eggknight:AI3:32": {
+      "keywords": [
+        "Discard",
+        "Restrain",
+        "Knockdown"
+      ],
+      "add": [
+        "Discard"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-14.jpg",
+      "sha256": "f687e0f2ba7e81371982464a7408cf186c501fac7f4123d4e896bf84bdde559a"
+    },
+    "M_Eggknight:AI3:35": {
+      "keywords": [
+        "Pushback X",
+        "Cooldown",
+        "Restrain",
+        "Choke",
+        "Discard"
+      ],
+      "add": [
+        "Cooldown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-15.jpg",
+      "sha256": "f8fc19cbdcb1150066331bf48bd1596f2bafdfb40b16d1bf09ef5037c527499d"
+    },
+    "M_Eggknight:AI3:33": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-16.jpg",
+      "sha256": "413b949ea5d01e7a117d05a76ff4b92e6de4b3495f9b31a4289b3b7950e3818e"
+    },
+    "M_Eggknight:AI3:36": {
+      "keywords": [
+        "Pushback X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-17.jpg",
+      "sha256": "02c4fd100eecfe68e26e3e12a78ffff5bce9ef1aed9e9b538db3c96527da6b9e"
+    },
+    "M_Eggknight:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-18.jpg",
+      "sha256": "5d4835fb485ed43e796e292c695d180429d900c38daf6e81b0aee3fb86790a8f"
+    },
+    "M_Eggknight:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-19.jpg",
+      "sha256": "9a2a1e9e2a0ecb2bf36f12d253a5cb3aae71a22b2a21aad27574942d7ac919b8"
+    },
+    "M_Eggknight:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-20.jpg",
+      "sha256": "4f9a58347eba366d889e799be62f16163fcd99ff339ee2347e3533e3093cc02f"
+    },
+    "M_Eggknight:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-21.jpg",
+      "sha256": "94f1e25e6f568db757bb31580aef757448fa071ea1f4c1b770f7bc53704b77e3"
+    },
+    "M_Eggknight:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。 Opening 和 Break 在此为指示物而非对应 X 行动。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-22.jpg",
+      "sha256": "dfe25c7faf1769034984a96dea2b9e57a806cfb753fd4e84ce1ef358c8548731"
+    },
+    "M_Eggknight:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-23.jpg",
+      "sha256": "f76ba32958da36a3a8ba739f04f3c8556abdbedb78de3a71918a42c4b97b81ba"
+    },
+    "M_Eggknight:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-24.jpg",
+      "sha256": "6f28609d3a425aa1be2552e97805e4b0394a13059319fad9fa5347675ab28c34"
+    },
+    "M_Eggknight:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。 弃置的是盔甲指示物，不是弃置手牌。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-25.jpg",
+      "sha256": "45bcd47f55147bf62de252d5c8b19d5fa54d9fa1695e864487c306f15b17e662"
+    },
+    "M_Eggknight:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Cooldown",
+        "Discard"
+      ],
+      "add": [
+        "OvercomeX+",
+        "Discard"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-26.jpg",
+      "sha256": "303d9b7c41ce0c950ffa2f2b57e49f132745773efb6504b0ebda117350441a43"
+    },
+    "M_Eggknight:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X",
+        "Knockdown",
+        "Crash"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-27.jpg",
+      "sha256": "399953df5c6e2232e2702a24f89c0429fe69534ca067e2df0a2000f7096664b7"
+    },
+    "M_Eggknight:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-28.jpg",
+      "sha256": "6200e2f430a19d016b81354b3f504876a40584a3ad2405e61ec8826c6ddf2a3e"
+    },
+    "M_Eggknight:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。 Opening 和 Break 在此为指示物而非对应 X 行动。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-29.jpg",
+      "sha256": "e0216fe3ccd58c76202059986344e9f8584ed44eb338a5e874f805b86ab4350a"
+    },
+    "M_Eggknight:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-30.jpg",
+      "sha256": "6f8fbf1df1d9e2ff78acd9573cc5f420674a9c2de8e85bcd6570bd273246b394"
+    },
+    "M_Eggknight:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-31.jpg",
+      "sha256": "a700808ed66657fb4175c3b7c0ef68b653728ac5399edf1f07bfbdf83e8583ee"
+    },
+    "M_Eggknight:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-32.jpg",
+      "sha256": "7cc18769f6a5d094dcb9f897536c0a3a0b0b91c3dd317c064b1632ea32a8b4b2"
+    },
+    "M_Eggknight:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-33.jpg",
+      "sha256": "d9dc890c3ed72ffa629d29f53b070b0d6cc568eaa9d98d38b7416196a10c23b4"
+    },
+    "M_Eggknight:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X",
+        "Knockdown"
+      ],
+      "add": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。 弃置的是盔甲指示物，不是弃置手牌。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-34.jpg",
+      "sha256": "777bdd41f825c1c6906ead312a5c829ed417d289485a57e5f2f9a9ee3c599615"
+    },
+    "M_Eggknight:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "add": [
+        "OvercomeX+"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-35.jpg",
+      "sha256": "b1fca176eecb19648f263a5499dd5d01f590628eb5ee61d926c326e40a44a1fc"
+    },
+    "M_Eggknight:SIG:38": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/eggknight/6d1c98de-36.jpg",
+      "sha256": "42c5b86a754000b2c24a3e8d2f0e918d66a3cbb623715ca04cada7749b20a8e9"
+    }
+  }
+}

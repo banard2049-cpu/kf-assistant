@@ -1,0 +1,6 @@
+{
+  "M_BogWitch:BP1:4": {
+    "add": ["OvercomeX+"],
+    "remove": ["Discard"]
+  }
+}

@@ -1,0 +1,401 @@
+{
+  "description": "远古薄暮恶魔 AI、BP 与标志卡人工目视核对；其他 Boss 的 AI/BP 尚未在本分片核对。",
+  "cards": {
+    "M_DevilAncientDusk:AI1:20": {
+      "keywords": [
+        "Poison",
+        "Bane",
+        "Pushback X"
+      ],
+      "add": [
+        "Poison",
+        "Bane",
+        "Pushback X"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-00.jpg",
+      "sha256": "0512d4f7edeecadb900aa42cb4e003f1727fa168ace87014a31936e363aef37a"
+    },
+    "M_DevilAncientDusk:AI1:21": {
+      "keywords": [
+        "Knockdown",
+        "Pushback X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-01.jpg",
+      "sha256": "92ac26f48af292450f72cb45d65e45093b2018b4e08de2db82135a297b73e68a"
+    },
+    "M_DevilAncientDusk:AI1:24": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-02.jpg",
+      "sha256": "8c35c4e04ba20f72a43ce8ae9fb15b5189b608c3ed35eea28a9ef14a26d26cdc"
+    },
+    "M_DevilAncientDusk:AI1:23": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-03.jpg",
+      "sha256": "8bc1a827e80cf9e1555f4e642546f92aef2b445b9b1105a93afe889ef2219423"
+    },
+    "M_DevilAncientDusk:AI1:22": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "add": [
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-04.jpg",
+      "sha256": "7c6d3ff03d70afcad95def88a5f43c977e84f4dcd01775bd7ff343fc26bce74c"
+    },
+    "M_DevilAncientDusk:AI1:25": {
+      "keywords": [
+        "Bane"
+      ],
+      "add": [],
+      "remove": [
+        "Sink"
+      ],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 卡名中的普通词不是对应游戏关键词。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-05.jpg",
+      "sha256": "24d6d6e02e13dc7d54d7d1716721582048cb979050dedcbae99008a81ae757c4"
+    },
+    "M_DevilAncientDusk:AI2:26": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-06.jpg",
+      "sha256": "3fda381cd19cd6c4325acfb97b7ff1db17b33785ae772c56991176179e26ad19"
+    },
+    "M_DevilAncientDusk:AI2:27": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-07.jpg",
+      "sha256": "3e895ea4e7e038c63267e761b4c4af29d0075cc43316b8fa12e5018012179143"
+    },
+    "M_DevilAncientDusk:AI2:28": {
+      "keywords": [
+        "Toxify",
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-08.jpg",
+      "sha256": "c745810bae365330dd156c2996d32f383b94d167b353b351ed7b60ec639789dd"
+    },
+    "M_DevilAncientDusk:AI2:29": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "add": [
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-09.jpg",
+      "sha256": "2c93618f0cbe7f6339517e6a6d3dc375b93f465729c432c19f4f588da25378fc"
+    },
+    "M_DevilAncientDusk:AI2:31": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [
+        "Sunder"
+      ],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 卡名中的普通词不是对应游戏关键词。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-10.jpg",
+      "sha256": "30db50a4c8e6bc976c29d892dd9deb5592d83fda04bd32916970bd43c0ac5bfc"
+    },
+    "M_DevilAncientDusk:AI2:30": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-11.jpg",
+      "sha256": "22effff5496ff217197554c3c63cc63ff603b09077558f86494fc70c61d8bee4"
+    },
+    "M_DevilAncientDusk:AI2:32": {
+      "keywords": [
+        "Bane",
+        "Pushback X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-12.jpg",
+      "sha256": "2121be5d71d0f9b279e1186c9a555561d11602bec15e890390431aaf6f812313"
+    },
+    "M_DevilAncientDusk:AI2:33": {
+      "keywords": [
+        "Crash"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-13.jpg",
+      "sha256": "456bedf2e412f6e337718985a5f94169b4d261ffc392a987816ba986a27fc81a"
+    },
+    "M_DevilAncientDusk:AI2:34": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-14.jpg",
+      "sha256": "424e01525ffc2492fe99f7a973e3aab3be93255755040eff014592a6ae2e575b"
+    },
+    "M_DevilAncientDusk:AI2:35": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-15.jpg",
+      "sha256": "54fcc817d3431d3c7151027ddf398a6b58dd52dc7b1404010a4e74e524f5bf95"
+    },
+    "M_DevilAncientDusk:AI2:36": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-16.jpg",
+      "sha256": "781349ea3405e81e0e1bde496cdcfc0f2fb36bfd228758984f4b1c0cf84c0b94"
+    },
+    "M_DevilAncientDusk:AI2:37": {
+      "keywords": [
+        "Bane",
+        "Crash"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-17.jpg",
+      "sha256": "f71fa4332ef53f48d7e04bb8942e3a781a35cbee3c59c808a5cf8937f250f579"
+    },
+    "M_DevilAncientDusk:BP1:0": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "add": [
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。 弃置的是状态卡、指示物或愚者牌，并非词典随机弃置手牌。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-18.jpg",
+      "sha256": "fbd54b502ab125edc8221a2d22e779c5ab153a9a8b3d726bd771789b1e9e3f48"
+    },
+    "M_DevilAncientDusk:BP1:1": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-19.jpg",
+      "sha256": "f977d60e5f540009667b880b131f64d1d2064414f91a3c6fe94d8caffac70447"
+    },
+    "M_DevilAncientDusk:BP1:5": {
+      "keywords": [
+        "Bane"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 弃置的是状态卡、指示物或愚者牌，并非词典随机弃置手牌。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-20.jpg",
+      "sha256": "f21531366aa167cd4bcbc04555318d7a090cf405b292029ca9cb92a9d71d2547"
+    },
+    "M_DevilAncientDusk:BP1:2": {
+      "keywords": [
+        "Pushback X",
+        "Knockback X"
+      ],
+      "add": [
+        "Pushback X",
+        "Knockback X"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 复数 Pushbacks/Knockbacks 是对两种效果的明确引用。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-21.jpg",
+      "sha256": "36ebc40d0843e8d152a0e40f7d8018b32836fc6baad2911518658b1cb8d618ea"
+    },
+    "M_DevilAncientDusk:BP1:3": {
+      "keywords": [
+        "Knockdown",
+        "Knockback X"
+      ],
+      "add": [
+        "Knockdown"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-22.jpg",
+      "sha256": "d8930506201c2f4be241b7ce81e277cfcd1807a4ee46ab9aa754d9592a77cb65"
+    },
+    "M_DevilAncientDusk:BP1:4": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-23.jpg",
+      "sha256": "7fee667693e03e8ebebad82d47cf28fcccc5b76358237f164eaa8c9ae948a728"
+    },
+    "M_DevilAncientDusk:BP2:6": {
+      "keywords": [
+        "Toxify"
+      ],
+      "add": [
+        "Toxify"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-24.jpg",
+      "sha256": "93321c6463d4870b50f74e908561efc662f252b4c77efe3eef90fc9b6e588cea"
+    },
+    "M_DevilAncientDusk:BP2:7": {
+      "keywords": [
+        "Pull X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-25.jpg",
+      "sha256": "82f259f9eab0581bf0bb83633da956baaed379bb88d1642a70f8f78140ea5389"
+    },
+    "M_DevilAncientDusk:BP2:11": {
+      "keywords": [
+        "Knockback X",
+        "Scavenge X"
+      ],
+      "add": [],
+      "remove": [
+        "Guard"
+      ],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 卡名中的普通词不是对应游戏关键词。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-26.jpg",
+      "sha256": "3b91fcf2d30afba8e24b8906b45fe77d8bfc1bb6c5e0d50ec2340d8d3eea2bc7"
+    },
+    "M_DevilAncientDusk:BP2:8": {
+      "keywords": [
+        "Bane"
+      ],
+      "add": [
+        "Bane"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-27.jpg",
+      "sha256": "c77bcc7b6ef9294ca9b5c714f5efed158f8cfc58358059e859fa8dd83237f005"
+    },
+    "M_DevilAncientDusk:BP2:10": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-28.jpg",
+      "sha256": "dc6bc1029141e1fb55143cbd221e921cf35f1d916267c887f48da1fb6ffd02ca"
+    },
+    "M_DevilAncientDusk:BP2:9": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-29.jpg",
+      "sha256": "9110746df57ae8d7e2f4d2795aea60b5440687ab39345fe9adc9b6a33da4c7ab"
+    },
+    "M_DevilAncientDusk:BP3:12": {
+      "keywords": [
+        "Bane"
+      ],
+      "add": [
+        "Bane"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。 弃置的是状态卡、指示物或愚者牌，并非词典随机弃置手牌。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-30.jpg",
+      "sha256": "10dafb70f6d0a176c468a5e520dc9f5f255b1243fc3dc898efa0dd5bae511ac8"
+    },
+    "M_DevilAncientDusk:BP3:13": {
+      "keywords": [
+        "Choke",
+        "Scavenge X"
+      ],
+      "add": [
+        "Scavenge X"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-31.jpg",
+      "sha256": "724301b4b452b202a42e1c69ab36ac82aa750f3ca4acc0b5d024feb421d7a9c2"
+    },
+    "M_DevilAncientDusk:BP3:17": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-32.jpg",
+      "sha256": "c9b1d6f8112ca20ccf8cc88ed4f3edb55d3ea1e1a632e1a52bce4cd8e0f9ae99"
+    },
+    "M_DevilAncientDusk:BP3:16": {
+      "keywords": [
+        "Bane"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 补入 OCR 遗漏或未正确识别的卡面词条。 弃置的是状态卡、指示物或愚者牌，并非词典随机弃置手牌。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-33.jpg",
+      "sha256": "8349e3856722875a79d7f6319c544b3c765c1a7a16e9cd3bfe109545c177e7b3"
+    },
+    "M_DevilAncientDusk:BP3:15": {
+      "keywords": [
+        "Devote"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。 弃置的是状态卡、指示物或愚者牌，并非词典随机弃置手牌。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-34.jpg",
+      "sha256": "411ec054128fda861c9bf8190eb333b71ad9cd27fc4c785a4badcded109a83a3"
+    },
+    "M_DevilAncientDusk:BP3:14": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-35.jpg",
+      "sha256": "8cdc6b5e87be40e4bc68849197cb6855410821bcf4c884e93462c0672260aa63"
+    },
+    "M_DevilAncientDusk:SIG:38": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：按卡面实际效果匹配词典。",
+      "image": "/assets/cards/monster-faces/devil-ancient-dusk/c701e7b0-36.jpg",
+      "sha256": "0508bfe8123d360cd5b4260e0ecdd524b4d519b8d39cbd8bc5c5672e2ba2d3b2"
+    }
+  }
+}

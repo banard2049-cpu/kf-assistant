@@ -1,0 +1,336 @@
+{
+  "cards": {
+    "M_Panzerdragon:AI0:18": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-00.jpg",
+      "sha256": "ed06b508904cf3bf208364040d37b888893c1055bb269a0bff95e40b0a0bcc77"
+    },
+    "M_Panzerdragon:AI1:19": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-01.jpg",
+      "sha256": "2691fcd89c25a6440c2c2d5a194c2212e957dcb0fa660d05649fb37a5f79b484"
+    },
+    "M_Panzerdragon:AI1:20": {
+      "keywords": [
+        "Bane",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-02.jpg",
+      "sha256": "073cb18a0632fe6ef10c4416614d132361eaa6c6ee81ddd361f435dd2c2dfa02"
+    },
+    "M_Panzerdragon:AI1:21": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-06.jpg",
+      "sha256": "ad6fabb32fd7497336631bb86553d9faeb51631552dbffc991b1ba5d423ac325"
+    },
+    "M_Panzerdragon:AI1:22": {
+      "keywords": [
+        "Bane",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-05.jpg",
+      "sha256": "265206bf18c6e79c57327c4c9db56ff3d3116591979c6abd5bb7a0ae6efdf269"
+    },
+    "M_Panzerdragon:AI1:23": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-04.jpg",
+      "sha256": "666979d9d4ea969cc2126f35e1084731052b79a0383e4298f93a6c98bf09d81f"
+    },
+    "M_Panzerdragon:AI1:24": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-03.jpg",
+      "sha256": "89ffe5ec65bb90b6c8bfcc15385f2d385ec46b38f94fbb19e3d340caab3101a8"
+    },
+    "M_Panzerdragon:AI2:25": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-10.jpg",
+      "sha256": "ad271ccc3bc00fbf9146ce9badab702f3672df4c5b558961e056f88e9edc84bc"
+    },
+    "M_Panzerdragon:AI2:26": {
+      "keywords": [
+        "Bane",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-11.jpg",
+      "sha256": "c62df52e97ae3b86400a4872162b71595f75fabb15a216dc637bec7cd2e0920d"
+    },
+    "M_Panzerdragon:AI2:27": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-12.jpg",
+      "sha256": "4fcbe904082db9c892d29a9c14757d461f1551ddd486d0e1029255134251fc17"
+    },
+    "M_Panzerdragon:AI2:28": {
+      "keywords": [
+        "Parasitize"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-07.jpg",
+      "sha256": "603c3a3f3a5b38ec17923a953b014579e7d84f117b0ada18f91f2b2f0016536f"
+    },
+    "M_Panzerdragon:AI2:29": {
+      "keywords": [
+        "Bane",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-08.jpg",
+      "sha256": "985574cb8d3667e9ddebf4fadd3b12e89b02ea57492985d5474f2562a553ca7f"
+    },
+    "M_Panzerdragon:AI2:30": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-09.jpg",
+      "sha256": "e150630f0d1543b982238b86f5bfe517f79cb36da0d8d343918213f51e819a3b"
+    },
+    "M_Panzerdragon:AI3:31": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-18.jpg",
+      "sha256": "2c03365a392896d8c9b7729f7eda72ec6fe39540521bd374c869664e7578e567"
+    },
+    "M_Panzerdragon:AI3:32": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-17.jpg",
+      "sha256": "3e40726bcdd9771da0f2858894ae9db00701b05cc1951fec04b700124ea4920c"
+    },
+    "M_Panzerdragon:AI3:33": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-16.jpg",
+      "sha256": "72a35920f1a7273559287f10c8ac41f995e474dfcac7d5337e68fd8b000a25c0"
+    },
+    "M_Panzerdragon:AI3:34": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-15.jpg",
+      "sha256": "ae075df5f90a070591df6c9272c9ce760fc922bff7a52b049ef6727073789fe1"
+    },
+    "M_Panzerdragon:AI3:35": {
+      "keywords": [
+        "Bane",
+        "Parasitize",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-14.jpg",
+      "sha256": "9ba6f971a497ad0c54f5fcbdb0e8adb35b593f6a2d47d69936f38485718f3256"
+    },
+    "M_Panzerdragon:AI3:36": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-13.jpg",
+      "sha256": "93dbc5aa9152e58eaa249532e70eab0f61341237cce162ac182b7a922f8c221e"
+    },
+    "M_Panzerdragon:BP1:0": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-19.jpg",
+      "sha256": "606b2075c4504fb0a52ebf4ff1f4715ee1ca9c1e5c369456602ddbe74e4d44d7"
+    },
+    "M_Panzerdragon:BP1:1": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-20.jpg",
+      "sha256": "a108c14c693c707f3b468019453d18ec4b59af40c0a0359c0f380ece9f7be86c"
+    },
+    "M_Panzerdragon:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Scavenge X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-21.jpg",
+      "sha256": "a1d1eedc4a9f8cd6d4f61abd1a10c61dfc191e35e06cdab2c738d4364e5e8fad"
+    },
+    "M_Panzerdragon:BP1:3": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-22.jpg",
+      "sha256": "37d520c70234f463bada880d9346f39b834053396a02dff4f72a585aac7a932c"
+    },
+    "M_Panzerdragon:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-23.jpg",
+      "sha256": "7944fecafe7b836c1fb36566fabe42a2264ec058a09794e2562eb0a2f2d2fba2"
+    },
+    "M_Panzerdragon:BP1:5": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-24.jpg",
+      "sha256": "276ad46d6b9db3aead4aa6bc8a50a8edd3e47b4695574cb11813834e554ef471"
+    },
+    "M_Panzerdragon:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-28.jpg",
+      "sha256": "24b61cafd699a63497d80dbc136ce8ec704877e97081be6f1429bc64bfaca5a9"
+    },
+    "M_Panzerdragon:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Knockdown",
+        "Knockback X",
+        "Scavenge X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-29.jpg",
+      "sha256": "7faa22830b0ac3df69648f5923663a0b0ba4f4290489f41f3ed0d5f8d8283070"
+    },
+    "M_Panzerdragon:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-30.jpg",
+      "sha256": "88ae089e3476e971e93ea17b2bec02997d581a31ac9f43cd377f8b71180c2c4b"
+    },
+    "M_Panzerdragon:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-25.jpg",
+      "sha256": "a490987c18c471eb1faa6e1cb76ed3616ac8725cad41836699491713144b0f9c"
+    },
+    "M_Panzerdragon:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Scavenge X"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-26.jpg",
+      "sha256": "030bca26ff2dee0002a6b4daa8dca6886fcaef96601bc1f9d062f5733ef9d3b1"
+    },
+    "M_Panzerdragon:BP2:8": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-27.jpg",
+      "sha256": "21c2e1893b9fc6248704e4ab37aa31ca4a1d583484fc41157591b258b30b3eb3"
+    },
+    "M_Panzerdragon:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder",
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-31.jpg",
+      "sha256": "3c658a73eadc6972e4d4f516ef90b32c2f4968e3e32ee8acdc0a8f84a289d6bf"
+    },
+    "M_Panzerdragon:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-36.jpg",
+      "sha256": "8203314f1311bf053afed3bd0856e3fca317c18545190459020e34697dfe2183"
+    },
+    "M_Panzerdragon:BP3:14": {
+      "keywords": [],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-35.jpg",
+      "sha256": "3776b90227a61bff66303a183e7ef44dcf08e08377a3025e502fbed0e10d6d26"
+    },
+    "M_Panzerdragon:BP3:15": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-33.jpg",
+      "sha256": "ade1cc4677571f2c350d40fe8e2db2a8b3e8c4352b0ce3538efaa026b5ce571c"
+    },
+    "M_Panzerdragon:BP3:16": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-32.jpg",
+      "sha256": "7eb5cd35082210984632ec1f5339105546f05f993d4791e8f8dd9df10159a5a7"
+    },
+    "M_Panzerdragon:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-34.jpg",
+      "sha256": "33b68bb9cc9dcffeba4b724e27b7f8246bbe197ec9ff33d91d4846d615480a75"
+    },
+    "M_Panzerdragon:SIG:37": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典规则词；弃置装备或指示物不是词典中的弃手牌，Germinate、Migrate 等不在词典。",
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-37.jpg",
+      "sha256": "f8eb5c227931ab88483bf281385bfaf03ec49ae55288fbf116fdbee2d6deebff"
+    }
+  }
+}

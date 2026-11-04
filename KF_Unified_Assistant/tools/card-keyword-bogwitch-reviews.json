@@ -1,0 +1,287 @@
+{
+  "description": "沼地女巫 18 张 AI、18 张 BP 与标志行为，逐张对照卡面核对。Stray 在原词典中不存在；普通弃置 Hex 非词典中的弃置手牌。",
+  "cards": {
+    "M_BogWitch:AI1:18": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-05.jpg",
+      "sha256": "29849e1bca79f2fb86ac168329167629a9d622017b09486c14d86f9c36ed14f9"
+    },
+    "M_BogWitch:AI1:19": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-04.jpg",
+      "sha256": "d03588cd05c944c1f538ccfe35084c01bad3e6434849cf4910bd9d92577140c8"
+    },
+    "M_BogWitch:AI1:20": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-03.jpg",
+      "sha256": "bda1532d24ed7caef49bf46a8a4754b6ad7d4d11d60bb18ec6fb1be8fecee623"
+    },
+    "M_BogWitch:AI1:21": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-02.jpg",
+      "sha256": "54d645ea57c9a026c60e3c2061fe46d93fb906ff899c8626a2e16dc163d1638e"
+    },
+    "M_BogWitch:AI1:22": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-01.jpg",
+      "sha256": "c01cdf25b19af252c80ef8a0e8dab8d96e7de63274b2b60edf163be6d9eb9d6e"
+    },
+    "M_BogWitch:AI1:23": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-00.jpg",
+      "sha256": "3492e0ea241cc2e3245d44566deb2d4e03a963aa0c77533335e70790daf00c0c"
+    },
+    "M_BogWitch:AI2:24": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-10.jpg",
+      "sha256": "755686253bc79c61a29b1a644799c1df430bf9dc40aef858748d3aaadd520d65"
+    },
+    "M_BogWitch:AI2:25": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-09.jpg",
+      "sha256": "8d95f7fd8d0d63194c385cf8b57d80fe9fb2ee0ced783e56c1d845572714c4bc"
+    },
+    "M_BogWitch:AI2:26": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-08.jpg",
+      "sha256": "62b86c5a0f7f36a8be2cb7781d2e0f0186719289e7e3f5fbf1894f0c5973f3db"
+    },
+    "M_BogWitch:AI2:27": {
+      "keywords": [
+        "Toxify"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-07.jpg",
+      "sha256": "7e0dca20e9167631f8ede07c50603f3ac17fb807802b6bd39e668bf27109c5f5"
+    },
+    "M_BogWitch:AI2:28": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-06.jpg",
+      "sha256": "9689720f6e5441f359f5c7774997c77bcd85f12b016b5f99796c8c940544323f"
+    },
+    "M_BogWitch:AI2:29": {
+      "keywords": [
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-11.jpg",
+      "sha256": "d31c4d91a2b463e3fef7109f565ff95d90c9128d82b6b2a09de2e85e68734934"
+    },
+    "M_BogWitch:AI3:30": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-17.jpg",
+      "sha256": "53057c4eeb8bae3fc9795f10b8acf69b143209c65262dda0f8fa8fe7cdcfb757"
+    },
+    "M_BogWitch:AI3:31": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-16.jpg",
+      "sha256": "ea2da1d75f3940283cbef7a2081af68b576308906832af21e6d18396df3b9ba3"
+    },
+    "M_BogWitch:AI3:32": {
+      "keywords": [],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-15.jpg",
+      "sha256": "08532f0e2708345cc368ef04a10f12c3f38dc121590f16fd3274869bcc2b480a"
+    },
+    "M_BogWitch:AI3:33": {
+      "keywords": [
+        "Doomed"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-14.jpg",
+      "sha256": "305aa1baa3078888fc19cfe05db70c996b541efe577ff588ad3413569071da3b"
+    },
+    "M_BogWitch:AI3:34": {
+      "keywords": [
+        "Doomed",
+        "Toxify"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-13.jpg",
+      "sha256": "58393b5e7eb2325479bd7e445556f37333e950c2adee02b43e5dc3f198e80014"
+    },
+    "M_BogWitch:AI3:35": {
+      "keywords": [
+        "Doomed"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-12.jpg",
+      "sha256": "548a32b4b206b6658b3eb470a0883ed30bc21bded8c70d7d4f0b970366ad88c8"
+    },
+    "M_BogWitch:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-19.jpg",
+      "sha256": "f3678590fdab7a9cb5115eca38f2bc6203e7de2e9a320d61aca7e8c6bb3c5928"
+    },
+    "M_BogWitch:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-20.jpg",
+      "sha256": "436dd7217f3a8dedc3c4b8ce5ce3e56fa41b0139fe08116af0d2e3affc1ce2b8"
+    },
+    "M_BogWitch:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison",
+        "Clash Scavenge"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-23.jpg",
+      "sha256": "62989415d4898c4b4a1cf0ef0317b181161e2b504809bf7c227832e1c531b4b7"
+    },
+    "M_BogWitch:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-22.jpg",
+      "sha256": "ce4d91a358f01ab71505f9d474ab0a09f36780d77a6ebf2b6d8845c2f23f5e7f"
+    },
+    "M_BogWitch:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-21.jpg",
+      "sha256": "969c46990c95f9f430375ee0c62e6d2f7e8903d891e5b01c9c8fa5261a4ca053"
+    },
+    "M_BogWitch:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-18.jpg",
+      "sha256": "dd45097782d2ae1fb44447391c745d728a74c315542a572db658b64b88effea5"
+    },
+    "M_BogWitch:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-29.jpg",
+      "sha256": "5b5c2f4469fd4e232da139a6f2789bff522d0934883c01c129480d146be5c161"
+    },
+    "M_BogWitch:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-28.jpg",
+      "sha256": "6655d50b09d57021d4f5be23e846a6f2244175327cd83d0f3a80e66e007f7918"
+    },
+    "M_BogWitch:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Poison",
+        "Pushback X"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-27.jpg",
+      "sha256": "ff947942a72d33395c2e83b87ae25fa945f6be6f1ab83df2b40525deafdfb5b9"
+    },
+    "M_BogWitch:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-24.jpg",
+      "sha256": "591636b6abc742181191b2461eae409496a4d4a17b2314f3131c67f27a425b20"
+    },
+    "M_BogWitch:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Toxify",
+        "Scavenge X"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-25.jpg",
+      "sha256": "c57fbd89abff1e48d853441e6352291edc949c35d19480b739ad3889ac868d54"
+    },
+    "M_BogWitch:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-26.jpg",
+      "sha256": "80ee96d7bf514c8189a4ad0a37400ac7765f0cc001ac085a1e0a73e6a7de9dae"
+    },
+    "M_BogWitch:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-30.jpg",
+      "sha256": "db8107900bb5193cdb8ee819b5ba62af2074788094ff198368b6a7589b3f763b"
+    },
+    "M_BogWitch:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-31.jpg",
+      "sha256": "b38909c4966d60942311e95ea7485f79092c5a3509c79ca76e8e1afe5e82679c"
+    },
+    "M_BogWitch:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Toxify"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-32.jpg",
+      "sha256": "4d8bf3e0ed18308061027d8b5d548ff3cb838888b1c5a0d951def1ec7a5c0b95"
+    },
+    "M_BogWitch:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Toxify"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-34.jpg",
+      "sha256": "fd67918bfc9cf42bc2fe3e5a6909838a257218dc14ebf91ce08b3ccbc691c2ff"
+    },
+    "M_BogWitch:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Toxify"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-33.jpg",
+      "sha256": "adb483c148eb45467e277e2325159d017c729f93f5c526dac1f45344ed942976"
+    },
+    "M_BogWitch:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-35.jpg",
+      "sha256": "2c504a0593d476d03dcd308fb32ae5a919d1a03098975ddc9d95567518182630"
+    },
+    "M_BogWitch:SIG:38": {
+      "keywords": [
+        "Toxify"
+      ],
+      "image": "/assets/cards/monster-faces/bog-witch/0fba6df6-36.jpg",
+      "sha256": "24873d2cffc736c120f6e9ebe93716884ada08c31c48d393a214743dd26d14df"
+    }
+  }
+}

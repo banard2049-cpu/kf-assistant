@@ -328,7 +328,25 @@
     }
   }
 
-  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue, publishScene };
+  let conflictClueMap = null;
+  async function refreshConflictClues() {
+    const detail = await api(`campaigns/${activeCampaign}`);
+    conflictClueMap = detail.campaign.state?.modules?.map || null;
+    campaignRevision = detail.campaign.revision;
+    return conflictClueMap;
+  }
+  async function adjustConflictClue(sheetId, clue, delta) {
+    if (!["martial", "errant", "historic", "mystic"].includes(clue) || ![-1, 1].includes(delta)) throw new Error("线索调整无效");
+    const map = await refreshConflictClues();
+    const index = map?.knights?.findIndex(item => item.sheetId === sheetId && item.memberType === "squire") ?? -1;
+    if (index < 0) throw new Error("地图中没有该侍从的线索记录，请先打开地图初始化队伍");
+    const value = Math.max(0, (Number(map.knights[index].clues?.[clue]) || 0) + delta);
+    const result = await api("campaign-sync", { method: "POST", body: JSON.stringify({ campaignId: activeCampaign, operations: [{ id: operationId(), clientId, path: `modules.map.knights.${index}.clues.${clue}`, value, baseRevision: campaignRevision }] }) });
+    campaignRevision = result.revision;
+    conflictClueMap = result.state?.modules?.map || await refreshConflictClues();
+    return conflictClueMap;
+  }
+  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue, publishScene, refreshConflictClues, adjustConflictClue, getConflictClues: () => conflictClueMap };
 
   async function boot() {
     if (!activeCampaign) {
@@ -345,6 +363,7 @@
       const roster = await api(`sheets?overview=1&campaignId=${encodeURIComponent(activeCampaign)}`);
       const allSheets = roster.sheets || [];
       const campaignState = detail.campaign.state || {};
+      conflictClueMap = campaignState.modules?.map || null;
       const isKnightSheet = sheet => knightIds.has(sheet?.state?.knightId);
       let party = Array.isArray(campaignState.party) ? campaignState.party.filter(id => allSheets.some(sheet => sheet.id === id && isKnightSheet(sheet))) : [];
       if (!party.length && campaignState.leaderSheetId && allSheets.some(sheet => sheet.id === campaignState.leaderSheetId && isKnightSheet(sheet))) party = [campaignState.leaderSheetId];

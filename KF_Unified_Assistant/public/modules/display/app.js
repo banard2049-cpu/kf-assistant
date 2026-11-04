@@ -720,18 +720,25 @@
       } else if (source && ["special","number"].includes(item.kind)) {
         const swapped=Math.abs(rotation%180)===90, rowSpan=item.rowEnd-item.rowStart+1, colSpan=item.columnEnd-item.columnStart+1;
         content=`<img class="terrain-art" src="${esc(displayAsset(source))}" alt="${esc(item.asset)}" style="width:${swapped?rowSpan/colSpan*100:100}%;height:${swapped?colSpan/rowSpan*100:100}%;transform:translate(-50%,-50%) rotate(${rotation}deg) scaleX(${item.flipped?-1:1})">`;
-      } else if (item.kind === "knight" && knightAssignment.has(item.id)) {
+      } else if (item.kind === "knight") {
         const knight = knightAssignment.get(item.id);
-        content=`<span class="board-marker knight knight-token-frame" style="--token-facing:${cardinalFacing(rotation)}deg" aria-label="${esc(knight.name)}" title="${esc(knight.name)}"><img class="knight-avatar" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg?v=story-1" alt=""></span>`;
+        const marker = window.KF_CONFLICT_BOARD_DATA?.assets?.[item.asset || "KnightStart"] || window.KF_CONFLICT_BOARD_DATA?.assets?.KnightStart;
+        content=`<span class="board-marker knight" aria-label="${esc(knight?.name || "骑士起始位置")}" title="${esc(knight?.name || "骑士起始位置")}"><img class="knight-start-marker" src="${esc(displayAsset(marker))}" alt="骑士起始位置"></span>`;
       } else if (item.kind === "monster") {
         const token = monsterTokenSrc(battle.monsterId);
         const label = belly ? (monsterLabel(monster) || "附着怪物") : (monsterLabel(monster) || item.asset.replace(/([a-z])([A-Z])/g,"$1 $2"));
         const tokenImage = token ? `<img class="monster-board-token" src="${esc(token)}" alt="${esc(label)}">` : "";
-        const bossFrame = monster?.type === "boss" ? " boss-token-frame" : "";
+        const bossFrame = monster?.type === "boss" ? " boss-token-frame" : " monster-token-frame";
         content=`<span class="board-marker monster${bossFrame}" style="--boss-facing:${cardinalFacing(rotation)}deg" aria-label="${esc(label)}" title="${esc(label)}">${tokenImage || esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
       } else {
         const label=belly && item.kind === "monster" ? (monsterLabel(monster) || "附着怪物") : item.kind==="knight"?"骑士":item.kind==="number"?item.asset.replace("Number",""):item.asset.replace(/([a-z])([A-Z])/g,"$1 $2");
         content=`<span class="board-marker ${item.kind}"><span class="marker-arrow ${facingClass(rotation)}" aria-hidden="true">▲</span>${esc(label)}${assignment.has(item.id)?`<span class="marker-number ${mobNumberClass(assignment.get(item.id))}">${assignment.get(item.id)}</span>`:""}</span>`;
+      }
+      if (item.kind === "knight" || (item.kind === "monster" && monster?.type !== "boss")) {
+        left += (width - 100 / 14) / 2;
+        top += (height - 10) / 2;
+        width = 100 / 14;
+        height = 10;
       }
       return `<span class="conflict-placement" data-placement="${esc(item.id)}" data-kind="${esc(item.kind)}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%;${placementTransform}--layer:${item.layer}">${content}</span>`;
     }).join("");

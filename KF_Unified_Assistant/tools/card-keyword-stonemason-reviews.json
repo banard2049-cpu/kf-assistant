@@ -1,0 +1,335 @@
+{
+  "cards": {
+    "M_Stonemason:AI1:18": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-00.jpg",
+      "sha256": "3eb5f6b4b7134dbb639b83f129de414e6bea05d0b0414d2a1e31744867a8c331"
+    },
+    "M_Stonemason:AI1:19": {
+      "keywords": [],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-01.jpg",
+      "sha256": "e968e6fcb4ffa8c39002a7eb6a7607a5519024f575b5085f608d9036a49ffc34"
+    },
+    "M_Stonemason:AI1:20": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-03.jpg",
+      "sha256": "0d74656f15d3e7d71ba6c2ac9c60a5083e8e7c22564b7aa17ea40702ea8e0546"
+    },
+    "M_Stonemason:AI1:21": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-04.jpg",
+      "sha256": "b63fb19f6655e320f6c2dd5d4973cdece1ce5eebe27b653dad098e0c28a58f7f"
+    },
+    "M_Stonemason:AI1:22": {
+      "keywords": [],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-05.jpg",
+      "sha256": "51dc2867c8b609d52dc5ca55cdda9d10fe18c260ef64d49258e0b2d65cffa41f"
+    },
+    "M_Stonemason:AI1:23": {
+      "keywords": [
+        "Pushback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-02.jpg",
+      "sha256": "0afd7b9e59ff0d45e37159cd4d41f713828041c0d1f25c0ecb067115d53847d5"
+    },
+    "M_Stonemason:AI2:24": {
+      "keywords": [],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-06.jpg",
+      "sha256": "7d65a58d0fd81e28ac3048b796b1700a406605169d22920d4f3310bcc5e1737b"
+    },
+    "M_Stonemason:AI2:25": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-07.jpg",
+      "sha256": "b60db7893e2172133db10eb2383ab255b8d4bdde2583fc263ff93c13d334df60"
+    },
+    "M_Stonemason:AI2:26": {
+      "keywords": [
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-08.jpg",
+      "sha256": "9b5f7c5185238000f3c2cdd031c8da123a8d3d61b6d89d367708bee5f3445e2a"
+    },
+    "M_Stonemason:AI2:27": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-09.jpg",
+      "sha256": "60ebf78566dd2ef32d3d52b666bd0a721e901cbef4dc0d416824674de381297d"
+    },
+    "M_Stonemason:AI2:28": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-11.jpg",
+      "sha256": "4aa240586589315d764408bc61ff8b4b4f0727c2d485bf6506a1b1ac5f0e86de"
+    },
+    "M_Stonemason:AI2:29": {
+      "keywords": [
+        "Pushback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-10.jpg",
+      "sha256": "8bd34dd2bc205dccd0b92bf5f84f9956eec825ec6b88ffa285208fc9f2689c37"
+    },
+    "M_Stonemason:AI2:30": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-12.jpg",
+      "sha256": "d849b1dff984d9c95d0ae76d58c4c4ac952240701abc7dc665617c5a854e0826"
+    },
+    "M_Stonemason:AI2:31": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-13.jpg",
+      "sha256": "54d54080040a2c14e9b27c6038fd4f52e6549a104a668a3543ae6647fa535939"
+    },
+    "M_Stonemason:AI2:32": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-14.jpg",
+      "sha256": "1b0da2ecd72fd8fc4cff7ee582cc1db15eeac7f3e1cfd02e641322b959870f29"
+    },
+    "M_Stonemason:AI2:33": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-16.jpg",
+      "sha256": "255b26b1ede10a970b52341542ec3ae4132cbf84c67864bcc3aab1aa46cdbe2f"
+    },
+    "M_Stonemason:AI2:34": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-17.jpg",
+      "sha256": "200785f89a7f3939309237fab17bdc3272cec164b564ea17fe0de657d681fcd3"
+    },
+    "M_Stonemason:AI2:35": {
+      "keywords": [
+        "Bane",
+        "Choke"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-15.jpg",
+      "sha256": "036964bc6d3ae9f7068f96a9ecd5c3d1af9b924b880d1c1a8f117f8f95e3371f"
+    },
+    "M_Stonemason:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-23.jpg",
+      "sha256": "37cad54c1a53250a945ab48a9c901a1f92f957eb04c250ed6efa9ef4073f4804"
+    },
+    "M_Stonemason:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-22.jpg",
+      "sha256": "30ceb971056925fdb966924b25a3c731201af0435947e3c6d21bfcf0c5166d42"
+    },
+    "M_Stonemason:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown",
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-21.jpg",
+      "sha256": "78c41e4189c2e3ddc8414a8e3d33933131bcfe9770881edd8976fe9a10e23446"
+    },
+    "M_Stonemason:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-20.jpg",
+      "sha256": "e685586397bb44878179994ff11c9fb645426065782925ed71dc6f12e04cebb0"
+    },
+    "M_Stonemason:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Hug"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-19.jpg",
+      "sha256": "5e5dd2cf0a0953770d4586f07fb06bb992ae9900cca9170dc3fabf8bcf9230c4"
+    },
+    "M_Stonemason:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-18.jpg",
+      "sha256": "e375d1793581e1bbe41c8b69c5a6d7bab897d7817238c20bdcaae05b95053316"
+    },
+    "M_Stonemason:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-27.jpg",
+      "sha256": "11b6409fd09d74fc40139cb16f332c8302f27b14db35c9fdc6a84083d930644d"
+    },
+    "M_Stonemason:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane",
+        "Knockback X",
+        "Reposition X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-29.jpg",
+      "sha256": "89186e93d273043021fdbdbe5b8c8ced2c639894fa17ce7c24ec4b0d13a83162"
+    },
+    "M_Stonemason:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-28.jpg",
+      "sha256": "964a9777d4e7d700d1c0ae9ef56667e905145e1fcf6f431a19548ac9de9f7590"
+    },
+    "M_Stonemason:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-24.jpg",
+      "sha256": "7b3fa5dc25c2a84457d02e2f8505710225c265111761a8aa0987888ebb61d874"
+    },
+    "M_Stonemason:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Reposition X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-25.jpg",
+      "sha256": "2217677dde9b7e2041308d882e1b072754d2293e56f7db336ada6c72fe31fc76"
+    },
+    "M_Stonemason:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-26.jpg",
+      "sha256": "1d2be0d52f7f2dee2e1fc677264dbb856451d5f8e1e4c0fa307c29e5875780b0"
+    },
+    "M_Stonemason:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane",
+        "Devote"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-34.jpg",
+      "sha256": "0e68351de8e0f5679bb6b06af4fe0d7216921be977cf5532460cd75c16b16d4a"
+    },
+    "M_Stonemason:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-33.jpg",
+      "sha256": "83860baca49bd558a92783508409f38376a166f2d4fa0909797341a3388d5900"
+    },
+    "M_Stonemason:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-32.jpg",
+      "sha256": "8cb3b4d68a7696a3547236bf96e3781850c14ecad3bdc9e07d2f42f8fcf4f26e"
+    },
+    "M_Stonemason:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-31.jpg",
+      "sha256": "e36a0986a280515b9441825f6a12e67a8e3fa7501b355b1f95a3d85ee91e5d57"
+    },
+    "M_Stonemason:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-35.jpg",
+      "sha256": "975408c29de40ecd7718c31b53144abafee17dd0dc21058e9e58c12bb0fdc2c4"
+    },
+    "M_Stonemason:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-30.jpg",
+      "sha256": "36d03745791d10637f42c0a74a64c69e448aaed18ec61893d4a0f46ad6236c6a"
+    },
+    "M_Stonemason:SIG:36": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "image": "/assets/cards/monster-faces/stonemason/b767e87b-36.jpg",
+      "sha256": "5c5b67d0e5e68d8263b3bc6175fcdaeb2f58a826fed1598d0aa767e5cd779970"
+    }
+  }
+}

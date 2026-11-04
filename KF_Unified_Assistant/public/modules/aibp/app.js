@@ -1802,6 +1802,18 @@
     }
   }
 
+  let keywordDrawSequence = 0;
+  function notifyDrawnKeywords(ids) {
+    const sequence = ++keywordDrawSequence;
+    const battle = state.battle;
+    window.KFKeywords?.notify([]);
+    window.KFCardKeywords?.ready.then(data => {
+      if (data && sequence === keywordDrawSequence && state.battle === battle) {
+        window.KFKeywords?.notify(window.KFCardKeywords.words(ids));
+      }
+    });
+  }
+
   function draw(type) {
     const monster = monsterById(state.battle.monsterId);
     if (ratwolfSignaturePending()) return toast("请先完成新生狼鼠的标志行为");
@@ -1825,6 +1837,7 @@
       return toast(`${type.toUpperCase()} 牌组为空`);
     }
     state.battle[active] = state.battle[`${type}Deck`][0];
+    notifyDrawnKeywords([state.battle[active]]);
     state.battle.healNotice = "";
     log(`抽取 ${type.toUpperCase()}`);
     save();
@@ -2136,6 +2149,7 @@
       return false;
     }
     b.ruleState.ruleCard = b.aiDeck.shift();
+    notifyDrawnKeywords([b.ruleState.ruleCard]);
     b.ruleState.ruleCardReason = reason;
     return true;
   }
@@ -2611,6 +2625,7 @@
     remember();
     const topCard = doppel.cards[0] || "";
     doppel.revealed = !doppel.revealed;
+    if (doppel.revealed) notifyDrawnKeywords(doppel.cards);
     state.battle.ruleState.doppelPreviewCard = doppel.revealed ? topCard : "";
     state.battle.ruleState.ruleNotice = doppel.revealed
       ? `拟身骑士的 ${doppel.cards.length} 张 BP 已一起翻至正面。`
@@ -2689,6 +2704,7 @@
       return toast("AI 牌组为空");
     }
     b.ruleState.aiChoiceIds = b.aiDeck.splice(0, 2);
+    notifyDrawnKeywords(b.ruleState.aiChoiceIds);
     b.healNotice = "";
     b.ruleState.aiChoiceMode = "choose";
     b.ruleState.recommendedAiId = "";
@@ -2884,6 +2900,7 @@
       return toast("AI 牌组为空");
     }
     b.ruleState.ruleCard = b.aiDeck.shift();
+    notifyDrawnKeywords([b.ruleState.ruleCard]);
     b.ruleState.ruleCardReason = "最爱幼崽";
     b.ruleState.ruleNotice = "结算这张 AI 后点击完成；它将以隐藏卡面进入弃牌区。";
     log("蟾蜍龙：结算最爱幼崽");
@@ -5169,11 +5186,11 @@
     const replacements = notes.length ? `<div class="postgame-replacements" role="note">${notes.map(item =>
       `<p><strong>等级 ${esc(item.minLevel)} · ${esc(item.name)}</strong>：${esc(item.note || `${(item.replaces || []).join("、")} 已失效，请按新能力结算。`)}</p>`
     ).join("")}</div>` : "";
-    return `${replacements}<div class="card-gallery reference-gallery ${cards.some(card => card.source) ? "postgame-reference-gallery" : ""}">${cards.map(card => {
+    return `${replacements}<div class="card-gallery reference-gallery">${cards.map(card => {
       if (!card.source) return pileGrid([card.id], monster);
       const status = card.supersededBy ? `<span class="postgame-card-note">${esc(Array.isArray(card.supersededBy) ? card.supersededBy.join("、") : card.supersededBy)} 已替换本组相应能力</span>` : "";
       return `<div class="postgame-reference-card">${cardHtml(card)}${sheetTraitToggleHtml(card, battle)}${status}${card.note ? `<span class="postgame-card-note">${esc(card.note)}</span>` : ""}</div>`;
-    }).join("")}</div>`;
+    }).join("")}${terrainReferenceHtml(battle)}</div>`;
   }
 
   function conflictBoardLayout(battle = state.battle) {
@@ -5438,6 +5455,33 @@
     return `<button type="button" class="digestive-track-marker" data-digestive-marker aria-label="消化轨位置 ${position}" style="left:91.1%;top:${DIGESTIVE_TRACK_POSITIONS[position - 1]}%"><img src="/assets/tokens/generic.png" alt="通用标记"><b>${position}</b></button>`;
   }
 
+  let squireClueBusy = false;
+  function squireCluesHtml() {
+    const squires = (window.KF_CAMPAIGN_PARTY || []).filter(member => member.type === "squire");
+    if (!squires.length) return "";
+    const map = window.KF_MODULE_BRIDGE?.getConflictClues?.();
+    const records = map?.knights || [];
+    const clues = { martial: ["武艺", "红"], errant: ["游侠", "绿"], historic: ["历史", "黄"], mystic: ["神秘", "蓝"] };
+    return `<aside class="squire-clues" aria-label="侍从线索"><div class="squire-clue-roster">${squires.map(member => {
+      const name = String(member.name || "").replace(/\s*[（(]侍从[）)]\s*$/, "");
+      const record = records.find(item => item.sheetId === member.id && item.memberType === "squire");
+      const selected = map?.taskMode && record?.task ? [[record.task, "任务", "任"]] : [[record?.primary, "主要", "主"], [record?.secondary, "次要", "次"]];
+      const types = selected.filter(([type], index, all) => clues[type] && all.findIndex(([other]) => other === type) === index);
+      const resources = types.length ? types : Object.keys(clues).map(type => [type, "", ""]);
+      return `<article class="squire-clue-member"><div class="squire-clue-portrait"><img src="/assets/heroes/${esc(member.squireId)}-avatar.jpg?v=story-1" alt="${esc(name)}立绘" loading="lazy"></div><div class="squire-clue-name"><strong title="${esc(name)}">${esc(name)}</strong></div>${record ? `<div class="squire-clue-resources">${resources.map(([type, role, short]) => {
+        const value = Math.max(0, Number(record.clues?.[type]) || 0);
+        const [label, color] = clues[type];
+        return `<span class="squire-clue-resource resource-${type}" title="${role ? `${role}需求 · ` : ""}${label}"><span class="squire-clue-adjust"><span class="squire-clue-label"><span aria-label="${role || "线索"}">${short}</span><img src="/assets/tokens/${color}-token.png?v=1" alt="${label}线索"></span><button type="button" data-squire-clue="${esc(member.id)}|${type}|-1" aria-label="${esc(name)}${role || label}线索减一" ${squireClueBusy || !value ? "disabled" : ""}>−</button><strong>${value}</strong><button type="button" data-squire-clue="${esc(member.id)}|${type}|1" aria-label="${esc(name)}${role || label}线索加一" ${squireClueBusy ? "disabled" : ""}>＋</button></span></span>`;
+      }).join("")}</div>` : '<p class="muted squire-clue-missing">请先打开地图初始化队伍线索。</p>'}</article>`;
+    }).join("")}</div></aside>`;
+  }
+
+  function terrainReferenceHtml(battle) {
+    const terrain = Array.isArray(battle.conflictBoard?.terrain) ? battle.conflictBoard.terrain : [];
+    const terrainCards = conflictTerrainCards(terrain);
+    return terrainCards.map(card => `<button type="button" class="card-button" data-terrain-card="${card.cardId}" title="查看 ${esc(card.label)} 地形卡">${conflictTerrainCardFaceHtml(card)}<span>地形 · ${esc(card.label)}</span></button>`).join("");
+  }
+
   function conflictBoardEditorHtml(monster, battle) {
     const boardState = battle.conflictBoard;
     const layout = conflictBoardLayout(battle);
@@ -5462,25 +5506,24 @@
       const knightStart = item.kind === "knight"
         ? `<img class="knight-start-marker" src="${esc(conflictAssetSrc(item.asset || "KnightStart"))}" alt="骑士起始位置">`
         : "";
-      const avatar = knight?.heroId
-        ? `<img class="knight-start-token" src="/assets/heroes/${esc(knight.heroId)}-avatar.jpg?v=story-1" alt="${esc(knight.name || "骑士")}">`
-        : "";
       const assignedNumber = mobAssignments.get(item.id);
       const label = knight || item.kind === "knight" ? "" : `${item.kind === "monster" ? (monsterImage ? "" : conflictTerrainLabel(item.asset)) : item.kind === "number" ? item.asset.replace("Number", "") : conflictTerrainLabel(item.asset)}`;
       const numberBadge = assignedNumber ? `<b class="${mobNumberClass(assignedNumber)}">${assignedNumber}</b>` : "";
       const numberImage = item.kind === "number"
         ? `<img class="terrain-control-number-image" src="${esc(conflictAssetSrc(item.asset))}" alt="${esc(item.asset)}">`
         : "";
-      const content = item.kind === "knight" ? (avatar || knightStart) : (numberImage || `${monsterImage || label}${numberBadge}`);
+      const content = item.kind === "knight" ? knightStart : (numberImage || `${monsterImage || label}${numberBadge}`);
       const bossFrame = item.kind === "monster" && monster?.type === "boss";
-      const knightFrame = item.kind === "knight" && Boolean(avatar);
-      const frameClass = bossFrame ? "boss-token-frame" : knightFrame ? "knight-token-frame" : "";
+      const frameClass = bossFrame ? "boss-token-frame" : item.kind === "monster" ? "monster-token-frame" : "";
+      const singleCell = item.kind === "knight" || (item.kind === "monster" && !bossFrame);
+      const left = (item.columnStart - 1 + (singleCell ? (columnSpan - 1) / 2 : 0)) / 14 * 100;
+      const top = (item.rowStart - 1 + (singleCell ? (rowSpan - 1) / 2 : 0)) / 10 * 100;
+      const width = (singleCell ? 1 : columnSpan) / 14 * 100;
+      const height = (singleCell ? 1 : rowSpan) / 10 * 100;
       const facing = cardinalFacing(boardState.resolvedOrientations?.[item.id] ?? item.rotation ?? 0);
-      return `<span class="terrain-control-start ${item.kind} ${item.kind === "knight" ? "knight" : ""}" style="left:${(item.columnStart - 1) / 14 * 100}%;top:${(item.rowStart - 1) / 10 * 100}%;width:${columnSpan / 14 * 100}%;height:${rowSpan / 10 * 100}%"><i${frameClass ? ` class="${frameClass}" style="--${bossFrame ? "boss" : "token"}-facing:${facing}deg"` : ""}>${content}</i></span>`;
+      return `<span class="terrain-control-start ${item.kind} ${item.kind === "knight" ? "knight" : ""}" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%"><i${frameClass ? ` class="${frameClass}" style="--${bossFrame ? "boss" : "token"}-facing:${facing}deg"` : ""}>${content}</i></span>`;
     }).join("");
     const catalog = conflictTerrainCatalog();
-    const usedAssets = [...new Set(terrain.map(item => item.asset))];
-    const terrainCards = conflictTerrainCards(terrain);
     const boardAsset = conflictBoardDefinition(battle)?.asset;
     const activeFoolCard = foolCardById(boardState.activeFoolCardId);
     const foolDeckExhausted = activeFoolCard && !boardState.foolDeckOrder.length;
@@ -5498,7 +5541,7 @@
       : "";
     const overlay = conflictOverlay(battle);
     return `<section class="panel terrain-control-panel" aria-label="冲突版图地形控制">
-      <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>${isBellyConflict(battle) ? "巨兽之腹版图" : "冲突版图与地形"}</h3></div><div class="inline-actions">
+      <div class="panel-header terrain-control-head"><div><span class="eyebrow">TTS CLASH BOARD</span><h3>${isBellyConflict(battle) ? "巨兽之腹版图" : "冲突版图"}</h3></div><div class="inline-actions">
         <button type="button" class="button secondary small ${boardState.showCoordinates ? "active" : ""}" data-grid-coordinates>${boardState.showCoordinates ? "隐藏格子位置" : "显示格子位置"}</button>
         <button type="button" class="button small ${activeFoolCard ? "danger" : ""}" data-fool-deck>${foolDeckButtonLabel}</button>
         <label class="terrain-start-toggle"><input type="checkbox" data-terrain-starts ${boardState.showStarts !== false ? "checked" : ""}>显示初始位置</label>
@@ -5526,7 +5569,7 @@
           ${conflictOverlayToolsHtml(boardState, layout, overlay)}
         </aside>
       </div>
-      <div class="terrain-reference"><div class="terrain-reference-head"><strong>当前地形卡</strong><span>${terrainCards.length} 张</span></div><div class="terrain-reference-list">${terrainCards.map(card => `<button type="button" data-terrain-card="${card.cardId}" title="查看 ${esc(card.label)} 地形卡">${conflictTerrainCardFaceHtml(card)}<span>${esc(card.label)}</span></button>`).join("") || `<span class="muted">${usedAssets.length ? "当前地形没有对应卡牌" : "当前版图没有地形"}</span>`}</div></div>
+
     </section>`;
   }
 
@@ -5727,10 +5770,29 @@
     save();
   }
 
+  let keywordNoticeBattle = null;
   function renderApp() {
     const root = $("#app");
     const b = state.battle;
     const monster = monsterById(b.monsterId) || DATA.monsters[0];
+    if (keywordNoticeBattle !== b) {
+      keywordNoticeBattle = b;
+      window.KFKeywords?.notify([]);
+    }
+    if (window.KFCardKeywords && window.KFKeywords) {
+      const monsterId = b.monsterId;
+      const traitIds = [...activeReferenceCards(monster, b), ...sheetTraitCards(b)]
+        .filter(card => /^Trait/.test(card.kind || '')).map(card => card.id);
+      window.KFCardKeywords.ready.then(data => {
+        if (state.battle.monsterId !== monsterId) return;
+        window.KFKeywords.setCardDataError?.(!data);
+        if (!data) return;
+        window.KFKeywords.setPersistent([
+          { label: '大卡（自动识别，可能遗漏）', keywords: window.KFCardKeywords.words([monsterId]) },
+          { label: '特性卡（自动识别，可能遗漏）', keywords: window.KFCardKeywords.words(traitIds) }
+        ]);
+      });
+    }
     const mob = isMob(monster);
     const winged = isWingedNightmare(monster);
     const wingedWideWings = winged ? cardById(monster, WINGED_WIDE_WINGS_ID) : null;
@@ -5890,11 +5952,15 @@
               </div>
             </div>
           </section>
-          <section class="panel">
-            <details open><summary>标志行为与特质 (${references.length})</summary>
+          <div class="reference-squire-layout"><section class="panel">
+            <details open><summary>标志行为与特质 · 地形</summary>
               ${referenceCardsHtml(monster, b, references)}
             </details>
-          </section>
+          </section>${squireCluesHtml()}</div>
+          <div class="conflict-board-layout">
+            ${conflictBoardEditorHtml(monster, b)}
+            <aside class="conflict-board-keywords" data-kf-keywords-mount aria-label="关键词查询"></aside>
+          </div>
           <section class="panel">
             <details><summary>全部怪物牌</summary>
               <select id="galleryKind">${kinds.map(kind => `<option ${kind === b.galleryKind ? "selected" : ""}>${esc(kind)}</option>`).join("")}</select>
@@ -5906,9 +5972,9 @@
               <div class="battle-log">${b.log.map(entry => `<p><time>${esc(entry.at)}</time>${esc(window.KFMonsterLabels?.text(entry.message) ?? entry.message)}</p>`).join("") || "<p>暂无操作</p>"}</div>
             </details>
           </section>
-          ${conflictBoardEditorHtml(monster, b)}
         </div>
       </div>`;
+    window.KFKeywords?.mount?.(document.querySelector("[data-kf-keywords-mount]"));
     const directoryToggle = $("#monsterDirectoryToggle");
     directoryToggle?.setAttribute?.("aria-expanded", String(monsterDirectoryOpen));
     directoryToggle?.setAttribute?.("aria-label", monsterDirectoryOpen ? "收起怪物目录" : "展开怪物目录");
@@ -5917,6 +5983,15 @@
   }
 
   function bindEvents(monster) {
+    $$('[data-squire-clue]').forEach(button => button.addEventListener('click', async () => {
+      if (squireClueBusy) return;
+      const [id, type, amount] = button.dataset.squireClue.split("|");
+      squireClueBusy = true;
+      renderApp();
+      try { await window.KF_MODULE_BRIDGE.adjustConflictClue(id, type, Number(amount)); }
+      catch (error) { toast(error.message || "线索同步失败"); }
+      finally { squireClueBusy = false; renderApp(); }
+    }));
     $("[data-deck-config]")?.addEventListener("toggle", event => { deckConfigOpen = event.currentTarget.open; });
     $("[data-sheet-token-tools]")?.addEventListener("toggle", event => { sheetTokenToolsOpen = event.currentTarget.open; });
     $("[data-sheet-trait-tools]")?.addEventListener("toggle", event => { sheetTraitToolsOpen = event.currentTarget.open; });

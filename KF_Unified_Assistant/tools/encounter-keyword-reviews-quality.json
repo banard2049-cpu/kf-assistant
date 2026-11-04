@@ -1,0 +1,116 @@
+{
+  "cards": {
+    "M_KnightFen:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KnightFen:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KnightFen:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KnightFen:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Knighteater:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_Knighteater:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Knighteater:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Knighteater:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_PalebloodWorms:1": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_PalebloodWorms:2": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_PalebloodWorms:3": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_PalebloodWorms:4": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_Panzerdragon:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Panzerdragon:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Parasitize",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Panzergeists:1": [
+      "Scavenge X"
+    ],
+    "M_Panzergeists:2": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Panzergeists:3": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Panzergeists:4": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Pumpkinhead:1": [
+      "Scavenge X"
+    ],
+    "M_Pumpkinhead:2": [
+      "Scavenge X",
+      "Choke"
+    ],
+    "M_Pumpkinhead:3": [
+      "Scavenge X",
+      "Choke"
+    ],
+    "M_Pumpkinhead:4": [
+      "Scavenge X",
+      "Choke"
+    ],
+    "M_PuppetKing:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_PuppetKing:2": [
+      "OverpowerX+",
+      "Scavenge X"
+    ]
+  }
+}

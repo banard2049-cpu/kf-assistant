@@ -1,0 +1,113 @@
+{
+  "cards": {
+    "M_BogWitch:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_BogWitch:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "M_BogWitch:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "M_BogWitch:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "M_DevilAncientDusk:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilAncientDusk:2": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilAncientDusk:3": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilAncientDusk:4": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilSmeltedFears:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_DevilSmeltedFears:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Delay"
+    ],
+    "M_DevilSmeltedFears:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Discard"
+    ],
+    "M_DevilSmeltedFears:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Discard"
+    ],
+    "M_Eggknight:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "M_Eggknight:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "M_Eggknight:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "M_Eggknight:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:1": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:2": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:3": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:4": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenWarriors:1": [
+      "Scavenge X"
+    ],
+    "M_FirstmenWarriors:2": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenWarriors:3": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenWarriors:4": [
+      "Scavenge X",
+      "Refresh"
+    ]
+  }
+}

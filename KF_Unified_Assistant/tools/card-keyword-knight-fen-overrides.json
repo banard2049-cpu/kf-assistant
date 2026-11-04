@@ -1,0 +1,390 @@
+{
+  "cards": {
+    "M_KnightFen:AI1:22": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-00.jpg",
+        "sha256": "4018aef35e1102461eae13e01956d89918d27b7af20f00d7e2db67e433f19e42"
+      }
+    },
+    "M_KnightFen:AI1:18": {
+      "keywords": [],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-01.jpg",
+        "sha256": "dbebd03a212e114a25c418639813d1db56981d77d5f9f52cb3da9b71ac055d69"
+      }
+    },
+    "M_KnightFen:AI1:20": {
+      "keywords": [
+        "Knockdown",
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-02.jpg",
+        "sha256": "44e60266b9a23ce19cb42cf3c97f17cbc455a09463b76130b284a0834a96c420"
+      }
+    },
+    "M_KnightFen:AI1:21": {
+      "keywords": [
+        "Dwell"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-03.jpg",
+        "sha256": "81af67917bb911ceb0d141be1ed2cfe971eb103b801ffcec50a349a493a6ee2b"
+      }
+    },
+    "M_KnightFen:AI1:19": {
+      "keywords": [
+        "Dwell"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-04.jpg",
+        "sha256": "d916d8b855d82b7e91a983706badd5ebc712bebd18eb92469619694eaf92c6db"
+      }
+    },
+    "M_KnightFen:AI1:23": {
+      "keywords": [],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-05.jpg",
+        "sha256": "5dcfaa3fdbac36c6b9160849d08530a14a7e4636afad3dfaa4e2ee29e6ed0ef8"
+      }
+    },
+    "M_KnightFen:AI2:24": {
+      "keywords": [],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-06.jpg",
+        "sha256": "412d54a61e7a35d337043c32fea375fed21c9f468e760c5044ae1d869c3399f1"
+      }
+    },
+    "M_KnightFen:AI2:29": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-07.jpg",
+        "sha256": "7c457a1ce5463f7cc8b570b092bd85957068438fb3700cb881beecb890c48ca5"
+      }
+    },
+    "M_KnightFen:AI2:28": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-08.jpg",
+        "sha256": "60faf4f095c9bdf24641c384c99fdf81dd1b03f77799e031351e4f89ec0c127d"
+      }
+    },
+    "M_KnightFen:AI2:27": {
+      "keywords": [
+        "Dwell"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-09.jpg",
+        "sha256": "3f15cdc238ba981af9e67108e206abfc51e4ec4a0ace343f4208a18b0e58e907"
+      }
+    },
+    "M_KnightFen:AI2:25": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-10.jpg",
+        "sha256": "29d3443193ed95e4809e8d380261bce2e1e255a8e38490dab3aed013f61f234a"
+      }
+    },
+    "M_KnightFen:AI2:26": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-11.jpg",
+        "sha256": "473abcbb94e1a1723ade715c36c0bbcd7632c711f03fa0c2c98fd7b7df2d219d"
+      }
+    },
+    "M_KnightFen:AI3:34": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-12.jpg",
+        "sha256": "b329722dcdbd765ea723d0bda53b9dd8d3055c1948c2af4fd57766d4e3c205fc"
+      }
+    },
+    "M_KnightFen:AI3:33": {
+      "keywords": [],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-13.jpg",
+        "sha256": "93714c8bbd3d81d3bdf625320bb725248e25eaa787a5d11730eb5f510f7dd302"
+      }
+    },
+    "M_KnightFen:AI3:35": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-14.jpg",
+        "sha256": "5e424b479a41027d5aeb9c32356f1ab6d47da7bd42e5d8f529464c6fae36733f"
+      }
+    },
+    "M_KnightFen:AI3:32": {
+      "keywords": [
+        "Dwell",
+        "Poison"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-15.jpg",
+        "sha256": "47e9f8aba5a6a9e5390b88c257d5edaa6daf52c0758d7f994e211df5846a146b"
+      }
+    },
+    "M_KnightFen:AI3:31": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-16.jpg",
+        "sha256": "d6fdfe60bf341ee84f422b7ec752e0b55eee9b378f6b67dca375550215d681d6"
+      }
+    },
+    "M_KnightFen:AI3:30": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-17.jpg",
+        "sha256": "c66974e2ebe0704ff44dce4afb188a4768e8d7e43267356aa1494752f7c66302"
+      }
+    },
+    "M_KnightFen:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-18.jpg",
+        "sha256": "10897d8136740bd41aec834374c2e61944ce0cc02f518f651301f65ea7ba99b0"
+      }
+    },
+    "M_KnightFen:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-19.jpg",
+        "sha256": "95b5882be2b2060e2a68e7e4bf17409285a8d6dc4ee51628d091db244cc979fa"
+      }
+    },
+    "M_KnightFen:BP1:2": {
+      "keywords": [
+        "Knockdown",
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-20.jpg",
+        "sha256": "65db848a2c6b0a18910b92e4247c78dc00b2b0766cc3a46cec211342ef52cd20"
+      }
+    },
+    "M_KnightFen:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Pushback X"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-21.jpg",
+        "sha256": "ca72fa3d5688a796af9c9ee45ace71ef218dcea2afafe5642641332951b25089"
+      }
+    },
+    "M_KnightFen:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-22.jpg",
+        "sha256": "3c5e9a8eb9bff95a11f208a996cf6019e68a564aa361228d780836127d383a4d"
+      }
+    },
+    "M_KnightFen:BP1:3": {
+      "keywords": [
+        "Knockback X",
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-23.jpg",
+        "sha256": "c5310d88527d19f3c675d9695166afd4840224abd1d17568c5dbd8d20ef66455"
+      }
+    },
+    "M_KnightFen:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-24.jpg",
+        "sha256": "5730527eacc8fff4cbff22b778779b3aefa995c2678f0d0f02eaa060b8fba6e9"
+      }
+    },
+    "M_KnightFen:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-25.jpg",
+        "sha256": "ed0e35d81773b9824e99c48f6d675aae435047c4ce710ca24de4a1108fe3d1e4"
+      }
+    },
+    "M_KnightFen:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-26.jpg",
+        "sha256": "8d11ca3cfed9cec25dd0ad69298c5238abc7189e39a99cdafa9527e5a2f62b15"
+      }
+    },
+    "M_KnightFen:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-27.jpg",
+        "sha256": "2157de38c97913db7b84627c4ec3485b728134c1429e2e85d403d1d5e2bbc521"
+      }
+    },
+    "M_KnightFen:BP2:10": {
+      "keywords": [
+        "Knockback X",
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-28.jpg",
+        "sha256": "28c3904882524e22f0caa52aa1027a8f3b48dd01c479b0ca3468ea67f7695256"
+      }
+    },
+    "M_KnightFen:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Poison",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-29.jpg",
+        "sha256": "8e476857727377ca517cbf3abcd4b450fbc2b5c129ef7db758f2e29ec3267457"
+      }
+    },
+    "M_KnightFen:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-30.jpg",
+        "sha256": "f10afaf322e06f2bb59edf449cdb43ee4d239ef2ad452b75db69b4a50c7e2095"
+      }
+    },
+    "M_KnightFen:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-31.jpg",
+        "sha256": "7ab00ec04b66a2a25ab8ef211bee83ed24b93da0e31a28c6dc963a40a427f9de"
+      }
+    },
+    "M_KnightFen:BP3:15": {
+      "keywords": [
+        "OverpowerX+",
+        "Sunder"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-32.jpg",
+        "sha256": "d62b7ad367bf7e400616fa8aa4c5d91eb88f3e67fc85902742d2be80e1432135"
+      }
+    },
+    "M_KnightFen:BP3:14": {
+      "keywords": [
+        "Choke",
+        "OvercomeX+",
+        "Sunder"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-33.jpg",
+        "sha256": "1ab20560e2fa12853eaf872f4fbbc038e421350dc9289901e36245fdc91625db"
+      }
+    },
+    "M_KnightFen:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-34.jpg",
+        "sha256": "906f512f9c02246f653dedc661c0cac082acf63427f245b1251a0aeb1dd77f95"
+      }
+    },
+    "M_KnightFen:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-35.jpg",
+        "sha256": "cbb6b295d389794a6e50568a7a673996eb34ea8a54461b47b5e5f672969b5caa"
+      }
+    },
+    "M_KnightFen:SIG:38": {
+      "keywords": [],
+      "note": "人工逐张核对英文卡面；弃置盔甲指示物或状态卡不视为随机弃手牌关键词。",
+      "image": {
+        "path": "/assets/cards/monster-faces/knight-fen/c32b56e4-36.jpg",
+        "sha256": "6d3cd50feac08d25a2a7a8d767323e958481534c215ce279aebef1109a34a243"
+      }
+    }
+  }
+}

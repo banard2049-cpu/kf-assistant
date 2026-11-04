@@ -1,0 +1,570 @@
+{
+  "source": "Encounter card faces; automatic OCR and manual review",
+  "cards": {
+    "M_BogWitch:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_BogWitch:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "M_BogWitch:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "M_BogWitch:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "M_DevilAncientDusk:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilAncientDusk:2": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilAncientDusk:3": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilAncientDusk:4": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_DevilSmeltedFears:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_DevilSmeltedFears:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Delay"
+    ],
+    "M_DevilSmeltedFears:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Discard"
+    ],
+    "M_DevilSmeltedFears:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Discard"
+    ],
+    "M_Eggknight:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "M_Eggknight:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "M_Eggknight:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "M_Eggknight:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:1": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:2": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:3": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenLictor:4": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenWarriors:1": [
+      "Scavenge X"
+    ],
+    "M_FirstmenWarriors:2": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenWarriors:3": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_FirstmenWarriors:4": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_HauntOf:1": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_HauntOf:2": [
+      "Scavenge X",
+      "Bane",
+      "Cooldown"
+    ],
+    "M_HauntOf:3": [
+      "Scavenge X",
+      "Bane",
+      "Cooldown",
+      "Restrain"
+    ],
+    "M_HauntOf:4": [
+      "Scavenge X",
+      "Bane",
+      "Delay"
+    ],
+    "M_Ironcast:1": [
+      "Scavenge X"
+    ],
+    "M_Ironcast:2": [
+      "Scavenge X",
+      "Swarm"
+    ],
+    "M_Ironcast:3": [
+      "Scavenge X",
+      "Swarm"
+    ],
+    "M_Ironcast:4": [
+      "Scavenge X",
+      "Swarm"
+    ],
+    "M_KnightFen:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KnightFen:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KnightFen:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KnightFen:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Knighteater:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_Knighteater:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Knighteater:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Knighteater:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_PalebloodWorms:1": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_PalebloodWorms:2": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_PalebloodWorms:3": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_PalebloodWorms:4": [
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_Panzerdragon:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Panzerdragon:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Parasitize",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Panzergeists:1": [
+      "Scavenge X"
+    ],
+    "M_Panzergeists:2": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Panzergeists:3": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Panzergeists:4": [
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_Pumpkinhead:1": [
+      "Scavenge X"
+    ],
+    "M_Pumpkinhead:2": [
+      "Scavenge X",
+      "Choke"
+    ],
+    "M_Pumpkinhead:3": [
+      "Scavenge X",
+      "Choke"
+    ],
+    "M_Pumpkinhead:4": [
+      "Scavenge X",
+      "Choke"
+    ],
+    "M_PuppetKing:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_PuppetKing:2": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_PuppetKing:3": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_PuppetKing:4": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_Ratwolves:1": [
+      "Scavenge X"
+    ],
+    "M_Ratwolves:2": [
+      "Scavenge X",
+      "Poison"
+    ],
+    "M_Ratwolves:3": [
+      "Scavenge X",
+      "Poison"
+    ],
+    "M_Ratwolves:4": [
+      "Scavenge X",
+      "Poison"
+    ],
+    "M_Stonemason:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_Stonemason:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_Stonemason:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_Stonemason:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Refresh"
+    ],
+    "M_KingLaidLow:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KingLaidLow:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KingLaidLow:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_KingLaidLow:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_Toadragon:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Toadragon:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Toadragon:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_Toadragon:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_WhiteApe:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "M_WhiteApe:2": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_WhiteApe:3": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown"
+    ],
+    "M_WhiteApe:4": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Delay"
+    ],
+    "M_WingedNightmare:1": [
+      "Scavenge X"
+    ],
+    "M_WingedNightmare:2": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_WingedNightmare:3": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_WingedNightmare:4": [
+      "Scavenge X",
+      "Refresh"
+    ],
+    "M_YoungDevour:1": [
+      "OverpowerX+",
+      "Fleisch",
+      "Scavenge X",
+      "Restrain",
+      "Refresh",
+      "Devote",
+      "Lumbering"
+    ],
+    "M_YoungDevour:2": [
+      "OverpowerX+",
+      "Fleisch",
+      "Scavenge X",
+      "Restrain",
+      "Refresh",
+      "Devote",
+      "Lumbering"
+    ],
+    "Special_F4:1": [
+      "OverpowerX+",
+      "Kingdom Scavenge",
+      "Bane",
+      "Refresh"
+    ],
+    "Special_F3:1": [
+      "Bane"
+    ],
+    "Special_F2:1": [
+      "Consumable Scavenge"
+    ],
+    "Special_K1:1": [],
+    "Special_K4:1": [],
+    "Special_P2:1": [
+      "Zeal X",
+      "Refresh"
+    ],
+    "Special_P5:1": [
+      "Bane"
+    ],
+    "Special_R5:1": [
+      "Scavenge X",
+      "Bane"
+    ],
+    "Special_S4:1": [
+      "OverpowerX+"
+    ],
+    "Special_U1:1": [],
+    "Special_TSF-0032:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Cooldown",
+      "Refresh"
+    ],
+    "Special_TSF-0531:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "Special_TSF-0932:1": [
+      "OverpowerX+",
+      "Scavenge X"
+    ],
+    "Special_TSF-7012:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane",
+      "Cooldown",
+      "Refresh"
+    ],
+    "Special_TSF-7416:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ],
+    "Special_TSF-7912:1": [
+      "OverpowerX+",
+      "Scavenge X",
+      "Bane"
+    ]
+  },
+  "reviewed": [
+    "M_BogWitch:1",
+    "M_BogWitch:2",
+    "M_BogWitch:3",
+    "M_BogWitch:4",
+    "M_DevilAncientDusk:1",
+    "M_DevilAncientDusk:2",
+    "M_DevilAncientDusk:3",
+    "M_DevilAncientDusk:4",
+    "M_DevilSmeltedFears:1",
+    "M_DevilSmeltedFears:2",
+    "M_DevilSmeltedFears:3",
+    "M_DevilSmeltedFears:4",
+    "M_Eggknight:1",
+    "M_Eggknight:2",
+    "M_Eggknight:3",
+    "M_Eggknight:4",
+    "M_FirstmenLictor:1",
+    "M_FirstmenLictor:2",
+    "M_FirstmenLictor:3",
+    "M_FirstmenLictor:4",
+    "M_FirstmenWarriors:1",
+    "M_FirstmenWarriors:2",
+    "M_FirstmenWarriors:3",
+    "M_FirstmenWarriors:4",
+    "M_HauntOf:1",
+    "M_HauntOf:2",
+    "M_HauntOf:3",
+    "M_HauntOf:4",
+    "M_Ironcast:1",
+    "M_Ironcast:2",
+    "M_Ironcast:3",
+    "M_Ironcast:4",
+    "M_KingLaidLow:1",
+    "M_KingLaidLow:2",
+    "M_KingLaidLow:3",
+    "M_KingLaidLow:4",
+    "M_KnightFen:1",
+    "M_KnightFen:2",
+    "M_KnightFen:3",
+    "M_KnightFen:4",
+    "M_Knighteater:1",
+    "M_Knighteater:2",
+    "M_Knighteater:3",
+    "M_Knighteater:4",
+    "M_PalebloodWorms:1",
+    "M_PalebloodWorms:2",
+    "M_PalebloodWorms:3",
+    "M_PalebloodWorms:4",
+    "M_Panzerdragon:1",
+    "M_Panzerdragon:2",
+    "M_Panzergeists:1",
+    "M_Panzergeists:2",
+    "M_Panzergeists:3",
+    "M_Panzergeists:4",
+    "M_Pumpkinhead:1",
+    "M_Pumpkinhead:2",
+    "M_Pumpkinhead:3",
+    "M_Pumpkinhead:4",
+    "M_PuppetKing:1",
+    "M_PuppetKing:2",
+    "M_PuppetKing:3",
+    "M_PuppetKing:4",
+    "M_Ratwolves:1",
+    "M_Ratwolves:2",
+    "M_Ratwolves:3",
+    "M_Ratwolves:4",
+    "M_Stonemason:1",
+    "M_Stonemason:2",
+    "M_Stonemason:3",
+    "M_Stonemason:4",
+    "M_Toadragon:1",
+    "M_Toadragon:2",
+    "M_Toadragon:3",
+    "M_Toadragon:4",
+    "M_WhiteApe:1",
+    "M_WhiteApe:2",
+    "M_WhiteApe:3",
+    "M_WhiteApe:4",
+    "M_WingedNightmare:1",
+    "M_WingedNightmare:2",
+    "M_WingedNightmare:3",
+    "M_WingedNightmare:4",
+    "M_YoungDevour:1",
+    "M_YoungDevour:2",
+    "Special_F2:1",
+    "Special_F3:1",
+    "Special_F4:1",
+    "Special_K1:1",
+    "Special_K4:1",
+    "Special_P2:1",
+    "Special_P5:1",
+    "Special_R5:1",
+    "Special_S4:1",
+    "Special_TSF-0032:1",
+    "Special_TSF-0531:1",
+    "Special_TSF-0932:1",
+    "Special_TSF-7012:1",
+    "Special_TSF-7416:1",
+    "Special_TSF-7912:1",
+    "Special_U1:1"
+  ]
+}

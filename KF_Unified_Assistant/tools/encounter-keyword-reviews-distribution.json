@@ -1,0 +1,12 @@
+{
+  "cards": {
+    "M_HauntOf:1": ["Scavenge X", "Cooldown"],
+    "M_HauntOf:2": ["Scavenge X", "Bane", "Cooldown"],
+    "M_HauntOf:3": ["Scavenge X", "Bane", "Cooldown", "Restrain"],
+    "M_HauntOf:4": ["Scavenge X", "Bane", "Delay"],
+    "M_Ironcast:1": ["Scavenge X"],
+    "M_Ironcast:2": ["Scavenge X", "Swarm"],
+    "M_Ironcast:3": ["Scavenge X", "Swarm"],
+    "M_Ironcast:4": ["Scavenge X", "Swarm"]
+  }
+}

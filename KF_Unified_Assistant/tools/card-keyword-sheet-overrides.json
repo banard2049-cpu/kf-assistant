@@ -1,0 +1,266 @@
+{
+  "cards": {
+    "M_BogWitch": {
+      "keywords": [
+        "Difficult Terrain",
+        "Knockback X"
+      ],
+      "note": "正反面人工核对：背面列出无可避免击飞与忽略困难地形；范围指普通区域距离、厄运属于特质名称。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc177853664662533489616A2E93FA44F3FE04648EB4C206473F62F72A0D96.jpg",
+          "sha256": "c9d21e3b615a68e8a20666d1388cc6e89bad82dc08a9f848fa7bd2ddadd6f088"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc11928981325399441797A644C396D1A550750F8991C98900E33B26E7D588.jpg",
+          "sha256": "c65faedd15c2bb1bd6c9e8674c1f64a708829421462154c1e42a030ce421db51"
+        }
+      }
+    },
+    "M_DevilAncientDusk": {
+      "keywords": [
+        "Bane",
+        "Choke",
+        "Difficult Terrain",
+        "Discard",
+        "Knockback X",
+        "Knockdown",
+        "OvercomeX+",
+        "Pull X"
+      ],
+      "note": "正反面人工核对：致命为伤亡等级而非攻击关键词；背面列出灾祸、拉近、过线、击倒、弃置、窒息、无可避免击飞和忽略困难地形。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc125028195194065419432BDD3D74E1CE800FC53844BECFCC7D0EFAF00DA6.jpg",
+          "sha256": "1997a08dfc74bf1e088f5602f61944cad58c0900d4af9dfde123193c034e55b3"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc12638820949434652906844AECB4DA1D46FA601929D90D76BE9DBEC953CD.jpg",
+          "sha256": "4ecae599d9343e81181ac95d9edb989ec6d0332a290a63347e2aac34e5f47829"
+        }
+      }
+    },
+    "M_DevilSmeltedFears": {
+      "keywords": [
+        "Bane",
+        "Choke",
+        "Cooldown",
+        "Delay",
+        "Discard",
+        "Knockback X"
+      ],
+      "note": "正反面人工核对：灾祸、窒息、冷却、延迟、弃置与无可避免击飞；致命是伤亡等级。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc152051189910188540546E515CE3655B17EC7504380424C942CD554FBC0D.jpg",
+          "sha256": "326bd8156fef06ff3a1b2711a8dea6b3cc876f2b244bacca5506e449038b837a"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc14609179362298498799FDF6B6441C5879157BE712E609A859081450E636.jpg",
+          "sha256": "2ae91137ee11d9c4a124cf1708b567851fb25084c94d63e81cb4983c04072f35"
+        }
+      }
+    },
+    "M_Eggknight": {
+      "keywords": [
+        "Crash",
+        "Knockback X",
+        "Knockdown",
+        "Obstacle"
+      ],
+      "note": "正反面人工核对：冲撞、击倒状态、障碍地形和击飞；弃置对象为盔甲或指示物，并非弃手牌关键词。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc17144757389909982074C30CA36215A79FEF1B2298890A95752A6931EE19.jpg",
+          "sha256": "fc75e5e8c6a25e18a665712236326081119b4658d7bc3286a442948a9f0e1753"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc16444574865403854141DF69F8F63CF773EA89953DB0F6E339B5C083B35F.jpg",
+          "sha256": "51560cb17f558e95511651d0a708807c2e17cd00397090170082b77ccfdab1f3"
+        }
+      }
+    },
+    "M_KnightFen": {
+      "keywords": [
+        "Advanced Bypass",
+        "Crash",
+        "Difficult Terrain",
+        "Displace",
+        "Dwell",
+        "OvercomeX+"
+      ],
+      "note": "正反面人工核对：沼栖、高级穿身、位移、忽略困难地形、冲撞、过线。弃置指示物和装备不等于弃手牌关键词。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc142951439794369965983AF51F1EE89C77D1F88500EE3C0496DAEE16383A.jpg",
+          "sha256": "def7f4b6955a68126805fd2c9b01d46ff199b2fbc9ac754e025f186a4c0a1b9a"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc18257081341481220730CA4B2722D73F3663DA23CCE3C8F9910B545A8E49.jpg",
+          "sha256": "c4460c168cbf3cdc8042effbba945e74180daf33c909157f374c0b2dff2a7ad4"
+        }
+      }
+    },
+    "M_Knighteater": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "正反面人工核对：列出无可避免击飞；肉肉为指示物的名称，弃置针对指示物而非弃手牌。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc157218921590585702374C6696ED899DDD916AA0B45E395100E8D2ADE534.jpg",
+          "sha256": "c84c901a9c56dcc00750c83aeb31d7f6e7a51c443952017639960932c76f15b0"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc157231062189447375381A4A4465A07D5795144E7D5758A6452182C0C258.jpg",
+          "sha256": "9b6482338ea76bb72d8d1d5dade9fac523e284a681c32346788ff022138553da"
+        }
+      }
+    },
+    "M_Panzerdragon": {
+      "keywords": [
+        "Displace",
+        "Knockback X",
+        "Knockdown",
+        "Lumbering",
+        "Parasitize",
+        "Pull X",
+        "Vault"
+      ],
+      "note": "正反面人工核对：寄生、击飞、笨重、撑跳、拉近、位移与击倒；度信为指示物名。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc1340670956645217954531A09AFA69E66C1D0C28F91DE5B031BDEBF42441.jpg",
+          "sha256": "9a574847c2b9db4c312429d144edeee7c3a57162c27c0cd0971a72599b86bb39"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc1020598660653325748242F1EDD481BCC3CB052439CC97A6313763A36A98.jpg",
+          "sha256": "f12078649aab18bdf3fa74e3adae0676b71dac0b1c40855d01cb954aeba88baa"
+        }
+      }
+    },
+    "M_PuppetKing": {
+      "keywords": [
+        "Bane",
+        "Displace",
+        "Escalate X",
+        "Forced Vault",
+        "Heartseeker",
+        "Knockback X",
+        "Knockdown",
+        "Obstacle",
+        "Precise"
+      ],
+      "note": "正反面人工核对：击飞、障碍地形、灾祸、晋升、受迫撑跳、击倒、精准、穿心及位移。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc12744880351446918615B705B59EE1A4001DFAC6EAF66EFBEBE01686613D.jpg",
+          "sha256": "b41681192860c9dc62187d9bf121b13e0a42f222134a053ab923d568a4c66913"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc180363853422431823642D56A56647E7C35E02275C18017A904EED37005B.jpg",
+          "sha256": "f730cae7626c3f7b5b4b56cb662fd3567a40ccbb07642b1ffa8ad325f1bf8e42"
+        }
+      }
+    },
+    "M_Stonemason": {
+      "keywords": [
+        "Difficult Terrain",
+        "Knockback X"
+      ],
+      "note": "正反面人工核对：击飞和忽略困难地形；弃置为移除盔甲指示物。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc14939262049913592045A8A8BBA6B0958161C1A5033B1A954C880A7ABB22.jpg",
+          "sha256": "13e54e9ad5ba25f21184fed2a03d08c40b9dede295543a880af3dc04b414eb48"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc123948202570044274322024BCE8566EBE6C7E6DF891758BC1FB06D2E46D.jpg",
+          "sha256": "1a03cfa80a9ec43502167558eb331d5188445922472c0eee2a65410c67408b5c"
+        }
+      }
+    },
+    "M_KingLaidLow": {
+      "keywords": [
+        "Crash",
+        "Difficult Terrain",
+        "Displace",
+        "Indestructible",
+        "Knockback X",
+        "Knockdown"
+      ],
+      "note": "正反面人工核对：钻地冲不造成冲撞、沼泽不可摧毁、击飞、忽略困难地形、击倒、位移。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc1097423247185101681261BA534266C8CC4688A0E8B66792216BA931ACE5.png",
+          "sha256": "0bec1e54bbf383f352bcd6023d635243b5794188f12ddca1fd29cae42eba687e"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc116036237629551107885829F99F2235289EBF8DDF189724A74E1701FAFE.png",
+          "sha256": "a021be736bdafa307180a11693a6231efba556183fbd36e9994ca952999d48d0"
+        }
+      }
+    },
+    "M_Toadragon": {
+      "keywords": [
+        "Crash",
+        "Difficult Terrain",
+        "Displace",
+        "Knockback X",
+        "Knockdown",
+        "Lumbering",
+        "Obstacle",
+        "Poison",
+        "Toxify"
+      ],
+      "note": "正反面人工核对：冲撞、位移、中毒、毒发、障碍、笨重、忽略困难地形、击飞及击倒。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc16599658008364925414543CD896E4DCEEC81B1255A04DBA5C1AD67E57ED.png",
+          "sha256": "41bc778fee967be2f0d915f6684ec0d6c49c3062b1156416bf780a547cc1e5ae"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc10479593780224804498886ADDE77A6631A03AC9764E52077A157512688B.png",
+          "sha256": "79b5c62751f2c41c0eb3a1abe2e26058ed62d68e517d5c1f0b14acabc7d75a74"
+        }
+      }
+    },
+    "M_WhiteApe": {
+      "keywords": [
+        "Crash",
+        "Knockback X"
+      ],
+      "note": "正反面人工核对：先民护卫造成冲撞及无可避免击飞；其他弃置仅为指示物或状态卡。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc13594900721377243184AC9B42E416E577E6672DAB69DC13AF20CCAEB6D1.png",
+          "sha256": "e0a089d8472374fde3a3b2b7e71e4bbdb3aee2c5b3e5b00dd1414044dcec27a4"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc14123832493297780780B22F22191E2B557DC31E99C9122A2054F35DB83D.png",
+          "sha256": "e61e02b3923f073037ec11ae00cedc74f5ab5ebf49c85509eb378bcb8ca50369"
+        }
+      }
+    },
+    "M_YoungDevour": {
+      "keywords": [
+        "Displace",
+        "Indestructible",
+        "Knockback X",
+        "Knockdown",
+        "Lumbering"
+      ],
+      "note": "正反面人工核对：不可摧毁、笨重、无可避免击飞、击倒及位移。",
+      "images": {
+        "face": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc10451908990900552077B51C81AB529DE0A4CB2EC62AD1427BF5F3DB4809.jpg",
+          "sha256": "44c8e8316c031785562dfd388e9517ac337f09bd899550c370046c83cc11a022"
+        },
+        "back": {
+          "path": "/assets/images/httpssteamusercontentaakamaihdnetugc10464441490947983110EB54C4C24DACDAE3F71633EFDA88C8B8ABD278F3.jpg",
+          "sha256": "4d3a8a5015265c637ff3e3c9510cc8b5b41217a76eccd296b5bfb756fba4359f"
+        }
+      }
+    }
+  }
+}

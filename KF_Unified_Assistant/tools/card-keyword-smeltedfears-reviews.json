@@ -1,0 +1,328 @@
+{
+  "cards": {
+    "M_DevilSmeltedFears:AI1:18": {
+      "keywords": [
+        "Bane",
+        "Pushback X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-03.jpg",
+      "sha256": "e3c014c71ddb82af7bbb942c257d73b5030b0ebff3fba25c854ca2063e8baa14"
+    },
+    "M_DevilSmeltedFears:AI1:19": {
+      "keywords": [
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-01.jpg",
+      "sha256": "d38932c7cb6017b0239b27f280cdbfb5e5a27457453533367fa593d70a685022"
+    },
+    "M_DevilSmeltedFears:AI1:20": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-02.jpg",
+      "sha256": "85c7dea299fb4b2c89ac46e7290b246a48824ebed1358362477a1f006ded8842"
+    },
+    "M_DevilSmeltedFears:AI1:21": {
+      "keywords": [
+        "Bane",
+        "Knockdown",
+        "Knockback X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-04.jpg",
+      "sha256": "c196c534150f81a6bd21f59dcd3a484d814362fb3c14083ff84ff943271dcdf4"
+    },
+    "M_DevilSmeltedFears:AI1:22": {
+      "keywords": [
+        "Pull X",
+        "Cooldown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-05.jpg",
+      "sha256": "3f30a0e915112fb79a9804b23441a77d67a766a98a201034f72a30e4af43eb82"
+    },
+    "M_DevilSmeltedFears:AI1:23": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-00.jpg",
+      "sha256": "572f665de75b7930f543d0c14e5806066e379e3f34fb32355a12ed74056f8794"
+    },
+    "M_DevilSmeltedFears:AI2:24": {
+      "keywords": [
+        "Forced Vault",
+        "Pushback X",
+        "Crash"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-08.jpg",
+      "sha256": "72ca2229f851a9766e06aea5b2c52adc783770f793da42457c4e403681070b1d"
+    },
+    "M_DevilSmeltedFears:AI2:25": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-07.jpg",
+      "sha256": "03c34ab4bbf5437393a4a65b373fa602a35d8f83ff8316f3415bfcba803cd8ec"
+    },
+    "M_DevilSmeltedFears:AI2:26": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-06.jpg",
+      "sha256": "db65f65cb0c05c61e7078760a8ffe7bdba5225efeeacc191c7550584bc14f004"
+    },
+    "M_DevilSmeltedFears:AI2:27": {
+      "keywords": [
+        "Pull X",
+        "Cooldown",
+        "Bane",
+        "Bane Limit X/+X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。 补充卡面对应的 Bane Limit X/+X。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-09.jpg",
+      "sha256": "9a9f0f39a8e8d1f2e9dc41c29d9eefff1c301d77f155437a944244d525084d25"
+    },
+    "M_DevilSmeltedFears:AI2:28": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-11.jpg",
+      "sha256": "75646060bcced2371de836aec43548747392742241b9a821b1a930fa12a8ffd2"
+    },
+    "M_DevilSmeltedFears:AI2:29": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-10.jpg",
+      "sha256": "e7ef5ebcd74e881d38c0b44cbdf5f65437430daa12b9cfb5a5e0231fae172445"
+    },
+    "M_DevilSmeltedFears:AI3:30": {
+      "keywords": [
+        "Bane",
+        "Pushback X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-12.jpg",
+      "sha256": "8ec32ff593843d2816c22a2d28a41aefdc2c288a9ba37e93c7b8d482a54040bd"
+    },
+    "M_DevilSmeltedFears:AI3:31": {
+      "keywords": [],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-13.jpg",
+      "sha256": "1101b98d0c298b0510f922446a6cc8d2fb744d3428dd2695b0bad5e0cb41ae29"
+    },
+    "M_DevilSmeltedFears:AI3:32": {
+      "keywords": [],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-14.jpg",
+      "sha256": "f47032673178b574d49acda1542b52aa4456399048c7f23fe92fa4b266074760"
+    },
+    "M_DevilSmeltedFears:AI3:33": {
+      "keywords": [
+        "Pull X",
+        "Cooldown",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-15.jpg",
+      "sha256": "dbfbeffbce55716e93d516763d5bc2af115cc670b83c8302d19c603316ccb755"
+    },
+    "M_DevilSmeltedFears:AI3:34": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-16.jpg",
+      "sha256": "c8120e2e15753fb2a654455ed8e758bea44d17b481aace4b2509aa2e427ed4d5"
+    },
+    "M_DevilSmeltedFears:AI3:35": {
+      "keywords": [],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-17.jpg",
+      "sha256": "146040c5f397bae8b1d39191f380b1f79d404e294d948ac8579a39811b8a0e5a"
+    },
+    "M_DevilSmeltedFears:BP1:0": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-22.jpg",
+      "sha256": "b27b721e2bdb37ce9d72fca7708db3cda188fc1986e03e3cdbcb83c394d83aff"
+    },
+    "M_DevilSmeltedFears:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Cooldown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-21.jpg",
+      "sha256": "104c3fce3161b19dc3e92951beef6bfc9dfda4ef0fc240ffba3cfe86984998ef"
+    },
+    "M_DevilSmeltedFears:BP1:2": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-20.jpg",
+      "sha256": "4bb5788c2d254ba7522db6756cf123bff1e0e9c7db216a8da359e0ed8ce891ae"
+    },
+    "M_DevilSmeltedFears:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Knockdown",
+        "Cooldown",
+        "Scavenge X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-19.jpg",
+      "sha256": "ea95dd83504a7ed97e8431aa8ba32a448b1d731a88f82b5a41deed5dc400a16a"
+    },
+    "M_DevilSmeltedFears:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Cooldown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-18.jpg",
+      "sha256": "8254c187a0e8a5b29d542eca78b848b0c237ce2a8413e0a2d911ea2a6552dc86"
+    },
+    "M_DevilSmeltedFears:BP1:5": {
+      "keywords": [
+        "OvercomeX+"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-23.jpg",
+      "sha256": "747ab41a4c573f465f181665fa85caf34f59fb24f421483c33b21680b0abe484"
+    },
+    "M_DevilSmeltedFears:BP2:9": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-27.jpg",
+      "sha256": "96f9c4c6b3a4dd83d1469893148464e41a6aa345484fd21f71395ec2a21cf522"
+    },
+    "M_DevilSmeltedFears:BP2:10": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-28.jpg",
+      "sha256": "5040548613407fe533b7454e1a641c9588ea89ee259622503fe6e0271477b80b"
+    },
+    "M_DevilSmeltedFears:BP2:11": {
+      "keywords": [
+        "OverpowerX+",
+        "Delay"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-29.jpg",
+      "sha256": "06478ecc74fe87253217583f4fe1b3480ce787cccf3a647a2fc8987406ede50a"
+    },
+    "M_DevilSmeltedFears:BP2:6": {
+      "keywords": [
+        "OverpowerX+",
+        "Delay"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-24.jpg",
+      "sha256": "1ba34ddc3b7b4201a1503b3da41135fdc4072b0a41cebbf3e70e94752e710fb2"
+    },
+    "M_DevilSmeltedFears:BP2:7": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane",
+        "Devote"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-26.jpg",
+      "sha256": "7dd4ebe6e629b4409354da77d7bcb9e782aa786efbcea3c48da4f539a4148b83"
+    },
+    "M_DevilSmeltedFears:BP2:8": {
+      "keywords": [
+        "OverpowerX+",
+        "Discard"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-25.jpg",
+      "sha256": "9a237421e603439085c6ff35c7a83fcdc0fb60ce30ead7db8ffc45f783cb9cd8"
+    },
+    "M_DevilSmeltedFears:BP3:12": {
+      "keywords": [
+        "OverpowerX+",
+        "Knockdown"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-30.jpg",
+      "sha256": "5c0320f71f6c5668de7377db9c5e1f9b1d823a7ca8d632c1fb13f1289185f563"
+    },
+    "M_DevilSmeltedFears:BP3:13": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-35.jpg",
+      "sha256": "13883f84a06f4e096fabfdfc030f0392d7cfe5d58cd75ccc2bc76e1f14bbffd7"
+    },
+    "M_DevilSmeltedFears:BP3:14": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-31.jpg",
+      "sha256": "df2fb5cce2ea1cf7a96775e2a20d43a082b9d2398c0bf7c9a74e25c1fec24414"
+    },
+    "M_DevilSmeltedFears:BP3:15": {
+      "keywords": [
+        "OverpowerX+",
+        "Discard",
+        "Scavenge X"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-34.jpg",
+      "sha256": "fc94d9e9804b18eedecf1f1cea05e475b013e73bf8f643a685291b155992c57b"
+    },
+    "M_DevilSmeltedFears:BP3:16": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-32.jpg",
+      "sha256": "6fd686a7df62c35f4654b4be30a053f577a799c64da96b4df07ec5d29e714076"
+    },
+    "M_DevilSmeltedFears:BP3:17": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane",
+        "Discard"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-33.jpg",
+      "sha256": "1361b4cc8ba7f1fa72c7110c485a3a51a514b4ceb2f8351d4d6b50e72c73f898"
+    },
+    "M_DevilSmeltedFears:SIG:38": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐图核对词典关键词；弃装备或状态卡不等同词典中的随机弃手牌。Power Roll、Bargain、Ferrobaptism 与 Gatekeeper 不在词典。",
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-36.jpg",
+      "sha256": "6b2e049bdaadf0023f73fe096af363e1f807c210a899a4a3fecf4680f26106d0"
+    }
+  }
+}

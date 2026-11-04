@@ -1,0 +1,669 @@
+{
+  "description": "后日谈特性卡人工目视核对分片",
+  "cards": {
+    "postgame-whiteape-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/whiteape-6-traits.png",
+      "sha256": "fcf96d3c3e62a10e91a0cb04332502f13bf7334828e9aca0846d20d805110d3b"
+    },
+    "postgame-whiteape-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/whiteape-7-traits.png",
+      "sha256": "e0831844d404f3e5af6329000ba059b726b6a3040e9f31706b22270938fffa8f"
+    },
+    "postgame-whiteape-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/whiteape-9-traits.png",
+      "sha256": "fcf2382bf6c694bfba93a1bd6193aa6359f749fb805d76cbc597afbf92144954"
+    },
+    "postgame-kinglaidlow-5-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/kinglaidlow-5-traits.png",
+      "sha256": "874eb84e3dab62dd61c5a11785ef85d0faadbad17f655aefd1d07a2a91c2c2dc"
+    },
+    "postgame-kinglaidlow-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/kinglaidlow-6-traits.png",
+      "sha256": "0b087c80c5318c0431c8835a3be85e0a6c98032b85821aff80d015241c21ca81"
+    },
+    "postgame-kinglaidlow-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/kinglaidlow-7-traits.png",
+      "sha256": "251d027073b3bd8a7d1d2eabfb9553734cf17303fb15472ec09922a4509ebb54"
+    },
+    "postgame-kinglaidlow-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/kinglaidlow-8-traits.png",
+      "sha256": "d9c1fa936464246c3070b0116c509a9b5c659b6fbab5b28d2c7346364b9b97e0"
+    },
+    "postgame-kinglaidlow-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/kinglaidlow-9-traits.png",
+      "sha256": "611ece5d56c0cc8281e3f3f2e9ad3c8fd73189fc667a5b92db3d822d59e95686"
+    },
+    "postgame-devilancientdusk-4-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/devilancientdusk-4-traits.png",
+      "sha256": "bc033060312b8d19e0220e600aa8c300323794368ef243961faf817db55dfd21"
+    },
+    "postgame-devilancientdusk-5-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/devilancientdusk-5-traits.png",
+      "sha256": "f99eefa304d849bbad0672f507bb9d322d59fb3e494737e865ce79f1b3f62f2c"
+    },
+    "postgame-devilancientdusk-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/devilancientdusk-6-traits.png",
+      "sha256": "7457b5d6d7120caf023c5eaeaeb0adccfc756b6a6787c9e5f7dccb7c8d1a22bd"
+    },
+    "postgame-devilancientdusk-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 卡中 discard 指状态卡、弃牌堆或 AI 卡，非词典所述随机弃置手牌。",
+      "image": "/assets/aibp/postgame/devilancientdusk-7-traits.png",
+      "sha256": "12945901faa5bcebb302d73f3da3bc7149680d57a6c6b999c809a551891e37a3"
+    },
+    "postgame-devilancientdusk-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/devilancientdusk-9-traits.png",
+      "sha256": "eff6707013d3df0a0e6ad15f2cc0c1e9662bfd19eb0c4292d644c3241a72e8dc"
+    },
+    "postgame-toadragon-4-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 卡中 discard 指状态卡、弃牌堆或 AI 卡，非词典所述随机弃置手牌。",
+      "image": "/assets/aibp/postgame/toadragon-4-traits.png",
+      "sha256": "d73f4e8a3a89dc1c8cc8c024be93d7aa149a7c429039cc90e9610acfdfdf7ded"
+    },
+    "postgame-toadragon-5-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/toadragon-5-traits.png",
+      "sha256": "275f325dd8bdf4bd99c79926ca783639e6536c97aff3154a0dc0a99b4639cd30"
+    },
+    "postgame-toadragon-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 Poisoned/Toxified 在此为状态卡名称，而非执行中毒或毒发关键词。",
+      "image": "/assets/aibp/postgame/toadragon-6-traits.png",
+      "sha256": "3961174aa9b1d33958390acdf014346b80b2ff5d1686803fcc2f8705d3a3b0a4"
+    },
+    "postgame-toadragon-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/toadragon-7-traits.png",
+      "sha256": "0ef3b11a56b80b0fdfe3905fc9cbda5da117efb10a475d420312fa3dbf62f86b"
+    },
+    "postgame-toadragon-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/toadragon-8-traits.png",
+      "sha256": "069c611d5e0748564b0583aa32a57545a4ee07335b38a4eea04bca53cc78f73b"
+    },
+    "postgame-toadragon-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 卡中 discard 指状态卡、弃牌堆或 AI 卡，非词典所述随机弃置手牌。",
+      "image": "/assets/aibp/postgame/toadragon-9-traits.png",
+      "sha256": "43939ee4e62190b70d2ceeae3e3816d71eeb25c43958a64c621da18708556ce0"
+    },
+    "postgame-stonemason-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 Deadly 为特性名称的一部分，不是致命关键词。",
+      "image": "/assets/aibp/postgame/stonemason-7-traits.png",
+      "sha256": "1142109077cc80519f1a7a5034e7820b86d526c9bd6d4c92d534c475b99a178b"
+    },
+    "postgame-stonemason-8-traits": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "add": [
+        "Knockback X"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：卡面提及 Knockback，关联词典击飞 X。",
+      "image": "/assets/aibp/postgame/stonemason-8-traits.png",
+      "sha256": "21e4268c5a5481dbb92486e30b10fc1e48824f0cde8ec1a90ba40ccf642aa297"
+    },
+    "postgame-stonemason-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/stonemason-9-traits.png",
+      "sha256": "dd52b4f40d73c2252c29c9f76901e30b53cc588109863fba27b91981df98fbe0"
+    },
+    "postgame-knighteater-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 discard 并非词典中随机弃置手牌的效果。",
+      "image": "/assets/aibp/postgame/knighteater-6-traits.png",
+      "sha256": "42d4ad0e1522bede7266510d0e07e4d0e84bb1375b6a6fef1cf1384b00c82c7b"
+    },
+    "postgame-knighteater-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knighteater-7-traits.png",
+      "sha256": "1f4e2698fc2fad0bde148989041cc6515e1430e946fc473fa108d5603395867b"
+    },
+    "postgame-knighteater-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knighteater-8-traits.png",
+      "sha256": "3880ec654651b7b5550e13db94c40282708a2b1b7fdfaa53d3670b0fd807bb5c"
+    },
+    "postgame-knighteater-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knighteater-9-traits.png",
+      "sha256": "7028fad88e2e2c9174acae9ed923dbb0bb406f368e830d092f97cf240ba26adf"
+    },
+    "postgame-bogwitch-5-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/bogwitch-5-traits.png",
+      "sha256": "d81e3902ded53fc771b94e0fb92489aa17e0ec712f872aa6f672a7d12bb6b367"
+    },
+    "postgame-bogwitch-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/bogwitch-7-traits.png",
+      "sha256": "e32e3dd5c4121d5767d902d0c860f5534d939806664d15b5e4c13317aaa830ca"
+    },
+    "postgame-bogwitch-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/bogwitch-8-traits.png",
+      "sha256": "14774c1175d6fb3abe68de0808e6060b4d2eca4268c0fe820d8b98cf8444318e"
+    },
+    "postgame-bogwitch-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/bogwitch-9-traits.png",
+      "sha256": "16e96a6eecda3f85e1fe393fbb70a60590d7593eb82360d92511b101de3fb1a1"
+    },
+    "postgame-youngdevour-4-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/youngdevour-4-traits.png",
+      "sha256": "3a209875b5c7bcd8cb530660760aa46f2e6973efe49944223b1cdb9d5ec9f521"
+    },
+    "postgame-youngdevour-5-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/youngdevour-5-traits.png",
+      "sha256": "df7367ea7388aba1b297e87f02d0e8c2e791aaaed73e77b16b50d0ef771ad77b"
+    },
+    "postgame-youngdevour-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 discard 并非词典中随机弃置手牌的效果。",
+      "image": "/assets/aibp/postgame/youngdevour-6-traits.png",
+      "sha256": "e10706b1401c9439337963aea607d88038ed30df31db0426c47c33b9a85ee92b"
+    },
+    "postgame-youngdevour-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/youngdevour-7-traits.png",
+      "sha256": "b0fcd8131834525332888dcad34fe8420756f292d6476744aa7e788d2c32010b"
+    },
+    "postgame-youngdevour-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。 discard 并非词典中随机弃置手牌的效果。",
+      "image": "/assets/aibp/postgame/youngdevour-9-traits.png",
+      "sha256": "4cb540e89a68427aef4341e62d929be3d4e53521fa97de8998f38a48ca3df689"
+    },
+    "postgame-knightfen-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knightfen-6-traits.png",
+      "sha256": "515f56da18c1a783e6a1642731936b7af80e36b41edbcb235652388557ad8d1f"
+    },
+    "postgame-knightfen-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knightfen-7-traits.png",
+      "sha256": "22daf1af638f6e1da10ae89dda247ccf2bcb37c82df0ebbd1bed0bcc4c60f24f"
+    },
+    "postgame-knightfen-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knightfen-8-traits.png",
+      "sha256": "8bbf412ccfaf0332cdac318e0ce3aa78094e79d807481fcf61dbfa879161d443"
+    },
+    "postgame-knightfen-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/knightfen-9-traits.png",
+      "sha256": "73a1bcfb65aff5a9c761b2be94847e594c6933651d67a127ef51671b54f7b364"
+    },
+    "postgame-eggknight-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/eggknight-6-traits.png",
+      "sha256": "c1ecb5c99fa192eb2aa60e3c109313f2acb744f39e44d78ded4faa7a43e49a5f"
+    },
+    "postgame-eggknight-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/eggknight-7-traits.png",
+      "sha256": "dc3d3c3f0eaae72a4ef7c2875f9e0597c0c4c0bcd55eb886011b877fb9353718"
+    },
+    "postgame-eggknight-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/eggknight-8-traits.png",
+      "sha256": "464f3950bd0311a5d8496a2566afbf1cf04ceb78bab13020d452ed2880bd93b9"
+    },
+    "postgame-eggknight-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/eggknight-9-traits.png",
+      "sha256": "a030af2cfea176664917952073b1807e7ca7dedc5e61141aff1fb9046be00e51"
+    },
+    "postgame-puppetking-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对：未见适用的词典关键词。",
+      "image": "/assets/aibp/postgame/puppetking-6-traits.png",
+      "sha256": "38777cc47fa01b39a4b04a0f00b2d44be206d75c2f6d67eaea34d3c97061567f"
+    },
+    "postgame-puppetking-8-traits": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "add": [
+        "Knockback X"
+      ],
+      "remove": [],
+      "note": "逐张目视核对：卡面提及 Knockback，关联词典击飞 X。",
+      "image": "/assets/aibp/postgame/puppetking-8-traits.png",
+      "sha256": "2f781a5386fffe37068b50d5cd4cd9c188c7b71517fe1577b8289f718818b0ce"
+    },
+    "postgame-whiteape-5-traits": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/whiteape-5-traits.png",
+      "sha256": "615e5e2c7490dad2f46a03ac5980fe61d6aef5a332e97184f4d3b640bd626d1c"
+    },
+    "postgame-whiteape-8-traits": {
+      "keywords": [
+        "Boundless",
+        "Knockback X"
+      ],
+      "add": [
+        "Knockback X"
+      ],
+      "remove": [],
+      "note": "Boundless 与 Knockback。",
+      "image": "/assets/aibp/postgame/whiteape-8-traits.png",
+      "sha256": "204c113f110812063a2ab0997d2d1a4278fc8330a1e417e9ecf9b19b2809e530"
+    },
+    "postgame-devilancientdusk-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [
+        "Power"
+      ],
+      "note": "Power Roll 是强度投掷，非词典 Power X 获得指示物行动。",
+      "image": "/assets/aibp/postgame/devilancientdusk-8-traits.png",
+      "sha256": "8fdc419c5733de4fa2e30bca1ade4d0f548ab2bb41893c6216a1d307917fb1d1"
+    },
+    "postgame-toadragon-3-traits": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/toadragon-3-traits.png",
+      "sha256": "13a4756b28748a29ff4a3c5770f1c3ba54bba72c3cbcf9aeecbca7e756f5ee36"
+    },
+    "postgame-stonemason-5-traits": {
+      "keywords": [
+        "Armor-piercing X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/stonemason-5-traits.png",
+      "sha256": "6b39b2ff2a2c795226d14e8d48dd4acd80ae626aae3546332fee94f3939d74f1"
+    },
+    "postgame-stonemason-6-traits": {
+      "keywords": [
+        "Bane"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/stonemason-6-traits.png",
+      "sha256": "189d5aad7d802f96d248c52600d67522b114c40e04348a50f77e63928d53fc70"
+    },
+    "postgame-knighteater-5-traits": {
+      "keywords": [
+        "Fleisch"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "Fleisch 在此为指示物名称；弃置的是指示物而非手牌。",
+      "image": "/assets/aibp/postgame/knighteater-5-traits.png",
+      "sha256": "05eb3694f7a935e9cc58ef0bf47db0b0162624eec60b560e824cea973a4d22fe"
+    },
+    "postgame-bogwitch-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [
+        "Sacrifice"
+      ],
+      "note": "Sacrifice 出现在特性标题，不是词典牲祭关键词。",
+      "image": "/assets/aibp/postgame/bogwitch-6-traits.png",
+      "sha256": "561f759a37062f5780a5399b2733d0c7a0089907b2210fc6b819d344f06ce1e0"
+    },
+    "postgame-bogwitch-10-traits": {
+      "keywords": [
+        "Heal"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/bogwitch-10-traits.png",
+      "sha256": "17477e2a91aaf7df1c071871a5b339357d1b26e49b1e297da7afe859c198b655"
+    },
+    "postgame-youngdevour-3-traits": {
+      "keywords": [
+        "Cooldown",
+        "Delay"
+      ],
+      "add": [],
+      "remove": [
+        "Area"
+      ],
+      "note": "Cooldown、Delay 是对应位置名称，非 Area（范围）关键词；弃置不同种类的卡并非随机弃手牌。",
+      "image": "/assets/aibp/postgame/youngdevour-3-traits.png",
+      "sha256": "25e1515d447e8b6336567fdafb352bdd19ca208b41adac5bef642b4e64b293f3"
+    },
+    "postgame-youngdevour-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [
+        "Power"
+      ],
+      "note": "Power Dice 是强度骰，不是 Power X 获得指示物行动。",
+      "image": "/assets/aibp/postgame/youngdevour-8-traits.png",
+      "sha256": "a101f42060d72db1aeb8775f84ff74965155459a13a9aaf90a02e11026becf21"
+    },
+    "postgame-knightfen-5-traits": {
+      "keywords": [
+        "Armor-piercing X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/knightfen-5-traits.png",
+      "sha256": "27f9bb78fbe92bb4326d4a7fb49dff9a6d7bfd72b2652520f265c0f4fda837b8"
+    },
+    "postgame-eggknight-5-traits": {
+      "keywords": [
+        "Armor-piercing X",
+        "Braced",
+        "Rocksteady"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/eggknight-5-traits.png",
+      "sha256": "ff11a52fcd875e9eda514fb8db14d8413c4927d5ba7eb5f98edfdd70cf8b1f98"
+    },
+    "postgame-puppetking-5-traits": {
+      "keywords": [
+        "Armor-piercing X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/puppetking-5-traits.png",
+      "sha256": "d86eaeb6e98e28394bd74fb34dc6878a73cfa0169531d91d0810b91fc95dafa7"
+    },
+    "postgame-puppetking-7-traits": {
+      "keywords": [
+        "Boundless"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/puppetking-7-traits.png",
+      "sha256": "485e48c42c49ce1246bc15ea4013b9cd1da66bac9fcdffd039902a4417759c82"
+    },
+    "postgame-puppetking-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/puppetking-9-traits.png",
+      "sha256": "8334d905edb33f4d50d58fa22ea179c6113cfa31aff217ba8bf3918ed4e8d1bd"
+    },
+    "postgame-devilsmeltedfears-4-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-4-traits.png",
+      "sha256": "b59c1455b9cdcf5a7d8301ce9cc6d4ae64fdd378529c31649962b0354e52ac9c"
+    },
+    "postgame-devilsmeltedfears-5-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-5-traits.png",
+      "sha256": "620e2faf37d15126f08e10ded7d7b28df756ded23711bc190d2adc13745cf989"
+    },
+    "postgame-devilsmeltedfears-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-6-traits.png",
+      "sha256": "19e0437afe5c4dfe82e2efb8117d1aa5e8f58147d304b9b4766b38eedf1d1380"
+    },
+    "postgame-devilsmeltedfears-7-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-7-traits.png",
+      "sha256": "9de9b57226ac6a38f6f27f3e83c50a0e18fd2cfc1ffa8ab2c844eb9034cf2bd3"
+    },
+    "postgame-devilsmeltedfears-8-traits": {
+      "keywords": [
+        "Cooldown",
+        "Delay"
+      ],
+      "add": [],
+      "remove": [
+        "Area"
+      ],
+      "note": "Cooldown、Delay 是对应位置名称，非 Area（范围）关键词。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-8-traits.png",
+      "sha256": "08453c37bb020251653fc8d9a7d4b87c34e73b03851712cd023d5e7cbfb64f4c"
+    },
+    "postgame-devilsmeltedfears-9-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-9-traits.png",
+      "sha256": "627d39004eb1079a3e2baf6d9fddad250627325ce4300e28aa4e7f475f2906aa"
+    },
+    "postgame-devilsmeltedfears-10-traits": {
+      "keywords": [
+        "Choke"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "Choke Limit 与 Choked 状态卡涉及窒息规则。",
+      "image": "/assets/aibp/postgame/devilsmeltedfears-10-traits.png",
+      "sha256": "6dcb65bea0d3525e58876162d9d2d1b013f876a982796d345951c29f33c741ef"
+    },
+    "postgame-panzerdragon-3-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/panzerdragon-3-traits.png",
+      "sha256": "c6b912effb0b65e6f7cf58eb58c31632b056fcc5fb5b3cf1aca0e75d7c11b71e"
+    },
+    "postgame-panzerdragon-4-traits": {
+      "keywords": [
+        "Indestructible",
+        "Parasitize"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/panzerdragon-4-traits.png",
+      "sha256": "73fcc7a98df70643866a9a20469faeabf66c10bedd1dfd5c78e12e4d9356880d"
+    },
+    "postgame-panzerdragon-5-traits": {
+      "keywords": [
+        "Pull X"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/panzerdragon-5-traits.png",
+      "sha256": "e4ea1999be2f684f1ff5fbcf8cce221cd9da9a65c0dcadadfa809a89f53cbdf5"
+    },
+    "postgame-panzerdragon-6-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "Discard 特定装备卡不是词典中随机弃置手牌。",
+      "image": "/assets/aibp/postgame/panzerdragon-6-traits.png",
+      "sha256": "8680cd89c3d2e4fe1607532e25b0ef0129bf2fe9f6d62f44757d197544c06fc0"
+    },
+    "postgame-panzerdragon-7-traits": {
+      "keywords": [
+        "Bypass"
+      ],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/panzerdragon-7-traits.png",
+      "sha256": "9fdc2819cc84a58d057c0c10d9a037cd26c7be74a1e76492dc88bc06666569b6"
+    },
+    "postgame-panzerdragon-8-traits": {
+      "keywords": [],
+      "add": [],
+      "remove": [],
+      "note": "逐张目视核对卡面及词典定义。",
+      "image": "/assets/aibp/postgame/panzerdragon-8-traits.png",
+      "sha256": "0f68bed53c20037915b745f3e0c4e7cbd648f590523cff3dc451353a17ffb7a9"
+    },
+    "postgame-panzerdragon-9-traits": {
+      "keywords": [
+        "Pull X"
+      ],
+      "add": [
+        "Pull X"
+      ],
+      "remove": [],
+      "note": "提及 Pull，关联词典 Pull X。",
+      "image": "/assets/aibp/postgame/panzerdragon-9-traits.png",
+      "sha256": "f5f19ff22bc6051d564396ded5d11978159198ab8075b5bcdbef62434ec72f02"
+    }
+  }
+}

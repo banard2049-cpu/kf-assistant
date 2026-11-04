@@ -1,0 +1,323 @@
+{
+  "cards": {
+    "M_YoungDevour:AI0:19": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-00.jpg",
+      "sha256": "4c83ff4e811089113f79bc3ddbbaf4d741e0ed2d8072395150f94bec38fd95af"
+    },
+    "M_YoungDevour:AI1:20": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-01.jpg",
+      "sha256": "864e512047f0e333db0ea9cfd4ca6178568b5f2a4c62ff7053563f4063edd9c9"
+    },
+    "M_YoungDevour:AI1:21": {
+      "keywords": [
+        "Doomed"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-02.jpg",
+      "sha256": "205d2ddf816da25bea94d7a7c7326e3d529d59f790822cbbd70c348b6ecc8bd8"
+    },
+    "M_YoungDevour:AI1:22": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-03.jpg",
+      "sha256": "763cf24357511c6825dcaed9a3dc7a6c5643302f8b5a56a0c40e0a5b80c110e0"
+    },
+    "M_YoungDevour:AI1:23": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-04.jpg",
+      "sha256": "96172c00f91a60f1b1616a40db0a4bb2c4bfa39c82009195d54889db3596546a"
+    },
+    "M_YoungDevour:AI1:24": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-05.jpg",
+      "sha256": "9b772190cec60551fb2cdff421c08c3a6e4c76748c83e7739d6c23b923b133c3"
+    },
+    "M_YoungDevour:AI1:25": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-06.jpg",
+      "sha256": "7b09d3af66c485b2d6b5a829d1e3f87b7df658b872a9bc764d393ff71102cb88"
+    },
+    "M_YoungDevour:AI2:26": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-07.jpg",
+      "sha256": "f9d15555ac558a7e6881412b95d13ba4672c1d99761b957dc59919b357752979"
+    },
+    "M_YoungDevour:AI2:27": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-08.jpg",
+      "sha256": "148843b71b2b53bbc4e7c69f622c79a952760890170f025afaafda898ecd270b"
+    },
+    "M_YoungDevour:AI2:28": {
+      "keywords": [
+        "Doomed",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-09.jpg",
+      "sha256": "d9197a66e7795db3fd97c8e67ed8bbd3636d7c497e6b8c72913ae53a4d691080"
+    },
+    "M_YoungDevour:AI2:29": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-12.jpg",
+      "sha256": "7e44183c5ce509eed19c1386a42f63de82f78d74e04f0e96873d19425ce5bad9"
+    },
+    "M_YoungDevour:AI2:30": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-11.jpg",
+      "sha256": "707d418d96c9ddbddea48f82b6cfc6c4b3150db3278ad8d4b45ccdf689d281eb"
+    },
+    "M_YoungDevour:AI2:31": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-10.jpg",
+      "sha256": "4754880cc560c5bcc2bdf2d85f5d9e4b2294da52938796d0a6e093aa6b069d76"
+    },
+    "M_YoungDevour:AI3:32": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-13.jpg",
+      "sha256": "144b6633b039e7b7016841ef98c94b13875087b9dbfc72de35c902ce5f7163d1"
+    },
+    "M_YoungDevour:AI3:33": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-14.jpg",
+      "sha256": "9eb3bf4e281653fa38e822c3071913cfcbca13e1e3418d120ff18fd29d015424"
+    },
+    "M_YoungDevour:AI3:34": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-15.jpg",
+      "sha256": "d8f2aa50e8bd3f1c8e5638294d5b09f175e5e33cccda8cd794256a744ef5ec77"
+    },
+    "M_YoungDevour:AI3:35": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-16.jpg",
+      "sha256": "e2beafe90dc92337c613628b54f331d92b5a7782757c227f8961f4e23be15957"
+    },
+    "M_YoungDevour:AI3:36": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-17.jpg",
+      "sha256": "baac47af9db26e690ea6d28a0bc3ddb166810e5aa2a6bb55cb5e55b4500f6312"
+    },
+    "M_YoungDevour:AI3:37": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-18.jpg",
+      "sha256": "2bdb417890cb1ac725048c74dfe12070958fa0117930e0e02a42f477912dd323"
+    },
+    "M_YoungDevour:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-19.jpg",
+      "sha256": "263e5da737501c8822419635910bc9009618b04a1be1223568bad12cac1852fd"
+    },
+    "M_YoungDevour:BP1:2": {
+      "keywords": [
+        "OverpowerX+",
+        "Reposition X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-20.jpg",
+      "sha256": "c285ebf0f44bf0d0f00e2fe5abcc98b530a750aa300e56fd9845f86358248f4e"
+    },
+    "M_YoungDevour:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-21.jpg",
+      "sha256": "dcedea1492dce07a3856817fea5f808b7a279b23f2f4b7ab00dbc4919230dcdb"
+    },
+    "M_YoungDevour:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane",
+        "Toxify"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-24.jpg",
+      "sha256": "535357bc1ec1b410f66e74608b32c157e0f2e749078349ad6587640da95037ae"
+    },
+    "M_YoungDevour:BP1:5": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-23.jpg",
+      "sha256": "1fe34b5ad59491ecfe8691033456a7278afbb3f927c3f78110593305929b4d1b"
+    },
+    "M_YoungDevour:BP1:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-22.jpg",
+      "sha256": "9a5d3eaa2e15c1820d04bcb5a186c0e57c404888d7106e3a8957f23ed396b273"
+    },
+    "M_YoungDevour:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-29.jpg",
+      "sha256": "d5d9bbd9caaaad26071aa0ec62ba4b4b4169271df65ed3f0b68d322de900ba3b"
+    },
+    "M_YoungDevour:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-30.jpg",
+      "sha256": "1f1200ef670f01b33271f094196f008a4d8a88c2bf1f3b2cb426565586ee5a83"
+    },
+    "M_YoungDevour:BP2:11": {
+      "keywords": [
+        "OverpowerX+",
+        "Toxify",
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-25.jpg",
+      "sha256": "9a34e5e588fc0c6e19f030bc538c7dc3fd027a599f26f39c4f1aabf97aa1ce4a"
+    },
+    "M_YoungDevour:BP2:12": {
+      "keywords": [
+        "OverpowerX+",
+        "Reposition X",
+        "Scavenge X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-26.jpg",
+      "sha256": "a7231f87dd36e08ab62c26cfc69288c5685e01ceb4482e9a96455bf9189a281b"
+    },
+    "M_YoungDevour:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Knockback X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-27.jpg",
+      "sha256": "201fb1e248c3902a6971602d8dfec4516d9414599405c14addfa45d29d1d985e"
+    },
+    "M_YoungDevour:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-28.jpg",
+      "sha256": "7382fe43656d4e09eac06ca6a1a9d8dec880f46ebd0bbdbf55010395cfb60ec4"
+    },
+    "M_YoungDevour:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Devote"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-36.jpg",
+      "sha256": "3030df05214c7c297a4f71d0c98c29745ead4751b0429806e6ccee8dceaaad65"
+    },
+    "M_YoungDevour:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-35.jpg",
+      "sha256": "d28388f11b739e7881214811aa51faf2ec8754f0965bb44c6799ff980561e0d9"
+    },
+    "M_YoungDevour:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Knockback X",
+        "Knockdown",
+        "Bane"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-34.jpg",
+      "sha256": "cd6a93666e05c0936afa24617a8d648a23f8987a8629b7386f5e8ddc1fddaac9"
+    },
+    "M_YoungDevour:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Scavenge X"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-32.jpg",
+      "sha256": "f2b237f9d82a760efe4f4477f85a25b3332e32a23d8eb775423ce980469a84a0"
+    },
+    "M_YoungDevour:BP3:17": {
+      "keywords": [
+        "OverpowerX+"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-33.jpg",
+      "sha256": "54d57503db0d07f4242d05ab348902a33b741559027099b40d3c7f39e11e5eaf"
+    },
+    "M_YoungDevour:BP3:18": {
+      "keywords": [
+        "OverpowerX+",
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-31.jpg",
+      "sha256": "b7d192198bbb952e5e061e6a6a9add5e404207d0e1a0d057ac5926ba6aeb5317"
+    },
+    "M_YoungDevour:SIG:0": {
+      "keywords": [],
+      "note": "逐张对照卡面及词典；弃置装备、状态卡和强度骰不等同词典关键词。",
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-37.jpg",
+      "sha256": "e458e09ca9015f823f49b744d13afc82d6b7b151f43178d2350b44df35c602b4"
+    }
+  }
+}

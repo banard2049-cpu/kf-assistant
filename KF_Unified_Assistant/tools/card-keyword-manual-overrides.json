@@ -1,0 +1,175 @@
+{
+  "description": "普通 Boss 特性卡的人工目视核对。关键词以词典 ID 表示；空数组表示该卡面未看到可对应的词典关键词。图片哈希记录对应的卡面版本。",
+  "cards": {
+    "M_DevilSmeltedFears:Trait:39": {
+      "keywords": [
+        "Choke"
+      ],
+      "note": "卡面 Choke X。弃置盔甲指示物不是词典中的弃置手牌。",
+      "add": [
+        "Choke"
+      ],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/devil-smelted-fears/6d28d3be-37.jpg",
+      "sha256": "89bcfd3afcd93d03c5d4369ad3ef3775f90f46d0cff08331a9996981f169c84b"
+    },
+    "M_KnightFen:Trait:39": {
+      "keywords": [
+        "Displace",
+        "Suppress",
+        "Poison"
+      ],
+      "note": "位移、AI 克制、中毒 2；弃置盔甲指示物不是弃置手牌。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/knight-fen/c32b56e4-38.jpg",
+      "sha256": "47ffc085bc7af5ef4614b304a427ea09ec48c0748e890fe80224e5b7f4f73a84"
+    },
+    "M_KnightFen:Trait_POS:41": {
+      "keywords": [],
+      "note": "未见词典关键词。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/knight-fen/c32b56e4-37.jpg",
+      "sha256": "d716f92ebc58309a29736e1027c13b222ff1468a43eb5a3199725011882194d2"
+    },
+    "M_KnightFen:Trait_SK:40": {
+      "keywords": [],
+      "note": "未见词典关键词。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/knight-fen/c32b56e4-39.jpg",
+      "sha256": "204c4eb29b5f2bf4bc5bea5de125267ab0c3aca71374bb4e3a1f61c19fd4fb2e"
+    },
+    "M_Knighteater:Trait_POS:37": {
+      "keywords": [],
+      "note": "未见词典关键词。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-37.jpg",
+      "sha256": "b840aaef9083f85831ecc2ff250c1cc9204cb532d789fa7aece3e44b2d971d2e"
+    },
+    "M_Knighteater:Trait_SK:36": {
+      "keywords": [],
+      "note": "未见词典关键词。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/knighteater/a64da226-38.jpg",
+      "sha256": "5c2a46b810c54d300c353010ad1caee1103d4391aa9b814e9f8c0081cfb01594"
+    },
+    "M_Panzerdragon:Trait:38": {
+      "keywords": [
+        "OverpowerX+",
+        "Parasitize"
+      ],
+      "note": "OVERPOWER X 与寄生 1；弃置盔甲指示物不是弃置手牌。OVERPOWER X 对应词典压倒词条，但卡面没有印 +。",
+      "add": [
+        "OverpowerX+"
+      ],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-38.jpg",
+      "sha256": "652faea11c57f14192a76ec300fe79499f6762b9c88f8ede9fa83848bf330f1a"
+    },
+    "M_Panzerdragon:Trait:39": {
+      "keywords": [],
+      "note": "只提到弃置盔甲及通用指示物，与词典弃置手牌的定义不同。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-40.jpg",
+      "sha256": "59aeffe242857ee38d0cb2efa6ac1c7155dfdaf453bc52a710232622c53c55dc"
+    },
+    "M_Panzerdragon:Trait:40": {
+      "keywords": [
+        "OverpowerX+",
+        "Devote"
+      ],
+      "note": "OVERPOWER X 与虔信；弃置盔甲指示物不是弃置手牌。OVERPOWER X 对应词典压倒词条，但卡面没有印 +。",
+      "add": [
+        "OverpowerX+",
+        "Devote"
+      ],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/panzerdragon/e2495b11-39.jpg",
+      "sha256": "888c6a4a1ea883d377009ac914ed02443b366e7e601c3b1e586a8442c45415b5"
+    },
+    "M_PuppetKing:Trait:39": {
+      "keywords": [
+        "Obstacle",
+        "Destructible",
+        "OvercomeX+",
+        "OverpowerX+",
+        "Power",
+        "Parasitize"
+      ],
+      "note": "障碍、可摧毁、过线 3+、压倒 3+、强度 1、寄生 1；弃置状态卡不是弃置手牌。",
+      "add": [
+        "Destructible",
+        "OverpowerX+"
+      ],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-37.jpg",
+      "sha256": "d658f45c0f6272a7e195f6bd30df261c283cb188d5e2040479ce54aded84cd05"
+    },
+    "M_PuppetKing:Trait:40": {
+      "keywords": [],
+      "note": "未见词典关键词。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-38.jpg",
+      "sha256": "07dc4b47db9cd58a2c08bbb8f4905ef01582435c305f644725c8503f259aded4"
+    },
+    "M_WhiteApe:Trait:38": {
+      "keywords": [
+        "Advanced Bypass"
+      ],
+      "note": "高级穿身；机会与破甲在此处是指示物而非 X 关键词行动。",
+      "add": [
+        "Advanced Bypass"
+      ],
+      "remove": [
+        "Bypass"
+      ],
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-38.jpg",
+      "sha256": "961e022085cdd3423c412e7d67cb273847897a8599e00975419bfd4c5bcee4b2"
+    },
+    "M_WhiteApe:Trait:39": {
+      "keywords": [],
+      "note": "未见词典关键词。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/white-ape/799e1d2b-39.jpg",
+      "sha256": "40081e98a1846257fcceb687690efceabb040c2040ef82a3555051d2506b2486"
+    },
+    "M_YoungDevour:Trait:38": {
+      "keywords": [
+        "Crash"
+      ],
+      "note": "冲撞被提及，包括不造成冲撞和骑士受到冲撞。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-38.jpg",
+      "sha256": "45a41560eb8e9045e50d2e0f5c9ee1c019bc2bc22db1abd0ee520002a34491ce"
+    },
+    "M_YoungDevour:Trait:39": {
+      "keywords": [
+        "Crash"
+      ],
+      "note": "冲撞。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-39.jpg",
+      "sha256": "14685ad7e4c5519cb16841e92092132b20d109aab19665f0c94fcb1b0fe1e872"
+    },
+    "M_YoungDevour:Trait:40": {
+      "keywords": [
+        "Crash",
+        "Displace"
+      ],
+      "note": "冲撞与位移。",
+      "add": [],
+      "remove": [],
+      "image": "/assets/cards/monster-faces/young-devour/d8eeaf1a-40.jpg",
+      "sha256": "3039d227311f420c8f6b894e4fc30e9d2d994f967a8ad5c769baf8293edd4941"
+    }
+  }
+}

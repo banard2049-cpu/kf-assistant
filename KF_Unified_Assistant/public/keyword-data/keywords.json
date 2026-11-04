@@ -1,0 +1,1048 @@
+{
+  "source": "A4 KF Keyword 修订版（导入到欧路词典APP）.eudic",
+  "entries": [
+    {
+      "id": "Acrobatics",
+      "en": "Acrobatics",
+      "zh": "杂技",
+      "definitionHtml": "<font size=\"+2\">Acrobatics:</font><br>If you would suffer Knockdown while adjacent to a Monster, you may Vault instead.<hr><font size=\"+2\">杂技:</font><br>若你与怪物相邻，在受<a href='dic://击倒'>击倒</a>时改为<a href='dic://撑跳'>撑跳</a>。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Activate X",
+      "en": "Activate X",
+      "zh": "激活X",
+      "definitionHtml": "<font size=\"+2\">Activate X:</font><br>Draw AI for the next X Mobs on the Mob track.<hr><font size=\"+2\">激活X:</font><br>为杂兵轨右侧的X只杂兵各抽取一张AI卡",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Advanced Block",
+      "en": "Advanced Block",
+      "zh": "高级格挡",
+      "definitionHtml": "<font size=\"+2\">Advanced <a href='dic://Block'>Block</a>:</font><br>While performing an Evasion Roll, treat 2 successful hits as evaded.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Block'>Block</a><br><a href='dic://Superior%20Block'>Superior Block</a><hr><font size=\"+2\">高级<a href='dic://格挡'>格挡</a>:</font><br>在执行闪避投掷时，视作成功闪避掉2个命中.<br><br>相关词条/亚型 请查看:<br><a href='dic://格挡'>格挡</a><br><a href='dic://超级格挡'>超级格挡</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Advanced Bypass",
+      "en": "Advanced Bypass",
+      "zh": "高级穿身",
+      "definitionHtml": "<font size=\"+2\">Advanced <a href='dic://Bypass'>Bypass</a>:</font><br>A Knight or Monster may voluntarily move through other miniatures. You cannot end your voluntary movement on a space occupied by another miniature.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Bypass'>Bypass</a><br><a href='dic://Superior%20Bypass'>Superior Bypass</a><hr><font size=\"+2\">高级<a href='dic://穿身'>穿身</a>:</font><br>拥有此技能的骑士或怪物可主动穿过其他模型移动。但你不可以在其他模型所占的格子结束主动移动。<br><br>相关词条/亚型 请查看:<br><a href='dic://穿身'>穿身</a><br><a href='dic://超级穿身'>超级穿身</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Advanced Defy",
+      "en": "Advanced Defy",
+      "zh": "高级违抗",
+      "definitionHtml": "<font size=\"+2\">Advanced <a href='dic://Defy'>Defy</a>:</font><br>While performing a Virtue test caused by a Judgement, treat 2 hits as evaded.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Defy'>Defy</a><br><a href='dic://Superior%20Defy'>Superior Defy</a><hr><font size=\"+2\">高级<a href='dic://违抗'>违抗</a>:</font><br>在执行由定断Judgement攻击造成的检定时，将2个命中视作闪避。<br><br>相关词条/亚型 请查看:<br><a href='dic://违抗'>违抗</a><br><a href='dic://超级违抗'>超级违抗</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Advanced Dodge",
+      "en": "Advanced Dodge",
+      "zh": "高级躲避",
+      "definitionHtml": "<font size=\"+2\">Advanced <a href='dic://Dodge'>Dodge</a>:</font><br>Gain +2 Evasion bonus instead of the +1 granted by Dodge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Dodge'>Dodge</a><br><a href='dic://Lesser%20Dodge'>Lesser Dodge</a><br><a href='dic://Superior%20Dodge'>Superior Dodge</a><hr><font size=\"+2\">高级<a href='dic://躲避'>躲避</a>:</font><br>改为获得+2 闪避加成<br><br>相关词条/亚型 请查看:<br><a href='dic://躲避'>躲避</a><br><a href='dic://次级躲避'>次级躲避</a><br><a href='dic://超级躲避'>超级躲避</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Advanced Reflex",
+      "en": "Advanced Reflex",
+      "zh": "高级反射",
+      "definitionHtml": "<font size=\"+2\">Advanced <a href='dic://Reflex'>Reflex</a>:</font><br>Move up to 2 spaces.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Reflex'>Reflex</a><br><a href='dic://Superior%20Reflex'>Superior Reflex</a><hr><font size=\"+2\">高级<a href='dic://反射'>反射</a>:</font><br>移动至多2格。<br><br>相关词条/亚型 请查看:<br><a href='dic://反射'>反射</a><br><a href='dic://超级反射'>超级反射</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Advanced Reinforce X",
+      "en": "Advanced Reinforce X",
+      "zh": "高级固防X",
+      "definitionHtml": "<font size=\"+2\">Advanced <a href='dic://Reinforce'>Reinforce</a> X:</font><br>When you are about to resolve an Armor Roll, add X black dice to your Armor dice Pool.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Reinforce'>Reinforce X</a><br><a href='dic://Superior%20Reinforce'>Superior Reinforce X</a><hr><font size=\"+2\">高级<a href='dic://固防X'>固防X</a>:</font><br>当你执行护甲投掷时，向护甲骰子池中加入X枚黑骰。<br><br>相关词条/亚型 请查看:<br><a href='dic://固防X'>固防X</a><br><a href='dic://超级固防X'>超级固防X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Afflict",
+      "en": "Afflict",
+      "zh": "折磨X",
+      "definitionHtml": "<font size=\"+2\">Afflict:</font><br>This keyword changes depending on the Kingdom. See the appropriate Trait card of the Monster you’re currently fighting for the definition.<hr><font size=\"+2\">折磨X:</font><br>此关键词的效果与具体王国相关。具体效果见冲突怪物的相关特质卡。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Ammo Reserves",
+      "en": "Ammo Reserves",
+      "zh": "额外储备X",
+      "definitionHtml": "<font size=\"+2\">Ammo Reserves:</font><br>Additional X Charges per empty hand slot or support slot.<hr><font size=\"+2\">额外储备X:</font><br>你每有1个空手臂槽或助具槽，就多X枚充能。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Area",
+      "en": "Area",
+      "zh": "范围",
+      "definitionHtml": "<font size=\"+2\">Area:</font><br>When resolving the Power Roll against the Target of your Attack, additionally resolve it against all Monsters on spaces denoted by this keyword. Resolve the Power Roll against each Monster&#x27;s AT individually (revealing or drawing their BP cards if needed), using this Attack&#x27;s Total Power. Resolve Monster Responses only for the original Target of the Attack. Each Area keyword is followed by a description of the spaces it targets.<hr><font size=\"+2\">范围:</font><br>在对你攻击的目标结算强度投掷时，额外对此关键词范围格子上的所有其他怪物也结算强度投掷——用此攻击强度投掷你得出的一个攻击总强度，分别去对抗每只怪物的AT（展示或抽取BP卡，如果需要的话）。同时，仅结算攻击目标BP卡的响应。每个范围关键词都会跟随着一个范围格子指示。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Armor-piercing X",
+      "en": "Armor-piercing X",
+      "zh": "穿甲X",
+      "definitionHtml": "<font size=\"+2\">Armor-piercing X:</font><br>Principality of Stone keyword. During the second ability window, discard up to X Armor tokens from the Target.<hr><font size=\"+2\">穿甲X:</font><br>巨石公国关键词。在第二技能窗口，<a href='dic://弃置'>弃置</a>至多X枚目标的盔甲指示物。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Attack Re-roll X",
+      "en": "Attack Re-roll X",
+      "zh": "命中重投X",
+      "definitionHtml": "<font size=\"+2\">Attack Re-roll X:</font><br>During an Attack Roll, you may re-roll up to X Attack dice with no additional cost. Remember that you can only re-roll each die once, regardless of the re-roll source.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Power%20Re-roll'>Power Re-roll X</a><hr><font size=\"+2\">命中重投X:</font><br>在命中投掷中，你可重投最多X枚命中骰。不论重投效果来源，每枚骰子最多可被重投1次。<br><br>相关词条/亚型 请查看:<br><a href='dic://强度重投X'>强度重投X</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Auto-X Y",
+      "en": "Auto-X Y",
+      "zh": "自动X Y",
+      "definitionHtml": "<font size=\"+2\">Auto-X Y:</font><br>Place a number of tokens in the Knight Pool during the first ability window, where X is the type of token you can place, and Y is the number of tokens, for example Auto-break 2.<hr><font size=\"+2\">自动X Y:</font><br>在第一技能窗口，向骑士池中放入Y枚X指示物。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Bane",
+      "en": "Bane",
+      "zh": "灾祸X",
+      "definitionHtml": "<font size=\"+2\">Bane:</font><br>Gain X Bane tokens.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Immune%20to%20Bane'>Immune to Bane</a><hr><font size=\"+2\">灾祸X:</font><br>获得X枚灾祸指示物。<br><br>相关词条/亚型 请查看:<br><a href='dic://免疫灾祸'>免疫灾祸</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Bane Limit X/+X",
+      "en": "Bane Limit X/+X",
+      "zh": "灾祸耐限X/+X",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Bane'>Bane</a> Limit X/+X:</font><br>Your Bane Limit becomes X or is increased by +X. Note: Bane Limit X doesn’t stack, but all +X bonuses are cumulative.<hr><font size=\"+2\">灾祸耐限X/+X:</font><br>你的灾祸耐限设为X，或提高+X。注意灾祸耐限X不可叠加，但是+X是可叠加的。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Black X",
+      "en": "Black X",
+      "zh": "黑破X",
+      "definitionHtml": "<font size=\"+2\">Black X:</font><br>During the second ability window, place X Black tokens in the Knight Pool. During the Power Roll step, the attacking Knight may use Black tokens in the Knight Pool to re-roll 1 Power die for each Black token used. They may turn 1 Potential symbol on each die re-rolled using a Black token into 1 Power, as if they had a Break token.<hr><font size=\"+2\">黑破X:</font><br>在第二技能窗口，向骑士池中加入X 枚黑破指示物。在强度投掷分步中，骑士池中每有1 枚黑破指示物，正在攻击的骑士能重投1枚强度骰。且对于重投来的强度骰，还可将1个潜力图标转化为1个强度（就像使用破甲指示物的效果那样）。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Block",
+      "en": "Block",
+      "zh": "格挡",
+      "definitionHtml": "<font size=\"+2\">Block:</font><br>While performing an Evasion Roll, treat 1 successful hit as evaded. Advanced Block treats 2 successful hits as evaded; Superior Block treats 3.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Block'>Advanced Block</a><br><a href='dic://Superior%20Block'>Superior Block</a><hr><font size=\"+2\">格挡:</font><br>在执行闪避投掷时，视作成功闪避掉1个命中。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://高级格挡'>高级格挡</a><br><a href='dic://超级格挡'>超级格挡</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Bloodletter",
+      "en": "Bloodletter",
+      "zh": "放血",
+      "definitionHtml": "<font size=\"+2\">Bloodletter:</font><br>This keyword is irrelevant in the Principality of Stone and Sunken Kingdom. It will become relevant in future Kingdoms.<hr><font size=\"+2\">放血:</font><br>此关键词在巨石公国与沉没王国中没有用途，其将在未来的王国发挥作用。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Boundless",
+      "en": "Boundless",
+      "zh": "无边限",
+      "definitionHtml": "<font size=\"+2\">Boundless:</font><br>Terrain keyword. You cannot voluntarily move onto this tile. If a Knight is forced to move onto or beyond this tile or Board Edge, they die.<hr><font size=\"+2\">无边限:</font><br>你不可主动移动进此板块。如果你被迫移动进、穿过此板块或穿过版边，you die。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Braced",
+      "en": "Braced",
+      "zh": "支撑",
+      "definitionHtml": "<font size=\"+2\">Braced:</font><br>You cannot be involuntarily moved or suffer Knockdown (you can still be Displaced).<hr><font size=\"+2\">支撑:</font><br>你不会被受迫移动或被<a href='dic://击倒'>击倒</a>（但你仍会被<a href='dic://位移'>位移</a>）。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Break X",
+      "en": "Break X",
+      "zh": "破甲X",
+      "definitionHtml": "<font size=\"+2\">Break X:</font><br>During the second ability window, place X Break tokens in the Knight Pool. During the Power Roll step, each Break token in the Knight Pool allows the attacking Knight to turn 1 Potential symbol into 1 Power.<hr><font size=\"+2\">破甲X:</font><br>在第二技能窗口，向骑士池中加入X枚破甲指示物。在强度投掷分步中，骑士池中每有1个破甲指示物，正在攻击的骑士可将1个潜力图标转化为1个强度。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Bypass",
+      "en": "Bypass",
+      "zh": "穿身",
+      "definitionHtml": "<font size=\"+2\">Bypass:</font><br>A Knight or Monster may move through spaces occupied by other Knights or Monsters, respectively. You cannot end your voluntary movement on a space occupied by another miniature.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Bypass'>Advanced Bypass</a><br><a href='dic://Superior%20Bypass'>Superior Bypass</a><hr><font size=\"+2\">穿身:</font><br>拥有此技能的骑士/怪物可对应穿过其他骑士/怪物移动。但你不可以在其他模型所占的格子结束主动移动。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://高级穿身'>高级穿身</a><br><a href='dic://超级穿身'>超级穿身</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Cantrip",
+      "en": "Cantrip",
+      "zh": "戏法X",
+      "definitionHtml": "<font size=\"+2\">Cantrip:</font><br>During the second ability window, place X Cantrip tokens in the Knight Pool. When declaring an Attack, change each Cantrip in the Knight Pool to either an Opening or Break token.<hr><font size=\"+2\">戏法X:</font><br>在第二技能窗口，向骑士池中加入X枚戏法指示物。在宣布攻击时，将骑士池中每1枚戏法指示物分别视作机会或破甲指示物。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Chasm",
+      "en": "Chasm",
+      "zh": "沟壑",
+      "definitionHtml": "<font size=\"+2\">Chasm:</font><br>Terrain keyword. Knights cannot voluntarily move through Chasm spaces. If a Knight ends their movement on a Chasm space, they die. If they are pushed back, dragged or pulled through a Chasm space, they die. If a Chasm tile is placed under a Knight, they die. Note: Knights do not die from moving over a Chasm during Knockback, unless they end their movement on that space.<hr><font size=\"+2\">沟壑:</font><br>你不可主动移动进沟壑板块的格子。如果骑士在沟壑板块结束移动，骑士死亡。如果骑士被顶推或拉近至沟壑格子，骑士死亡。如果沟壑板块被放置在骑士上，骑士死亡。注意被击飞的骑士只有在沟壑结束受迫移动时才会死亡，否则就直接飞过沟壑了。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Choke",
+      "en": "Choke",
+      "zh": "窒息X",
+      "definitionHtml": "<font size=\"+2\">Choke:</font><br>If you do not have the Choked Condition card, gain it and place a black acrylic cube on 0 on the Heat track: this is your Choke Limit. Then increase the Choke Limit by X-1. Your Heat can never go below this limit. If you already had the Choked Condition card, increase the Choke Limit by X. Then, if your Heat is below the Choke Limit, gain enough Heat so that it is above the Choke Limit.<hr><font size=\"+2\">窒息X:</font><br>如果你没有窒息状态卡，获取一张。然后在你的烈度轨0的位置放置一个黑色亚克力方块，黑色亚克力方块上方的一格就代表你的窒息下限数值。然后将窒息下限提高“X-1”（例如当你受到窒息1时，你的窒息下限就会等于1）；如果你已拥有窒息状态卡，将窒息下限提高“X”。上述两个操作之一之后，如果你的烈度落到了窒息下限以下（即黑色亚克力方块压覆或超过了透明亚克力方块），将当前烈度提高到窒息下限（例如当你没有窒息状态卡且烈度为0时，受到窒息1将迫使你的烈度提高到1）。记住，你的烈度永远都不能低于窒息下限（即窒息会压缩你的“绿条”）。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Clash Scavenge",
+      "en": "Clash Scavenge",
+      "zh": "冲突搜刮X",
+      "definitionHtml": "<font size=\"+2\">Clash <a href='dic://Scavenge'>Scavenge</a>:</font><br>Add X Exhibition or Full Clash Loot cards to the Loot deck, depending on the last Clash you resolved. If there are no more Loot cards to add, ignore Scavenge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Consumable%20Scavenge'>Consumable Scavenge</a><br><a href='dic://Kingdom%20Scavenge'>Kingdom Scavenge</a><br><a href='dic://Scavenge'>Scavenge X</a><br><a href='dic://Upgrade%20Scavenge'>Upgrade Scavenge</a><hr><font size=\"+2\">冲突<a href='dic://搜刮X'>搜刮X</a>:</font><br>向战利品卡组加入X张完全冲突或初步冲突战利品卡（与触发此效果的冲突类型对应）。<br><br>相关词条/亚型 请查看:<br><a href='dic://消耗品搜刮X'>消耗品搜刮X</a><br><a href='dic://王国搜刮X'>王国搜刮X</a><br><a href='dic://搜刮X'>搜刮X</a><br><a href='dic://改装搜刮X'>改装搜刮X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Clockwork",
+      "en": "Clockwork",
+      "zh": "发条",
+      "definitionHtml": "<font size=\"+2\">Clockwork:</font><br>This keyword is irrelevant in the Principality of Stone and Sunken Kingdom. It will become relevant in future Kingdoms.<hr><font size=\"+2\">发条:</font><br>此关键词在巨石公国与沉没王国中没有用途，其将在未来的王国发挥作用。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Closing X",
+      "en": "Closing X",
+      "zh": "空挡X",
+      "definitionHtml": "<font size=\"+2\">Closing X:</font><br>During the second ability window, place X Closing tokens in the Knight Pool. During the Attack Roll step, each Closing token grants a re-roll of 1 Attack die and adds +1 to the result of each Attack die rolled during an Attack Roll.<hr><font size=\"+2\">空挡X:</font><br>在第二技能窗口，向骑士池中加入X 枚空挡指示物。在骑士攻击的命中投掷分步，骑士池中每有1 枚空挡指示物，给每枚命中骰的投掷结果+1，同时，骑士池中每有1 枚空挡指示物，攻击的骑士可重投1枚命中骰（无需其他费用）",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Commit",
+      "en": "Commit",
+      "zh": "负压",
+      "definitionHtml": "<font size=\"+2\">Commit:</font><br>To attack with this weapon, gain +1 Heat.<hr><font size=\"+2\">负压:</font><br>要使用此武器攻击，需获得+1烈度。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Consumable Scavenge",
+      "en": "Consumable Scavenge",
+      "zh": "消耗品搜刮X",
+      "definitionHtml": "<font size=\"+2\">Consumable <a href='dic://Scavenge'>Scavenge</a>:</font><br>Add X Consumable Gear Loot cards to the Loot deck. If there are no more Loot cards to add, ignore Scavenge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Clash%20Scavenge'>Clash Scavenge</a><br><a href='dic://Kingdom%20Scavenge'>Kingdom Scavenge</a><br><a href='dic://Scavenge'>Scavenge X</a><br><a href='dic://Upgrade%20Scavenge'>Upgrade Scavenge</a><hr><font size=\"+2\">消耗品<a href='dic://搜刮X'>搜刮X</a>:</font><br>向战利品卡组加入X张消耗品利品卡。<br><br>相关词条/亚型 请查看:<br><a href='dic://冲突搜刮X'>冲突搜刮X</a><br><a href='dic://王国搜刮X'>王国搜刮X</a><br><a href='dic://搜刮X'>搜刮X</a><br><a href='dic://改装搜刮X'>改装搜刮X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Cooldown",
+      "en": "Cooldown",
+      "zh": "冷却",
+      "definitionHtml": "<font size=\"+2\">Cooldown:</font><br>Place 1 random card from your hand into the Cooldown area.<hr><font size=\"+2\">冷却:</font><br>将你的一张随机手牌放到冷却位置。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Crash",
+      "en": "Crash",
+      "zh": "冲撞",
+      "definitionHtml": "<font size=\"+2\">Crash:</font><br>The Knight subjected to Crash loses 1 Vigor and suffers Knockdown. A Knight suffers Crash each time a non-Mob Monster moves onto or through their space, as well as when any effect forces them to move onto an Obstacle or places an Obstacle on them.<hr><font size=\"+2\">冲撞:</font><br>受到冲撞的骑士会失去-1活力并被<a href='dic://击倒'>击倒</a>。当怪物移动时进入或穿过被骑士占据的格子时，该骑士会受到冲撞；当骑士被任何效果受迫移动进<a href='dic://障碍'>障碍</a>地形时，或当一块<a href='dic://障碍'>障碍</a>地形板块放置到被骑士占据的格子时，骑士也会受到冲撞。",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Cumbersome",
+      "en": "Cumbersome",
+      "zh": "沉重",
+      "definitionHtml": "<font size=\"+2\">Cumbersome:</font><br>During the second ability window, if you successfully wounded with this weapon, exhaust it. Treat it as a voluntary exhaust.<hr><font size=\"+2\">沉重:</font><br>如使用此武器攻击对怪物造成损伤，在第二技能窗口，将此武器卡横置。该横置视作主动横置。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Daze",
+      "en": "Daze",
+      "zh": "眩目",
+      "definitionHtml": "<font size=\"+2\">Daze:</font><br>During either the first or second ability window, if adjacent, you may turn the Monster (without moving it) in a way that would make it face directly away from you.<hr><font size=\"+2\">眩目:</font><br>在第一或第二技能窗口，如果你与敌人相邻，则可使敌人转至使你在其后方的朝向（但不要移动敌人）",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Deadly",
+      "en": "Deadly",
+      "zh": "致命",
+      "definitionHtml": "<font size=\"+2\">Deadly:</font><br>During an Attack Roll, gain a Crit Chance on a natural 9–10 result.<hr><font size=\"+2\">致命:</font><br>在命中投掷中，将1枚普通命中骰替换为额外1枚关键骰。如果仅投掷1枚（关键）骰子，则改为在骰面9-10获得关键机会。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Defy",
+      "en": "Defy",
+      "zh": "违抗",
+      "definitionHtml": "<font size=\"+2\">Defy:</font><br>While performing a Virtue test caused by a Judgement, treat 1 hit as evaded.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Defy'>Advanced Defy</a><br><a href='dic://Superior%20Defy'>Superior Defy</a><hr><font size=\"+2\">违抗:</font><br>在执行由定断Judgement攻击造成的检定时，将1个命中视作闪避（大概就是对抗定断版的<a href='dic://格挡'>格挡</a>）。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://高级违抗'>高级违抗</a><br><a href='dic://超级违抗'>超级违抗</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Delay",
+      "en": "Delay",
+      "zh": "延迟",
+      "definitionHtml": "<font size=\"+2\">Delay:</font><br>Place 1 random card from your Hand into the Delay Area.<hr><font size=\"+2\">延迟:</font><br>将你的一张随机手牌放到延迟区。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Deploy",
+      "en": "Deploy",
+      "zh": "部署X",
+      "definitionHtml": "<font size=\"+2\">Deploy:</font><br>During Clash Setup, at the start of the Monster Positioning step, you may move X spaces.<hr><font size=\"+2\">部署X:</font><br>在冲突设置时，在怪物放置步骤，你可移动至多X格。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Destructible",
+      "en": "Destructible",
+      "zh": "可摧毁",
+      "definitionHtml": "<font size=\"+2\">Destructible:</font><br>Terrain keyword. When a miniature is involuntarily moved onto this tile, or when a Boss Monster moves onto this tile, the tile is destroyed. Note: a knocked-back Knight ignores non-Obstacle Terrain tiles they move through, so they will not destroy such a Destructible tile unless they end their movement on it.<hr><font size=\"+2\">可摧毁:</font><br>当骑士被迫移动进此板块时，或当怪物移动进此板块时，此板块会被摧毁。注意如果骑士被击飞，其将忽略穿过的非<a href='dic://障碍'>障碍</a>地形。因此，除非其在可摧毁非<a href='dic://障碍'>障碍</a>地形上结束移动，可摧毁非<a href='dic://障碍'>障碍</a>地形不会被摧毁。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Devote",
+      "en": "Devote",
+      "zh": "虔信",
+      "definitionHtml": "<font size=\"+2\">Devote:</font><br>Gain a Devotion token.<hr><font size=\"+2\">虔信:</font><br>获得一枚虔信指示物。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Devote to",
+      "en": "Devote to",
+      "zh": "虔信于X",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Devote'>Devote</a> to:</font><br>Gain the Saint X card if you don’t have it already. Then, gain a Devotion token.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Immune%20to'>Immune to X</a><hr><font size=\"+2\"><a href='dic://虔信'>虔信</a>于X:</font><br>获得圣徒X卡（如果你尚未拥有圣徒X卡）。然后，获得一枚<a href='dic://虔信'>虔信</a>指示物.<br><br>相关词条/亚型 请查看:<br><a href='dic://免疫X'>免疫X</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Difficult Terrain",
+      "en": "Difficult Terrain",
+      "zh": "困难地形",
+      "definitionHtml": "<font size=\"+2\">Difficult Terrain:</font><br>Terrain keyword. If, during voluntary movement, a Knight moves through any number of Difficult Terrain tile spaces, they move one less space. Monsters on Difficult Terrain have -1 AT.<hr><font size=\"+2\">困难地形:</font><br>地形关键词。如果，在主动移动过程中，骑士移动路径上存在至少一格困难地形格子，则该次主动移动需比原本少移动1格。占据有困难地形格子的怪物获得-1AT。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Discard",
+      "en": "Discard",
+      "zh": "弃置",
+      "definitionHtml": "<font size=\"+2\">Discard:</font><br>Place 1 random card from your Hand into the Discard area.<hr><font size=\"+2\">弃置:</font><br>从手牌随机弃置1张卡至你骑士面板的弃置位置。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Displace",
+      "en": "Displace",
+      "zh": "位移",
+      "definitionHtml": "<font size=\"+2\">Displace:</font><br>Move the Displaced Target to an empty space adjacent to its current position. If a Knight is Displaced and there is no space they can legally be Displaced to, they die instead. If a Monster is Displaced and there is no space it can legally be Displaced to, place it on the closest empty space instead.<hr><font size=\"+2\">位移:</font><br>将被位移的目标移动到与其当前格子相邻的一个空格子。如果骑士在受到位移时，无任何合规的格子可移动，直接死亡。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Diversion",
+      "en": "Diversion",
+      "zh": "扰乱",
+      "definitionHtml": "<font size=\"+2\">Diversion:</font><br>During the second ability window, place a Diversion token in the Knight Pool. An attacking Knight may use a Diversion token from the Knight Pool to ignore Fail Responses until the end of their Attack. Improved Diversion instead allows the Knight to ignore all Responses until the end of their Attack.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Improved%20Diversion'>Improved Diversion</a><hr><font size=\"+2\">扰乱:</font><br>在第二技能窗口，向骑士池中加入1枚扰乱指示物。执行攻击的骑士可使用1枚扰乱指示物来忽略怪物的Fail响应（效果持续到其攻击结束）。<br><br>相关词条/亚型 请查看:<br><a href='dic://高级扰乱'>高级扰乱</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Dodge",
+      "en": "Dodge",
+      "zh": "躲避",
+      "definitionHtml": "<font size=\"+2\">Dodge:</font><br>When you are about to resolve an Evasion Roll, gain +1 Evasion bonus for this roll. Lesser Dodge grants +1 only if you have no other Evasion bonuses; Advanced Dodge grants +2 instead; Superior Dodge grants +3 instead.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Dodge'>Advanced Dodge</a><br><a href='dic://Lesser%20Dodge'>Lesser Dodge</a><br><a href='dic://Superior%20Dodge'>Superior Dodge</a><hr><font size=\"+2\">躲避:</font><br>当你要执行一次闪避投掷时，该投掷获得+1 闪避加成。可能的亚型。<br><br>相关词条/亚型 请查看:<br><a href='dic://高级躲避'>高级躲避</a><br><a href='dic://次级躲避'>次级躲避</a><br><a href='dic://超级躲避'>超级躲避</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Doomed",
+      "en": "Doomed",
+      "zh": "厄运",
+      "definitionHtml": "<font size=\"+2\">Doomed:</font><br>During this Monster Attack, Knights cannot re-roll the Evasion Roll or Judgement test using Heat.<hr><font size=\"+2\">厄运:</font><br>在怪物攻击中，骑士不可使用烈度在闪避投掷与定断检定中重投。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Drag X",
+      "en": "Drag X",
+      "zh": "拖拽X",
+      "definitionHtml": "<font size=\"+2\">Drag X:</font><br>If the target is adjacent, the source moves X spaces directly away from the target. Then move the target miniature X spaces along the path the source took. At the end of the Drag, turn the source to face the affected miniature.<br><br>Other miniatures: If the source is a non-Mob Monster, the dragged Knight can move through spaces occupied by other miniatures. If a Knight ends involuntary movement on a space with another miniature, the other miniature is Displaced. If the source is a Mob Monster or a Knight, stop resolving Drag if it is about to enter a space occupied by another miniature.<br><br>Terrain: The affected miniature must resolve the effects of all Terrain tiles it moves through.<br><br>Destructible Obstacles: If a Knight is about to be dragged into a Destructible Obstacle (such as a Column), remove the Terrain tile from the Clash Board, the Knight suffers Crash, then continue the Drag.<br><br>Indestructible Obstacles: If a Knight is about to be dragged into an Indestructible Obstacle, it suffers Crash and the Drag stops.<br><br>Knight Timing: A Knight may use Drag X during either the first or second ability window.<br><br>Drag toward: Instead of moving straight away from the target, the source moves toward and past the specified space along the shortest path, until the Target can enter the specified space or up to the Drag value. Then move the Target along the path the source took until adjacent to the source.<hr><font size=\"+2\">拖拽X:</font><br>目标与来源相邻时，来源向远离目标方向直线移动X格，目标沿同样路径移动X格，来源转向目标。首领拖拽骑士可穿过其他模型，结束于其他模型格子则将其位移；杂兵拖拽时来源要进入其他模型格子则结束。目标结算沿途地形：进入可摧毁障碍时移除障碍、受到冲撞并继续；遇不可摧毁障碍时受到冲撞，沿边缘向怪物按最短路径继续。骑士可在攻击第一或第二技能窗口使用。向指定位置拖拽时，来源沿最短路径到指定位置，再保持方向移动一格，目标沿同样路径移动到指定位置。<br><br>详见规则书文本框。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Dwell",
+      "en": "Dwell",
+      "zh": "沼栖",
+      "definitionHtml": "<font size=\"+2\">Dwell:</font><br>Sunken Kingdom keyword. Move the Monster miniature to the closest unoccupied space on a Swamp Terrain tile.<hr><font size=\"+2\">沼栖:</font><br>沉没王国关键词. 将怪物模型移动到最近的未被占据的沼泽地形板块格子上。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Envenomed X",
+      "en": "Envenomed X",
+      "zh": "淬毒X",
+      "definitionHtml": "<font size=\"+2\">Envenomed X:</font><br>During the second ability window, if you dealt a Wound, place X Break tokens in the Knight Pool. Then, for each 1 Power above the AT of the wounded BP card, place 1 additional Break token in the Knight Pool, up to X additional tokens.<hr><font size=\"+2\">淬毒X:</font><br>若你的攻击成功造伤，在第二技能窗口，向骑士池中放入X 枚破甲指示物。然后，如果本次攻击你的强度比BP的 高1点或更多，则你可再额外向骑士池中放入至多X枚破甲指示物，且此枚数不可超过上述强度比AT高出的数值。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Escalate X",
+      "en": "Escalate X",
+      "zh": "晋升X",
+      "definitionHtml": "<font size=\"+2\">Escalate X:</font><br>Escalate X lowest level AI cards (remove each one from the AI deck and shuffle in a card one level higher), one at a time. Then do the same for the BP deck. Do not look at the removed cards.<hr><font size=\"+2\">晋升X:</font><br>晋升X张最低阶BP卡（移除1张最低阶，然后再洗入1张高一阶BP），1张接1张地操作，之后再对AI卡组执行同样次数的晋升操作。不要查看移除的BP/AI卡。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Falsity",
+      "en": "Falsity",
+      "zh": "虚晃",
+      "definitionHtml": "<font size=\"+2\">Falsity:</font><br>During the Attack Roll step, you may re-roll your Crit die without gaining Heat. If you re-roll your Crit die while it is already a hit, immediately Zeal 1.<hr><font size=\"+2\">虚晃:</font><br>在命中投掷分步，你可重投你的关键骰（不需要获得烈度）。如果，你重投的是已投出命中的关键骰，立刻狂热1（在第二技能窗口，向你的骑士面板上放置1枚狂热指示物）",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Fire X",
+      "en": "Fire X",
+      "zh": "火焰X",
+      "definitionHtml": "<font size=\"+2\">Fire X:</font><br>During the second ability window, place X Fire tokens in the Knight Pool. During the Power Roll step, each Fire token in the Knight Pool allows the attacking Knight to turn 1 Potential symbol into 1 Power. You may use other tokens to turn Potential into Power first, but if you cannot, you must use as many Fire tokens from the Pool as possible. During the Clear the Knight Pool step, leave all but one unused Fire token in the Knight Pool: remove the used tokens and one additional unused Fire token.<hr><font size=\"+2\">火焰X:</font><br>在第二技能窗口，向骑士池中加入X枚火焰指示物。在强度投掷分步，骑士池中每有1 个火焰指示物，正在攻击的骑士能将1 个潜力图标转化为1 个强度。你必须尽可能使用火焰指示物（但可先使用其他指示物）。在清理骑士池步骤，移除“所有使用的火焰指示物外加1枚未使用火焰指示物”，剩余火焰指示物予以保留。",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Fleisch",
+      "en": "Fleisch",
+      "zh": "肉肉X",
+      "definitionHtml": "<font size=\"+2\">Fleisch:</font><br>During the second ability window, place X Fleisch tokens in the Knight Pool.<hr><font size=\"+2\">肉肉X:</font><br>在第二技能窗口，向骑士池中加入X枚肉肉指示物。",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Forced Vault",
+      "en": "Forced Vault",
+      "zh": "受迫撑跳",
+      "definitionHtml": "<font size=\"+2\">Forced <a href='dic://Vault'>Vault</a>:</font><br>If the source is adjacent to the target, place the affected miniature on a space in a straight line from the source, on the opposite side of the source and adjacent to it. Treat this as involuntary movement. If a Knight would have to end this movement outside the Board Edge or on an Indestructible Obstacle Terrain tile, they die instead. If a Monster would have to end this movement outside the Board Edge or on an Indestructible Obstacle Terrain tile, it is Displaced to the closest available space.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Vault'>Vault</a><hr><font size=\"+2\">受迫<a href='dic://撑跳'>撑跳</a>:</font><br>如果你与怪物相邻，将你的模型直接放在指向怪物的直线上，且位于相对于怪物模型对侧的与怪物相邻的一个空格子。此操作视为受迫移动，如果骑士结束受迫移动的位置在版边以外或是在<a href='dic://不可摧毁'>不可摧毁</a><a href='dic://障碍'>障碍</a>地形板块上，改为骑士死亡。如果怪物结束受迫移动的位置在版边以外或是在<a href='dic://不可摧毁'>不可摧毁</a><a href='dic://障碍'>障碍</a>地形板块上，怪物被<a href='dic://位移'>位移</a>至结束位置最近的可移动进格子上。<br><br>相关词条/亚型 请查看:<br><a href='dic://撑跳'>撑跳</a>",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Fortify X",
+      "en": "Fortify X",
+      "zh": "强化X",
+      "definitionHtml": "<font size=\"+2\">Fortify X:</font><br>If you do not have maximum Vigor, gain X Vigor. If you have maximum Vigor, place a red cube on X on the Vigor track: it becomes your additional Vigor. When you would lose Vigor, lose your additional Vigor first, counting it down like a secondary track.<hr><font size=\"+2\">强化X:</font><br>如果你的活力不是最大值，获得+X活力。如果你的活力是最大值，在你的活力轨的X上再放置一枚红方块，作为你额外活力的记录，当你失去活力时，优先失去该额外活力（理解为第二条活力轨，但物理配件上用同一条轨道）",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Gangup",
+      "en": "Gangup",
+      "zh": "包围X",
+      "definitionHtml": "<font size=\"+2\">Gangup:</font><br>Move up to X spaces toward the Target. Then move the Targeted Knight the remaining number of spaces, ignoring the source, toward another closest Monster along the shortest path, or until adjacent. Treat this as involuntary movement. If the Target is already adjacent to another Monster, they suffer Knockdown instead of being moved. Afterward, the source always moves adjacent to the Target. If the Target would end this movement on a space occupied by the source, the source is Displaced to the previous space the Knight moved through.<hr><font size=\"+2\">包围X:</font><br>向目标移动最多X格或直到相邻。若目标已与另一只怪物相邻，目标受到击倒；若仅与包围来源相邻，目标沿最短路径向最近的另一只怪物受迫移动剩余格数或直到相邻，必要时穿过来源。来源随后保持或移动到与目标相邻；若目标在来源格子结束受迫移动，将来源位移至目标最后一步前的格子。<br><br>详见规则书文本框。",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Greater Pass",
+      "en": "Greater Pass",
+      "zh": "高级接力X",
+      "definitionHtml": "<font size=\"+2\">Greater <a href='dic://Pass'>Pass</a>:</font><br>During the Clear the Knight Pool step, choose up to X Knight tokens to remain in the Knight Pool, except Sunder and Power tokens.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Pass'>Pass</a><hr><font size=\"+2\">高级<a href='dic://接力X'>接力X</a>:</font><br>在清理骑士池分步，选择至多X枚协力指示物保留在骑士池中，但是无法让断破、 强度指示物保留。<br><br>相关词条/亚型 请查看:<br><a href='dic://接力X'>接力X</a>",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Growth",
+      "en": "Growth",
+      "zh": "生长",
+      "definitionHtml": "<font size=\"+2\">Growth:</font><br>This keyword is irrelevant in the Principality of Stone and Sunken Kingdom. It will become relevant in future Kingdoms.<hr><font size=\"+2\">生长:</font><br>此关键词在巨石公国与沉没王国中没有用途，其将在未来的王国发挥作用。.",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Guard",
+      "en": "Guard",
+      "zh": "防守X",
+      "definitionHtml": "<font size=\"+2\">Guard:</font><br>Before re-rolling Evasion dice, you may add +X to the result, spread between any of the Evasion dice. You cannot re-roll those dice.<hr><font size=\"+2\">防守X:</font><br>在闪避投掷中，你重投闪避骰之前，你可将合计X的加值分配至任意枚闪避骰子上。但是，本分步接下来分配有来自防守X关键词的闪避骰不可被重投。",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Heal",
+      "en": "Heal",
+      "zh": "回生",
+      "definitionHtml": "<font size=\"+2\">Heal:</font><br>Boss Clash: Take the top BP card from the Wound Stack and remove it from the Clash. It does not count as a Wound.<br><br>Mob Clash: Take the top BP card from the Wound Stack and place it in the leftmost empty space of the Mob track. Take the corresponding Mob miniature and place it adjacent to the source of this Heal, or in the closest unoccupied space, facing the most Knights. If the Mob track is full or there are no more miniatures to place, discard that card instead and ignore miniature placement.<hr><font size=\"+2\">回生:</font><br>·首领冲突：将损伤堆叠顶部的一张卡从本场战斗中暂时移除，之后该卡不再计入损伤。<br>·杂兵冲突：拿取损伤堆叠顶部的 BP 卡，将其放在杂兵轨最左侧空位上。然后拿出一个杂兵模型配上相应数字底座环，放到距回生效果来源最近的空格上，朝最多骑士方向。在上述操作中，若发现杂兵轨已满，则改为<a href='dic://弃置'>弃置</a>拿取的 BP 卡，并忽略后续操作。",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Heartseeker",
+      "en": "Heartseeker",
+      "zh": "穿心",
+      "definitionHtml": "<font size=\"+2\">Heartseeker:</font><br>During the Draw BP card step of the Attack, you may look at the top two BP cards and choose which one to attack. Shuffle the other card back into the deck. Soulseeker lets you look at the top three BP cards, choose one and shuffle the other two back into the deck.<hr><font size=\"+2\">穿心:</font><br>在攻击的抽取BP卡分步，你可查看BP卡组顶部2张BP卡，然后选择其中1张攻击，并把另一张洗回BP卡组。可能的亚型",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Herd",
+      "en": "Herd",
+      "zh": "聚拢X",
+      "definitionHtml": "<font size=\"+2\">Herd:</font><br>Move up to X spaces toward the Target. Then move the Targeted Knight the remaining number of spaces, ignoring the source, toward another closest Knight along the shortest path, or until adjacent. Treat this as involuntary movement. If the Target is already adjacent to another Knight, they suffer Knockdown instead of being moved. Afterward, the source always moves adjacent to the Target. If the Target would end this movement on a space occupied by the source, the source is Displaced to the previous space the Knight moved through.<hr><font size=\"+2\">聚拢X:</font><br>向目标移动最多X格或直到相邻。若目标已与另一名骑士相邻，目标受到击倒；若仅与聚拢来源相邻，目标沿最短路径向最近的另一名骑士受迫移动剩余格数或直到相邻，必要时穿过来源。来源随后保持或移动到与目标相邻；若目标在来源格子结束受迫移动，将来源位移至目标最后一步前的格子。<br><br>详见规则书文本框。",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Hide",
+      "en": "Hide",
+      "zh": "隐藏",
+      "definitionHtml": "<font size=\"+2\">Hide:</font><br>If you are not in front of a Monster, you may activate this ability at the end of your turn to become Hidden. If you have the Priority Target token, pass it to the Knight with the highest Passion other than you. While Hidden, you have +1 Evasion and +1 Precision. You stop being Hidden if you move in front of a Monster, gain the Priority Target token, after the second ability window of your Attack, or at the end of your next turn. Place a Generic token on the game element granting Hide as a reminder.<hr><font size=\"+2\">隐藏:</font><br>如果你不位于怪物的前方，可在你的回合结束时激活此技能来进入隐藏状态。此时，如果你拥有  指示物，将其递给战意最高的其他骑士。只要你还处于隐藏状态，+1闪避与+1精度。当你在怪物前方进行移动、你获得了 指示物、在你攻击的第二技能窗口之后、在你的下一回合结束时，结束隐藏状态。在隐藏效果来源上放置通用指示物来作为提醒。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Hope X",
+      "en": "Hope X",
+      "zh": "希望X",
+      "definitionHtml": "<font size=\"+2\">Hope X:</font><br>During the second ability window, place X Hope tokens in the Knight Pool. During the Power Roll step, each Hope token in the Knight Pool allows the attacking Knight to turn 1 Potential or Hope symbol into 1 Power.<hr><font size=\"+2\">希望X:</font><br>在第二技能窗口，向骑士池中加入X枚希望指示物。在强度投掷分步中，骑士池中每有1枚希望指示物，正在攻击的骑士可将1个潜力或希望图标转化为1个强度",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Hug",
+      "en": "Hug",
+      "zh": "游身X",
+      "definitionHtml": "<font size=\"+2\">Hug:</font><br>If adjacent to a Monster, during any ability window move up to X spaces cardinally or diagonally. Each space you move to must be unoccupied and adjacent to a Monster. You cannot move through a corner between two occupied spaces. If you perform Hug in the first ability window, your movement cannot result in your target being outside your weapon&#x27;s effective range.<hr><font size=\"+2\">游身X:</font><br>与怪物相邻时，在第一或第二技能窗口沿正交或斜角移动至多X格。路径每格须未被占据且与怪物相邻；斜角方向两侧的相邻格均被占据时不可沿该斜角移动。第一技能窗口使用时，移动不能使目标脱离启用武器的有效射程。<br><br>详见规则书文本框。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Immune to X",
+      "en": "Immune to X",
+      "zh": "免疫X",
+      "definitionHtml": "<font size=\"+2\">Immune to X:</font><br>You may ignore the effects of the corresponding game element. Types include immunity to Bane, Body Condition cards, Mind Condition cards and Fear.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Devote%20to'>Devote to</a><hr><font size=\"+2\">免疫X:</font><br>你可忽略X这类游戏要素的效果. 可能的类型<br><br>相关词条/亚型 请查看:<br><a href='dic://虔信于X'>虔信于X</a>",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Immune to Bane",
+      "en": "Immune to Bane",
+      "zh": "免疫灾祸",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Immune%20to'>Immune to</a> <a href='dic://Bane'>Bane</a>:</font><br>Ignore all Bane tokens you have. You cannot gain Bane tokens.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Bane'>Bane</a><hr><font size=\"+2\">免疫灾祸:</font><br>忽略你拥有的所有灾祸指示物，且你不会获得灾祸指示物。<br><br>相关词条/亚型 请查看:<br><a href='dic://灾祸X'>灾祸X</a>",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Immune to Body Condition cards",
+      "en": "Immune to Body Condition cards",
+      "zh": "免疫身体状态卡",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Immune%20to'>Immune to</a> Body Condition cards:</font><br>Ignore the effects of Body Condition cards. You cannot gain Body Condition cards.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Immune%20to%20Mind%20Condition%20cards'>Immune to Mind Condition cards</a><hr><font size=\"+2\">免疫身体状态卡:</font><br>忽略身体状态卡的效果，且你不会获得身体状态卡。<br><br>相关词条/亚型 请查看:<br><a href='dic://免疫精神状态卡'>免疫精神状态卡</a>",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Immune to Fear",
+      "en": "Immune to Fear",
+      "zh": "免疫恐慌",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Immune%20to'>Immune to</a> Fear:</font><br>Ignore the effects of the Fear Condition card. You cannot gain the Fear Condition card.<hr><font size=\"+2\">免疫恐慌:</font><br>忽略恐慌状态卡的效果，且你不会获得恐慌状态卡。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Immune to Mind Condition cards",
+      "en": "Immune to Mind Condition cards",
+      "zh": "免疫精神状态卡",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Immune%20to'>Immune to</a> Mind Condition cards:</font><br>Ignore the effects of Mind Condition cards. You cannot gain Mind Condition cards.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Immune%20to%20Body%20Condition%20cards'>Immune to Body Condition cards</a><hr><font size=\"+2\">免疫精神状态卡:</font><br>忽略精神状态卡的效果，且你不会获得精神状态卡。<br><br>相关词条/亚型 请查看:<br><a href='dic://免疫身体状态卡'>免疫身体状态卡</a>",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Improved Diversion",
+      "en": "Improved Diversion",
+      "zh": "高级扰乱",
+      "definitionHtml": "<font size=\"+2\">Improved <a href='dic://Diversion'>Diversion</a>:</font><br>During the second ability window, place an Improved Diversion token in the Knight Pool. An attacking Knight may use an Improved Diversion token from the Knight Pool to ignore all Responses until the end of their Attack.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Diversion'>Diversion</a><hr><font size=\"+2\">高级<a href='dic://扰乱'>扰乱</a>:</font><br>在第二技能窗口，向骑士池中加入1高级<a href='dic://扰乱'>扰乱</a>枚指示物。执行攻击的骑士可使用1枚高级<a href='dic://扰乱'>扰乱</a>指示物来忽略怪物的所有响应（效果持续到其攻击结束）.<br><br>相关词条/亚型 请查看:<br><a href='dic://扰乱'>扰乱</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Improved Rush",
+      "en": "Improved Rush",
+      "zh": "高级冲锋",
+      "definitionHtml": "<font size=\"+2\">Improved <a href='dic://Rush'>Rush</a>:</font><br>Move with +2 Speed and perform a Melee or Reach Attack with Auto-break 1 and +1 Precision. You must move at least 3 spaces and reach your target via the shortest possible path. Stop when in the effective range of your active Weapon.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Rush'>Rush</a><hr><font size=\"+2\">高级<a href='dic://冲锋'>冲锋</a>:</font><br>以 +2移速移动，然后以自带自动破甲1与+1精度执行一次近战/延伸攻击。你必须移动至少3格，且沿最短路径使目标进入有效射程。<br><br>相关词条/亚型 请查看:<br><a href='dic://冲锋'>冲锋</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Indestructible",
+      "en": "Indestructible",
+      "zh": "不可摧毁",
+      "definitionHtml": "<font size=\"+2\">Indestructible:</font><br>Terrain keyword. This Terrain tile cannot be destroyed in any way. It invalidates Terrain placement on top of it.<hr><font size=\"+2\">不<a href='dic://可摧毁'>可摧毁</a>:</font><br>此板块不会被任何方式摧毁。不能在其上再放置任何其他地形板块。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Inspire X",
+      "en": "Inspire X",
+      "zh": "振奋X",
+      "definitionHtml": "<font size=\"+2\">Inspire X:</font><br>During the first ability window, choose X knocked down Knights. They may immediately stand up.<hr><font size=\"+2\">振奋X:</font><br>在第一技能窗口，选择至多X架倒地的骑士，其可立刻站起。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Jump",
+      "en": "Jump",
+      "zh": "跳跃",
+      "definitionHtml": "<font size=\"+2\">Jump:</font><br>Activate at the start of movement, whether voluntary or not. Until the end of this movement, you may ignore a single space of a Terrain tile, including an Obstacle. This ability cannot be used while knocked down, even if passive. Advanced Jump lets you ignore up to 2 adjacent spaces of a single Terrain tile instead, including Obstacles, and likewise cannot be used while knocked down.<hr><font size=\"+2\">跳跃:</font><br>在移动开始时激活此技能（不论是主动移动还是受迫移动），直到本次移动结束，你可忽略移动路径上地形板块的1个格子（包括<a href='dic://障碍'>障碍</a>地形）。此技能不可以在倒地时使用，哪怕为常驻/被动技能都不可以。可能的亚型",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Kingdom Scavenge",
+      "en": "Kingdom Scavenge",
+      "zh": "王国搜刮X",
+      "definitionHtml": "<font size=\"+2\">Kingdom <a href='dic://Scavenge'>Scavenge</a>:</font><br>Add X Kingdom Gear Loot cards to the Loot deck. If there are no more Loot cards to add, ignore Scavenge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Clash%20Scavenge'>Clash Scavenge</a><br><a href='dic://Consumable%20Scavenge'>Consumable Scavenge</a><br><a href='dic://Scavenge'>Scavenge X</a><br><a href='dic://Upgrade%20Scavenge'>Upgrade Scavenge</a><hr><font size=\"+2\">王国<a href='dic://搜刮X'>搜刮X</a>:</font><br>向战利品卡组加入X张王国装备战利品卡。<br><br>相关词条/亚型 请查看:<br><a href='dic://冲突搜刮X'>冲突搜刮X</a><br><a href='dic://消耗品搜刮X'>消耗品搜刮X</a><br><a href='dic://搜刮X'>搜刮X</a><br><a href='dic://改装搜刮X'>改装搜刮X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Knockback X",
+      "en": "Knockback X",
+      "zh": "击飞X",
+      "definitionHtml": "<font size=\"+2\">Knockback X:</font><br>Move the affected miniature up to X spaces directly away from the source of Knockback in a straight line, or in the specified direction for directional Knockback.<br><br>If caused by an Attack, Knockback affects the Target only within the Attack&#x27;s effective range: adjacency for normal Attacks, the designated zone for Zone Attacks, or within X spaces for Ranged X Attacks. If caused by a Knight, it affects the Target only if adjacent or within the effective range of the Active Weapon. If caused by a Monster Response, it affects the Attacker only within adjacency.<br><br>Knocked-back Knights ignore Terrain tiles they move through except Obstacles. If a Knight would move through a Destructible Obstacle, stop the movement, remove the tile, place the Knight in its space, then the Knight suffers Crash. For an Indestructible Obstacle, stop in the adjacent space immediately before it, then suffer Crash.<br><br>Knocked-back Monsters can move through Terrain tiles and miniatures without hindrance. They destroy Destructible Terrain tiles they land on. Knocked-back Boss Monsters cause Crash and Unavoidable Knockback to Knights as normal.<br><br>At a Board Edge, continue along the edge away from the source, if possible.<br><br>Knockback to the side: Move perpendicularly to the normal Knockback line, in the direction that leads the target directly away from the source.<hr><font size=\"+2\">击飞X:</font><br>目标向远离来源的直线方向移动X格，或按效果指定方向移动。怪物攻击、骑士攻击造成的击飞分别要求目标仍在攻击或启用武器的有效射程内；怪物响应造成的击飞要求目标仍与怪物相邻。骑士忽略穿过的模型和非障碍地形；遇可摧毁障碍时在障碍前停止、移除障碍、移至原障碍格并受到冲撞；遇不可摧毁障碍时在障碍前停止并受到冲撞。怪物可穿过地形和模型，摧毁沿途可摧毁地形，并如正常移动般对受影响骑士造成冲撞和无可避免击飞。骑士可在攻击第二技能窗口使用。将穿过版边时沿版边继续，第一步尽可能远离来源。向一侧击飞按指定的垂直方向移动。<br><br>详见规则书文本框。",
+      "englishSourcePage": 84
+    },
+    {
+      "id": "Knockdown",
+      "en": "Knockdown",
+      "zh": "击倒",
+      "definitionHtml": "<font size=\"+2\">Knockdown:</font><br>Knockdown is a special Condition. When knocked down, put your miniature on its side and take a Knockdown (falling down) card. While you have this card, you cannot move voluntarily, perform actions, reactions or free actions, or use Gear abilities or Techniques, unless stated otherwise. At the end of your next turn, flip the card to the Knockdown (standing up) side. All Knights with a standing-up card stand up at the start of their next turn. If the card is discarded for any reason, stand up too.<hr><font size=\"+2\">击倒:</font><br>获得击倒（倒地）状态卡，然后将模型放倒。击倒状态遵循通用的状态规则。如果击倒的来源是敌人攻击，只有当你在攻击的有效<a href='dic://范围'>范围</a>（有效射程通常攻击为相邻，区域攻击为指定区域，远程X攻击为X格内，等等）时，才受到击倒；如果击倒的来源是响应，只有当你与怪物相邻时才受到击倒",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Leech",
+      "en": "Leech",
+      "zh": "血蛭",
+      "definitionHtml": "<font size=\"+2\">Leech:</font><br>This keyword is irrelevant in the Principality of Stone and Sunken Kingdom. It will become relevant in future Kingdoms.<hr><font size=\"+2\">血蛭:</font><br>此关键词在巨石公国与沉没王国中没有用途，其将在未来的王国发挥作用。.",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Lesser Dodge",
+      "en": "Lesser Dodge",
+      "zh": "次级躲避",
+      "definitionHtml": "<font size=\"+2\">Lesser <a href='dic://Dodge'>Dodge</a>:</font><br>When you are about to resolve an Evasion Roll and have no other Evasion bonuses, gain +1 Evasion bonus for this roll.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Dodge'>Advanced Dodge</a><br><a href='dic://Dodge'>Dodge</a><br><a href='dic://Superior%20Dodge'>Superior Dodge</a><hr><font size=\"+2\">次级<a href='dic://躲避'>躲避</a>:</font><br>当你要执行一次闪避投掷，且没任何闪避加成时，该投掷获得+1 闪避加成.<br><br>相关词条/亚型 请查看:<br><a href='dic://高级躲避'>高级躲避</a><br><a href='dic://躲避'>躲避</a><br><a href='dic://超级躲避'>超级躲避</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Lifeline",
+      "en": "Lifeline",
+      "zh": "救生绳",
+      "definitionHtml": "<font size=\"+2\">Lifeline:</font><br>When you are about to die from moving onto a Terrain tile&#x27;s space, Displace instead. Alternatively, when you are about to die from falling from a Boundless Board Edge, stop adjacent to it. This ability can be used even if knocked down or otherwise prohibited from using active abilities.<hr><font size=\"+2\">救生绳:</font><br>当你即将因移动进地形板块而死亡时，改为<a href='dic://位移'>位移</a>。类似地，当你即将因跌出<a href='dic://无边限'>无边限</a>版边而死亡时，改为在版边相邻格子停止移动。此技能即使是在被<a href='dic://击倒'>击倒</a>状态下或被禁止使用主动技能情况下也都可以使用。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Lumbering",
+      "en": "Lumbering",
+      "zh": "笨重",
+      "definitionHtml": "<font size=\"+2\">Lumbering:</font><br>Cannot be involuntarily moved.<hr><font size=\"+2\">笨重:</font><br>不会被受迫移动。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Magic",
+      "en": "Magic",
+      "zh": "魔力X",
+      "definitionHtml": "<font size=\"+2\">Magic:</font><br>During the second ability window, place X Magic tokens in the Knight Pool.<hr><font size=\"+2\">魔力X:</font><br>在第二技能窗口，向骑士池中加入X枚魔力指示物。.",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Monkey Business",
+      "en": "Monkey Business",
+      "zh": "猴戏X",
+      "definitionHtml": "<font size=\"+2\">Monkey Business:</font><br>Place Little Ser on X. If Monkey Business has no cost, you may use it at the beginning of your turn. X can be:<br><br>Board: Place Little Ser on the Clash Board. During an Encounter, place Little Ser on the Encounter Monster Board before the Knight Positioning step.<br><br>Knight: Place Little Ser on any Knight Board.<br><br>Monster: Place Little Ser on the Monster Sheet, or on an Encounter card during Encounters.<br><br>Exploration: Place Little Ser on the Exploration deck.<hr><font size=\"+2\">猴戏X:</font><br>将小爵士放到X要素上。如果一项猴戏技能没有费用，则你可在你的回合开始时使用该猴戏。X可以是",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Motivate X",
+      "en": "Motivate X",
+      "zh": "激励X",
+      "definitionHtml": "<font size=\"+2\">Motivate X:</font><br>During the second ability window, other Knights may move up to X spaces among them. For example, Motivate 3 allows one Knight to move 3 spaces, two Knights to move 2 and 1 spaces respectively, or three Knights to move 1 space each.<hr><font size=\"+2\">激励X:</font><br>在第二技能窗口，其他任意名骑士可合计移动至多X格。例如：激励3可以让一名骑士移动3格，让2名骑士中一名移动2格另一名移动1格，或是让3名骑士各移动1格。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Obscuring",
+      "en": "Obscuring",
+      "zh": "遮蔽",
+      "definitionHtml": "<font size=\"+2\">Obscuring:</font><br>Terrain keyword. This tile blocks Line of Sight.<hr><font size=\"+2\">遮蔽:</font><br>此板块会遮挡视线。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Obstacle",
+      "en": "Obstacle",
+      "zh": "障碍",
+      "definitionHtml": "<font size=\"+2\">Obstacle:</font><br>Terrain keyword. Knights cannot move through Obstacles. Many move-like abilities interact with Obstacles; see Knockback, Pushback, Drag and Pull.<hr><font size=\"+2\">障碍:</font><br>骑士不可穿过此板块移动。许多类移动技能与障碍地形会有互动。见的击飞、顶推和拉近关键词。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Opening X",
+      "en": "Opening X",
+      "zh": "机会X",
+      "definitionHtml": "<font size=\"+2\">Opening X:</font><br>During the second ability window, place X Opening tokens in the Knight Pool. During the Attack Roll step, each Opening token in the Knight Pool adds +1 to the result of each die.<hr><font size=\"+2\">机会X:</font><br>在第二技能窗口，向骑士池中加入X枚机会指示物。在骑士攻击的命中投掷分步，骑士池中每有1枚机会指示物，给每枚命中骰的投掷结果+1。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "Overbreak X",
+      "en": "Overbreak X",
+      "zh": "超破X",
+      "definitionHtml": "<font size=\"+2\">Overbreak X:</font><br>During the second ability window, if your Total Power exceeds AT by 1 or more, place X Break tokens in the Knight Pool.<hr><font size=\"+2\">超破X:</font><br>在第二技能窗口，如果本次攻击你的强度比BP 的 高1点或更多，向骑士池中放入X枚破甲指示物。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "OvercomeX+",
+      "en": "OvercomeX+",
+      "zh": "过线X+",
+      "definitionHtml": "<font size=\"+2\">OvercomeX+:</font><br>If you failed to deal a Wound but your Total Power was X or more, resolve the Overcome effect. If you dealt a Wound and your Total Power exceeds the AT value by X or more, resolve the Overcome effect.<hr><font size=\"+2\">过线X+:</font><br>如果你成功造成损伤，且攻击总强度超过 AT 值X点或更多，结算过线效果。如果你未能造成损伤，但攻击总强度大于等于X，结算过线效果。",
+      "englishSourcePage": 83
+    },
+    {
+      "id": "OverpowerX+",
+      "en": "OverpowerX+",
+      "zh": "压倒X+",
+      "definitionHtml": "<font size=\"+2\">OverpowerX+:</font><br>If you dealt a Wound and your Total Power exceeds the AT value by X or more, resolve the Overpower effect.<hr><font size=\"+2\">压倒X+:</font><br>如果你成功造成损伤，且攻击总强度超过 AT 值X点或更多，结算压倒效果。",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Parasitize",
+      "en": "Parasitize",
+      "zh": "寄生X",
+      "definitionHtml": "<font size=\"+2\">Parasitize:</font><br>Principality of Stone keyword. If you don’t have the Panzer Parasite Condition card, gain it. Then place X Generic tokens on the Panzer Parasite Condition card.<hr><font size=\"+2\">寄生X:</font><br>巨石公国关键词。如果你没有装甲寄生虫状态卡，获取一张。然后向卡上放置X枚通用指示物。",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Pass",
+      "en": "Pass",
+      "zh": "接力X",
+      "definitionHtml": "<font size=\"+2\">Pass:</font><br>During the Clear the Knight Pool step, choose up to X Knight tokens to remain in the Knight Pool. You can only choose Opening, Break, or Cantrip tokens.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Greater%20Pass'>Greater Pass</a><hr><font size=\"+2\">接力X:</font><br>在清理骑士池分步，选择至多合计X枚的机会、破甲与戏法指示物组合（其中每个都可为0枚）保留在骑士池<br><br>相关词条/亚型 请查看:<br><a href='dic://高级接力X'>高级接力X</a>",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Poison",
+      "en": "Poison",
+      "zh": "中毒X",
+      "definitionHtml": "<font size=\"+2\">Poison:</font><br>Sunken Kingdom keyword. If you don’t have the Poisoned Condition card, gain it. Then place X Generic tokens on the Poisoned Condition card (these are the Poison tokens).<hr><font size=\"+2\">中毒X:</font><br>沉没王国关键词。如果你没有中毒状态卡，获取一张。然后向卡上放置X枚通用指示物（来代表中毒指示物）。",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Poison Resilience",
+      "en": "Poison Resilience",
+      "zh": "毒抗X",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Poison'>Poison</a> Resilience:</font><br>Sunken Kingdom keyword. Ignore up to X Poison tokens from the Poisoned and Toxified Condition cards.<hr><font size=\"+2\">毒抗X:</font><br>沉没王国关键词. 忽略中毒Poisoned或毒发Toxified状态卡上的至多X枚中毒指示物。",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Power",
+      "en": "Power",
+      "zh": "强度X",
+      "definitionHtml": "<font size=\"+2\">Power:</font><br>During the second ability window, place X Power tokens in the Knight Pool. During the Power Roll step, each Power token in the Knight Pool adds 1 Power. You cannot use Greater Pass on this token.<hr><font size=\"+2\">强度X:</font><br>在第二技能窗口，向骑士池中加入X枚强度指示物。在攻击的强度投掷分步，骑士池中每有1 枚强度指示物，攻击的强度+1。你不能对强度指示物使用高级接力",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Power Re-roll X",
+      "en": "Power Re-roll X",
+      "zh": "强度重投X",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Power'>Power</a> Re-roll X:</font><br>During the Power Roll step of an Attack, you may re-roll up to X Power dice. Remember, you cannot re-roll Power dice using Heat.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Attack%20Re-roll'>Attack Re-roll X</a><hr><font size=\"+2\">强度重投X:</font><br>在一次攻击的强度投掷分步，你可最多重投X枚强度骰。记住，你不可使用 重投强度骰。<br><br>相关词条/亚型 请查看:<br><a href='dic://命中重投X'>命中重投X</a>",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Precise",
+      "en": "Precise",
+      "zh": "精准",
+      "definitionHtml": "<font size=\"+2\">Precise:</font><br>During the Draw a BP card step of the Attack, after you draw the card, you may target the top card of the discard pile instead. If you do, shuffle the card you drew into the BP deck.<hr><font size=\"+2\">精准:</font><br>在攻击的抽取BP卡分步，在抽出BP卡之后，你可改为以BP弃牌堆顶的BP卡为攻击对象。如果你这样做，将刚抽出的BP卡再洗回BP卡组",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Provoke",
+      "en": "Provoke",
+      "zh": "挑衅",
+      "definitionHtml": "<font size=\"+2\">Provoke:</font><br>During the first ability window, gain the Priority Target token and turn the Monster to face you.<hr><font size=\"+2\">挑衅:</font><br>在第一技能窗口，获得首要目标指示物，并使怪物转向面朝你的方向",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Pull X",
+      "en": "Pull X",
+      "zh": "拉近X",
+      "definitionHtml": "<font size=\"+2\">Pull X:</font><br>Move the affected miniature up to X spaces toward the source of the Pull along the shortest possible path. At the end of the Pull, turn the source to face the affected miniature.<br><br>Other miniatures: The pulled miniature can move through spaces occupied by other miniatures. If it ends involuntary movement on a space with another miniature, the other miniature is Displaced. If the pulled miniature is a Boss Monster, it causes Crash to Knights as normal.<br><br>Terrain: The affected miniature must resolve the effects of all Terrain tiles it moves through.<br><br>Destructible Obstacles: If a Knight is about to be pulled into a Destructible Obstacle, remove the tile from the Clash Board, the Knight suffers Crash, then continue the Pull.<br><br>Indestructible Obstacles: If a Knight is about to be pulled into an Indestructible Obstacle, it suffers Crash and continues along the Obstacle&#x27;s edge on the shortest possible path toward the source.<br><br>Adjacency: If the affected miniature is or becomes adjacent to the source, the Pull ends.<br><br>Knight Timing: Knights may use Pull X during either the first or second ability window.<hr><font size=\"+2\">拉近X:</font><br>目标沿最短路径向来源移动X格，来源再转向目标。首领拉近骑士时骑士可穿过其他模型，结束于其他模型格子则将其位移；杂兵拉近时目标要进入其他模型格子则结束。目标结算沿途地形：进入可摧毁障碍时移除障碍、受到冲撞并继续；遇不可摧毁障碍时受到冲撞，沿边缘向怪物按最短路径继续。目标已与来源相邻或移动到相邻时结束拉近。骑士可在攻击第一或第二技能窗口使用。<br><br>详见规则书文本框。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Pushback X",
+      "en": "Pushback X",
+      "zh": "顶推X",
+      "definitionHtml": "<font size=\"+2\">Pushback X:</font><br>Turn the source toward the affected miniature. Then move up to X spaces in that direction, pushing it in a straight line.<br><br>Other miniatures: If the source is a non-Mob Monster, the pushed Knight can move through spaces occupied by other miniatures. If a Knight ends involuntary movement on a space with another miniature, the other miniature is Displaced. If the source is a Mob Monster, stop Pushback if the affected miniature is about to enter another miniature&#x27;s space.<br><br>Terrain: The affected miniature must resolve the effects of all Terrain tiles it moves through. If the affected miniature is not adjacent, first move the source toward it along the shortest possible path.<br><br>Destructible Obstacles: If a Knight is about to be pushed into a Destructible Obstacle, remove the tile from the Clash Board, the Knight suffers Crash, then continue Pushback.<br><br>Indestructible Obstacles: If a Boss Monster would push a Knight into one, Displace the Knight to an adjacent space that lets the Monster enter the Knight&#x27;s former space, then continue Pushback. If Displacement is impossible, the Knight dies; the Monster enters the Knight&#x27;s former space and Pushback stops. If a Mob Monster would push a Knight into one, stop Pushback and the Knight suffers Crash. If a Knight would push a Mob Monster into one, stop Pushback and resolve the Terrain&#x27;s effect, if any.<br><br>Board Edge: Displace the affected Knight or Monster to an adjacent space that lets the source enter its former space, then continue Pushback. If Displacement is impossible, Pushback stops when the source is a Knight or Mob; when the source is a non-Mob Monster, the target dies.<br><br>Knight Timing: A Knight may resolve Pushback X during either the first or second ability window of their Attack, excluding Attacks with a Ranged X-Y Weapon, or when specifically instructed to resolve it immediately.<br><br>Pushback toward: Instead of pushing the Target in a straight line, push it along the shortest path to the specified space.<hr><font size=\"+2\">顶推X:</font><br>来源转向目标，沿目标方向直线移动X格并推动目标；若不相邻，先沿最短路径接近至相邻，再顶推剩余格数。首领顶推骑士时骑士可穿过其他模型，结束于其他模型格子则将其位移；杂兵顶推时目标要进入其他模型格子则结束。目标结算沿途地形。骑士进入可摧毁障碍时移除障碍、受到冲撞并继续；骑士顶推怪物进入可摧毁障碍时移除障碍，结算地形效果并继续。骑士被首领顶推进不可摧毁障碍时，位移至相邻格，首领进入其原格并继续；无法位移则骑士死亡，首领进入其原格后结束。杂兵顶推骑士遇不可摧毁障碍时结束并使骑士受到冲撞；骑士顶推怪物遇不可摧毁障碍时结束并结算地形效果。目标将穿过版边时位移至相邻格，来源进入其原格并继续；骑士无法位移时，首领为来源则目标死亡并结束，骑士或杂兵为来源则结束。骑士可在攻击第一或第二技能窗口使用，远程X-Y武器攻击仅第二窗口可用；收到结算顶推指示时也可立即使用。向指定位置顶推时沿最短路径移动，使目标最终到达指定位置。<br><br>详见规则书文本框。",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Ranged X–Y",
+      "en": "Ranged X–Y",
+      "zh": "远程 X-Y",
+      "definitionHtml": "<font size=\"+2\">Ranged X–Y:</font><br>To attack with this weapon, you must be at least X and up to Y spaces away from your target. This keyword is not stackable.<hr><font size=\"+2\">远程 X-Y:</font><br>要使用此武器进行攻击，你与目标间的距离必须大于等于X且小于等于Y。此关键词不可叠加。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Reach X",
+      "en": "Reach X",
+      "zh": "延伸X",
+      "definitionHtml": "<font size=\"+2\">Reach X:</font><br>You may attack from up to X spaces away. This keyword is not stackable.<hr><font size=\"+2\">延伸X:</font><br>你可攻击距离最多X格远的目标。此关键词不可叠加。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Reflex",
+      "en": "Reflex",
+      "zh": "反射",
+      "definitionHtml": "<font size=\"+2\">Reflex:</font><br>Move up to 1 space. Advanced Reflex lets you move up to 2 spaces; Superior Reflex lets you move up to 3 spaces.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Reflex'>Advanced Reflex</a><br><a href='dic://Superior%20Reflex'>Superior Reflex</a><hr><font size=\"+2\">反射:</font><br>移动至多1格。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://高级反射'>高级反射</a><br><a href='dic://超级反射'>超级反射</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Refresh",
+      "en": "Refresh",
+      "zh": "刷新X",
+      "definitionHtml": "<font size=\"+2\">Refresh:</font><br>Move X cards from the Delay area to the Cooldown area, OR from the Cooldown area to your hand.<hr><font size=\"+2\">刷新X:</font><br>将<a href='dic://延迟'>延迟</a>位置的X张卡移到<a href='dic://冷却'>冷却</a>位置，或将<a href='dic://冷却'>冷却</a>位置的X张卡移回手牌。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Reinforce X",
+      "en": "Reinforce X",
+      "zh": "固防X",
+      "definitionHtml": "<font size=\"+2\">Reinforce X:</font><br>When you are about to resolve an Armor Roll, add X red dice to your Armor dice Pool. Advanced Reinforce adds X black dice instead; Superior Reinforce adds X white dice instead.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Reinforce'>Advanced Reinforce X</a><br><a href='dic://Superior%20Reinforce'>Superior Reinforce X</a><hr><font size=\"+2\">固防X:</font><br>当你执行护甲投掷时，向护甲骰子池中加入X枚红骰。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://高级固防X'>高级固防X</a><br><a href='dic://超级固防X'>超级固防X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Reposition X",
+      "en": "Reposition X",
+      "zh": "调位X",
+      "definitionHtml": "<font size=\"+2\">Reposition X:</font><br>During the second ability window, you may move up to X spaces.<hr><font size=\"+2\">调位X:</font><br>在第二技能窗口，你可移动最多X格。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Restrain",
+      "en": "Restrain",
+      "zh": "束缚",
+      "definitionHtml": "<font size=\"+2\">Restrain:</font><br>Delay all cards in your Cooldown area (move them to the Delay area).<hr><font size=\"+2\">束缚:</font><br>将你<a href='dic://冷却'>冷却</a>区的所有卡牌移动至<a href='dic://延迟'>延迟</a>区。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Rocksteady",
+      "en": "Rocksteady",
+      "zh": "稳定",
+      "definitionHtml": "<font size=\"+2\">Rocksteady:</font><br>When you are about to suffer Knockdown, you may use this ability to ignore it.<hr><font size=\"+2\">稳定:</font><br>当你即将被<a href='dic://击倒'>击倒</a>时，可使用此技能忽略<a href='dic://击倒'>击倒</a>。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Roll Out",
+      "en": "Roll Out",
+      "zh": "卸力",
+      "definitionHtml": "<font size=\"+2\">Roll Out:</font><br>When you are about to suffer Knockdown while adjacent to a Monster, suffer Knockback 4 instead.<hr><font size=\"+2\">卸力:</font><br>当你在与怪物相邻位置要受到<a href='dic://击倒'>击倒</a>时，改为受到击飞4。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Rotation",
+      "en": "Rotation",
+      "zh": "轮换X",
+      "definitionHtml": "<font size=\"+2\">Rotation:</font><br>Move all Monster tokens on the District Wheel X spaces clockwise.<hr><font size=\"+2\">轮换X:</font><br>将轮盘上的所有指示物顺时针旋转X格。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Rouse X",
+      "en": "Rouse X",
+      "zh": "激昂X",
+      "definitionHtml": "<font size=\"+2\">Rouse X:</font><br>During the second ability window, place X Rouse tokens in the Knight Pool. In the first ability window, the attacking Knight may use Rouse tokens from the Knight Pool to treat their Passion as 1 higher until the end of this Attack for each Rouse token used.<hr><font size=\"+2\">激昂X:</font><br>在第二技能窗口，向骑士池中加入X枚激昂指示物。骑士池中每有1个激昂指示物，正在攻击的骑士在此攻击期间可将自己的战意水平视作+1。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Rush",
+      "en": "Rush",
+      "zh": "冲锋",
+      "definitionHtml": "<font size=\"+2\">Rush:</font><br>Move with +1 Speed and perform a Melee or Reach Attack with Auto-break 1. You must move at least 3 spaces and reach your target via the shortest possible path. Stop when in the effective range of your active Weapon. Improved Rush grants +2 Speed and +1 Precision instead, retaining Auto-break 1 and the same movement requirements.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Improved%20Rush'>Improved Rush</a><hr><font size=\"+2\">冲锋:</font><br>以+1移速移动，然后以自带自动破甲1执行一次近战/延伸攻击。你必须移动至少3格，且沿最短路径使目标进入有效射程。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://高级冲锋'>高级冲锋</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Sacrifice",
+      "en": "Sacrifice",
+      "zh": "牲祭",
+      "definitionHtml": "<font size=\"+2\">Sacrifice:</font><br>During the first ability window, you may lose 1 Vigor to immediately place 1 Break token in the Knight Pool.<hr><font size=\"+2\">牲祭:</font><br>在第一技能窗口，你可失去-1活力以向骑士池中放入1枚破甲指示物。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Scavenge X",
+      "en": "Scavenge X",
+      "zh": "搜刮X",
+      "definitionHtml": "<font size=\"+2\">Scavenge X:</font><br>Add X Loot cards to the Loot deck. If no Loot card type is specified, choose from Kingdom Gear, Upgrade and Consumable Gear Loot cards. Kingdom Scavenge adds Kingdom Gear cards; Upgrade Scavenge adds Upgrade cards; Consumable Scavenge adds Consumable Gear cards; Clash Scavenge adds Exhibition or Full Clash Loot cards depending on the last Clash resolved. If Scavenge triggers but there are no more Loot cards to add, ignore Scavenge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Clash%20Scavenge'>Clash Scavenge</a><br><a href='dic://Consumable%20Scavenge'>Consumable Scavenge</a><br><a href='dic://Kingdom%20Scavenge'>Kingdom Scavenge</a><br><a href='dic://Upgrade%20Scavenge'>Upgrade Scavenge</a><hr><font size=\"+2\">搜刮X:</font><br>向战利品卡组加入X张战利品卡。如果搜刮关键词没有指定加入何种战利品卡，则由你从王国装备、改装、消耗品等战利品卡之中自选。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://冲突搜刮X'>冲突搜刮X</a><br><a href='dic://消耗品搜刮X'>消耗品搜刮X</a><br><a href='dic://王国搜刮X'>王国搜刮X</a><br><a href='dic://改装搜刮X'>改装搜刮X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Second Chance",
+      "en": "Second Chance",
+      "zh": "二次机会",
+      "definitionHtml": "<font size=\"+2\">Second Chance:</font><br>After you draw a Mortis or Judicium card, you may ignore its effect and discard it. Draw and resolve another card from the same deck. A discarded Judicium is immediately shuffled back into the Judicium deck. You cannot ignore the second draw in any way. This ability can be used even when knocked down or otherwise prohibited from using active abilities.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Superior%20Chance'>Superior Chance</a><hr><font size=\"+2\">二次机会:</font><br>在你抽取一张创伤/硬币卡之后，忽略其效果并<a href='dic://弃置'>弃置</a>。然后从同一卡组重抽一张并结算（注意被<a href='dic://弃置'>弃置</a>的硬币卡将立刻被洗回硬币卡组）。你不再可以任何方式忽略第二次抽取。此技能即使在<a href='dic://击倒'>击倒</a>状态或被禁止使用主动技能情况下也一样可生效。<br><br>相关词条/亚型 请查看:<br><a href='dic://超级机会'>超级机会</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Sink",
+      "en": "Sink",
+      "zh": "排水",
+      "definitionHtml": "<font size=\"+2\">Sink:</font><br>Sunken Kingdom keyword. During the Exploration step, whenever you discover the Sink symbol or you’re prompted by the Exploration card, trigger Sink.<hr><font size=\"+2\">排水:</font><br>沉没王国关键词。在探索步骤，每当你遇到Sink图标或收到探索卡指示时，触发Sink。.",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Soak",
+      "en": "Soak",
+      "zh": "吸收X",
+      "definitionHtml": "<font size=\"+2\">Soak:</font><br>Reduce Vigor loss from Monster Attacks during a Clash by X. You can use this ability only after performing the Armor Roll. If it reduces your Vigor loss to 0, do not resolve the Peril Check.<hr><font size=\"+2\">吸收X:</font><br>在冲突中，将从怪物攻击中受到的损失减X（最低减至0）。你只能在执行完护甲投掷之后使用此技能。若你成功将损失减至0，不要结算伤亡卡抽取。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Soulseeker",
+      "en": "Soulseeker",
+      "zh": "穿魂",
+      "definitionHtml": "<font size=\"+2\">Soulseeker:</font><br>During the Draw BP card step of the Attack, you may look at the top three BP cards and choose which one to attack. Shuffle the other cards into the deck.<hr><font size=\"+2\">穿魂:</font><br>在攻击的抽取BP卡分步，你可查看BP卡组顶部3张BP卡，然后选择其中1张攻击，并把另两张洗回BP卡组。",
+      "englishSourcePage": 82
+    },
+    {
+      "id": "Spell",
+      "en": "Spell",
+      "zh": "咒语X",
+      "definitionHtml": "<font size=\"+2\">Spell:</font><br>During the second ability window, place X Spell tokens in the Knight Pool. During an Attack treat this token as both an Opening and Break token.<hr><font size=\"+2\">咒语X:</font><br>在第二技能窗口，向骑士池中加入X枚咒语指示物。在骑士的攻击中，咒语指示物被同时视作机会与破甲指示物。",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Splinter",
+      "en": "Splinter",
+      "zh": "分裂X",
+      "definitionHtml": "<font size=\"+2\">Splinter:</font><br>Knights adjacent to the Target of the Attack lose X Vigor.<hr><font size=\"+2\">分裂X:</font><br>与攻击目标相邻的骑士失去-X活力。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Spotlight",
+      "en": "Spotlight",
+      "zh": "焦点",
+      "definitionHtml": "<font size=\"+2\">Spotlight:</font><br>During the first ability window, if you are the Priority Target or the Divine Target, gain 1 additional red Power die for this Attack.<hr><font size=\"+2\">焦点:</font><br>在第一技能窗口，如果你拥有首要或神圣目标指示物，本次攻击获得+1红骰。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Stalwart",
+      "en": "Stalwart",
+      "zh": "不移",
+      "definitionHtml": "<font size=\"+2\">Stalwart:</font><br>When you are about to suffer Knockback, you may use this ability to ignore it.<hr><font size=\"+2\">不移:</font><br>当你将要受到击飞时，可使用此技能忽略击飞。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Sunder",
+      "en": "Sunder",
+      "zh": "断破X",
+      "definitionHtml": "<font size=\"+2\">Sunder:</font><br>During the second ability window, place X Sunder tokens in the Knight Pool. During the Power Roll step, each Sunder token in the Knight Pool allows the attacking Knight to turn 1 Potential symbol into 2 Power. You cannot use Greater Pass on this token.<hr><font size=\"+2\">断破X:</font><br>在第二技能窗口，向骑士池中加入X枚断破指示物。在攻击的强度投掷分步，骑士池中每有1 枚断破指示物，正在攻击的骑士能将1个潜力图标转化为2个强度。你不能对断破指示物使用高级接力。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Superior Block",
+      "en": "Superior Block",
+      "zh": "超级格挡",
+      "definitionHtml": "<font size=\"+2\">Superior <a href='dic://Block'>Block</a>:</font><br>While performing an Evasion Roll, treat 3 successful hits as evaded.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Block'>Advanced Block</a><br><a href='dic://Block'>Block</a><hr><font size=\"+2\">超级<a href='dic://格挡'>格挡</a>:</font><br>在执行闪避投掷时，视作成功闪避掉3个命中.<br><br>相关词条/亚型 请查看:<br><a href='dic://高级格挡'>高级格挡</a><br><a href='dic://格挡'>格挡</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Superior Bypass",
+      "en": "Superior Bypass",
+      "zh": "超级穿身",
+      "definitionHtml": "<font size=\"+2\">Superior <a href='dic://Bypass'>Bypass</a>:</font><br>A Knight or Monster may voluntarily move through other miniatures. You cannot end your voluntary movement on a space occupied by another miniature. A Knight or Monster may voluntarily enter an Obstacle space and end its movement there. It additionally ignores Difficult Terrain and Chasm Terrain keywords. Obstacles do not block Line of Sight or range, so a Knight or Monster on an Obstacle can still be attacked as normal.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Bypass'>Advanced Bypass</a><br><a href='dic://Bypass'>Bypass</a><hr><font size=\"+2\">超级<a href='dic://穿身'>穿身</a>:</font><br>拥有此技能的骑士或怪物，可主动穿过其他模型移动。但你不可以在其他模型所占的格子结束主动移动；可主动进入<a href='dic://障碍'>障碍</a>地形格子并在<a href='dic://障碍'>障碍</a>地形格子上结束移动；忽略<a href='dic://困难地形'>困难地形</a>与<a href='dic://沟壑'>沟壑</a>地形关键词。注意：<a href='dic://障碍'>障碍</a>不会阻挡视线与射程，所以位于<a href='dic://障碍'>障碍</a>地形上的骑士或怪物可以照常进行攻击（与考虑视线）。<br><br>相关词条/亚型 请查看:<br><a href='dic://高级穿身'>高级穿身</a><br><a href='dic://穿身'>穿身</a>",
+      "englishSourcePage": 80
+    },
+    {
+      "id": "Superior Chance",
+      "en": "Superior Chance",
+      "zh": "超级机会",
+      "definitionHtml": "<font size=\"+2\">Superior Chance:</font><br>After you draw a Mortis or Judicium card, you may ignore its effect and discard it. Draw and resolve another card from the same deck, removing the You died horribly Massive Peril Judicium card for that draw only. A discarded Judicium card is always shuffled back into the Judicium deck. You cannot ignore the second draw in any way. This ability can be used even when knocked down or otherwise prohibited from using active abilities.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Second%20Chance'>Second Chance</a><hr><font size=\"+2\">超级机会:</font><br>在你抽取一张创伤/硬币卡之后，忽略其效果并<a href='dic://弃置'>弃置</a>。然后从同一卡组重抽一张并结算（注意被<a href='dic://弃置'>弃置</a>的硬币卡将立刻被洗回硬币卡组），如果重抽的是硬币卡组，先移除其中的You died horribly巨大危险硬币卡（如果有的话）。你不再可以任何方式忽略第二次抽取。此技能即使在<a href='dic://击倒'>击倒</a>状态或被禁止使用主动技能情况下也一样可生效。<br><br>相关词条/亚型 请查看:<br><a href='dic://二次机会'>二次机会</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Superior Defy",
+      "en": "Superior Defy",
+      "zh": "超级违抗",
+      "definitionHtml": "<font size=\"+2\">Superior <a href='dic://Defy'>Defy</a>:</font><br>While performing a Virtue test caused by a Judgement, treat 3 hits as evaded.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Defy'>Advanced Defy</a><br><a href='dic://Defy'>Defy</a><hr><font size=\"+2\">超级<a href='dic://违抗'>违抗</a>:</font><br>在执行由定断Judgement攻击造成的检定时，将3个命中视作闪避<br><br>相关词条/亚型 请查看:<br><a href='dic://高级违抗'>高级违抗</a><br><a href='dic://违抗'>违抗</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Superior Dodge",
+      "en": "Superior Dodge",
+      "zh": "超级躲避",
+      "definitionHtml": "<font size=\"+2\">Superior <a href='dic://Dodge'>Dodge</a>:</font><br>Gain +3 Evasion bonus instead of the +1 granted by Dodge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Dodge'>Advanced Dodge</a><br><a href='dic://Dodge'>Dodge</a><br><a href='dic://Lesser%20Dodge'>Lesser Dodge</a><hr><font size=\"+2\">超级<a href='dic://躲避'>躲避</a>:</font><br>改为获得+3闪避加成<br><br>相关词条/亚型 请查看:<br><a href='dic://高级躲避'>高级躲避</a><br><a href='dic://躲避'>躲避</a><br><a href='dic://次级躲避'>次级躲避</a>",
+      "englishSourcePage": 81
+    },
+    {
+      "id": "Superior Reflex",
+      "en": "Superior Reflex",
+      "zh": "超级反射",
+      "definitionHtml": "<font size=\"+2\">Superior <a href='dic://Reflex'>Reflex</a>:</font><br>Move up to 3 spaces.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Reflex'>Advanced Reflex</a><br><a href='dic://Reflex'>Reflex</a><hr><font size=\"+2\">超级<a href='dic://反射'>反射</a>:</font><br>移动至多3格。<br><br>相关词条/亚型 请查看:<br><a href='dic://高级反射'>高级反射</a><br><a href='dic://反射'>反射</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Superior Reinforce X",
+      "en": "Superior Reinforce X",
+      "zh": "超级固防X",
+      "definitionHtml": "<font size=\"+2\">Superior <a href='dic://Reinforce'>Reinforce</a> X:</font><br>When you are about to resolve an Armor Roll, add X white dice to your Armor dice Pool.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Advanced%20Reinforce'>Advanced Reinforce X</a><br><a href='dic://Reinforce'>Reinforce X</a><hr><font size=\"+2\">超级<a href='dic://固防X'>固防X</a>:</font><br>当你执行护甲投掷时，向护甲骰子池中加入X枚白骰。<br><br>相关词条/亚型 请查看:<br><a href='dic://高级固防X'>高级固防X</a><br><a href='dic://固防X'>固防X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Suppress",
+      "en": "Suppress",
+      "zh": "克制",
+      "definitionHtml": "<font size=\"+2\">Suppress:</font><br>You may shuffle the discard pile denoted by the subtype into the appropriate deck. BP Suppress: shuffle the BP discard pile into the BP deck. AI Suppress: shuffle the AI discard pile into the AI deck.<hr><font size=\"+2\">克制:</font><br>将亚型所示的弃牌堆洗回对应卡组。可能的亚型",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Swarm",
+      "en": "Swarm",
+      "zh": "蜂拥X",
+      "definitionHtml": "<font size=\"+2\">Swarm:</font><br>The attacked Knight loses X Vigor for each other adjacent Monster.<hr><font size=\"+2\">蜂拥X:</font><br>受到攻击的骑士每与1只其他怪物相邻，就额外损失-X活力。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Tireless",
+      "en": "Tireless",
+      "zh": "耐久",
+      "definitionHtml": "<font size=\"+2\">Tireless:</font><br>When you are about to activate the Cumbersome keyword, you may ignore it.<hr><font size=\"+2\">耐久:</font><br>当你要激活<a href='dic://沉重'>沉重</a>关键词时，可忽略该关键词。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Toxify",
+      "en": "Toxify",
+      "zh": "毒发X",
+      "definitionHtml": "<font size=\"+2\">Toxify:</font><br>If you do not have the Toxified or Poisoned Condition card, gain the Toxified Condition card. If you already have the Poisoned Condition card, flip it. Then place X Generic tokens, representing Poison tokens, on the Toxified Condition card.<hr><font size=\"+2\">毒发X:</font><br>如果你没有中毒或毒发状态卡，获取一张毒发状态卡。如果你有中毒状态卡，将其翻面。最后，向卡上放置X枚通用指示物（来代表中毒指示物）。",
+      "englishSourcePage": 85
+    },
+    {
+      "id": "Trailmake",
+      "en": "Trailmake",
+      "zh": "探雾X",
+      "definitionHtml": "<font size=\"+2\">Trailmake:</font><br>At the start of Deep Fog traversal, you may look at the top X cards of the Deep Fog deck, select one and put it aside. Shuffle the rest into the Deep Fog deck and put the selected card at the bottom of the deck.<hr><font size=\"+2\">探雾X:</font><br>在穿越弥雾开始时，你可查看弥雾卡组顶部的X张卡，并选择其中一张放在卡组一旁。然后将剩余卡牌洗回弥雾卡组，最后将放在一旁的那张放到弥雾卡组底部。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Tumble",
+      "en": "Tumble",
+      "zh": "翻滚",
+      "definitionHtml": "<font size=\"+2\">Tumble:</font><br>When you are about to suffer Crash, roll a d10. On a 6+ ignore it.<hr><font size=\"+2\">翻滚:</font><br>当你即将受到<a href='dic://冲撞'>冲撞</a>时，投掷1枚d10，结果6+时忽略<a href='dic://冲撞'>冲撞</a>。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Unwieldy",
+      "en": "Unwieldy",
+      "zh": "迟钝",
+      "definitionHtml": "<font size=\"+2\">Unwieldy:</font><br>If a Weapon is Unwieldy, you may only attack targets in a straight cardinal line.<hr><font size=\"+2\">迟钝:</font><br>在使用此武器攻击时，你只能攻击在自己格子四个正交直线方向上的目标。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Upgrade Scavenge",
+      "en": "Upgrade Scavenge",
+      "zh": "改装搜刮X",
+      "definitionHtml": "<font size=\"+2\">Upgrade <a href='dic://Scavenge'>Scavenge</a>:</font><br>Add X Upgrade Loot cards to the Loot deck. If there are no more Loot cards to add, ignore Scavenge.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Clash%20Scavenge'>Clash Scavenge</a><br><a href='dic://Consumable%20Scavenge'>Consumable Scavenge</a><br><a href='dic://Kingdom%20Scavenge'>Kingdom Scavenge</a><br><a href='dic://Scavenge'>Scavenge X</a><hr><font size=\"+2\">改装<a href='dic://搜刮X'>搜刮X</a>:</font><br>向战利品卡组加入X张改装战利品卡。<br><br>相关词条/亚型 请查看:<br><a href='dic://冲突搜刮X'>冲突搜刮X</a><br><a href='dic://消耗品搜刮X'>消耗品搜刮X</a><br><a href='dic://王国搜刮X'>王国搜刮X</a><br><a href='dic://搜刮X'>搜刮X</a>",
+      "englishSourcePage": 86
+    },
+    {
+      "id": "Vault",
+      "en": "Vault",
+      "zh": "撑跳",
+      "definitionHtml": "<font size=\"+2\">Vault:</font><br>If you are adjacent to a Monster, place your miniature on an empty space in a straight line from you, on the opposite side of the Monster and adjacent to it. Treat this as voluntary movement. A Knight may use this ability in either the first or second ability window.<br><br>Related Keyword/Subtype also see:<br><a href='dic://Forced%20Vault'>Forced Vault</a><hr><font size=\"+2\">撑跳:</font><br>如果你与怪物相邻，将你的模型直接放在指向怪物的直线上，且位于相对于怪物模型对侧的与怪物相邻的一个空格子。骑士可在第一或第二技能窗口使用此技能。可能的亚型<br><br>相关词条/亚型 请查看:<br><a href='dic://受迫撑跳'>受迫撑跳</a>",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Wander",
+      "en": "Wander",
+      "zh": "缓行",
+      "definitionHtml": "<font size=\"+2\">Wander:</font><br>After you draw a Deep Fog card, discard it and draw another in its place.<hr><font size=\"+2\">缓行:</font><br>在你抽取一张弥雾卡之后，将其<a href='dic://弃置'>弃置</a>，然后再抽取一张弥雾卡。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Wither X",
+      "en": "Wither X",
+      "zh": "凋零X",
+      "definitionHtml": "<font size=\"+2\">Wither X:</font><br>This keyword is irrelevant in Principality of Stone and Sunken Kingdom. It will become relevant in future Kingdoms.<hr><font size=\"+2\">凋零X:</font><br>此关键词在巨石公国与沉没王国中没有用途，其将在未来的王国发挥作用。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Zeal X",
+      "en": "Zeal X",
+      "zh": "狂热X",
+      "definitionHtml": "<font size=\"+2\">Zeal X:</font><br>During the second ability window, place X Zeal tokens on your Knight Board.<hr><font size=\"+2\">狂热X:</font><br>在第二技能窗口，向你的骑士面板上放置X枚狂热指示物。",
+      "englishSourcePage": 87
+    },
+    {
+      "id": "Zeal Threshold",
+      "en": "Zeal Threshold",
+      "zh": "狂热阈值X",
+      "definitionHtml": "<font size=\"+2\"><a href='dic://Zeal'>Zeal</a> Threshold:</font><br>If gaining Zeal tokens would exceed your Zeal Threshold, gain Zeal tokens up to your Zeal Threshold and place the rest of the tokens in the Knight Pool.<hr><font size=\"+2\">狂热阈值X:</font><br>在获得狂热指示物时，若获得后将超过你的狂热阈值，先获得到等同你的狂热阈值，然后将剩下的狂热指示物放入骑士池中。",
+      "englishSourcePage": 87
+    }
+  ],
+  "englishSource": {
+    "title": "Kingdoms Forlorn Core Rulebook",
+    "file": "KF_Rulebook.pdf",
+    "keywordPages": [
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87
+    ],
+    "masterIndexPages": [
+      88,
+      89,
+      90,
+      91
+    ],
+    "symbols": "Inline game symbols are expanded to their English names, including Heat, Vigor, Passion, Potential, Power, Speed and Peril Check."
+  }
+}

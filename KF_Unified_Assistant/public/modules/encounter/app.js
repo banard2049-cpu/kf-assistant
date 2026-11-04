@@ -795,7 +795,23 @@
   }
   function renderApp() {
     if (!availableMonsters().some(monster => monster.id === state.monsterId)) state = blankState();
-    $("#app").innerHTML = stepper() + `<div class="layout ${monsterRailCollapsed ? "monster-collapsed" : ""}">${monsterRail()}<div class="main-stack">${mainPanel()}${actionLogPanel()}</div></div>`;
+    if (window.KFEncounterKeywords && window.KFKeywords) {
+      const monsterId = state.monsterId;
+      const level = state.level;
+      window.KFKeywords.setContext?.('当前遭遇卡关键词');
+      window.KFEncounterKeywords.ready.then(data => {
+        if (state.monsterId !== monsterId || state.level !== level) return;
+        window.KFKeywords.setCardDataError?.(!data);
+        if (!data) return;
+        const words = window.KFEncounterKeywords.get(monsterId, level);
+        window.KFKeywords.setPersistent([
+          { label: currentMonster().special ? '特殊遭遇卡' : `等级 ${level} · ${currentLevel().side === 'back' ? '背面' : '正面'}`,
+            keywords: words || [], message: words === null ? '此遭遇卡尚未扫描。' : !words.length ? '此遭遇卡未识别到词典关键词。' : '' }
+        ]);
+      });
+    }
+    $("#app").innerHTML = stepper() + `<div class="layout ${monsterRailCollapsed ? "monster-collapsed" : ""}">${monsterRail()}<div class="main-stack">${mainPanel()}<section class="panel encounter-keywords-panel"><div class="panel-head"><div><span class="eyebrow">KEYWORDS</span><h2>关键词解释</h2></div></div><div id="encounter-keywords-host"></div></section>${actionLogPanel()}</div></div>`;
+    window.KFKeywords?.mount?.('#encounter-keywords-host');
     bind();
   }
   function preparePieces() {

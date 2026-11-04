@@ -877,7 +877,7 @@ h3 { font-size: 19px; }
 .gallery-card { display: grid; gap: 6px; }
 .gallery-card .crop-card { aspect-ratio: var(--card-aspect); }
 .gallery-card strong { font-size: 11px; overflow-wrap: anywhere; }
-.reference-gallery { max-height: 390px; }
+.reference-gallery { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); max-height: none; }
 
 .counter {
   display: grid;
@@ -1714,12 +1714,31 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 }
 
 .terrain-control-panel { overflow: hidden; }
+/* 关键词查询停在冲突版图右侧；窄屏或展开怪物目录时回到版图下方。 */
+body[data-kf-module="aibp"] > .kf-keywords { display: none; }
+/* 版图与工具达到最大宽度后，关键词区域占用剩余空间。 */
+.conflict-board-layout { display: grid; grid-template-columns: minmax(0, 1538px) minmax(480px, 1fr); gap: 14px; align-items: start; }
+.conflict-board-layout > .terrain-control-panel { min-width: 0; }
+.conflict-board-keywords {
+  min-width: 0; position: sticky; top: 86px;
+  max-height: calc(100dvh - 104px); overflow-y: auto; overscroll-behavior: contain;
+}
+.conflict-board-keywords .kf-keywords { margin: 0; padding: 0; max-width: none; }
+.conflict-board-keywords .kf-keywords-content input { flex: 1 1 180px; max-width: none; }
+@media (max-width: 1200px) {
+  .conflict-board-layout { grid-template-columns: minmax(0, 1fr); }
+  .conflict-board-keywords { position: static; max-height: none; overflow: visible; }
+}
+@media (max-width: 1500px) {
+  .standalone-layout.directory-open .conflict-board-layout { grid-template-columns: minmax(0, 1fr); }
+  .standalone-layout.directory-open .conflict-board-keywords { position: static; max-height: none; overflow: visible; }
+}
 .terrain-control-head { align-items: center; }
 .terrain-control-head .inline-actions { flex-wrap: wrap; justify-content: flex-end; }
 .terrain-control-head .button.active { box-shadow: inset 0 0 0 2px var(--gold-bright); }
 .terrain-start-toggle { display: flex; align-items: center; grid-auto-flow: column; gap: 7px; }
 .terrain-start-toggle input { width: 16px; height: 16px; margin: 0; }
-.terrain-control-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; margin-top: 14px; }
+.terrain-control-workspace { display: grid; grid-template-columns: minmax(0, 1250px) 260px; gap: 14px; margin-top: 14px; }
 .terrain-control-board {
   position: relative; width: 100%; aspect-ratio: 14 / 10; overflow: hidden;
   border: 1px solid #625844; background: #282622; box-shadow: inset 0 0 0 1px #000;
@@ -1797,8 +1816,8 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 .terrain-control-placement.dragging { z-index: 50; cursor: grabbing; filter: drop-shadow(0 0 6px var(--gold-bright)); }
 .terrain-control-placement img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 2px #000); pointer-events: none; }
 .terrain-control-placement.selected { z-index: 30; outline: 3px solid var(--gold-bright); outline-offset: -2px; background: rgba(198, 154, 75, .14); }
-.terrain-control-start { position: absolute; z-index: 40; display: grid; place-items: center; padding: 5px; pointer-events: none; }
-.terrain-control-start i { position: relative; display: grid; width: min(88%, 52px); aspect-ratio: 1; place-items: center; border: 2px solid #e8d9b5; border-radius: 50%; background: #141514; color: #fff; font-size: 9px; font-style: normal; text-align: center; line-height: 1.05; box-shadow: 0 2px 5px #000; }
+.terrain-control-start { position: absolute; z-index: 40; display: grid; place-items: center; padding: 0; pointer-events: none; }
+.terrain-control-start i { position: relative; display: grid; width: 88%; aspect-ratio: 1; place-items: center; border: 2px solid #e8d9b5; border-radius: 50%; background: #141514; color: #fff; font-size: 9px; font-style: normal; text-align: center; line-height: 1.05; box-shadow: 0 2px 5px #000; }
 .terrain-control-start.knight i { border: 0; background: transparent; box-shadow: none; }
 .terrain-control-start.monster i { border-color: #d95c54; background: #421d1d; }
 .terrain-control-start i img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
@@ -1807,11 +1826,11 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 .terrain-control-start.knight i img.knight-start-marker { object-fit: contain; }
 .terrain-control-start i b { position: absolute; right: -5px; bottom: -5px; display: grid; width: 21px; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--gold-bright); color: #17140e; font-size: 11px; }
 .terrain-control-tools { display: grid; align-content: start; gap: 12px; min-width: 0; padding: 12px; border: 1px solid var(--line); background: var(--surface-2); }
-.fool-deck-preview { display: grid; grid-template-columns: 88px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 4px 10px; min-width: 0; padding: 9px; border: 1px solid #514937; background: #111513; }
+.fool-deck-preview { display: grid; grid-template-columns: 116px minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 4px 10px; min-width: 0; padding: 10px; border: 1px solid #514937; background: #111513; }
 .fool-deck-preview.active { border-color: #c94842; box-shadow: inset 3px 0 #d13232; }
-.fool-deck-preview strong { align-self: end; overflow: hidden; color: var(--ink); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-.fool-deck-preview > span:last-child { align-self: start; color: var(--muted); font-size: 10px; line-height: 1.35; }
-.fool-card-face,.fool-card-back { grid-row: 1 / 3; width: 88px; aspect-ratio: 121 / 186; }
+.fool-deck-preview strong { align-self: end; overflow: hidden; color: var(--ink); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.fool-deck-preview > span:last-child { align-self: start; color: var(--muted); font-size: 11px; line-height: 1.35; }
+.fool-card-face,.fool-card-back { grid-row: 1 / 3; width: 116px; aspect-ratio: 121 / 186; }
 .fool-card-face { position: relative; display: block; overflow: hidden; background: #171513; }
 .fool-card-face img { position: absolute; left: var(--card-left); top: var(--card-top); width: var(--card-sheet-width); height: var(--card-sheet-height); max-width: none; }
 .fool-card-back { display: block; height: auto; object-fit: cover; }
@@ -1837,7 +1856,7 @@ details > summary { cursor: pointer; color: var(--text); font-weight: 700; paddi
 @media (max-width: 880px) {
   .terrain-control-workspace { grid-template-columns: 1fr; }
   .terrain-control-tools { grid-template-columns: 1fr; }
-  .terrain-control-board { min-width: 660px; }
+  .terrain-control-board { min-width: 660px; max-width: 1250px; }
   .terrain-control-workspace { overflow-x: auto; }
 }
 .mob-track {
@@ -2644,3 +2663,33 @@ label,
 .sheet-trait-actions button { min-width: 20px; min-height: 24px; padding: 2px 4px; border: 0; background: #171b18ed; color: #fff; font-size: 11px; cursor: pointer; touch-action: manipulation; }
 .sheet-trait-actions button:hover, .sheet-trait-actions button:focus-visible { background: #5c4a2c; }
 @media (hover: none) { .sheet-trait-actions { opacity: 1; } }
+
+.reference-squire-layout { display: flex; align-items: stretch; gap: 16px; }
+.reference-squire-layout > .panel { flex: 1; min-width: 0; }
+.squire-clues { flex: 0 0 360px; min-width: 0; display: flex; padding: 0; }
+.squire-clue-roster { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; gap: 8px; }
+.squire-clue-member { display: grid; grid-template-columns: 82px minmax(0, 1fr); grid-template-rows: 32px minmax(0, 1fr); min-height: 110px; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #1a211c; box-shadow: 0 7px 18px #0003; }
+.squire-clue-portrait { position: relative; grid-row: 1 / -1; min-height: 0; overflow: hidden; background: #111714; }
+.squire-clue-portrait img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; }
+.squire-clue-name { display: grid; align-content: center; min-width: 0; padding: 7px; }
+.squire-clue-name strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.squire-clue-resources { grid-column: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 0 7px 7px; }
+.squire-clue-resource { display: grid; align-items: center; min-width: 0; padding: 2px 0; border-left: 3px solid var(--line); background: #131915; }
+.squire-clue-resource.resource-martial { border-left-color: var(--red); }
+.squire-clue-resource.resource-errant { border-left-color: var(--green); }
+.squire-clue-resource.resource-historic { border-left-color: var(--gold); }
+.squire-clue-resource.resource-mystic { border-left-color: var(--blue); }
+.squire-clue-adjust { display: grid; grid-template-columns: 24px minmax(18px, auto) 24px; align-items: center; }
+.squire-clue-label { display: flex; grid-column: 1 / -1; align-items: center; justify-content: center; gap: 4px; height: 28px; }
+.squire-clue-label span { height: 28px; font-size: 22px; font-weight: 800; line-height: 28px; }
+.squire-clue-label img { display: block; width: 28px; height: 28px; object-fit: contain; }
+.squire-clue-adjust strong { color: var(--gold-soft, #d5bc8e); font-size: 22px; line-height: 1; text-align: center; }
+.squire-clue-adjust button { display: grid; place-items: center; width: 24px; min-width: 24px; height: 30px; min-height: 30px; padding: 0; border: 0; border-radius: 0; box-shadow: none; text-shadow: none; background: transparent; color: var(--text); font-size: 18px; line-height: 1; }
+.squire-clue-adjust button:hover:not(:disabled) { background: rgba(204,178,117,.18); }
+.squire-clue-adjust button:disabled { opacity: .32; }
+.squire-clue-missing { grid-column: 2; padding: 0 9px 9px; }
+@media (max-width: 800px) { .reference-squire-layout { flex-direction: column; } .reference-squire-layout > .panel, .squire-clues { width: 100%; box-sizing: border-box; } .squire-clues { flex-basis: auto; } .squire-clue-member { min-height: 110px; } }
+
+.squire-clue-adjust button:active { box-shadow: none; transform: none; }
+
+.terrain-control-start.monster i.boss-token-frame { width: min(88%, 52px); }
