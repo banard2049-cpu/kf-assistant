@@ -89,10 +89,12 @@
       "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
     },
     "M_Knighteater:AI3:30": {
-      "keywords": [],
+      "keywords": [
+        "Fleisch"
+      ],
       "image": "/assets/cards/monster-faces/knighteater/a64da226-17.jpg",
       "sha256": "e83fed91087fc8ce009465b7783db5397c3d9f1878d84e6a1c02bfdfd19b6025",
-      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+      "note": "卡面规则明确计数、放置或弃置 Fleisch 指示物，收录对应 Fleisch 词条。"
     },
     "M_Knighteater:AI3:31": {
       "keywords": [],
@@ -275,11 +277,12 @@
     },
     "M_Knighteater:BP3:14": {
       "keywords": [
-        "OvercomeX+"
+        "OvercomeX+",
+        "Fleisch"
       ],
       "image": "/assets/cards/monster-faces/knighteater/a64da226-32.jpg",
       "sha256": "993df4b00784becc5904795bf60bb26f2aa6e7c41ba3829ddbb76672aae23912",
-      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+      "note": "卡面规则明确计数、放置或弃置 Fleisch 指示物，收录对应 Fleisch 词条。"
     },
     "M_Knighteater:BP3:15": {
       "keywords": [
@@ -313,10 +316,12 @@
       "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
     },
     "M_Knighteater:SIG:38": {
-      "keywords": [],
+      "keywords": [
+        "Fleisch"
+      ],
       "image": "/assets/cards/monster-faces/knighteater/a64da226-36.jpg",
       "sha256": "96b1ac1820f7fb40d37529b9cae0b080e3f288351924a1fa3c287afa65aa44f5",
-      "note": "按卡面目视核对词典词条；弃置护甲或肉肉指示物不等于弃置手牌，Wolf Down 与 Penetrate 不在词典中。"
+      "note": "卡面规则明确计数、放置或弃置 Fleisch 指示物，收录对应 Fleisch 词条。"
     }
   }
 }

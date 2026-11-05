@@ -6,6 +6,7 @@
   const DATA = window.KF_MOD_DATA;
   const FOG_RULES = window.KF_FOG_RULES;
   const MERCENARY_RULES = window.KF_MERCENARY_RULES;
+  const POI_RULES = window.KF_POINT_OF_INTEREST_RULES;
   const SAVE_VERSION = 8;
   const SAVE_KEY = "kf-map-host-v8";
   const LEGACY_SAVE_KEYS = ["kf-map-host-v7", "kf-map-host-v6", "kf-map-host-v5"];
@@ -446,6 +447,7 @@
         heading: 0
       },
       storyQueue: [],
+      pointOfInterestReminder: null,
       explorationCodes: [],
       history: [],
       threatSevenSpawned: false,
@@ -510,6 +512,7 @@
       if (!Array.isArray(current.placed)) current.placed = [];
       current.tileState = recordOrEmpty(current.tileState);
       current.tileMeta = recordOrEmpty(current.tileMeta);
+      current.pointOfInterestReminder = POI_RULES.normalize(current.pointOfInterestReminder);
       current.districtWheel = recordOrEmpty(current.districtWheel);
       current.districtWheelLevels = recordOrEmpty(current.districtWheelLevels);
       current.districtWheelLocations = recordOrEmpty(current.districtWheelLocations);
@@ -618,6 +621,7 @@
   let kingdomPanelExpanded = true;
   let kingdomPanelDialogOpen = false;
   let mapFocusFrame = 0;
+  let focusStoryReminder = state.step === 3;
   // Marker drops re-render the map; keep the player's view instead of re-centring on the party.
   let keepMapViewOnce = false;
   const mapState = () => state.maps[state.kingdom];
@@ -748,8 +752,14 @@
   }
 
   function enterStep(index) {
+    const previousStep = state.step;
     state.step = clamp(Math.trunc(Number(index) || 0), 0, STEPS.length - 1);
     activeTool = STEP_TOOL[state.step] || activeTool;
+    if (state.step === 3 && previousStep !== 3) {
+      const reminder = storyStepReminderText();
+      addLog(reminder);
+      focusStoryReminder = true;
+    }
   }
 
   function canSkipTravelStep() {
@@ -1132,12 +1142,12 @@
     state.log = state.log.slice(0, 200);
   }
 
-  function toast(text) {
+  function toast(text, duration = 2600) {
     const node = $("#toast");
     node.textContent = text;
     node.hidden = false;
     clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => { node.hidden = true; }, 2600);
+    toast.timer = setTimeout(() => { node.hidden = true; }, duration);
   }
 
   function snapshot(label) {
@@ -1603,17 +1613,38 @@
     return "";
   }
 
-  function beginTile(id) {
+  function beginTile(id, force = false) {
     const current = mapState();
     const blockReason = tileTravelBlockReason(id);
-    if (blockReason) return toast(blockReason);
+    if (blockReason && !force) return toast(blockReason);
     const item = tile(id);
+    if (!item) return toast("目标板块不存在");
+    if (force && !confirm(`强制板块结算：${tileLabel(item)}\n\n当前限制：${blockReason || "无"}。\n将强制移动队伍至此，并重新开始该板块的背面与正面结算，包括已探索板块。当前未完成的板块、遭遇、弥雾及探索选择流程将中断；已生效的时间、威胁和奖励不会自动回退。\n\n确认继续？可通过“撤销一步”恢复。`)) return;
     const back = item?.rules?.back || {};
-    snapshot(`前往 ${tileLabel(tile(id))}`);
+    snapshot(`${force ? "强制板块结算" : "前往"} ${tileLabel(item)}`);
+    const origin = current.current;
+    if (force) {
+      current.pendingEncounter = null;
+      current.pointOfInterestReminder = null;
+      const fog = current.fog;
+      if (fog.active) {
+        const held = [...(fog.used || []).map(entry => entry.cardId), fog.current, fog.pendingDraw?.cardId].filter(Boolean);
+        fog.deck = shuffle([...new Set([...fog.deck, ...held])].filter(cardId => !fog.discard.includes(cardId)));
+        Object.assign(fog, { active: false, target: "", current: null, pendingDraw: null, route: [], used: [], hazardPending: false });
+        clearFogPeek(fog);
+      }
+      state.mercenaries.pendingAction = null;
+      const exp = current.exploration;
+      if (exp.current && !exp.deck.includes(exp.current) && !exp.discard.includes(exp.current)) exp.deck.unshift(exp.current);
+      exp.current = null;
+      exp.resolvedRound = null;
+      exp.pendingClueDirections = [];
+      setCurrentTile(current, id);
+    }
     current.placed = [...new Set([...current.placed, id])];
     current.tileState[id] ||= "hidden";
     current.selected = id;
-    current.travelRoute = [current.current, id];
+    current.travelRoute = [origin, id];
     current.tileResolution = {
       tileId: id,
       stage: "back",
@@ -1632,7 +1663,7 @@
       notes: ""
     };
     enterStep(1);
-    addLog(`开始结算 ${tileLabel(tile(id))}`);
+    addLog(`${force ? "强制移动队伍并开始板块结算" : "开始结算"} ${tileLabel(item)}`);
     save(true);
   }
 
@@ -1685,6 +1716,9 @@
 
   function finalizeTileResolution(pending) {
     const current = mapState();
+    // Rulebook p.33: resolve PoI with the top card before the exploration draw.
+    // Keep this snapshot for the story-step reminder, even if the deck changes later.
+    current.pointOfInterestReminder = POI_RULES.capture(pending.tileId, state.round, card(current.exploration.deck[0]));
     current.tileMeta ||= {};
     current.tileMeta[pending.tileId] = {
       backTime: Number(pending.backTime) || 0,
@@ -2045,7 +2079,7 @@
         ${region ? `<span class="badge gold">${esc(region.name)}</span>` : ""}
       </div>
       <div class="toolbar">
-        <button id="selectedBeginButton" ${travelBlockReason ? `disabled title="${esc(travelBlockReason)}"` : ""}>开始板块结算</button>
+        <button id="selectedBeginButton" ${travelBlockReason ? `class="danger" title="${esc(travelBlockReason)}；点击确认后强制移动并结算"` : ""}>${travelBlockReason ? "强制板块结算" : "开始板块结算"}</button>
         <button id="earlyRevealButton" class="secondary" ${status === "hidden" && !current.showAll ? "" : "disabled"}>提前揭示</button>
         <button id="forceMovePartyButton" class="secondary" ${selected.id === current.current ? "disabled" : ""}>强制移动队伍至此</button>
       </div>
@@ -2557,6 +2591,102 @@
     </section>`;
   }
 
+  function storyPointOfInterestReminder() {
+    const current = mapState();
+    return POI_RULES.currentReminder(current.pointOfInterestReminder, {
+      step: state.step, round: state.round, tileId: current.current
+    });
+  }
+
+  function adjustStoryPointOfInterest(index, delta) {
+    const reminder = storyPointOfInterestReminder();
+    if (!reminder) return;
+    const updated = POI_RULES.adjustResult(reminder, index, delta);
+    if (!updated || updated.points[index]?.result === reminder.points[index]?.result) return;
+    snapshot("手动修正兴趣点结果");
+    mapState().pointOfInterestReminder = updated;
+    addLog(`手动修正兴趣点结果：\n${storyStepReminderText()}`);
+    save(true);
+  }
+
+  function storyStepReminderText() {
+    const lines = [`进入故事步骤（第 ${state.round} 轮，时间 ${state.trackers.time}）。`, "阅读本轮故事段落，并检查时间事件。"];
+    const reminder = storyPointOfInterestReminder();
+    const kingdomName = state.kingdom === "POS" ? "巨石公国" : "沉没王国";
+    for (const point of reminder?.points || []) {
+      if (point.type === "number") {
+        const automatic = reminder.modifier === null ? null : point.value + reminder.modifier;
+        lines.push(point.result !== automatic
+          ? `${kingdomName} · 兴趣点：${point.value} + ${reminder.modifier ?? "?"}${automatic === null ? "" : ` = ${automatic}`}，手动修正为 ${point.result}，查王国面板第 ${point.result} 项。`
+          : point.result === null
+          ? `${kingdomName} · 兴趣点：${point.value}，按当时探索牌顶修正后查表。`
+          : `${kingdomName} · 兴趣点：${point.value} + ${reminder.modifier} = ${point.result}，查王国面板第 ${point.result} 项。`);
+      } else {
+        lines.push(`${kingdomName} · 兴趣点：${point.name}，查王国面板同名条目。`);
+      }
+      const result = POI_RULES.result(state.kingdom, point);
+      if (result) lines.push(`${result.title}（${result.name}）：${result.text}`);
+    }
+    return lines.join("\n");
+  }
+
+  function storyPointOfInterestAction(result) {
+    if (["Faraway Landslide", "A Distant Rumble"].includes(result?.name)) return "轮换 1";
+    if (result?.name === "A Convenient Hideaway") return "威胁 −2";
+    return "";
+  }
+
+  function executeStoryPointOfInterest(index) {
+    const reminder = storyPointOfInterestReminder();
+    if (!reminder || !Number.isInteger(index) || reminder.executed?.[index]) return;
+    const result = POI_RULES.result(state.kingdom, reminder.points[index]);
+    const action = storyPointOfInterestAction(result);
+    if (!action) return;
+    snapshot(`兴趣点：${action}`);
+    if (action === "轮换 1") rotateDistrictWheel(mapState(), 1, 1, true);
+    else changeThreat(-2);
+    reminder.executed ||= [];
+    reminder.executed[index] = true;
+    addLog(`执行兴趣点「${result.title}」：${action}`);
+    save(true);
+  }
+
+  function storyReminderPanel() {
+    if (state.step !== 3) return "";
+    const reminder = storyPointOfInterestReminder();
+    const kingdomName = state.kingdom === "POS" ? "巨石公国" : "沉没王国";
+    const points = (reminder?.points || []).map((point, index) => {
+      const result = POI_RULES.result(state.kingdom, point);
+      const action = storyPointOfInterestAction(result);
+      const executed = reminder.executed?.[index] === true;
+      const conditions = result?.text.split(/(?=DEVIL：|成功：|失败：)/).filter(Boolean) || [];
+      const automatic = reminder.modifier === null ? null : point.value + reminder.modifier;
+      const correction = point.result === automatic ? 0 : automatic === null ? null : point.result - automatic;
+      const correctionText = correction === null ? "?" : correction < 0 ? `(${correction})` : correction;
+      return `<article class="story-poi-block">
+        <div class="story-section-heading"><h4>兴趣点</h4><span class="tiny">${esc(kingdomName)}</span></div>
+        ${point.type === "number" ? `<div class="story-poi-calculation"><span class="tiny">板块数字 + 牌顶修正 + 手动修正</span>
+          <div class="story-poi-calculation-row">
+            <strong class="story-poi-formula">${esc(point.value)} + ${esc(reminder.modifier ?? "?")} + ${esc(correctionText)} = <output class="story-poi-value" aria-label="兴趣点结果" aria-live="polite">${esc(point.result ?? "?")}</output></strong>
+            <div class="story-poi-adjustment" role="group" aria-label="手动修正兴趣点结果">
+              <button type="button" class="small secondary" data-poi-index="${index}" data-poi-delta="-1" aria-label="兴趣点结果减一" ${executed || point.result !== null && point.result <= 1 ? "disabled" : ""}>−</button>
+              <button type="button" class="small secondary" data-poi-index="${index}" data-poi-delta="1" aria-label="兴趣点结果加一" ${executed || point.result !== null && point.result >= 9 ? "disabled" : ""}>＋</button>
+            </div>
+          </div><span class="tiny">${point.result === null ? "按当时探索牌顶修正后查表，也可用 − / ＋ 手动设置结果" : `王国面板第 ${esc(point.result)} 项 · 可用 − / ＋ 修正`}</span></div>` : '<p class="tiny">按名称查找王国面板同名条目</p>'}
+        <div class="story-poi-result"><h4>${esc(result?.title || point.name || "待确认结果")}</h4>${result ? `<p class="tiny story-poi-name">${esc(result.name)}</p>` : ""}
+          ${conditions.map(text => `<p class="story-effect${text.startsWith("DEVIL") ? " story-condition" : ""}">${esc(text)}</p>`).join("")}
+          ${action ? `<div class="toolbar"><button type="button" class="small" data-execute-poi="${index}" ${executed ? "disabled" : ""}>${executed ? "已执行" : `执行：${esc(action)}`}</button>${executed ? '<span class="tiny">可通过“撤销一步”恢复。</span>' : ""}</div>` : ""}
+        </div>
+      </article>`;
+    }).join("");
+    return `<section class="panel resolution story-reminder-panel" aria-label="故事步骤提醒">
+      <div class="panel-header"><div><div class="eyebrow">STORY STEP</div><h3>故事步骤提醒</h3></div><span class="badge gold">第 ${esc(state.round)} 轮 · 时间 ${esc(state.trackers.time)}</span></div>
+      <div class="story-section"><h4>本步处理</h4><ul><li>阅读本轮故事段落。</li><li>检查并结算当前时间事件。</li></ul></div>
+      ${points || '<p class="tiny story-empty">本轮没有新的兴趣点需要结算。</p>'}
+      <p class="tiny story-reminder-footer">全部结算完成后，点击下方“完成本轮”。</p>
+    </section>`;
+  }
+
   function cluesAndStoryPanel() {
     const current = mapState();
     const lastClue = current.exploration.lastClueResolution;
@@ -2871,6 +3001,7 @@
 
       <aside class="host-sidebar" aria-label="主持工具">
         <div class="sidebar-scroll stack">
+          ${state.step === 3 ? `<div class="sidebar-priority">${storyReminderPanel()}</div>` : ""}
           ${current.tileResolution ? `<div class="sidebar-priority">${tileResolutionPanel()}</div>` : ""}
           ${current.fog.active ? `<div class="sidebar-priority">${fogPanel()}</div>` : ""}
           <section class="panel history-panel">
@@ -2901,7 +3032,10 @@
     </div>`;
     bind();
     const sidebar = $(".sidebar-scroll");
-    if (sidebar) sidebar.scrollTop = sidebarScrollTop;
+    const focusStory = focusStoryReminder && state.step === 3;
+    focusStoryReminder = false;
+    if (sidebar) sidebar.scrollTop = focusStory ? 0 : sidebarScrollTop;
+    if (focusStory) $(".story-reminder-panel")?.scrollIntoView({ block: "nearest" });
     if (kingdomPanelDialogOpen) openKingdomPanelDialog();
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
@@ -2947,7 +3081,7 @@
           ${tileResolutionPanel()}
            ${state.step === 2 ? explorationToolsPanel() : ""}
           ${mercenaryPanel()}
-          ${state.step === 3 ? cluesAndStoryPanel() : ""}
+          ${state.step === 3 ? `${storyReminderPanel()}${cluesAndStoryPanel()}` : ""}
           <section class="panel">
             <div class="panel-header"><div><div class="eyebrow">SETTLEMENT HISTORY</div><h3>最近记录</h3></div><button id="nextStep" class="small">${state.step === 3 ? "完成本轮" : "进入下一步"}</button></div>
             <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(window.KFMonsterLabels?.text(item.text) ?? item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
@@ -3315,6 +3449,17 @@
       beginTile(node.dataset.tile);
     });
 
+    $$("[data-execute-poi]").forEach(button => button.addEventListener("click", () => {
+      executeStoryPointOfInterest(Number(button.dataset.executePoi));
+    }));
+    $$("[data-poi-delta]").forEach(button => button.addEventListener("click", () => {
+      const { poiIndex, poiDelta } = button.dataset;
+      adjustStoryPointOfInterest(Number(poiIndex), Number(poiDelta));
+      const replacement = $(`[data-poi-index="${poiIndex}"][data-poi-delta="${poiDelta}"]`);
+      (replacement?.disabled
+        ? $(`[data-poi-index="${poiIndex}"][data-poi-delta="${-Number(poiDelta)}"]`)
+        : replacement)?.focus({ preventScroll: true });
+    }));
     $$("[data-tool-tab]").forEach(button => button.addEventListener("click", () => {
       activeTool = button.dataset.toolTab;
       $$("[data-tool-tab]").forEach(tab => {
@@ -3361,7 +3506,7 @@
     });
     $("#closeKingdomPanel")?.addEventListener("click", closeKingdomPanelDialog);
     $("#kingdomPanelDialog")?.addEventListener("cancel", event => event.preventDefault());
-    $("#selectedBeginButton")?.addEventListener("click", () => beginTile(current.selected));
+    $("#selectedBeginButton")?.addEventListener("click", () => beginTile(current.selected, Boolean(tileTravelBlockReason(current.selected))));
     $("#forceMovePartyButton")?.addEventListener("click", () => forceMoveParty(current.selected));
     $("#showSpecificKingdomTile")?.addEventListener("click", () => {
       const id = $("#showKingdomTileSelect")?.value;
@@ -4529,6 +4674,7 @@
         imported.version = SAVE_VERSION;
         state = normalizeSavedMapState(applySavedTileRegionCorrections(imported));
         activeTool = STEP_TOOL[state.step] || "tile";
+        focusStoryReminder = state.step === 3;
         save(true);
         toast("存档导入成功");
       } catch (error) {
@@ -4566,9 +4712,11 @@
     state = replacement;
     activeTool = STEP_TOOL[state.step] || (state.step === 3 ? "exploration" : "tile");
     pendingEncounterAutoStart = false;
+    focusStoryReminder = state.step === 3;
     checkLimits();
     render();
-    toast(`检测到并发修改，已保留服务器上轮次更多的第 ${state.round} 轮存档`);
+    const updateMessage = `检测到并发修改，已保留服务器上轮次更多的第 ${state.round} 轮存档`;
+    toast(updateMessage);
   });
 
   const completedEncounterConsumed = consumeCompletedEncounter();

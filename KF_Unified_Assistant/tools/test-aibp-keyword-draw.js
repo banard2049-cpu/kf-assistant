@@ -48,7 +48,10 @@ const context = vm.createContext({
 for (const file of [
   "public/monster-labels.js",
   "public/modules/aibp/data/monster-data.js",
+  "public/modules/aibp/data/localized-traits.js",
+  "public/modules/aibp/data/localized-sheets.js",
   "public/modules/aibp/data/level-config.js",
+  "public/modules/aibp/data/postgame-config.js",
   "public/modules/aibp/data/mob-activation-config.js",
   "public/modules/aibp/data/boss-rule-config.js",
   "public/modules/aibp/data/conflict-setup-data.js",
@@ -115,5 +118,24 @@ context.window.KFCardKeywords = { ready: Promise.resolve({}), words: ids => Arra
   api.discardTopAi(1);
   await Promise.resolve();
   assert.equal(notices.length, 0, "face-down discards do not leak keywords");
+  // Exercise the actual index through the battle UI, not the ID-only mock above.
+  context.document.currentScript = { src: "http://localhost/modules/card-keywords.js" };
+  const keywordData = JSON.parse(fs.readFileSync(path.join(root, "public/keyword-data/card-keywords.json"), "utf8"));
+  context.fetch = async () => ({ ok: true, json: async () => keywordData });
+  vm.runInContext(fs.readFileSync(path.join(root, "public/modules/card-keywords.js"), "utf8"), context);
+  await context.window.KFCardKeywords.ready;
+  let persistent = [];
+  context.window.KFKeywords.setPersistent = groups => { persistent = groups; };
+  api.selectMonster("M_Pumpkinhead");
+  await Promise.resolve();
+  assert.ok(persistent[0].keywords.includes("Advanced Bypass"), "pumpkinhead battle panel shows Advanced Bypass");
+  assert.ok(persistent[1].keywords.includes("Afflict"), "localized pumpkinhead traits resolve to indexed cards");
+  api.selectMonster("M_Knighteater");
+  api.state().battle.level = 5;
+  api.rebuild();
+  api.renderApp();
+  await Promise.resolve();
+  assert.ok(api.activeReferenceIds().includes("postgame-knighteater-5-traits"), "level 5 trait is active");
+  assert.ok(persistent[1].keywords.includes("Fleisch"), "level 5 trait panel retains Fleisch");
   console.log("keyword draw and battle switching passed");
 })().catch(error => { console.error(error); process.exitCode = 1; });

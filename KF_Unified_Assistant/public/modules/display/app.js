@@ -458,9 +458,11 @@
     const trackType=bossTrack?bossTrack.type:"standard";
     const sourceSlots=bossTrack?bossTrack.slots||[]:standardSlots;
     const slotCount=noMobTrack?6:16;
+    const coordinatedAttack=trackType==="guardian"?cardById(monster,"M_WhiteApe:Trait:39"):null;
+    const leadingCard=coordinatedAttack?`<div class="display-mob-slot guardian feature revealed"><div class="display-track-card" data-public-feature="${esc(coordinatedAttack.id)}" aria-label="协同攻击" title="${esc(coordinatedAttack.name)}" style="${cardArt(coordinatedAttack)}"></div></div>`:"";
     const backCard=monster.cards.find(card=>/^BP[123SX]$/.test(card.kind));
     let used=0;
-    const slots=Array.from({length:16},(_,index)=>(index<10?sourceSlots[index]:null)||{id:"",occupied:false,revealed:false,side:"face",markerTokens:{}}).slice(0,slotCount).map((slot,index)=>{
+    const slots=Array.from({length:16},(_,index)=>(index<10?sourceSlots[index]:null)||{id:"",occupied:false,revealed:false,side:"face",markerTokens:{}}).slice(0,slotCount-Number(Boolean(coordinatedAttack))).map((slot,index)=>{
       const card=trackType==="standard"&&slot.revealed&&slot.id?cardById(monster,slot.id):null;
       const occupied=slot.occupied===true||Boolean(slot.id);
       const filler=!occupied&&(fillers[used]?.card||fillers[used]?.terrainCard)?fillers[used++]:null;
@@ -476,7 +478,7 @@
         cardContent=`<div class="display-track-stack">${stackCards.map((stackCard,depth)=>`<div class="display-track-card" style="--stack-depth:${depth};${cardArt(stackCard,knownCards.length?"face":"back")}"></div>`).join("")}</div><b class="display-track-count">×${esc(slot.cardCount||stackCards.length)}</b>`;
       }else if(trackType==="guardian"&&occupied){
         const guardianCard=slot.carrier?cardById(monster,"M_WhiteApe:Trait:38"):null;
-        cardContent=guardianCard?`<div class="display-track-card" style="${cardArt(guardianCard)}"></div>`:`<img class="display-guardian-figure" src="/assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫">`;
+        cardContent=guardianCard?`<div class="display-track-card" style="${cardArt(guardianCard)}"></div>`:`<img class="display-guardian-figure" src="/assets/guardians/guardian-${index % 6 + 1}.webp?v=3" alt="先民护卫 ${index + 1}">`;
       }
       const activationTokens=trackType==="standard"?(battle.mobActivations||[]).filter(token=>token.position===index).map(token=>`<span class="display-activation ${token.used?"used":""} ${token.id===battle.activeMobActivationId?"active":""}">${esc(token.type)}</span>`).join(""):"";
       // AI/SG activation tokens sit in a strip anchored to the bottom of the BP
@@ -487,7 +489,7 @@
       const slotNumber=index<10?`<span class="display-slot-number ${mobNumberClass(index+1)}">${index+1}</span>`:"";
       return `<div class="display-mob-slot ${trackType} ${index>=10?"display-extra-slot ":""}${occupied?"occupied":filler?"feature":"empty"} ${slot.revealed?"revealed":"hidden"} ${card&&slot.id===battle.activeBP?"active":""} ${slot.decoy?"decoy":""}" data-track-index="${index}">${slotNumber}${cardContent||'<strong class="display-empty-slot">空位</strong>'}<div class="display-bp-markers">${markers}</div>${activations}${slot.decoy?'<b class="display-decoy">诱匿</b>':""}</div>`;
     }).join("");
-    return {html:`<section class="display-mob-track-block ${noMobTrack?"no-mob-track":""}" aria-label="杂兵 BP 轨"><div class="display-mob-track" data-track-slot-count="${slotCount}">${slots}</div></section>`,used};
+    return {html:`<section class="display-mob-track-block ${noMobTrack?"no-mob-track":""}" aria-label="杂兵 BP 轨"><div class="display-mob-track" data-track-slot-count="${slotCount}">${leadingCard}${slots}</div></section>`,used};
   }
   function applyBoardCrop(board) {
     const crop = board?.crop || {};
@@ -764,7 +766,7 @@
       "M_FirstmenWarriors:Trait:37","M_FirstmenWarriors:Trait:38","M_FirstmenWarriors:Trait:39",
     ]);
     const isTacticCard=card=>tacticIds.has(card.id)||/战术|tactic/i.test(card.name||"");
-    const references=(monster?.cards||[]).filter(card=>["Trait",kingdomTrait,"BPX"].includes(card.kind)&&!isTacticCard(card));
+    const references=(monster?.cards||[]).filter(card=>["Trait",kingdomTrait,"BPX"].includes(card.kind)&&!isTacticCard(card)&&!(battle.bossMobTrack?.type==="guardian"&&card.id==="M_WhiteApe:Trait:39"));
     // battle.mobTacticCard is the authoritative pointer to the currently
     // selected tactic.  Do not re-classify it by name/id here: newly added
     // tactic cards may not yet be covered by the local classifier.

@@ -270,13 +270,15 @@
     "M_Eggknight:BP1:4": {
       "keywords": [
         "OvercomeX+",
-        "Power"
+        "Power",
+        "Opening X",
+        "Break X"
       ],
       "add": [
         "OvercomeX+"
       ],
       "remove": [],
-      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。 Opening 和 Break 在此为指示物而非对应 X 行动。",
+      "note": "卡面明确保留额外的 Opening / Break 指示物，收录对应规则词条。",
       "image": "/assets/cards/monster-faces/eggknight/6d1c98de-22.jpg",
       "sha256": "dfe25c7faf1769034984a96dea2b9e57a806cfb753fd4e84ce1ef358c8548731"
     },
@@ -369,13 +371,15 @@
     "M_Eggknight:BP2:7": {
       "keywords": [
         "OvercomeX+",
-        "Power"
+        "Power",
+        "Opening X",
+        "Break X"
       ],
       "add": [
         "OvercomeX+"
       ],
       "remove": [],
-      "note": "逐张目视核对：按卡面实际效果匹配词典。 顶部 OVERCOME 阈值与 Power 1 分别对应过线和强度。 Opening 和 Break 在此为指示物而非对应 X 行动。",
+      "note": "卡面明确保留额外的 Opening / Break 指示物，收录对应规则词条。",
       "image": "/assets/cards/monster-faces/eggknight/6d1c98de-29.jpg",
       "sha256": "e0216fe3ccd58c76202059986344e9f8584ed44eb338a5e874f805b86ab4350a"
     },

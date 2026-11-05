@@ -156,9 +156,11 @@
       "keywords": [
         "OvercomeX+",
         "Power",
-        "Knockback X"
+        "Knockback X",
+        "Opening X",
+        "Break X"
       ],
-      "note": "逐图对照词典，排除弃置装备及盔甲指示物的普通用法；Ruin 和 Penetrate 原词典未收录。",
+      "note": "卡面明确保留额外的 Opening / Break 指示物，收录对应规则词条。",
       "image": "/assets/cards/monster-faces/stonemason/b767e87b-22.jpg",
       "sha256": "30ceb971056925fdb966924b25a3c731201af0435947e3c6d21bfcf0c5166d42"
     },

@@ -314,15 +314,17 @@ const aibpStyles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 assert.match(aibpStyles,
   /\.guardian-mob-track\s*\{[\s\S]*?grid-auto-columns:\s*clamp\(170px,\s*15vw,\s*220px\)/,
   "先民护卫轨道列宽应与标准杂兵 BP 轨道一致");
-assert.ok(fs.existsSync(path.join(root, "../../assets/guardians/firstman-guardian-placeholder.png")),
-  "未持有共享 BP 的先民护卫占位图必须位于 AIBP 本地资源目录");
-assert.equal((whiteApeRules.match(/assets\/guardians\/firstman-guardian-placeholder\.png/g) || []).length, 1,
-  "初始时只有未持卡的护卫 2 应显示先民护卫占位图");
+for (let index = 1; index <= 6; index++) {
+  assert.ok(fs.existsSync(path.join(root, `../../assets/guardians/guardian-${index}.webp`)),
+    `未持有共享 BP 的先民护卫立绘 guardian-${index}.webp 必须位于 AIBP 本地资源目录`);
+}
+assert.equal((whiteApeRules.match(/assets\/guardians\/guardian-\d\.webp/g) || []).length, 1,
+  "初始时只有未持卡的护卫 2 应显示先民护卫立绘");
 assert.match(whiteApeRules, /data-rule-action="spawn-white-guardian"/,
   "White Ape Troll 应提供先民护卫特殊生成操作");
 api.renderApp();
 assert.match(nodes.get("#app").innerHTML,
-  /data-white-reinforcement-slot style="left:72\.5%;top:23\.5%"/,
+  /data-white-reinforcement-slot style="left:73\.7%;top:8\.0%"/,
   "增援抵达应在巨白猿魔大卡对应特质区域显示空计数入口");
 assert.doesNotMatch(nodes.get("#app").innerHTML, /data-white-vengeance-slot|data-white-vengeance-token/,
   "等级 1 不应显示为部落复仇计数");

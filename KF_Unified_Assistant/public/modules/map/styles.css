@@ -1224,7 +1224,10 @@ button.delve-track-cell.active .track-cell-note {
   right: 18px;
   bottom: 18px;
   z-index: 50;
-  max-width: 420px;
+  max-width: min(420px, calc(100vw - 36px));
+  max-height: calc(100vh - 36px);
+  overflow-y: auto;
+  white-space: pre-line;
   padding: 11px 14px;
   border: 1px solid var(--gold);
   border-radius: 8px;
@@ -1518,6 +1521,7 @@ main { padding: 12px 18px 24px; }
 .history-details[open] summary { border-bottom: 1px solid var(--line-soft); }
 .history-details .list { max-height: 280px; overflow-y: auto; }
 .history-details .list-row { align-items: flex-start; }
+.history-details .list-row > span { white-space: pre-line; }
 .history-details time { flex: 0 0 auto; }
 .list-row > * { min-width: 0; }
 .list-row span,
@@ -2213,3 +2217,27 @@ label,
 @media (max-width: 700px) {
   .marker-palette { flex-basis: 58px; padding: 5px 4px; }
 }
+
+.story-reminder-panel { overflow-wrap: anywhere; }
+.story-reminder-panel h4 { margin: 0; font-size: 14px; }
+.story-reminder-panel .panel-header { align-items: center; gap: 8px; }
+.story-section, .story-poi-block { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.story-section ul { display: grid; gap: 5px; margin: 8px 0 0; padding-left: 20px; }
+.story-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.story-poi-calculation { display: grid; gap: 4px; margin-top: 10px; padding: 10px 12px; background: var(--kf-paper-2); border-left: 3px solid var(--gold); }
+.story-poi-calculation-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.story-poi-formula { min-width: 0; font-size: 23px; line-height: 1.3; color: var(--gold); }
+.story-poi-adjustment { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; }
+.story-poi-adjustment button { width: 36px; min-height: 40px; padding: 4px; font-size: 20px; }
+.story-poi-value { font: inherit; color: inherit; }
+@media (max-width: 360px) {
+  .story-poi-formula { font-size: 19px; }
+  .story-poi-adjustment { gap: 4px; }
+  .story-poi-adjustment button { width: 32px; }
+}
+.story-poi-result { display: grid; gap: 8px; margin-top: 14px; }
+.story-poi-result h4 { font-size: 16px; }
+.story-poi-name { margin-top: -4px; }
+.story-effect { line-height: 1.65; }
+.story-condition { padding: 8px 10px; border-left: 3px solid var(--red); background: rgba(88, 16, 22, .18); }
+.story-reminder-footer, .story-empty { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }

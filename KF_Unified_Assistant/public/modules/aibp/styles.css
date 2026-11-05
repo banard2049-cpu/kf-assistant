@@ -1247,13 +1247,24 @@ h3 { font-size: 19px; }
 .white-guardian-rule .rule-badges { margin-bottom: 0; }
 .guardian-rule-summary {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.45;
 }
 .guardian-rule-summary strong { flex: 0 0 auto; color: var(--ink); }
+.guardian-rule-summary > span { flex: 1 1 0; min-width: 180px; }
+/* 徽标并入说明行，放在最前面；不再单独占一行 */
+.guardian-rule-summary .guardian-rule-badges {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+.guardian-rule-summary .guardian-rule-badges .badge { min-height: 22px; padding: 2px 7px; font-size: 10px; }
 .guardian-mob-track {
   display: grid;
   grid-auto-flow: column;
@@ -1306,7 +1317,7 @@ h3 { font-size: 19px; }
   overflow: hidden;
   place-items: stretch;
   border-radius: 4px;
-  background: #eee7d5;
+  background: #e0d2b6;
 }
 .guardian-track-figure img {
   display: block;
@@ -2493,12 +2504,17 @@ label,
   color: var(--kf-muted);
 }
 .conflict-map-figure { margin: 0; min-width: 0; }
-.conflict-map-figure img {
-  display: block;
+.conflict-map-crop {
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  height: auto;
   border: 1px solid #5c5148;
   background: #17140f;
+}
+.conflict-map-crop img {
+  position: absolute;
+  display: block;
+  max-width: none;
 }
 .conflict-map-figure figcaption {
   margin-top: 7px;
@@ -2636,12 +2652,6 @@ label,
 .postgame-reference-gallery > * { break-inside: avoid; margin: 0 0 12px; }
 .postgame-reference-gallery .postgame-reference-card { display: inline-flex; width: 100%; }
 .postgame-preview-modal { width: min(880px, 94vw); }
-.sheet-trait-tools { margin: 8px 0 12px; }
-.sheet-trait-tools > p { font-size: 12px; line-height: 1.5; }
-.sheet-trait-choices { display: grid; gap: 6px; }
-.sheet-trait-choice { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--line); }
-.sheet-trait-choice > span { min-width: 0; font-size: 12px; overflow-wrap: anywhere; }
-.sheet-trait-choice > button { flex-shrink: 0; }
 .sheet-trait-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .sheet-trait { position: absolute; transform: translate(-50%, -50%); padding: 0; border: 1px solid #b79b63; background: #f4eee4; box-shadow: 0 2px 8px #0008; cursor: grab; touch-action: none; pointer-events: auto; }
 .sheet-trait > img { display: block; width: 100%; height: auto; user-select: none; }
@@ -2681,3 +2691,5 @@ label,
 @media (max-width: 800px) { .reference-squire-layout { flex-direction: column; } .reference-squire-layout > .panel, .squire-clues { width: 100%; box-sizing: border-box; } .squire-clues { flex-basis: auto; } .squire-clue-member { min-height: 110px; } }
 
 .squire-clue-adjust button:active { box-shadow: none; transform: none; }
+
+.guardian-track-figure { aspect-ratio: var(--card-aspect, .7); }

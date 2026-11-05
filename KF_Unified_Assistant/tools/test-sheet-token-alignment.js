@@ -224,6 +224,7 @@ const monsterSource = read("public/modules/aibp/data/monster-data.js");
 const monsterContext = { window: {} };
 vm.createContext(monsterContext);
 vm.runInContext(monsterSource, monsterContext);
+vm.runInContext(read("public/modules/aibp/data/localized-sheets.js"), monsterContext);
 const sheetMonsters = monsterContext.window.KF_MONSTER_DATA.monsters.filter(monster => monster.sheet?.face || monster.sheet?.back);
 assert.ok(sheetMonsters.length >= 20);
 for (const monster of sheetMonsters) {

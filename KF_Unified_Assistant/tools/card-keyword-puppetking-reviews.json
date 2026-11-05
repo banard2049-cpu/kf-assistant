@@ -171,10 +171,13 @@
       "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
     },
     "M_PuppetKing:BP1:2": {
-      "keywords": [],
+      "keywords": [
+        "Opening X",
+        "Break X"
+      ],
       "image": "/assets/cards/monster-faces/puppet-king/c05af5a0-19.jpg",
       "sha256": "5911fb32536ac4c520e00e960880cb90e5d7ebda3ad01fde6692c05a21027a03",
-      "note": "目视核对；弃置盔甲/装备或状态卡不同于词典的随机弃手牌，指示物与攻击强度投掷不作为同名关键词。"
+      "note": "卡面明确保留额外的 Opening / Break 指示物，收录对应规则词条。"
     },
     "M_PuppetKing:BP1:3": {
       "keywords": [

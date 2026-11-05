@@ -1,0 +1,2718 @@
+{
+  "cards": {
+    "M_FirstmenLictor": {
+      "keywords": [
+        "Advanced Bypass",
+        "Difficult Terrain",
+        "Dwell",
+        "Lumbering",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/firstmen-lictor-hunters-face.webp",
+          "sha256": "4e71391594040adccb018e0f2ba91a214f0a90c3b8da7759f2e9a30a8b814ff0",
+          "previousSourceSHA256": "6044d8eadaf98a3dba9d2f3e8b2934107b383eba63be9c380463e828096f52b6"
+        },
+        "back": {
+          "path": "/assets/boss-panels/firstmen-lictor-hunters-back.webp",
+          "sha256": "b9c577b24feefb4dc29a49923ce8a87e91b180e85bf3857d00653d1980c91433",
+          "previousSourceSHA256": "44dd65a8d612e55f4b2d327b8220b333e431543ab4de4b081c391e526d24abea"
+        }
+      }
+    },
+    "M_FirstmenLictor:AI1:18": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-01.jpg",
+      "sha256": "cc00a18281d8d7bb72671e7e8ab1a87e29fcd9b13162dbad41da80b4dd4025f0"
+    },
+    "M_FirstmenLictor:AI1:19": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-04.jpg",
+      "sha256": "8cd377f8f3786e00af6475a0c6ae4aacb05a8145ee1086f03f3d323d8a97a8bf"
+    },
+    "M_FirstmenLictor:AI1:20": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-03.jpg",
+      "sha256": "0dd5a8a1cea5fe33573884b685adea22a47d6694924a03d391f1df659ad130ae"
+    },
+    "M_FirstmenLictor:AI1:21": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-00.jpg",
+      "sha256": "42275109d43151247d1ec9d53d8cab3eef4e6402d5692221e568b8edfea403f0"
+    },
+    "M_FirstmenLictor:AI1:22": {
+      "keywords": [
+        "Dwell",
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-05.jpg",
+      "sha256": "8a537b281638267598629160bb7cff8197e3f184674ede94e3e6ff4a709fc929"
+    },
+    "M_FirstmenLictor:AI1:23": {
+      "keywords": [
+        "Dwell"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-02.jpg",
+      "sha256": "884b8130dd719e9017db9bf4faa09b47fbe3f639bbcf93113bdcdc8b834c549c"
+    },
+    "M_FirstmenLictor:AI2:24": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-07.jpg",
+      "sha256": "2d39c9f6d46bae16914082915ef7becc8b9984437b6cb8467002f191230fb850"
+    },
+    "M_FirstmenLictor:AI2:25": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-10.jpg",
+      "sha256": "66b37bb2340b95c69f44fbcf528c81f2f18aa90ceb9cffdfe75ba878b66cc998"
+    },
+    "M_FirstmenLictor:AI2:26": {
+      "keywords": [
+        "Poison",
+        "Dwell"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-09.jpg",
+      "sha256": "64fb608c67948142dab4143445c57b112d0e2b567f1ae4ec7cb9a55fc2a1ae84"
+    },
+    "M_FirstmenLictor:AI2:27": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-08.jpg",
+      "sha256": "b804893cfa8876600b6ecb469755b73431176d5858af98dea1a47ce3a9ae6a7d"
+    },
+    "M_FirstmenLictor:AI2:28": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-11.jpg",
+      "sha256": "b46a0279a0cf212acac36edec0d70ebb0a7f49990512b92088fc83a1105ae78b"
+    },
+    "M_FirstmenLictor:AI2:29": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-06.jpg",
+      "sha256": "6d4f64434a38a2427220af92d24fe2d092551b3a4235552a8a1fa97b9239fad9"
+    },
+    "M_FirstmenLictor:AI3:30": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-16.jpg",
+      "sha256": "81d313e184dd6e7d45345149c9aff40efb860d473130b3033a7fd2080f5a6f9f"
+    },
+    "M_FirstmenLictor:AI3:31": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-17.jpg",
+      "sha256": "2b46441eb88a518bb6f9f96fc81c81517c87e467d4707a0f7b079d82d3f9450c"
+    },
+    "M_FirstmenLictor:AI3:32": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-14.jpg",
+      "sha256": "fcd00d3561abb5996f0c57e3c8a2f2a961ed92da3b9184d86007d85aa08ba130"
+    },
+    "M_FirstmenLictor:AI3:33": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-12.jpg",
+      "sha256": "18cb0b86a1ac646bcc4a896e0b1442a08985aac940260437b769a7b8fb59005f"
+    },
+    "M_FirstmenLictor:AI3:34": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-13.jpg",
+      "sha256": "f82da86ea74941d4464105a78d2852018988fa95f6930f3f2c51b7cb33110f50"
+    },
+    "M_FirstmenLictor:AI3:35": {
+      "keywords": [
+        "Dwell",
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-15.jpg",
+      "sha256": "3a8b4af0001bf86f507b08c66ee369b219a266ea3185d5c1220fc3f237e61db3"
+    },
+    "M_FirstmenLictor:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-25.jpg",
+      "sha256": "37a9df2b4a574d703dcfd0c43d9fc17299853867a3ea9c4f3a12330868df728c"
+    },
+    "M_FirstmenLictor:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-20.jpg",
+      "sha256": "47bdbdd82e479e9e0df7f406e9d472527d9ad61467d077f8a7a3419ea3f13b46"
+    },
+    "M_FirstmenLictor:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-24.jpg",
+      "sha256": "110409a134879ceca049ad639e267278b3608246b3683b196cdfe7483225730d"
+    },
+    "M_FirstmenLictor:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-19.jpg",
+      "sha256": "1e85ff5ca4181d819ca8256f7716434ef7397ba8e0d54f060abafc239d23ccff"
+    },
+    "M_FirstmenLictor:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-22.jpg",
+      "sha256": "665e278cc3400e1ab241a52c42b6e116e0f3530288a68606ef032a3537183475"
+    },
+    "M_FirstmenLictor:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-18.jpg",
+      "sha256": "98e0796106d396ff46a19eb95aaa4c675d3caeb9bed60d94db6dbf460d4b4a7b"
+    },
+    "M_FirstmenLictor:BP1:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-21.jpg",
+      "sha256": "a92d8a4a743980533537be86aa25902bf39dab258fd71b68ab227def02b9c499"
+    },
+    "M_FirstmenLictor:BP1:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-23.jpg",
+      "sha256": "cc7335f7d07b939defa3ffa56866a828de56543cdc933336ef4a071b57e047bc"
+    },
+    "M_FirstmenLictor:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-31.jpg",
+      "sha256": "fc58013a32c61dd32a4186f15ea0b110f692b1d77bce4bd96685603aa8f6a8d1"
+    },
+    "M_FirstmenLictor:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-26.jpg",
+      "sha256": "ec2483c7c0c5dd10122d947b0862378d01a125bf86288da80e8a92d9ccf58cbc"
+    },
+    "M_FirstmenLictor:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-27.jpg",
+      "sha256": "0634da88a1c1e02ff0c11ddcb444473edeba07539ba9960b8e0a5c740f6f6ff2"
+    },
+    "M_FirstmenLictor:BP2:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-28.jpg",
+      "sha256": "86408525bc4e35762faba81b2ac739fe72afa03155a616fd983d26ea2bc734f1"
+    },
+    "M_FirstmenLictor:BP2:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-30.jpg",
+      "sha256": "26ff28d05e8b5d7563a00d9f99c6d83d840aa01feea206f449750f785f85f6b2"
+    },
+    "M_FirstmenLictor:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-29.jpg",
+      "sha256": "74b9f294e7587bc5953f8b7d5b1e41daabd496ce78e361b2ff650e6f4457fbf7"
+    },
+    "M_FirstmenLictor:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-34.jpg",
+      "sha256": "e1b3ba00122c6d02da312d1eff751cddd731db6627508dd4a9a23b9cbf020e21"
+    },
+    "M_FirstmenLictor:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Opening X",
+        "Break X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-33.jpg",
+      "sha256": "b77cf8ecfe37518f87f99308de22397580bd85645fef37b60d44d3db7b777de5"
+    },
+    "M_FirstmenLictor:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Activate X",
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-35.jpg",
+      "sha256": "28ccaa418242a0c98d277da4ef9f96e1d06f58c05eb68d148ee051875b33d222"
+    },
+    "M_FirstmenLictor:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-32.jpg",
+      "sha256": "2ab6c6ebc4a2206ae95abed79bad7d5863339f022f254c496dfbf7026710c415"
+    },
+    "M_FirstmenLictor:SIG:36": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-36.jpg",
+      "sha256": "4d6f4d97795c07d95e2ea47ba22094e47c1153a4e9569048d6b7a787819cd232"
+    },
+    "M_FirstmenLictor:Trait:37": {
+      "keywords": [
+        "Escalate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-38.jpg",
+      "sha256": "197ac21c72e1529410ef35d5d61dc4e19c93f96879579ea769c0e0ab836f3f1f"
+    },
+    "M_FirstmenLictor:Trait:38": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-42.jpg",
+      "sha256": "b1ed666aaee17d30ed7b59a74fb19c65eae3c3e59afe235e3d19f8e500f543dc"
+    },
+    "M_FirstmenLictor:Trait:39": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-39.jpg",
+      "sha256": "6d9d3961e8ed3359da6ebc4636010b1abc67f3e1225d79f28ad3300f30e64cd8"
+    },
+    "M_FirstmenLictor:Trait:40": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-41.jpg",
+      "sha256": "35310b4083baef500a4921be55e1c9c156dbd35e7cbee891410a7f6817a68409"
+    },
+    "M_FirstmenLictor:Trait:41": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-37.jpg",
+      "sha256": "3862afcf5718d03cb99f670b65c4a7251032551d3694898a7aab62a9e37be9dd"
+    },
+    "M_FirstmenLictor:Trait:42": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-lictor/c1d50fcc-40.jpg",
+      "sha256": "0cb2a690be87cb84f8d21c7fd7110705bdf1cf56b8b88a5141dc03e20f3e8916"
+    },
+    "postgame-firstmenlictor-5-traits": {
+      "keywords": [
+        "Doomed"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenlictor-5-traits.png",
+      "sha256": "705d65ff7fbe7e6ebb9935ef6f1516b18672e4eb2f96c83593601021d64ee03a"
+    },
+    "postgame-firstmenlictor-6-traits": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenlictor-6-traits.png",
+      "sha256": "cff08b6044c8049f509400264dca0af8c6a806b2b76d3ffc75909dcab8210c70"
+    },
+    "postgame-firstmenlictor-7-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenlictor-7-traits.png",
+      "sha256": "4b23a2a84b16db32a2966d58b5bc417d4b95a43ca6e8e916dbda711014ee435e"
+    },
+    "postgame-firstmenlictor-8-traits": {
+      "keywords": [
+        "Poison",
+        "Toxify"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenlictor-8-traits.png",
+      "sha256": "131edd8b93e90d8d329005f5c670418f16ecc98752a7e6fed0c15753b8e8798e"
+    },
+    "postgame-firstmenlictor-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenlictor-9-traits.png",
+      "sha256": "b7d766771c4f6680c649af4df1ac190d1cbdcdd5f61f40e7fa5519d3c1226f98"
+    },
+    "M_FirstmenWarriors": {
+      "keywords": [
+        "Advanced Bypass"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/firstmen-warriors-face.webp",
+          "sha256": "0c8d4881555c5b78a0eaa75c8d36a62cadcf3d73041fffa0ebad170963b98c98",
+          "previousSourceSHA256": "40b0b4cab1411345b2a9b953e40fe3eae28f707649a58ba662910405096f51a4"
+        },
+        "back": {
+          "path": "/assets/boss-panels/firstmen-warriors-back.webp",
+          "sha256": "dc3ddecc1361c824d5bbf5a279fc944747decfa1f8b355b238eaaa1cb71ef705",
+          "previousSourceSHA256": "b9cc7a181d3c27b03524e739df6a9ba33bd60bc3680d28584f7931cf1f4df8f5"
+        }
+      }
+    },
+    "M_FirstmenWarriors:AI1:18": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-02.jpg",
+      "sha256": "3c748aa4cbf358734e6d8785e1cc1d7fb3842e917ae0e5dc493210861aefa06b"
+    },
+    "M_FirstmenWarriors:AI1:19": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-03.jpg",
+      "sha256": "952e2a02a88ce6626cdc46cf150eb61465b506eba4a1536853260cc996e4773e"
+    },
+    "M_FirstmenWarriors:AI1:20": {
+      "keywords": [
+        "Cooldown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-05.jpg",
+      "sha256": "10fd6125337b344f902a19bf47b1e93b46baabb03edf712c9fc91f50bfa3fd94"
+    },
+    "M_FirstmenWarriors:AI1:21": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-04.jpg",
+      "sha256": "3d86e48c154da9217c8a8221f4bf973f580a699cb7cc75913d58276d74b71acb"
+    },
+    "M_FirstmenWarriors:AI1:22": {
+      "keywords": [
+        "Forced Vault",
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-01.jpg",
+      "sha256": "cc9fe6c320b4a83a53b76979758ce3e6bd6aadefa19e7a1e39d5ac38a7c7ce53"
+    },
+    "M_FirstmenWarriors:AI1:23": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-00.jpg",
+      "sha256": "b87560aa4b63948169fff5bc29bfc9fa8ec92b5c7e40180f6855148031190f61"
+    },
+    "M_FirstmenWarriors:AI2:24": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-06.jpg",
+      "sha256": "0267ac7f4b047c8aef55539686778cecba27d6feb3746f7f25a2c748651a114b"
+    },
+    "M_FirstmenWarriors:AI2:25": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-07.jpg",
+      "sha256": "37b9bbb341ce4613f7dcc649b088a862311cf00e0c360195cf38d9e01fc41580"
+    },
+    "M_FirstmenWarriors:AI2:26": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-09.jpg",
+      "sha256": "c2825a9ddecbd4459f034a7a2b3f1a0f0cb02ed7fec64b2ced0322bb947c8741"
+    },
+    "M_FirstmenWarriors:AI2:27": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-11.jpg",
+      "sha256": "b34f1bfd848592059a7e036d452712afd04a96c97d7bacc3920fd6eaef9f676d"
+    },
+    "M_FirstmenWarriors:AI2:28": {
+      "keywords": [
+        "Knockdown",
+        "Forced Vault",
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-08.jpg",
+      "sha256": "25c8cd32c24307cc4ee9ef5faa17022923bd9aa164da9352241acd62ef2ad39c"
+    },
+    "M_FirstmenWarriors:AI2:29": {
+      "keywords": [
+        "Delay"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-10.jpg",
+      "sha256": "3b15e2e1da3e5c4a544dae1ee3eaaf8bba3bc29b60f0b681acfa3c2a61021b08"
+    },
+    "M_FirstmenWarriors:AI3:30": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-12.jpg",
+      "sha256": "210adfc98aa1dc2c24707af388155f5b1ca9d1e9a0ca89e90b4e683b61f8393c"
+    },
+    "M_FirstmenWarriors:AI3:31": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-14.jpg",
+      "sha256": "04787b9514bcb0f1497117c171ea265a5498af77b0b99a04b0282638f0d327aa"
+    },
+    "M_FirstmenWarriors:AI3:32": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-15.jpg",
+      "sha256": "9a8dcb0150611aaca46303c84b030b08e53cec402c83b027aa1b21c5bed7da66"
+    },
+    "M_FirstmenWarriors:AI3:33": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-17.jpg",
+      "sha256": "48050c42d9fc5b588dda7afb05762f2de30901187eb528fe1160c2ddd7b16478"
+    },
+    "M_FirstmenWarriors:AI3:34": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-13.jpg",
+      "sha256": "a70236e897cae6508e8d9b8018d9b6570425ca4e90b53e6e2432842d7dd7cb4c"
+    },
+    "M_FirstmenWarriors:AI3:35": {
+      "keywords": [
+        "Discard"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-16.jpg",
+      "sha256": "31ce858e61b50d872f5909ab55d055dbde0b09de756e101132be61e9abab6c70"
+    },
+    "M_FirstmenWarriors:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-23.jpg",
+      "sha256": "238f38393a146ed9354e40f2ec641e7603dae2c88cc96df80fe3c69f94b5c2f8"
+    },
+    "M_FirstmenWarriors:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-19.jpg",
+      "sha256": "cf1ff9f630a8e2f1ed2fbc26479f3978986f64d0228296dde42f072aa7619390"
+    },
+    "M_FirstmenWarriors:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-20.jpg",
+      "sha256": "b3c3e5adec9000620e3271f44b49f95084faba381f80455c049e495861c4b1dd"
+    },
+    "M_FirstmenWarriors:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-18.jpg",
+      "sha256": "b431427cd8e3bc34ffa0f85344dc35f793b2e2592fa16d0a1b187611596a0263"
+    },
+    "M_FirstmenWarriors:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-21.jpg",
+      "sha256": "5792f155ebf795c8066fa06d8a63dddcf38bc927c0278d1dfb57eaa41f9027b0"
+    },
+    "M_FirstmenWarriors:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Opening X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-22.jpg",
+      "sha256": "e2d0f521e61d1c951a42bd4a03f0b326d39e3c06a10d8d29e43df4ccacf950b5"
+    },
+    "M_FirstmenWarriors:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-24.jpg",
+      "sha256": "bd9c34be81b54f8772894b81f6cb789410373c9034fe9eccc32be169e7bb70c9"
+    },
+    "M_FirstmenWarriors:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-25.jpg",
+      "sha256": "25ec98beceaadef248e50701f19ef64190b84f2ed4658edc347a3f0e808290b2"
+    },
+    "M_FirstmenWarriors:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-26.jpg",
+      "sha256": "980f14cec5eb64251f233e280956326459249426f538d9b794b12599505cbac0"
+    },
+    "M_FirstmenWarriors:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-28.jpg",
+      "sha256": "ce78f36cb381ec8f3081abd6954327288992d345cdc2dd96c7ce76c03d0809fd"
+    },
+    "M_FirstmenWarriors:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Activate X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-27.jpg",
+      "sha256": "453613943907a246e45f9899d472aac2a19e5c44e2cedc531dc88eed84cf5e77"
+    },
+    "M_FirstmenWarriors:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-29.jpg",
+      "sha256": "fdc3758247172e83d866e96fb6d57830116a4403fb1523392994c3cc89799d8d"
+    },
+    "M_FirstmenWarriors:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Discard",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-35.jpg",
+      "sha256": "9a647143fed1c38ed4c3f8df764605f3d36c4acf599b2dd9fa0a89682acdb8e4"
+    },
+    "M_FirstmenWarriors:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-34.jpg",
+      "sha256": "1602f6739428c51a0c0b36011d7f72275f7486b0e1fb03f78b18c4efb0cd3a8e"
+    },
+    "M_FirstmenWarriors:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-33.jpg",
+      "sha256": "be8a626aa0334531e637214b043d9412ba7173e4a6e44fb56c0199b7ab4e0581"
+    },
+    "M_FirstmenWarriors:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Forced Vault",
+        "Knockdown",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-30.jpg",
+      "sha256": "c97dbc80524a3fd63353a09289a348574f689a78c4566a132033972dd6158b98"
+    },
+    "M_FirstmenWarriors:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-32.jpg",
+      "sha256": "634f6a4e1f0018ddc2ca75f677d552a841dff24f3ab691fa4dc41bd689f0f87e"
+    },
+    "M_FirstmenWarriors:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-31.jpg",
+      "sha256": "1cb612b5c95dced28c7e258ae031fcbe4579c2cbd2bdccae1f2b88caafa7b259"
+    },
+    "M_FirstmenWarriors:SIG:36": {
+      "keywords": [
+        "Escalate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-36.jpg",
+      "sha256": "c2774dd6fb8ef0070f9f697594c376e6d3806006dbed0db121534dd3ba838177"
+    },
+    "M_FirstmenWarriors:Trait:37": {
+      "keywords": [
+        "Herd",
+        "Splinter"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-39.jpg",
+      "sha256": "60cf18876d92639f8d7952bc84227762095e7ca6a7b3e9e21f87c3da65e30f74"
+    },
+    "M_FirstmenWarriors:Trait:38": {
+      "keywords": [
+        "Gangup",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-37.jpg",
+      "sha256": "6e4b2f69f5b4b7660b226ba9baa4168b1750d7ee3a5663c3cb1c17b69d9d1281"
+    },
+    "M_FirstmenWarriors:Trait:39": {
+      "keywords": [
+        "Pull X",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/firstmen-warriors/a7ccfd83-38.jpg",
+      "sha256": "94fb65df2f582c68983f406b29033a43f32cf131f3135325eec7282cda357664"
+    },
+    "postgame-firstmenwarriors-5-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenwarriors-5-traits.png",
+      "sha256": "b2dc264d28cc3c827898f84f628e655333f97f9b703828b3f5d8959180b4b0f1"
+    },
+    "postgame-firstmenwarriors-6-traits": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenwarriors-6-traits.png",
+      "sha256": "f4cba413e3d45eda874bfdc945019961e2cb2a3f4f29acc234afbd90832afd4d"
+    },
+    "postgame-firstmenwarriors-7-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenwarriors-7-traits.png",
+      "sha256": "6c2552f16645fa03f039af4f665aca044b3adda7daaa16b355c61d512f78a5c4"
+    },
+    "postgame-firstmenwarriors-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenwarriors-8-traits.png",
+      "sha256": "d9ff5a61be8c1a6bddc7ea23734b03b78f8285c0fd1c5af354d083962c910f6f"
+    },
+    "postgame-firstmenwarriors-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/firstmenwarriors-9-traits.png",
+      "sha256": "968540617519efc6b0198d5871c41e881734261c816e83dac04e95ead787bbc0"
+    },
+    "M_HauntOf": {
+      "keywords": [
+        "Superior Bypass",
+        "Knockback X",
+        "Crash"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/haunts-utrebant-face.webp",
+          "sha256": "5e7fc3eff3b4794afaafd7cbaab35cdde0fb3f6e42b81e2a93c8b89090c696c5",
+          "previousSourceSHA256": "1853706ed3066bf834b4dccf4e403dfb3c4ed82aa10e754def50e7e98fb704d3"
+        },
+        "back": {
+          "path": "/assets/boss-panels/haunts-utrebant-back.webp",
+          "sha256": "0fe8caa518bc88d2d38ea0996d02e064884dcb4a8f9a2880b51006efebe76729",
+          "previousSourceSHA256": "099797eb3a5f5670b0d6cc9715c97523bc1bc76dab9f07633c026eadabdb8081"
+        }
+      }
+    },
+    "M_HauntOf:AI1:9": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-05.jpg",
+      "sha256": "f0e0776ce795ddbad4dad5fc8e06fc7c14b0093f6703295c7a4de60071cd6f23"
+    },
+    "M_HauntOf:AI1:10": {
+      "keywords": [
+        "Cooldown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-04.jpg",
+      "sha256": "c30e9356d9e6a6022ca3470227b3acbbdb0717c1c7f6d62d818f68a029573577"
+    },
+    "M_HauntOf:AI1:11": {
+      "keywords": [
+        "Cooldown",
+        "Restrain"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-03.jpg",
+      "sha256": "ff5e71ed1d1fb3d95927d8b6e2f823d7ebcd828745dd66af0befcda627549d3e"
+    },
+    "M_HauntOf:AI1:12": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-01.jpg",
+      "sha256": "42e555bf62d69319ef12a8bd4492d0dc2e2db16678ee66ddf00a78c948f795f4"
+    },
+    "M_HauntOf:AI1:13": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-00.jpg",
+      "sha256": "59af094d3ed94a0dc8c8fc4d3b26ca8467d00cd6e41a74eb7c4fb83b5712a2ad"
+    },
+    "M_HauntOf:AI1:14": {
+      "keywords": [
+        "Choke",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-02.jpg",
+      "sha256": "4b7b4faf3f02194896ddc541775f784774b7e587e2111935cbf1e3c707578a1b"
+    },
+    "M_HauntOf:AI2:15": {
+      "keywords": [
+        "Forced Vault",
+        "Restrain"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-11.jpg",
+      "sha256": "8a0dff08e36c4fefa995bbb701478e79706ccfa503a62622c8d0a9a915735d78"
+    },
+    "M_HauntOf:AI2:16": {
+      "keywords": [
+        "Delay"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-09.jpg",
+      "sha256": "ed7fbe2eb5ca23c6899781bd566fa48b294a2df8b01c081bdbdd00009ef1d920"
+    },
+    "M_HauntOf:AI2:17": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-07.jpg",
+      "sha256": "9d7341bea6d242b74cff143fa3e869b8fff2fe16e8b2171b92755a2d85d875c3"
+    },
+    "M_HauntOf:AI2:18": {
+      "keywords": [
+        "Knockback X",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-06.jpg",
+      "sha256": "4bf9d35dade572611ed7ba31b6a0975c4e11279c36bf1bc606f1a845d265febd"
+    },
+    "M_HauntOf:AI2:19": {
+      "keywords": [
+        "Choke",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-10.jpg",
+      "sha256": "fd088476fac22994c1b9c099f03f92cb356e0319227b7ea567503212339121f1"
+    },
+    "M_HauntOf:AI2:20": {
+      "keywords": [
+        "Cooldown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-08.jpg",
+      "sha256": "8890fcf60599e02a25b263c4834cdb2aef793738c3cc19a3757c2b97f6668b90"
+    },
+    "M_HauntOf:AI3:21": {
+      "keywords": [
+        "Discard",
+        "Forced Vault"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-17.jpg",
+      "sha256": "d50994bf175c403a04bc6148dba08a608e12381e2c41b581d3e863535b9d6a31"
+    },
+    "M_HauntOf:AI3:22": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-15.jpg",
+      "sha256": "3fa877c4843586cd02c1b5a9fb24dc3243c21b8ab7eba11d92d5285ffa557523"
+    },
+    "M_HauntOf:AI3:23": {
+      "keywords": [
+        "Choke",
+        "Knockback X",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-16.jpg",
+      "sha256": "48ab51678bca1dee90a694eae9737ea55dc60ccc4dac73ebed98be05edb33eae"
+    },
+    "M_HauntOf:AI3:24": {
+      "keywords": [
+        "Cooldown",
+        "Restrain",
+        "Forced Vault"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-12.jpg",
+      "sha256": "2df28badf6e8a3a37b705c9c67da6438b64ea7114b25930e1dfb87637765fb6e"
+    },
+    "M_HauntOf:AI3:25": {
+      "keywords": [
+        "Choke",
+        "Delay"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-13.jpg",
+      "sha256": "db08690992f7ec778c4005a93995365280eaad459463c190c5c89b46ea22aa07"
+    },
+    "M_HauntOf:AI3:26": {
+      "keywords": [
+        "Delay",
+        "Discard"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-14.jpg",
+      "sha256": "d0111112048047eca339fb647ee52f619a30e0a5ad6f8a4783a5a889a3378651"
+    },
+    "M_HauntOf:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Knockback X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-20.jpg",
+      "sha256": "0dc535f9eec7250782b1a3d7897f9197d2905d3a73f5d374baa19b345e83255a"
+    },
+    "M_HauntOf:BP1:1": {
+      "keywords": [
+        "Choke",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-19.jpg",
+      "sha256": "72fcc1f4aa04f21f43e4edd0e969c2bb114718d9aa2210a478780d256bcd98bc"
+    },
+    "M_HauntOf:BP1:2": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-18.jpg",
+      "sha256": "f14621ac29d08ca6c276b7d0e3eed1de71d716fe19f1b4f55a62c26477141234"
+    },
+    "M_HauntOf:BP2:3": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-22.jpg",
+      "sha256": "d9283c0086488a463f956b3609ba6bc787d14f13665d5b12ddc8ff31f69ffc20"
+    },
+    "M_HauntOf:BP2:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Forced Vault",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-23.jpg",
+      "sha256": "8143f0d9e40bdd865c9ef94736dbcd251ff6a89459a4c08b85f712b198e24a7b"
+    },
+    "M_HauntOf:BP2:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-21.jpg",
+      "sha256": "f2e55cd4e1d27e5243b064f9b1773fb282f8f613eff76b142d1a9011d745e727"
+    },
+    "M_HauntOf:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-26.jpg",
+      "sha256": "4c9fa25e31bfed5aeac037701f864adb599ae58021a74b9f80efea5e6bdbfd7e"
+    },
+    "M_HauntOf:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Choke",
+        "Knockback X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-25.jpg",
+      "sha256": "90795840a98de9db5668b8c88254346eab2f4413d17714fab37d7c1460085820"
+    },
+    "M_HauntOf:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Forced Vault",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-24.jpg",
+      "sha256": "f6e05cf47cf7e661cbd9af8fbf472697996c2e2d840da1c5993b054138f80c2c"
+    },
+    "M_HauntOf:SIG:27": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/haunts-of-utrebant/b5ad5f35-27.jpg",
+      "sha256": "c436dd9f0cac99aeff3d573270e6f0be5cfe5e4b53b0d27924eb58a13146bed3"
+    },
+    "postgame-hauntof-5-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/hauntof-5-traits.png",
+      "sha256": "2e3e4c03bfb9397f96e1661c0797bcba1eb2141ec5d14f20f971a6b66412c044"
+    },
+    "postgame-hauntof-6-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/hauntof-6-traits.png",
+      "sha256": "e359644b1d1f641b6a5527772951b376616d9909fca49dddf400b595671c92e0"
+    },
+    "postgame-hauntof-7-traits": {
+      "keywords": [
+        "Bane",
+        "Bane Limit X/+X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/hauntof-7-traits.png",
+      "sha256": "d7992810db8971589f13fe77fddd1a382f6ee5d27b40ffa984e52f4bbd2b54f0"
+    },
+    "postgame-hauntof-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/hauntof-8-traits.png",
+      "sha256": "75a90b0b1be8cdba3176040f6703d874100c286e9d0c9010e1681bc69e591da9"
+    },
+    "postgame-hauntof-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/hauntof-9-traits.png",
+      "sha256": "70d03be574f960f31c3dc284124fd52debbc1132021aef3923ea7527c334a571"
+    },
+    "M_Ironcast": {
+      "keywords": [
+        "Gangup",
+        "Heal"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/ironcast-face.webp",
+          "sha256": "1fc82ea679c85229978fbc294b17dd7ace7540ee07944710d61b0a4a4622e573",
+          "previousSourceSHA256": "c40a3e9c5aa37ff05fa4cfc7288cd62d2b64ba4d45aeceade89f78fbdaf16d58"
+        },
+        "back": {
+          "path": "/assets/boss-panels/ironcast-back.webp",
+          "sha256": "b1ffa163a999e5ef00de34c8663de73e4ea0ad1167897ee818e2f2cbd9dbf867",
+          "previousSourceSHA256": "5582e899bc4ce95e43c9f2b170a12440180257cbb9b2dee74dccd8861cbc8c4e"
+        }
+      }
+    },
+    "M_Ironcast:AI1:18": {
+      "keywords": [
+        "Gangup"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-00.jpg",
+      "sha256": "17087a439f09530160e4de049d8e430c6955b86b3ab5cabf20b3fe1fd4bdcc19"
+    },
+    "M_Ironcast:AI1:19": {
+      "keywords": [
+        "Gangup"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-02.jpg",
+      "sha256": "6c631f47bb15dd6df1069da348717033db0464b605062e994d42c0596b0a44f6"
+    },
+    "M_Ironcast:AI1:20": {
+      "keywords": [
+        "Knockdown",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-01.jpg",
+      "sha256": "0679f223259ddca399259e2bd5c92991ac49a127bbec0fb69504e335b8dbbf8d"
+    },
+    "M_Ironcast:AI1:21": {
+      "keywords": [
+        "Parasitize",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-03.jpg",
+      "sha256": "30533135e2bea3c26cf9e68e783342ed2f5f641243027d595a885eb2a09de4ae"
+    },
+    "M_Ironcast:AI1:22": {
+      "keywords": [
+        "Gangup"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-04.jpg",
+      "sha256": "c26640c219a1698cb1e1d70445ba7b45d2c99917c81fc772386a1f34ebdb5fab"
+    },
+    "M_Ironcast:AI1:23": {
+      "keywords": [
+        "Gangup"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-05.jpg",
+      "sha256": "62412700e80252fd0820dc55962dcce1d680a004270cf2391122f907a1e3574f"
+    },
+    "M_Ironcast:AI2:24": {
+      "keywords": [
+        "Knockback X",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-08.jpg",
+      "sha256": "99a97ff49fb200251930e6144f17c2f758eb8189d68ee6e5105ea8315cc78631"
+    },
+    "M_Ironcast:AI2:25": {
+      "keywords": [
+        "Knockback X",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-07.jpg",
+      "sha256": "301fae388504051c662cc44f905a473ebd1edc9c4728b13f32707599a02dd70f"
+    },
+    "M_Ironcast:AI2:26": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-06.jpg",
+      "sha256": "e760b8d51d29e03b281ba7b0c645eaade73224abf1cc8e48a80bbf705f0477db"
+    },
+    "M_Ironcast:AI2:27": {
+      "keywords": [
+        "Gangup",
+        "Knockdown",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-11.jpg",
+      "sha256": "ddfe0869a45a20badf73cb0c4a21f7e1899df54198666a83a8968f3f4074d0d1"
+    },
+    "M_Ironcast:AI2:28": {
+      "keywords": [
+        "Choke",
+        "Knockback X",
+        "Knockdown",
+        "Parasitize"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-09.jpg",
+      "sha256": "1f0a6b67b7649ebe1fa030a5644e44195a1f8d4eac830943645920dffed34bb7"
+    },
+    "M_Ironcast:AI2:29": {
+      "keywords": [
+        "Gangup",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-10.jpg",
+      "sha256": "603305933d80afe19b33dda2b86e904a4669d505c4ea8e471cb5f885e167cf2a"
+    },
+    "M_Ironcast:AI3:30": {
+      "keywords": [
+        "Bane",
+        "Gangup",
+        "Parasitize"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-17.jpg",
+      "sha256": "976aadb95aec722b57630065c0aa035d50e8f2a789411cc5e400922026111599"
+    },
+    "M_Ironcast:AI3:31": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-16.jpg",
+      "sha256": "7e87f41ac780822852b9123ea3671b0aa585a77c0526121046fdcc27355b3118"
+    },
+    "M_Ironcast:AI3:32": {
+      "keywords": [
+        "Gangup",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-12.jpg",
+      "sha256": "1d49cdbf07c98a0c89b4b297e728f908e015d4e9cadcb47583381a79216d2e49"
+    },
+    "M_Ironcast:AI3:33": {
+      "keywords": [
+        "Heal",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-13.jpg",
+      "sha256": "a6c7bee22289c3c228ecebe3901918333f0486df63238c0b1a4e95f69537fd91"
+    },
+    "M_Ironcast:AI3:34": {
+      "keywords": [
+        "Choke",
+        "Gangup",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-15.jpg",
+      "sha256": "30755372ae24187953c470719cabe8c63c48dabb935f79975952f53dbf6be68f"
+    },
+    "M_Ironcast:AI3:35": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-14.jpg",
+      "sha256": "d82266c617fa70a6b0620daa1e37ad942a5752ae1a6375bfe5c25c76c157a7b7"
+    },
+    "M_Ironcast:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-20.jpg",
+      "sha256": "7f26dfbf9700676e56c52581c1a643937dccb5d0a0782f9ff51b624e6fd28743"
+    },
+    "M_Ironcast:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-18.jpg",
+      "sha256": "5e375c2d20e3223235e4df93823a4415d370147a0e66cb36c61f9a04d5418b27"
+    },
+    "M_Ironcast:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-19.jpg",
+      "sha256": "bc82fca73e8e03b7d4c49af8cd4427b17bd0c85da4703b5e10602ade168d23cb"
+    },
+    "M_Ironcast:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-21.jpg",
+      "sha256": "3b6b2cc38b91afc16870bbf155ede60b0d0f741d703dcc3369b2772e4c8cdba0"
+    },
+    "M_Ironcast:BP1:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-22.jpg",
+      "sha256": "4a6832015b1e0c4835a2e5491bbb37f1bf6a09682395cedd6f74482c5ea66c99"
+    },
+    "M_Ironcast:BP1:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-23.jpg",
+      "sha256": "bcc0fbf806adbe4ee5dd26e3342daa5dd5b5ae50212dbdf117bb40b337994fd4"
+    },
+    "M_Ironcast:BP2:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Heal",
+        "Power",
+        "Scavenge X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-26.jpg",
+      "sha256": "e40d49524d7a3fa509bbb1cfa4540a74d9ad62dfffb1c9389ade3de0314e200f"
+    },
+    "M_Ironcast:BP2:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-25.jpg",
+      "sha256": "86626d8adb23f5dfae8f4dfa37a65c7ab34675061ba3bd768708b6ef13bf74db"
+    },
+    "M_Ironcast:BP2:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-24.jpg",
+      "sha256": "3ed9c72c930121b09ac976bd431df71668cf34c7387de1e97a3075bb102770e0"
+    },
+    "M_Ironcast:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Knockdown",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-29.jpg",
+      "sha256": "3e199135a528f42e85e1f28c1cd6ce83283cbfdfaf8b242418334584386b18a7"
+    },
+    "M_Ironcast:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-28.jpg",
+      "sha256": "70f608816cccdf9a32de0437ed8576c7520fdd948b1e998d338edb9aeebe6edc"
+    },
+    "M_Ironcast:BP2:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-27.jpg",
+      "sha256": "98c5979f0dfa52d0ff52c394d15d96b2ba96beb6bb9809ac420103fad3d816dc"
+    },
+    "M_Ironcast:BP3:12": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-35.jpg",
+      "sha256": "78c99d444722954f24bd1abad996f33cb09b6e5c93a78cfc5f2c28d8e5a51f90"
+    },
+    "M_Ironcast:BP3:13": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Break X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-34.jpg",
+      "sha256": "c9423217d978af31fa3f519e4adb556817c124ca2d1fc42710cb17f976a66154"
+    },
+    "M_Ironcast:BP3:14": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Break X",
+        "Gangup",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-33.jpg",
+      "sha256": "031245f71c58f57fdde4d288b8562de5240d478f07e4fe9297faf5d90c39f338"
+    },
+    "M_Ironcast:BP3:15": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-32.jpg",
+      "sha256": "51d36833cb1cc31e7c7f5b995d1ff8fa4a9f1a98e8c36f30a57e0be8c2e1e0a1"
+    },
+    "M_Ironcast:BP3:16": {
+      "keywords": [
+        "OvercomeX+",
+        "Gangup",
+        "Parasitize",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-31.jpg",
+      "sha256": "80424c104707532720436f10cbbfb883920f67711012ad21f5a05de2f521ef12"
+    },
+    "M_Ironcast:BP3:17": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Opening X",
+        "Gangup",
+        "Heal"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-30.jpg",
+      "sha256": "9698b8fa7e0114c1f216938e459a66a421a715dcf37af6120b44c7105d2f6a9e"
+    },
+    "M_Ironcast:SIG:38": {
+      "keywords": [
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ironcast-dead/c30453b4-36.jpg",
+      "sha256": "1f27be770c87b0f9da0edb61905c1c99938e087c73af5067f0a888861e569739"
+    },
+    "postgame-ironcast-5-traits": {
+      "keywords": [
+        "Parasitize"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ironcast-5-traits.png",
+      "sha256": "45b150db18557115e1fce69d0b9cd565c5e5c816f8b7e5ffdada828a394ed485"
+    },
+    "postgame-ironcast-6-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ironcast-6-traits.png",
+      "sha256": "fbcde3e203c5540e064d4df8a9424ad57645a90147acbbe9461952c712bf1603"
+    },
+    "postgame-ironcast-7-traits": {
+      "keywords": [
+        "Heal"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ironcast-7-traits.png",
+      "sha256": "da1bf7e412dbdbf04683a7df556db86e6d15ed819e6882501363660e246bef8d"
+    },
+    "postgame-ironcast-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ironcast-8-traits.png",
+      "sha256": "19dada519525027ba1753b408964ddec32c497f12f0cde5882166e953b5bd767"
+    },
+    "postgame-ironcast-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ironcast-9-traits.png",
+      "sha256": "2e2b5eab1c34aa955d14b1498e5b5ab9c59faa8e9a71f088806d1dc405613caa"
+    },
+    "M_PalebloodWorms": {
+      "keywords": [
+        "Activate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/paleblood-worms-face.webp",
+          "sha256": "887d4aac3d01562ae5f72bde762947d8e824b5e618fec987a4ff624ac106a65a",
+          "previousSourceSHA256": "b81328834dc137a49e9f4b29890b7e523ecb16ed62a125677c691385069aaffc"
+        },
+        "back": {
+          "path": "/assets/boss-panels/paleblood-worms-back.webp",
+          "sha256": "0bea6522ded93b0fa583c9e9bff3094370b638764f2044742ad10b1070f7b40d",
+          "previousSourceSHA256": "d358d37317d66bf3d92cc1866b5c2787a03ba953ce2d54039a2d3dec3a14a51e"
+        }
+      }
+    },
+    "M_PalebloodWorms:AI1:12": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-00.jpg",
+      "sha256": "afb0ccef3a4be20068702b8158e24a437cf5cd73305db2acee929dc68a33978a"
+    },
+    "M_PalebloodWorms:AI1:13": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-01.jpg",
+      "sha256": "991696d92e9b8d7fb7a1169ed95e233c4e18bd916658ee7762f484af5c3824d7"
+    },
+    "M_PalebloodWorms:AI1:14": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-03.jpg",
+      "sha256": "e204705c58604b8bc2b9bf58c9689af5e60b5222ef72227ce82faf3c6c2b04c8"
+    },
+    "M_PalebloodWorms:AI1:15": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-02.jpg",
+      "sha256": "9419a9617def75fb151401aa7d8ca85a88d2f853aee0bc93896b1312403bfb02"
+    },
+    "M_PalebloodWorms:AI2:16": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-04.jpg",
+      "sha256": "65b373c1db8872147d23bbe3885d07f0e83939d24da35a33eaa6ee3a7adc2526"
+    },
+    "M_PalebloodWorms:AI2:17": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-05.jpg",
+      "sha256": "9c19ef8eb92bdc1db014584d82b8dcbc17ba4e9ed4b682524198a195f1449d4f"
+    },
+    "M_PalebloodWorms:AI2:18": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-06.jpg",
+      "sha256": "44f5c81924f8d4b44b0d54fac6bd6c7c093f7a1143e1630d5e56caf13da77185"
+    },
+    "M_PalebloodWorms:AI2:19": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-07.jpg",
+      "sha256": "e82fb8f9dee63185326173142b06a964d36ae080d751169d8c6ce53ed7ab08a5"
+    },
+    "M_PalebloodWorms:AI3:20": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-08.jpg",
+      "sha256": "650506be947c474faee52bf9f6f5d0cc75621d2d8901f6e9cd760419aed35a5f"
+    },
+    "M_PalebloodWorms:AI3:21": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-09.jpg",
+      "sha256": "1a5f3fb44ed76f9d2e18b827ab9c92cf640d7d9f6f49c327e06c9ac54decf5e6"
+    },
+    "M_PalebloodWorms:AI3:22": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-11.jpg",
+      "sha256": "82d3503cddae846fb64d4e1869a39e271693bf7eb48efcc17cb464708e10e7e3"
+    },
+    "M_PalebloodWorms:AI3:23": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-10.jpg",
+      "sha256": "7fc30ceea3dc191f795ab040fc19f43bd42f16993bf4222979d13091e35e84fb"
+    },
+    "M_PalebloodWorms:BP1:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-12.jpg",
+      "sha256": "0b3027d937e94fd4aa7b712dd451235a3da641f752deaba5a439a7a9baac28e3"
+    },
+    "M_PalebloodWorms:BP1:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-13.jpg",
+      "sha256": "075375ace59e3502ccc337eb713a040dcb5bf060d97c304740ab16752f4abe9c"
+    },
+    "M_PalebloodWorms:BP1:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Activate X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-15.jpg",
+      "sha256": "f96245282ff7e67f8d42a45b81b55049756a1403ec3bf35699ccf4aa2ee59b23"
+    },
+    "M_PalebloodWorms:BP1:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-14.jpg",
+      "sha256": "a3cdbd4538d025dde2e4a479790bbd51adc80942a787f859cf4f4868180faae0"
+    },
+    "M_PalebloodWorms:BP2:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Activate X",
+        "Knockback X",
+        "Knockdown",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-16.jpg",
+      "sha256": "6d776386d76cc5fd9dfd7e726ec6b0a33011a42df8fc401406a0ae4bbcac5d41"
+    },
+    "M_PalebloodWorms:BP2:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-17.jpg",
+      "sha256": "89d388bd5f08fc7c8a5e84ee956283249cd4519901bb9fe6ad6baf3a11e839ee"
+    },
+    "M_PalebloodWorms:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-18.jpg",
+      "sha256": "ee49ded407a6d52f321f066655af7588740f436053aba934c3cfe452e9b2b3ad"
+    },
+    "M_PalebloodWorms:BP2:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-19.jpg",
+      "sha256": "d26f3b5232d953e89a067cc63bd2d4907d8fed41e5a8564a9c621d49db47c824"
+    },
+    "M_PalebloodWorms:BP3:9": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-21.jpg",
+      "sha256": "855d6f205c6c47bbe080d8e8b7f7742e8761e0db236ca2a59727da8ad7108f12"
+    },
+    "M_PalebloodWorms:BP3:10": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Break X",
+        "Activate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-23.jpg",
+      "sha256": "aa18eee007fbdffa79014f7a9400dd22e5a37e373f2492ddd24c944ca8ec436e"
+    },
+    "M_PalebloodWorms:BP3:11": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Break X",
+        "Knockdown",
+        "Knockback X",
+        "Activate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-22.jpg",
+      "sha256": "8c7d1627fb6909934696cb88858ef6dfc2ac52fa12db73b40312dd29c423eb42"
+    },
+    "M_PalebloodWorms:BP3:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Break X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-20.jpg",
+      "sha256": "c1f4b160c2a92a6d1145ca0ce8e8e19d97b10aadb20b0c6c74f8b1bac5e0d0df"
+    },
+    "M_PalebloodWorms:SIG:24": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/paleblood-worms/1b5b9699-24.jpg",
+      "sha256": "c632cc83c3d326a06a26782c21af62230bfb03a3cdd348d2bd9628e31150c708"
+    },
+    "postgame-palebloodworms-5-traits": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/palebloodworms-5-traits.png",
+      "sha256": "8a157a88a5da582e4c651c39ae0d4301d85a00f4b21766b5f262d69ad25407a3"
+    },
+    "postgame-palebloodworms-6-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/palebloodworms-6-traits.png",
+      "sha256": "c149fd9d232682d8acfc7d7f4fac2560a9357b1e1a84d60d55d4729493ded993"
+    },
+    "postgame-palebloodworms-7-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/palebloodworms-7-traits.png",
+      "sha256": "8dff96136b02cb29e8ffc101f162d5d267deb970ab0ae09088bb372f0a3e9cc0"
+    },
+    "postgame-palebloodworms-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/palebloodworms-8-traits.png",
+      "sha256": "82685bad8f45fd82b8d484774a79a59a4ca9800ae0c0451983d38935a9138443"
+    },
+    "postgame-palebloodworms-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/palebloodworms-9-traits.png",
+      "sha256": "4af9b28a5678a5f4c12c14ee82c3c360a0550e1f979f44e4288f8acd77e4b439"
+    },
+    "M_Panzergeists": {
+      "keywords": [
+        "Superior Bypass",
+        "Bane",
+        "Bane Limit X/+X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/panzergeists-face.webp",
+          "sha256": "fb679e5fb92d2ad26b12920b32e7b604f57148822d629369a4b5c496c9b7defb",
+          "previousSourceSHA256": "e1eeb3b83586c25fda5f05874e15c4ca91caf34da32e6fac41321fa7d06b0e8f"
+        },
+        "back": {
+          "path": "/assets/boss-panels/panzergeists-back.webp",
+          "sha256": "43a026772be226efee413554e70f3d260a683f3cb984bb6aeed4924ef95c69ec",
+          "previousSourceSHA256": "4b2d513377db02f1be4a98061c212a0243f57a30da1e8899c42a7e828a1337a4"
+        }
+      }
+    },
+    "M_Panzergeists:AI1:10": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-03.jpg",
+      "sha256": "218aed828a0bd46b37b8710d2bcbaf21e69588a39504041e2d5d06a84d3c3bcd"
+    },
+    "M_Panzergeists:AI1:11": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-02.jpg",
+      "sha256": "a17fdb75037cc711d4141b2f0edb18f4775796bfa46684ec777624e3f76506e3"
+    },
+    "M_Panzergeists:AI1:12": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-00.jpg",
+      "sha256": "dd2d29cb36600cf13ee43e1a9be2fef02700fa51c3abf7b35372cf298503d1bf"
+    },
+    "M_Panzergeists:AI1:13": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-01.jpg",
+      "sha256": "d69d884e7fa19e4a2cfb6c39885eb6aff403def8e760e2f19b35f2aba288527e"
+    },
+    "M_Panzergeists:AI2:14": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-07.jpg",
+      "sha256": "9a8b7b9c72c3dd8b12668f9cc374800580ad35a72b04a7be4ef4f4bb2fb84a16"
+    },
+    "M_Panzergeists:AI2:15": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-06.jpg",
+      "sha256": "44b28929dd2bea4de7829c531d030f086194acd4a913d36c28c84706823f17d4"
+    },
+    "M_Panzergeists:AI2:16": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-05.jpg",
+      "sha256": "ba928a8fc6c0179b70f7b8df8680a151b77b9ee31ec8ba7fe32b5f6369a7e637"
+    },
+    "M_Panzergeists:AI2:17": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-04.jpg",
+      "sha256": "d45484d96ecab70268c46c7f16f13016e8db9994baccc38183aa7bbccc4cf10b"
+    },
+    "M_Panzergeists:AI3:18": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-09.jpg",
+      "sha256": "af9f0fa2338ea2337792a152a2b4f1815b7a612b510ed49ad98fbcd60ee188d7"
+    },
+    "M_Panzergeists:AI3:19": {
+      "keywords": [
+        "Bane",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-08.jpg",
+      "sha256": "5c0bd0d764aeae33f6b96a33c2b19ff7738672b974ebbe7ef2161f2612933ec4"
+    },
+    "M_Panzergeists:BP1:0": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-13.jpg",
+      "sha256": "387589f6e17dd6a9ed74baeddd085235da818f0a7d4debe3e7ac99df2f2bb25a"
+    },
+    "M_Panzergeists:BP1:1": {
+      "keywords": [
+        "Bane"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-10.jpg",
+      "sha256": "a15bbecc2c1d091bc77596d3c2f02abb45652ec557a856739cb1d2198f75bd72"
+    },
+    "M_Panzergeists:BP1:2": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-11.jpg",
+      "sha256": "63323d3ba5b37734241a5bd475601767cbb1ce97a2d4ede399c53a778b616bed"
+    },
+    "M_Panzergeists:BP1:3": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-14.jpg",
+      "sha256": "80e49733472ffaec9d51bb5aa11fad6bd540ccc5aa42e5b34f2c8faa16161024"
+    },
+    "M_Panzergeists:BP1:4": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-12.jpg",
+      "sha256": "aa4645de63835194ec84b7a4e4504e530191ef73145f277c99f21efad1607e21"
+    },
+    "M_Panzergeists:BP2:5": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-17.jpg",
+      "sha256": "b0d27cf3c847afd7972313bcaf1abde8b3650decfe5a2ada498424a7648d8f43"
+    },
+    "M_Panzergeists:BP2:6": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-16.jpg",
+      "sha256": "813eeca3dc365874b1234face352175703a36838b326a64c79bf0910aec0e394"
+    },
+    "M_Panzergeists:BP2:7": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-15.jpg",
+      "sha256": "8296e6e6d53e9cd47803218e9f429169445171cc91b3e860f2132b311f80aa62"
+    },
+    "M_Panzergeists:BP3:9": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-18.jpg",
+      "sha256": "848955e1777d91bb8698dc1269ed95fc993d8cc6762db43b390832310d2e6b95"
+    },
+    "M_Panzergeists:BP3:8": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-19.jpg",
+      "sha256": "2bd681894118a3ad7a7b2b841854f1eebdf5088e174b2a566bf347fe3c9b7676"
+    },
+    "M_Panzergeists:SIG:20": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/panzergeists/9879edd0-20.jpg",
+      "sha256": "ece87f75480ffef23099affda8f6a84199022943541225d05ff2050672d0e7c4"
+    },
+    "postgame-panzergeists-5-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/panzergeists-5-traits.png",
+      "sha256": "bd60a6de58f4aa5b7ab0609e6443dd406ce161bdbe7d8531abe71446801a8b60"
+    },
+    "postgame-panzergeists-6-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/panzergeists-6-traits.png",
+      "sha256": "451c41286d71e5e6d84838bd46f37e746fd77c5c570e643fc2556ba8c4958e70"
+    },
+    "postgame-panzergeists-7-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/panzergeists-7-traits.png",
+      "sha256": "93f7f931506f23c95283fc60b78598a6919d423bc59074443b23234806ac500c"
+    },
+    "postgame-panzergeists-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/panzergeists-8-traits.png",
+      "sha256": "6ae9f2d97bcda660424d9f7ed883bbab629be0c498ac200fcfab17f1a1b9231b"
+    },
+    "postgame-panzergeists-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/panzergeists-9-traits.png",
+      "sha256": "f79013cc757fa6b4c015ba338c12c678b23e536ce109a9cf522c1123b402042f"
+    },
+    "M_Pumpkinhead": {
+      "keywords": [
+        "Advanced Bypass",
+        "Lumbering",
+        "Heal",
+        "Bane"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/pumpkinhead-face.webp",
+          "sha256": "9392d056bea076b89ea4dc183db1d0614f973cfaf627590a5450e2756b15ac05",
+          "previousSourceSHA256": "a4c0f6c0f6c148cb5b790172e5e791a62d206c27c64102da35c0b5a559979b7a"
+        },
+        "back": {
+          "path": "/assets/boss-panels/pumpkinhead-back.webp",
+          "sha256": "025b46843ed6a566b899bc3d7b15262ba1047d57732be00809d8d218d4958ea2",
+          "previousSourceSHA256": "ddba1a843fbb96b62e6af315ee2eb0edff5ac3daa70ba6bbd3c4809594030e60"
+        }
+      }
+    },
+    "M_Pumpkinhead:AI1:9": {
+      "keywords": [
+        "Afflict"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-03.jpg",
+      "sha256": "7aae23447829d6fb81484fe6207af40db77155c2f5be299459bb57d6e0dd7398"
+    },
+    "M_Pumpkinhead:AI1:10": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-04.jpg",
+      "sha256": "cd50e75855b35ad74263356c7028bf2a7a04a1d02ec2688fe7c062c34492b872"
+    },
+    "M_Pumpkinhead:AI1:11": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-05.jpg",
+      "sha256": "8791ba432fd2b5548c85bed77057c3d649b6cd86e1462d922a64b84fda74f90d"
+    },
+    "M_Pumpkinhead:AI1:12": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-06.jpg",
+      "sha256": "679a661312fdd283948f9a9ee2a25c50d984d9f1344b508de438547aaef7110a"
+    },
+    "M_Pumpkinhead:AI1:6": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-00.jpg",
+      "sha256": "0b3f975d7062d41f426020386a21550b4a56bdaaefe156fa5c4e29938513258e"
+    },
+    "M_Pumpkinhead:AI1:7": {
+      "keywords": [
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-01.jpg",
+      "sha256": "28ded901e74c63ae06a0f9382ee00a340b6a67ec00053a31de3fede3ef4d2879"
+    },
+    "M_Pumpkinhead:AI1:8": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-02.jpg",
+      "sha256": "9b855554de76098e8732b4b3cca34c926b86c06a72119c75f9605bbae07e0d80"
+    },
+    "M_Pumpkinhead:AI2:13": {
+      "keywords": [
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-09.jpg",
+      "sha256": "29c6dbe9043a04f1cc8f6b8584f5678f249331de2b3420890066c955ad9ccbac"
+    },
+    "M_Pumpkinhead:AI2:14": {
+      "keywords": [
+        "Afflict"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-08.jpg",
+      "sha256": "e959b46d81ee6bde040d4b894fb66c8a56ccf0b2d915d622fdf004322abb014d"
+    },
+    "M_Pumpkinhead:AI2:15": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-07.jpg",
+      "sha256": "c84b55451ef43fe65e79dc102b4f7abfefe3590bf5baadddbde5475a09d94552"
+    },
+    "M_Pumpkinhead:AI3:16": {
+      "keywords": [
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-12.jpg",
+      "sha256": "fc071e503cdeb5b88baae6366dbfd1fd5f482b923589227bc486628fdbfd3474"
+    },
+    "M_Pumpkinhead:AI3:17": {
+      "keywords": [
+        "Afflict"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-10.jpg",
+      "sha256": "6251caf575e38eeba70c556eb96a083a07b1f925b5af6e088583af1b498733a3"
+    },
+    "M_Pumpkinhead:AI3:18": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-11.jpg",
+      "sha256": "398d462870259a947835ae83c00342b8d9dfdd8b3f2470d72f9c347f46a795f5"
+    },
+    "M_Pumpkinhead:BPS:0": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Afflict",
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/pumpkinhead/c77df093-17.jpg",
+          "sha256": "49c5fc5c689fc002d25881b9bbedd28aafe7cc5919313d4d2ee7002c256211d9"
+        },
+        "back": {
+          "path": "/assets/cards/backs/pumpkinhead/back-17.jpg",
+          "sha256": "cf80dafd41cdc1019330d07e152982fa94d0da16e3323ebaa3b6fee53dbac285"
+        }
+      }
+    },
+    "M_Pumpkinhead:BPS:1": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Afflict",
+        "Pushback X",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/pumpkinhead/c77df093-14.jpg",
+          "sha256": "c97506740cfcc241baa2aa7963086d04b75189c4021b085d79cd47bc01837a09"
+        },
+        "back": {
+          "path": "/assets/cards/backs/pumpkinhead/back-14.jpg",
+          "sha256": "e72d83c5eeaa99fd4358ee4fbbd0feacd665a5915f7ed08b96c37c4bb48b8eb0"
+        }
+      }
+    },
+    "M_Pumpkinhead:BPS:2": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown",
+        "Opening X",
+        "Break X",
+        "Afflict"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/pumpkinhead/c77df093-16.jpg",
+          "sha256": "a5edeeb4c6d3bfa9c91ae1d7110c4d7f58ed2c326f3151aecd6e03f65e8d308d"
+        },
+        "back": {
+          "path": "/assets/cards/backs/pumpkinhead/back-16.jpg",
+          "sha256": "4ab736c56d095e9f759162ed8cf0dfec88bd9e1554c62547945dd63b613a6461"
+        }
+      }
+    },
+    "M_Pumpkinhead:BPS:3": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Knockdown",
+        "Afflict"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/pumpkinhead/c77df093-13.jpg",
+          "sha256": "b4cdbee6c7a0494f865552500d6b1466690f564bc3815eba23e5a5fc2fcc6499"
+        },
+        "back": {
+          "path": "/assets/cards/backs/pumpkinhead/back-13.jpg",
+          "sha256": "122f92124536c729a6d9bd1cc50e9c3e880295d19db610719673195ec1eb97af"
+        }
+      }
+    },
+    "M_Pumpkinhead:BPS:4": {
+      "keywords": [
+        "OvercomeX+",
+        "Reposition X",
+        "Forced Vault",
+        "Pushback X",
+        "Knockdown",
+        "Afflict",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/pumpkinhead/c77df093-15.jpg",
+          "sha256": "0e9f05f2e15ebcc3279655bc05cba1b54aaedc834779feefc4a8347dd854f7db"
+        },
+        "back": {
+          "path": "/assets/cards/backs/pumpkinhead/back-15.jpg",
+          "sha256": "c18f8f33e9e5f5afb859134b85afc1ef027b15d5ddddcf3c2603d23311c4539d"
+        }
+      }
+    },
+    "M_Pumpkinhead:BPS:5": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Afflict"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/pumpkinhead/c77df093-18.jpg",
+          "sha256": "e1bb94ee91442974a046e2b65a4875c4e3349a1c0539d2e0d72a92b76652c5f4"
+        },
+        "back": {
+          "path": "/assets/cards/backs/pumpkinhead/back-18.jpg",
+          "sha256": "9a029a903f4188ac10e7c6c19e14f31d56a76c46c44993af50b63c85e223d7f2"
+        }
+      }
+    },
+    "M_Pumpkinhead:SIG:19": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-19.jpg",
+      "sha256": "8b6ba02783e4a7b5fb55e04a4faa6a4fdd02b8029546e74fe142fb2c8c0b29be"
+    },
+    "M_Pumpkinhead:Trait_POS:25": {
+      "keywords": [
+        "Afflict",
+        "Parasitize"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-20.jpg",
+      "sha256": "5c90d6c7b18dfa564083d40e035d69d36b7a61e2097c35994d681733d4908ce8"
+    },
+    "M_Pumpkinhead:Trait_SK:24": {
+      "keywords": [
+        "Afflict",
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/pumpkinhead/c77df093-21.jpg",
+      "sha256": "5699e3aca38fde02a995b34515fe4096bf501f999a782b4509d5f829576af9da"
+    },
+    "postgame-pumpkinhead-5-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/pumpkinhead-5-traits.png",
+      "sha256": "ba9461d443767245421036cc882d167039d7188d952fd45728d2bb9d368bc6ed"
+    },
+    "postgame-pumpkinhead-6-traits": {
+      "keywords": [
+        "Fire X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/pumpkinhead-6-traits.png",
+      "sha256": "58fdfd94d7782888ac47e03a72804930c6b8d5259b08272a73a35c34e27c2dc3"
+    },
+    "postgame-pumpkinhead-7-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/pumpkinhead-7-traits.png",
+      "sha256": "fa03331ccf2d3ec3d6c34554115b890903a233925473bd236f64acb569df7a88"
+    },
+    "postgame-pumpkinhead-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/pumpkinhead-8-traits.png",
+      "sha256": "8bd6bf5220d432435072352c788706e67ed07dd4e2719babda220222ac4b632b"
+    },
+    "postgame-pumpkinhead-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/pumpkinhead-9-traits.png",
+      "sha256": "06187ffc964c4d247b514006e5b6daa441a431d423316fa37209b332585f5866"
+    },
+    "M_Ratwolves": {
+      "keywords": [
+        "Afflict",
+        "Drag X",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/ratwolves-face.webp",
+          "sha256": "c2dad918d760d686a735b05dd304ce671746f9576e8e98f8a92f00cdbd7ed295",
+          "previousSourceSHA256": "df54d7609b1aa6ded64a270b2720b6be52c43b9c9027efa01d59812b7a1df357"
+        },
+        "back": {
+          "path": "/assets/boss-panels/ratwolves-back.webp",
+          "sha256": "ee29936505474de2bccc665f0c9dda36b6fb23a0c0157d456afb675c3d60c8cc",
+          "previousSourceSHA256": "9d3c01552d64771e46af2709c26f858f74c214e96a8ed84d01649d154159e3f7"
+        }
+      }
+    },
+    "M_Ratwolves:AI1:9": {
+      "keywords": [
+        "Afflict",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-03.jpg",
+      "sha256": "c2137f4058afeeb5b9fb55899459fbdcca3d4a727ae58c118b8fd3d15c59da8d"
+    },
+    "M_Ratwolves:AI1:10": {
+      "keywords": [
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-02.jpg",
+      "sha256": "0c1ef318f905db0d75ca9043e42b99fc698dd8500ffc669804e09bdd2252bbf7"
+    },
+    "M_Ratwolves:AI1:11": {
+      "keywords": [
+        "Afflict",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-01.jpg",
+      "sha256": "4a726212c1ab48db3793a5f420ba40c6c4cc6b811005107928c09ee91ec79f86"
+    },
+    "M_Ratwolves:AI1:12": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-00.jpg",
+      "sha256": "e547bd1dafff79953677d6d61aa4c6d6a014c789cd5ea6b759a2d3c6ebaf61d9"
+    },
+    "M_Ratwolves:AI2:13": {
+      "keywords": [
+        "Knockback X",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-05.jpg",
+      "sha256": "8463913cfde00b279efebce256bb04c852f811e4c032f32c4f02794a070e2306"
+    },
+    "M_Ratwolves:AI2:14": {
+      "keywords": [
+        "Afflict",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-06.jpg",
+      "sha256": "d3886e85b6ed049fc799cd4fa128fd504d4f2be69c3f3a0aa6eca233617e1c71"
+    },
+    "M_Ratwolves:AI2:15": {
+      "keywords": [
+        "Afflict",
+        "Drag X",
+        "Knockdown",
+        "Swarm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-07.jpg",
+      "sha256": "27faaeb257726e4814a21cbab07ddc542ffab75396f2373a156f495898c3723a"
+    },
+    "M_Ratwolves:AI2:16": {
+      "keywords": [
+        "Afflict",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-04.jpg",
+      "sha256": "e7b5ef27eaabf203004d21cea3dc1754d76ed9b13c0d499b965d78a9238176f5"
+    },
+    "M_Ratwolves:AI3:17": {
+      "keywords": [
+        "Afflict",
+        "Knockdown",
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-09.jpg",
+      "sha256": "0982b494b6c85bf9b4c79d7fb138523c0e012ab2b094b77d6fe02cd159491b1a"
+    },
+    "M_Ratwolves:AI3:18": {
+      "keywords": [
+        "Activate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-08.jpg",
+      "sha256": "9ec2c2059cc8613293932bed7e671016b78bc0c0d01fa39f5634d89d126585b4"
+    },
+    "M_Ratwolves:BP1:0": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-10.jpg",
+      "sha256": "444c636ef5caf3dd0340b259e86ced86af5c1780874d3c72a1fd86f726ebdd54"
+    },
+    "M_Ratwolves:BP1:1": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-11.jpg",
+      "sha256": "99e83044097596f841d72ef1fc4f626a60f66f438ee0c755ee4e3641afb0f723"
+    },
+    "M_Ratwolves:BP1:2": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-12.jpg",
+      "sha256": "23b66f7cf74e9950a8be3aaa6290f00daff11aa9b1bcecb512cfe1327402682f"
+    },
+    "M_Ratwolves:BP1:3": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-13.jpg",
+      "sha256": "5acc44644d5cbd44e8437475e9208f6994bb75e1b42f1b7625408949152c286e"
+    },
+    "M_Ratwolves:BP2:4": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-15.jpg",
+      "sha256": "2214b924805fc4f79d8c2a411edaababde213b17bcba6d4518e34e62070a5866"
+    },
+    "M_Ratwolves:BP2:5": {
+      "keywords": [
+        "Parasitize"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-16.jpg",
+      "sha256": "1d0f1dc3692853848c5e91801943e5472507d8ccb073d5b5ab5e37311edb947d"
+    },
+    "M_Ratwolves:BP2:6": {
+      "keywords": [
+        "OvercomeX+",
+        "Power"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-14.jpg",
+      "sha256": "c48fb5df917567db607938158924a18da3812cd3817079708d96d02c2b5c78d3"
+    },
+    "M_Ratwolves:BP3:7": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-17.jpg",
+      "sha256": "a2428bbc683f5e2862feac2db11aa7b201d383ed73b762e05e98766543a36162"
+    },
+    "M_Ratwolves:BP3:8": {
+      "keywords": [
+        "OvercomeX+",
+        "Power",
+        "Activate X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-18.jpg",
+      "sha256": "30c48c017872f3da136ae90c32f3e0d10b0e596475c245413cb9cf87253ac2cb"
+    },
+    "M_Ratwolves:SIG:21": {
+      "keywords": [
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-19.jpg",
+      "sha256": "4a9c0f9f2f29b77b4c21984e2d8e097f25f30374bbabffa3c49f4249e84d15fe"
+    },
+    "M_Ratwolves:Trait_POS:22": {
+      "keywords": [
+        "Afflict",
+        "Parasitize",
+        "Cooldown",
+        "Delay"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-20.jpg",
+      "sha256": "9003335ab3e8f0d538660a92068fdf5d7ed70bacb084fc4486590fe9ef2188c6"
+    },
+    "M_Ratwolves:Trait_SK:23": {
+      "keywords": [
+        "Afflict",
+        "Poison"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/ratwolves/70c20abe-21.jpg",
+      "sha256": "205809fa6b736fa1c62e539dcc48675c38b1ccb80840c9a874235f0cd7909fb2"
+    },
+    "postgame-ratwolves-5-traits": {
+      "keywords": [
+        "Afflict",
+        "Bane"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ratwolves-5-traits.png",
+      "sha256": "bc1bdce9eda951338db4c9c891dfc74770c2a6e7655c77625ed269674cab1dc6"
+    },
+    "postgame-ratwolves-6-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ratwolves-6-traits.png",
+      "sha256": "6f945cb93028eb378bd144901fd5b738465b3684fcb5b9d83f1aec0ac822d227"
+    },
+    "postgame-ratwolves-7-traits": {
+      "keywords": [
+        "Afflict",
+        "Choke"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ratwolves-7-traits.png",
+      "sha256": "34280118668551d44d520c776b7c1a2b0dd0168cd754448343ab762be4f31358"
+    },
+    "postgame-ratwolves-8-traits": {
+      "keywords": [
+        "Bane",
+        "Choke"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ratwolves-8-traits.png",
+      "sha256": "b30d0fa594504c3504363bd35d0375b07bb9e0ae0c78e511f77a304cc89b6a5f"
+    },
+    "postgame-ratwolves-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/ratwolves-9-traits.png",
+      "sha256": "21dcc8141b6b3dd3df3aaa74ecd2c8f99a08079b90729517685214d4bcb2f7ef"
+    },
+    "M_WingedNightmare": {
+      "keywords": [
+        "Chasm",
+        "Reflex",
+        "Knockdown",
+        "Displace",
+        "Crash",
+        "Superior Bypass"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/boss-panels/winged-nightmare-face.webp",
+          "sha256": "7f045e1e7006286b5297299ed004a68163c98d76be53d8a9b37aed8a79541d1c",
+          "previousSourceSHA256": "d4d30d2ceb64d616cefd3210429b09366095960a7e3f20e87ef36e83b6c797e4"
+        },
+        "back": {
+          "path": "/assets/boss-panels/winged-nightmare-back.webp",
+          "sha256": "79005e35fa1971f943329e7fe9c556c8e095fb3a8de0a066aa543a2f244fa071",
+          "previousSourceSHA256": "7b7ee8e5877952735db5e17afa97622c0153220b29c3ec20c250d66da6f46108"
+        }
+      }
+    },
+    "M_WingedNightmare:AI1:3": {
+      "keywords": [
+        "Choke",
+        "Knockback X",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-00.jpg",
+      "sha256": "2c1f3d4abbc66e5bcc556d727970306ca3fc6f217b28bbad3e56f8020aba8d1d"
+    },
+    "M_WingedNightmare:AI1:4": {
+      "keywords": [
+        "Pull X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-01.jpg",
+      "sha256": "93bcf439a37964d8fa0bd13c5c7a96447013e866ad0ee723f36646e73beb06f9"
+    },
+    "M_WingedNightmare:AI1:5": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-02.jpg",
+      "sha256": "5ca06715eb32fa4e9ad40fde2b0f7abce104156d18149c02d9cbaef208882ad3"
+    },
+    "M_WingedNightmare:AI1:6": {
+      "keywords": [
+        "Pushback X",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-04.jpg",
+      "sha256": "e8319f031fd347445bd945647c955f4be8df956370dd2a8bc5a551bbefa5a044"
+    },
+    "M_WingedNightmare:AI1:7": {
+      "keywords": [
+        "Chasm",
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-03.jpg",
+      "sha256": "1a71c8431b0c881973b4e3580713314efcaf7382efe94f45ae3e4484398a6e6d"
+    },
+    "M_WingedNightmare:AI2:9": {
+      "keywords": [
+        "Difficult Terrain"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-06.jpg",
+      "sha256": "a7324696d687ff353ddca9da0851a0abbf05300d57878c167c1a02a1c3332f1f"
+    },
+    "M_WingedNightmare:AI2:10": {
+      "keywords": [
+        "Knockdown",
+        "Pushback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-09.jpg",
+      "sha256": "3c392992f933cbf0e2e810cef953a2a0ad27167a3d81dbda17cdc46457092ce9"
+    },
+    "M_WingedNightmare:AI2:11": {
+      "keywords": [
+        "Chasm",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-08.jpg",
+      "sha256": "0d016a892fb35739b7c14c3a08b8dd351b0c9241c1bb531d2e7ef019d5acbc49"
+    },
+    "M_WingedNightmare:AI2:12": {
+      "keywords": [
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-07.jpg",
+      "sha256": "ce5863186c322c93d7c3db8f4de09e09413685811bbf926aed532bdcd38d9ee6"
+    },
+    "M_WingedNightmare:AI2:8": {
+      "keywords": [
+        "Choke",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-05.jpg",
+      "sha256": "f5c6b2c9514c7ecb91e4e1217d53b74153e5c4d22192aad6441b0514eee64620"
+    },
+    "M_WingedNightmare:AI3:13": {
+      "keywords": [
+        "Choke",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-10.jpg",
+      "sha256": "642a3b7d0aace579342e754b181ff9703d08c5c8805fc844f975031ac8c42631"
+    },
+    "M_WingedNightmare:AI3:14": {
+      "keywords": [
+        "Chasm",
+        "Pushback X",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-14.jpg",
+      "sha256": "672141ea13d908aa8718de88223db254d2f6eff29d602c2ac2403f4f20362645"
+    },
+    "M_WingedNightmare:AI3:15": {
+      "keywords": [
+        "Chasm",
+        "Drag X",
+        "Knockdown"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-13.jpg",
+      "sha256": "f7c4cbd13b4ac3769a279800a64234b6d0bebaa051ee395329219813759a072c"
+    },
+    "M_WingedNightmare:AI3:16": {
+      "keywords": [
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-12.jpg",
+      "sha256": "258aed8f3246b3174936a21ff3197f7953af68ba6774d2f592c1a4e3deacf782"
+    },
+    "M_WingedNightmare:AI3:17": {
+      "keywords": [
+        "Chasm",
+        "Difficult Terrain",
+        "Knockback X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-11.jpg",
+      "sha256": "e5cc50e93d8aa0ea5338aadd6baf0b466c1732a450c20a5824f876c2c5012e64"
+    },
+    "M_WingedNightmare:BPS:1": {
+      "keywords": [
+        "OverpowerX+",
+        "Pushback X",
+        "Drag X",
+        "Superior Bypass"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/winged-nightmare/57cc0706-15.jpg",
+          "sha256": "809c66a7c39fcc7ec968d86ccf32f0507d30620df8e795e80cc3902fb6fa15ce"
+        },
+        "back": {
+          "path": "/assets/cards/backs/winged-nightmare/back-15.jpg",
+          "sha256": "0ef44e87e99938af591a21964cda9bfbfcf2a22f254bbdd433547033e19a8581"
+        }
+      }
+    },
+    "M_WingedNightmare:BPX:2": {
+      "keywords": [
+        "OverpowerX+",
+        "Pushback X",
+        "Drag X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "images": {
+        "face": {
+          "path": "/assets/cards/monster-faces/winged-nightmare/57cc0706-16.jpg",
+          "sha256": "3e123dff21933ea41a3a7c190f6c0dad3dcf9eef0f4c6e3a7f533c2ea928a48e"
+        },
+        "back": {
+          "path": "/assets/cards/backs/winged-nightmare/back-16.jpg",
+          "sha256": "5bd815aaea61bcd1b2925f353ce9fb53f302ba41a8449eab455512569bfb8fd4"
+        }
+      }
+    },
+    "M_WingedNightmare:SIG:0": {
+      "keywords": [
+        "Bypass",
+        "Chasm"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/cards/monster-faces/winged-nightmare/57cc0706-17.jpg",
+      "sha256": "6e2efeb0d9e6d61e15d9ea699138ee6b96347848e14d3f160663811f40c23e18"
+    },
+    "postgame-wingednightmare-5-traits": {
+      "keywords": [
+        "Superior Bypass"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/wingednightmare-5-traits.png",
+      "sha256": "11bc6790d0a58ad2170872665b8ef3f9728ace8e0e465ffe237f54ede99c7dc5"
+    },
+    "postgame-wingednightmare-6-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/wingednightmare-6-traits.png",
+      "sha256": "01f65921e024b1a7a7dfc4d906185d4ced07e6cc45068f5dc836a009c89342a8"
+    },
+    "postgame-wingednightmare-7-traits": {
+      "keywords": [
+        "Drag X",
+        "Knockback X",
+        "Pull X"
+      ],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/wingednightmare-7-traits.png",
+      "sha256": "b4400f7c1e7f525797187dec8532c4bc5d55b8f860b92a8ca9973e0b963acae3"
+    },
+    "postgame-wingednightmare-8-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/wingednightmare-8-traits.png",
+      "sha256": "cde55037361ad301296c5d3461d315fff64de97a453a9d128a3a268e76dc546e"
+    },
+    "postgame-wingednightmare-9-traits": {
+      "keywords": [],
+      "note": "逐张目视核对卡面；规则中引用的词典词条也收录，标题中的普通同名词不收录。",
+      "image": "/assets/aibp/postgame/wingednightmare-9-traits.png",
+      "sha256": "eac4b8d8d5117480a8a64c3e8adfe12096fb3103ea9e130b70e9406fa656296f"
+    }
+  },
+  "panelAssetSource": "B2 print PDF; lossless native-pixel crops of all 22 monster sheets. Previous semantic-review source hashes retained per image."
+}

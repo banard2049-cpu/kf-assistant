@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '../..');
 const cards = JSON.parse(fs.readFileSync(path.join(root, 'public/keyword-data/card-keywords.json'), 'utf8')).cards;
-const manifest = JSON.parse(fs.readFileSync(path.join(root, 'card-ocr-manifest.json'), 'utf8'));
+const manifest = JSON.parse(fs.readFileSync(path.join(root, 'tools/card-ocr-manifest.json'), 'utf8'));
 const dictionary = JSON.parse(fs.readFileSync(path.join(root, 'public/keyword-data/keywords.json'), 'utf8'));
 const ids = new Set(dictionary.entries.map(entry => entry.id));
 for (const item of manifest) {
@@ -23,6 +23,8 @@ vm.runInContext(fs.readFileSync(path.join(root, 'public/modules/card-keywords.js
   assert.ok(traits.includes('M_KnightFen:Trait_SK:40'));
   assert.ok(traits.includes('M_KnightFen:Trait_POS:41'));
   assert.ok(Array.from(context.window.KFCardKeywords.words(['M_BogWitch:AI1:18'])).includes('Poison'));
+  assert.ok(Array.from(context.window.KFCardKeywords.words(['M_Pumpkinhead'])).includes('Advanced Bypass'), 'pumpkinhead sheet must show Advanced Bypass');
+  assert.ok(Array.from(context.window.KFCardKeywords.words(['postgame-knighteater-5-traits'])).includes('Fleisch'), 'Fleisch references on level 5 trait must be retained');
   const bad = vm.createContext({ window: {}, document: { currentScript: { src: 'http://localhost/modules/card-keywords.js' } }, URL,
     fetch: async () => ({ ok: true, json: async () => ({ cards: [] }) }) });
   vm.runInContext(fs.readFileSync(path.join(root, 'public/modules/card-keywords.js'), 'utf8'), bad);

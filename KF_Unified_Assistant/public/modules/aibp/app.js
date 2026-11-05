@@ -318,6 +318,9 @@
     const campaignKingdom = window.KF_CAMPAIGN_KINGDOM === "stone" ? "stone" : "sunken";
     const levelKey = Number(level) >= 2 ? "2+" : "1";
     const map = setup.mapsByKingdom?.[campaignKingdom] || setup.mapsByLevel?.[levelKey] || setup.map;
+    const [mapX, mapY, mapWidth, mapHeight] = map.crop;
+    const mapRatio = map.aspectRatio * mapWidth / mapHeight;
+    const mapStyle = `width:${100 / mapWidth}%;height:${100 / mapHeight}%;left:${-100 * mapX / mapWidth}%;top:${-100 * mapY / mapHeight}%;`;
     const original = setup.original?.byKingdom?.[campaignKingdom] || setup.original?.default || null;
     const tiles = setup.tilesByKingdom?.[campaignKingdom] || setup.tilesByLevel?.[levelKey] || setup.tiles || [];
     const kingdomLabels = { sunken: "沉没王国", stone: "石之公国", both: "双王国" };
@@ -355,7 +358,9 @@
           </section>
         </div>
         <figure class="conflict-map-figure">
-          <img src="${esc(map)}" alt="${esc(monsterLabel(setup))}冲突地图" loading="lazy">
+          <div class="conflict-map-crop" style="aspect-ratio:${mapRatio}">
+            <img src="${esc(map.src)}" style="${mapStyle}" alt="${esc(monsterLabel(setup))}冲突地图" loading="lazy">
+          </div>
           <figcaption>${esc(monsterLabel(setup))}冲突地图${setup.mapsByKingdom ? ` · ${kingdomLabels[campaignKingdom]}` : setup.mapsByLevel ? ` · ${levelKey === "1" ? "等级 1" : "等级 2+"}` : ""}</figcaption>
         </figure>
       </div>
@@ -1425,7 +1430,6 @@
   let mobMarkerAssetId = DEFAULT_MOB_MARKER_ASSET_IDS[state.battle.monsterId] || "token-01";
   let deckConfigOpen = false;
   let sheetTokenToolsOpen = false;
-  let sheetTraitToolsOpen = false;
   let selectedTerrainId = "";
   let overlayPlacementMode = "";
   // Keep the legacy local preference as the initial value, then persist it in
@@ -2240,13 +2244,14 @@
     save();
   }
 
-  function recordWhiteReinforcement(value) {
+  function recordWhiteReinforcement(value, keepNotice = false) {
     const rs = state.battle.ruleState;
     const previous = rs.reinforcementTokens;
     rs.reinforcementTokens = clamp(previous + Math.max(0, Number(value) || 0), 0, 20);
-    rs.ruleNotice = rs.reinforcementTokens >= 4
+    const notice = rs.reinforcementTokens >= 4
       ? `增援抵达 ${rs.reinforcementTokens}/4：已达到阈值。完成当前行动后，点击指示物结算。`
       : `增援抵达 ${rs.reinforcementTokens}/4。`;
+    rs.ruleNotice = keepNotice && rs.ruleNotice ? `${rs.ruleNotice} ${notice}` : notice;
     log(`巨白猿魔增援抵达通用指示物：${rs.reinforcementTokens}/4`);
     if (previous < 4 && rs.reinforcementTokens >= 4) {
       toast("增援抵达达到 4：完成当前行动后点击结算");
@@ -2357,12 +2362,13 @@
     state.battle.ruleState.cookieTokens += Math.max(0, Number(value) || 0);
   }
 
-  function recordBossWoundCounters(monster, id, woundValue = 0) {
+  function recordBossWoundCounters(monster, id, woundValue = 0, keepNotice = false) {
     const rule = bossRule(monster);
     const rank = bpRank(cardById(monster, id));
     if (rule?.kind === "white-ape") {
       const value = id === rule.cards.thickSkin ? 1 : (rank === 3 ? 2 : 1);
-      recordWhiteReinforcement(value);
+      // 特殊 BP 分支已经写下结算提示时，只把增援计数接在后面，别把它覆盖掉。
+      recordWhiteReinforcement(value, keepNotice);
     }
     if (rule?.kind === "bog-witch") recordCookieCrumbs(rank === 3 ? 2 : 1);
     recordP2WoundCounters(monster, woundValue);
@@ -2421,8 +2427,12 @@
       return true;
     }
     if (rule?.kind === "white-ape" && id === rule.cards.thickSkin) {
+      // 厚皮是双面卡：WOUND 与 CRITICAL 都是「放到 BP 牌堆旁并翻面」，
+      // 区别只在暴击额外允许一次攻击。它从不进入损伤堆，也不触发晋升。
       state.battle.ruleState.thickSkinSetAside = true;
-      state.battle.ruleState.ruleNotice = "厚皮已置于专用区域；不加入损伤，也不执行晋升。";
+      state.battle.ruleState.ruleNotice = action === "critical"
+        ? "厚皮暴击：已置于 BP 牌堆旁并翻面；不加入损伤、不执行晋升，你可立即执行一次额外攻击。"
+        : "厚皮已置于专用区域；不加入损伤，也不执行晋升。";
       return true;
     }
     if (rule?.kind === "panzer-colony") {
@@ -2459,13 +2469,16 @@
       if (action === "removed") state.battle[`${type}Removed`].push(id);
       if (action === "bottom") state.battle[`${type}Deck`].push(id);
     }
-    if (type === "bp" && ["defeat", "critical"].includes(action)
-      && !resolveSpecialBossBp(monster, id, action)) {
-      resolveBossBp(monster, id, action === "critical");
+    let specialBpHandled = false;
+    if (type === "bp" && ["defeat", "critical"].includes(action)) {
+      specialBpHandled = resolveSpecialBossBp(monster, id, action);
+      if (!specialBpHandled) resolveBossBp(monster, id, action === "critical");
     }
     if (type === "bp" && ["defeat", "critical"].includes(action)) {
       const woundValueAfter = state.battle.singleWounds + state.battle.doubleWounds * 2;
-      recordBossWoundCounters(monster, id, Math.max(0, woundValueAfter - woundValueBefore));
+      recordBossWoundCounters(
+        monster, id, Math.max(0, woundValueAfter - woundValueBefore), specialBpHandled
+      );
     }
     log(`${activeCard?.kind || type.toUpperCase()}：${resolvingAi0 ? "首次结算后移出游戏" : action}`);
     if (type === "ai" && isMob(monster)) completeMobActivation();
@@ -4078,6 +4091,7 @@
   function cardLabel(card, side = "face") {
     if (card?.id === FIRSTMEN_WARRIOR_COMPANION_CARDS.muscularChest) return "BP2 · MUSCULAR CHEST";
     if (card?.id === FIRSTMEN_WARRIOR_COMPANION_CARDS.rampageStrike) return "AI2 · RAMPAGE STRIKE";
+    if (card?.id === "M_WhiteApe:BPS:0" && side === "back") return "厚皮 · THICK SKIN（背面）";
     if (card?.kind !== "SIG") return `${card.kind} · ${card.name}`;
     const monsterName = String(card.name || "").replace(/\s+Signature Routine$/i, "");
     return `${side === "back" ? "SIGNATURE" : "ROUTINE"} · ${monsterLabel(monsterName)}`;
@@ -4461,16 +4475,6 @@
       aria-pressed="${placed}">${placed ? "从面板移除" : "放到面板"}</button>`;
   }
 
-  function sheetTraitTools(battle) {
-    const cards = sheetTraitCards(battle);
-    if (!cards.length) return "";
-    return `<details class="sheet-trait-tools" data-sheet-trait-tools ${sheetTraitToolsOpen ? "open" : ""}>
-      <summary>等级属性与特质 · 放到面板 (${normalizeSheetTraits(battle).length}/${cards.length})</summary>
-      <p class="muted">选择当前等级属性图或特质，拖动调整位置；面板上的 − / ＋ 可调节大小，第二屏同步显示。</p>
-      <div class="sheet-trait-choices">${cards.map(card => `<div class="sheet-trait-choice"><span>${esc(card.name)}</span>${sheetTraitToggleHtml(card, battle)}</div>`).join("")}</div>
-    </details>`;
-  }
-
   function sheetTokenCounts(battle) {
     const counts = new Map(TOKEN_ASSETS.map(asset => [asset.id, 0]));
     battle.sheetTokens.forEach(token => counts.set(token.assetId, (counts.get(token.assetId) || 0) + token.count));
@@ -4667,7 +4671,7 @@
       const vengeance = battle.ruleState.vengeanceTokens;
       const vengeanceThreshold = whiteVengeanceThreshold(battle);
       return [
-        make("token-01", "reinforcements", reinforcement, 72.5, 23.5, {
+        make("token-01", "reinforcements", reinforcement, 73.7, 8.0, {
           autoAction: "white-reinforcements",
           mustResolve: reinforcement >= 4,
           title: `增援抵达通用指示物 ×${reinforcement}${reinforcement >= 4 ? "，点击清除并生成先民护卫" : "，点击增加"}`
@@ -4718,7 +4722,7 @@
       : "";
     const emptyWhiteReinforcementSlot = battle.monsterId === "M_WhiteApe"
       && !battle.ruleState.reinforcementTokens
-      ? '<button type="button" class="sheet-rule-token-slot" data-white-reinforcement-slot style="left:72.5%;top:23.5%" title="放置 1 个增援抵达通用指示物">+</button>'
+      ? '<button type="button" class="sheet-rule-token-slot" data-white-reinforcement-slot style="left:73.7%;top:8.0%" title="放置 1 个增援抵达通用指示物">+</button>'
       : "";
     const emptyWhiteVengeanceSlot = whiteVengeanceActive(battle)
       && !battle.ruleState.vengeanceTokens
@@ -4967,13 +4971,19 @@
           <button class="button" data-rule-action="white-round" ${rs.pendingCoordinatedAttacks ? "disabled" : ""}>怪物轮开始</button>
           <button class="button secondary" data-rule-action="spawn-white-guardian" ${canSpawn ? "" : "disabled"}>特殊生成护卫</button>
           <button class="button secondary" data-rule-action="pass-guardian" ${canPass ? "" : "disabled"}>传递 BP</button>
-          <button class="button secondary" data-rule-action="guardian-attack" ${rs.pendingCoordinatedAttacks ? "" : "disabled"}>协同攻击 ×${rs.pendingCoordinatedAttacks}</button>
+          <button class="button${rs.pendingCoordinatedAttacks ? "" : " secondary"}" data-rule-action="guardian-attack" ${rs.pendingCoordinatedAttacks ? "" : "disabled"}>协同攻击 ×${rs.pendingCoordinatedAttacks}</button>
         </div>
         <div class="guardian-rule-summary">
+          <div class="rule-badges guardian-rule-badges"><span class="badge">厚皮：${rs.thickSkinSetAside ? "专用区域" : b.bpDeck[0] === rule.cards.thickSkin ? "BP 顶" : "牌组中"}</span><span class="badge">护卫 ${guardians.count}/${cap}</span><span class="badge">增援 ${rs.reinforcementTokens}/4</span>${b.level >= 2 ? `<span class="badge">复仇 ${rs.vengeanceTokens}/${vengeanceThreshold}</span>` : ""}</div>
           <strong>先民护卫共享 BP</strong>
           <span>特殊生成放在与大红树相邻、尽量靠近巨白猿魔的格子；同享巨白猿魔的属性加成；生成与死亡均不产生损伤或晋升。</span>
         </div>
-        <div class="guardian-mob-track" aria-label="先民护卫杂兵轨">${Array.from({ length: 6 }, (_, index) => {
+        <div class="guardian-mob-track" aria-label="先民护卫杂兵轨">
+          <div class="guardian-track-slot occupied" aria-label="协同攻击卡">
+            <div class="guardian-track-body">${cardHtml(cardById(monster, rule.cards.coordinatedAttack), "guardian-track-card track-card", "face", false)}</div>
+            <span class="guardian-slot-spacer"></span>
+          </div>
+          ${Array.from({ length: 6 }, (_, index) => {
           const occupied = guardianSlots[index];
           const carrier = guardians.carrier === index;
           const locked = index >= cap;
@@ -4981,7 +4991,7 @@
             <span class="guardian-track-number ${mobNumberClass(index + 1)}">${index + 1}</span>
             <div class="guardian-track-body">
               ${carrier ? cardHtml(cardById(monster, rule.cards.guardian), "guardian-track-card track-card", "face", false) : occupied ? `<div class="guardian-track-figure">
-                <img src="/assets/guardians/firstman-guardian-placeholder.png" alt="先民护卫 ${index + 1}">
+                <img src="/assets/guardians/guardian-${index % 6 + 1}.webp?v=3" alt="先民护卫 ${index + 1}">
               </div>` : `<div class="guardian-track-placeholder">
                 <strong>${locked ? "等级未开放" : occupied ? `先民护卫 ${index + 1}` : "空位"}</strong>
                 <span>${occupied ? "共享属性加成" : locked ? `护卫上限 ${cap}` : "等待特殊生成"}</span>
@@ -4991,7 +5001,6 @@
             ${occupied ? `<button class="button danger small" data-defeat-guardian="${index}" ${rs.pendingCoordinatedAttacks ? "disabled" : ""}>护卫死亡</button>` : '<span class="guardian-slot-spacer"></span>'}
           </div>`;
         }).join("")}</div>
-        <div class="rule-badges"><span class="badge">厚皮：${rs.thickSkinSetAside ? "专用区域" : b.bpDeck[0] === rule.cards.thickSkin ? "BP 顶" : "牌组中"}</span><span class="badge">护卫 ${guardians.count}/${cap}</span><span class="badge">增援 ${rs.reinforcementTokens}/4</span>${b.level >= 2 ? `<span class="badge">复仇 ${rs.vengeanceTokens}/${vengeanceThreshold}</span>` : ""}</div>
       </div>`;
     }
 
@@ -5198,7 +5207,31 @@
     const postgame = window.KF_POSTGAME_RULES;
     const extra = postgame?.traitsFor(monster.id, battle.level) || [];
     const reference = postgame?.levelReferenceFor(monster.id, battle.level);
-    return [...base, ...extra, ...(reference ? [reference] : [])];
+    // The Thick Skin BP is a double-sided card: its back carries the recurring
+    // "Start of Monster Round" rule, so it belongs in the reference panel even
+    // while the card itself sits in the BP deck.
+    const thickSkinCard = bossRule(monster)?.kind === "white-ape"
+      ? cardById(monster, bossRule(monster).cards.thickSkin)
+      : null;
+    return [
+      ...(thickSkinCard ? [{ ...thickSkinCard, referenceSide: "back" }] : []),
+      ...base, ...extra, ...(reference ? [reference] : [])
+    ];
+  }
+
+  function thickSkinReferenceHtml(card, battle) {
+    const setAside = Boolean(battle.ruleState.thickSkinSetAside);
+    const note = setAside
+      ? "已置于 BP 牌堆旁：不加入损伤堆、不执行晋升；下一个怪物轮开始时回到 BP 牌堆顶。"
+      : "常驻 BP 牌堆：怪物轮开始时置于堆顶；若它在堆顶且任何效果会让你与 BP 牌堆互动，忽略该互动。";
+    return `<div class="postgame-reference-card thick-skin-reference-card">
+      ${cardHtml(card, "", "back", false)}
+      <div class="postgame-reference-heading">
+        <button type="button" class="postgame-reference-name" data-preview="${esc(card.id)}" data-preview-side="back" title="厚皮 · THICK SKIN（背面）">厚皮（背面）</button>
+        <span class="badge">${setAside ? "牌堆旁" : "BP 牌"}</span>
+      </div>
+      <span class="postgame-card-note">${esc(note)}</span>
+    </div>`;
   }
 
   function referenceCardsHtml(monster, battle, cards) {
@@ -5207,6 +5240,7 @@
       `<p><strong>等级 ${esc(item.minLevel)} · ${esc(item.name)}</strong>：${esc(item.note || `${(item.replaces || []).join("、")} 已失效，请按新能力结算。`)}</p>`
     ).join("")}</div>` : "";
     return `${replacements}<div class="card-gallery reference-gallery postgame-reference-gallery">${cards.map(card => {
+      if (card.referenceSide === "back") return thickSkinReferenceHtml(card, battle);
       if (!card.source) return pileGrid([card.id], monster);
       const status = card.supersededBy ? `<span class="postgame-card-note">${esc(Array.isArray(card.supersededBy) ? card.supersededBy.join("、") : card.supersededBy)} 已替换本组相应能力</span>` : "";
       return `<div class="postgame-reference-card">${cardHtml(card, "", "face", false)}
@@ -5894,7 +5928,6 @@
               </div>
             </details>
             ${sheetTokenTools(b)}
-            ${sheetTraitTools(b)}
             <div class="monster-sheet-display ${b.conflictLocation === "巨兽之腹" ? "has-devour-dragon-trait" : ""}">
               <div class="monster-sheet-stage" data-sheet-stage style="aspect-ratio:${sheetStageAspect(monster)};height:auto">
                 <div class="monster-sheet-spread">
@@ -5975,7 +6008,7 @@
                       <button class="button" data-draw="bp" title="抽取 BP">抽 BP</button>
                       <button class="button secondary" data-settle="bp:discard" title="弃置当前 BP" ${activeBP && !thickSkinActive ? "" : "disabled"}>弃置</button>
                       <button class="button secondary" data-settle="bp:defeat" title="用当前 BP 结算击伤" ${activeBP ? "" : "disabled"}>击伤</button>
-                      <button class="button secondary" data-settle="bp:critical" title="BP1、BP2 按击败结算；BP3 按暴击结算" ${bpRank(activeBP) > 0 && !thickSkinActive ? "" : "disabled"}>暴击</button>
+                      <button class="button secondary" data-settle="bp:critical" title="${thickSkinActive ? "厚皮暴击：置于 BP 牌堆旁并翻面，不加入损伤、不晋升，可立即执行一次额外攻击" : "BP1、BP2 按击败结算；BP3 按暴击结算"}" ${bpRank(activeBP) > 0 || thickSkinActive ? "" : "disabled"}>暴击</button>
                       <button class="button secondary" data-settle="bp:bottom" title="将当前 BP 置于牌组底部" ${activeBP && !thickSkinActive ? "" : "disabled"}>置底</button>
                       <button class="button secondary" data-promote="bp" title="BP 晋升" ${thickSkinActive ? "disabled" : ""}>晋升</button>`}
                     <button class="button secondary" data-wound="single" title="添加单重损伤" ${thickSkinActive ? "disabled" : ""}>+单重</button>
@@ -6036,7 +6069,6 @@
     }));
     $("[data-deck-config]")?.addEventListener("toggle", event => { deckConfigOpen = event.currentTarget.open; });
     $("[data-sheet-token-tools]")?.addEventListener("toggle", event => { sheetTokenToolsOpen = event.currentTarget.open; });
-    $("[data-sheet-trait-tools]")?.addEventListener("toggle", event => { sheetTraitToolsOpen = event.currentTarget.open; });
     $("[data-grid-coordinates]")?.addEventListener("click", toggleConflictCoordinates);
     $("[data-fool-deck]")?.addEventListener("click", drawOrResetFoolCard);
     $$('[data-terrain-id]').forEach(button => button.addEventListener('click', event => {
@@ -6414,7 +6446,7 @@
     const fixedWarriorCompanion = monster?.id === "M_FirstmenWarriors" && isWarriorCompanionCard(card.id);
     const fixedWingedBp = isWingedNightmare(monster) && isWingedFixedBpId(card.id);
     const type = fixedWarriorCompanion || fixedWingedBp || !allowMoves ? "" : aibpDeckType(card);
-    const previewSide = card.kind === "SIG" && side === "back" ? "back" : "face";
+    const previewSide = side === "back" && ["SIG", "BPS"].includes(card.kind) ? "back" : "face";
     modal.innerHTML = `<div class="modal-backdrop" data-close-modal></div><div class="modal-card ${card.source ? "postgame-preview-modal" : ""}">
       <button class="modal-close" data-close-modal aria-label="关闭卡牌预览">×</button>
       ${cardHtml(card, "preview-card", previewSide, false, false)}

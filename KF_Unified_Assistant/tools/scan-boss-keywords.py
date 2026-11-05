@@ -16,7 +16,7 @@ import sys
 import unicodedata
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = ROOT / 'card-ocr-manifest.json'
+MANIFEST = ROOT / 'tools/card-ocr-manifest.json'
 OUT = ROOT / 'public/data/card-keyword-ocr.json'
 MATCHES = ROOT / 'public/keyword-data/card-keywords.json'
 SUPPLEMENT = ROOT / 'public/data/card-keyword-ocr-supplement.json'

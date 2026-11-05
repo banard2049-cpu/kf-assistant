@@ -70,9 +70,21 @@ def main():
         slug = spec['slug']
         source_path = public / monster['sheet']['face'].lstrip('/')
         with Image.open(source_path) as source:
-            if source.size != (2405, 1649):
+            expected = (monster['sheet']['cellWidth'], monster['sheet']['cellHeight'])
+            if source.size != expected:
                 raise ValueError(f'Unexpected panel size for {monster["id"]}: {source.size}')
-            token = circular_portrait(source.convert('RGB'), spec)
+            # Registration coordinates were measured on the 2405x1649 sheets.
+            # Read the new native-resolution source using the same framing.
+            scale_x, scale_y = source.width / 2405, source.height / 1649
+            a, b, c, d, e, f = spec['affine']
+            sampling = {
+                **spec,
+                'affine': [
+                    a * scale_x, b * scale_y, c,
+                    d * scale_x, e * scale_y, f,
+                ],
+            }
+            token = circular_portrait(source.convert('RGB'), sampling)
         metadata = PngImagePlugin.PngInfo()
         metadata.add_text('Source', monster['sheet']['face'])
         metadata.add_text('SourceSHA256', hashlib.sha256(source_path.read_bytes()).hexdigest())

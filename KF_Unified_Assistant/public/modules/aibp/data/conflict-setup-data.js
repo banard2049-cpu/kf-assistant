@@ -48,8 +48,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_Ratwolves",
       mapsByKingdom: {
-        sunken: "/assets/conflict-maps/ratwolves-sunken.jpg",
-        stone: "/assets/conflict-maps/ratwolves-stone.jpg"
+        sunken: { src: "/assets/conflict-originals/ratwolves-sunken.jpg", crop: [0.5355, 0.04, 0.389, 0.394], aspectRatio: 1.36516854 },
+        stone: { src: "/assets/conflict-originals/ratwolves-stone.jpg", crop: [0.5225, 0.042, 0.447, 0.453], aspectRatio: 1.35977601 }
       },
       name: "狼鼠狼",
       en: "Ratwolves",
@@ -69,8 +69,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_WingedNightmare",
       mapsByKingdom: {
-        sunken: "/assets/conflict-maps/winged-nightmare-sunken.jpg",
-        stone: "/assets/conflict-maps/winged-nightmare-stone.jpg"
+        sunken: { src: "/assets/conflict-originals/winged-nightmare-sunken.jpg", crop: [0.0805, 0.602, 0.3525, 0.356], aspectRatio: 1.36269916 },
+        stone: { src: "/assets/conflict-originals/winged-nightmare-stone.jpg", crop: [0.0725, 0.598, 0.3565, 0.359], aspectRatio: 1.36546561 }
       },
       name: "展翅魔",
       en: "Winged Nightmare",
@@ -96,8 +96,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_Pumpkinhead",
       mapsByKingdom: {
-        sunken: "/assets/conflict-maps/pumpkinheads-sunken.jpg",
-        stone: "/assets/conflict-maps/pumpkinheads-stone.jpg"
+        sunken: { src: "/assets/conflict-originals/pumpkinheads-sunken.jpg", crop: [0.5525, 0.039, 0.387, 0.396], aspectRatio: 1.36499766 },
+        stone: { src: "/assets/conflict-originals/pumpkinheads-stone.jpg", crop: [0.5225, 0.046, 0.4475, 0.45], aspectRatio: 1.36482694 }
       },
       name: "南瓜头精怪",
       en: "Pumpkinhead Monstrosities",
@@ -124,8 +124,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_KnightFen",
       mapsByKingdom: {
-        sunken: "/assets/conflict-maps/knight-fen-sunken.jpg",
-        stone: "/assets/conflict-maps/knight-fen-stone.jpg"
+        sunken: { src: "/assets/conflict-originals/knight-fen-sunken.jpg", crop: [0.551, 0.568, 0.387, 0.39], aspectRatio: 1.36325386 },
+        stone: { src: "/assets/conflict-originals/knight-fen-stone.jpg", crop: [0.553, 0.568, 0.3885, 0.389], aspectRatio: 1.36593355 }
       },
       name: "污泥骑士",
       en: "Knight of the Fen",
@@ -143,8 +143,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_PalebloodWorms",
       mapsByKingdom: {
-        sunken: "/assets/conflict-maps/paleblood-worms-sunken.jpg",
-        stone: "/assets/conflict-maps/paleblood-worms-stone.jpg"
+        sunken: { src: "/assets/conflict-originals/paleblood-worms-sunken.jpg", crop: [0.519, 0.511, 0.4465, 0.447], aspectRatio: 1.36499766 },
+        stone: { src: "/assets/conflict-originals/paleblood-worms-stone.jpg", crop: [0.5215, 0.509, 0.4475, 0.447], aspectRatio: 1.36435921 }
       },
       name: "白血蠕虫",
       en: "Paleblood Worms",
@@ -164,7 +164,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_FirstmenWarriors",
-      map: "/assets/conflict-maps/firstmen-warriors.jpg",
+      map: { src: "/assets/conflict-originals/firstmen-warriors.jpg", crop: [0.5455, 0.044, 0.3875, 0.392], aspectRatio: 1.36465638 },
       name: "先民战士",
       en: "Firstmen Warriors",
       kingdom: "both",
@@ -182,7 +182,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_HauntOf",
-      map: "/assets/conflict-maps/haunts-utrebant.jpg",
+      map: { src: "/assets/conflict-originals/haunts-utrebant.jpg", crop: [0.543, 0.044, 0.388, 0.392], aspectRatio: 1.36546561 },
       name: "乌特勒班幽灵",
       en: "Haunts of Utrebant",
       kingdom: "both",
@@ -199,7 +199,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_WhiteApe",
-      map: "/assets/conflict-maps/white-ape-troll.jpg",
+      map: { src: "/assets/conflict-originals/white-ape-troll.jpg", crop: [0.5485, 0.565, 0.3875, 0.387], aspectRatio: 1.36452971 },
       name: "巨白猿魔",
       en: "White Ape Troll",
       kingdom: "both",
@@ -216,7 +216,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_KingLaidLow",
-      map: "/assets/conflict-maps/king-laid-low.jpg",
+      map: { src: "/assets/conflict-originals/king-laid-low.jpg", crop: [0.0655, 0.566, 0.3875, 0.384], aspectRatio: 1.36755743 },
       name: "俯伏王",
       en: "The King Laid Low",
       kingdom: "both",
@@ -234,8 +234,8 @@ window.KF_CONFLICT_SETUPS = {
     {
       id: "M_DevilAncientDusk",
       mapsByLevel: {
-        "1": "/assets/conflict-maps/devil-ancient-dusk-l1.jpg",
-        "2+": "/assets/conflict-maps/devil-ancient-dusk-l2.jpg"
+        "1": { src: "/assets/conflict-originals/devil-ancient-dusk.jpg", crop: [0.185, 0.655, 0.2985, 0.298], aspectRatio: 1.36610487 },
+        "2+": { src: "/assets/conflict-originals/devil-ancient-dusk.jpg", crop: [0.518, 0.655, 0.298, 0.298], aspectRatio: 1.36610487 }
       },
       name: "远古薄暮恶魔",
       en: "Devil of the Ancient Dusk",
@@ -256,7 +256,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Toadragon",
-      map: "/assets/conflict-maps/toadragon.jpg",
+      map: { src: "/assets/conflict-originals/toadragon.jpg", crop: [0.5765, 0.042, 0.388, 0.393], aspectRatio: 1.36780533 },
       name: "大沼泽蟾蜍龙",
       en: "Toadragon of the Great Marsh",
       kingdom: "both",
@@ -271,7 +271,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Knighteater",
-      map: "/assets/conflict-maps/knighteater.jpg",
+      map: { src: "/assets/conflict-originals/knighteater.jpg", crop: [0.615, 0.041, 0.3535, 0.358], aspectRatio: 1.36487119 },
       name: "食士师",
       en: "Knighteater",
       kingdom: "both",
@@ -286,7 +286,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_YoungDevour",
-      map: "/assets/conflict-maps/young-devour-dragon.jpg",
+      map: { src: "/assets/conflict-originals/young-devour-dragon.jpg", crop: [0.546, 0.04, 0.3885, 0.393], aspectRatio: 1.34953271 },
       name: "幼年贪食巨龙",
       en: "Young Devour Dragon",
       kingdom: "both",
@@ -301,7 +301,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Panzergeists",
-      map: "/assets/conflict-maps/panzergeists.jpg",
+      map: { src: "/assets/conflict-originals/panzergeists.jpg", crop: [0.5445, 0.557, 0.3895, 0.396], aspectRatio: 1.36760563 },
       name: "装甲幽鬼",
       en: "Panzergeists",
       kingdom: "stone",
@@ -319,7 +319,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Stonemason",
-      map: "/assets/conflict-maps/stonemason-knight.jpg",
+      map: { src: "/assets/conflict-originals/stonemason-knight.jpg", crop: [0.5445, 0.557, 0.3895, 0.391], aspectRatio: 1.36661978 },
       name: "石匠骑士",
       en: "Stonemason Knight",
       kingdom: "stone",
@@ -333,7 +333,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_FirstmenLictor",
-      map: "/assets/conflict-maps/firstmen-lictor-hunters.jpg",
+      map: { src: "/assets/conflict-originals/firstmen-lictor-hunters.jpg", crop: [0.0815, 0.616, 0.351, 0.352], aspectRatio: 1.36121495 },
       name: "先民巡猎手",
       en: "Firstmen Lictor Hunters",
       kingdom: "sunken",
@@ -350,7 +350,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_BogWitch",
-      map: "/assets/conflict-maps/bog-witch.jpg",
+      map: { src: "/assets/conflict-originals/bog-witch.jpg", crop: [0.068, 0.565, 0.3875, 0.387], aspectRatio: 1.36202058 },
       name: "沼泽地女巫",
       en: "Bog Witch",
       kingdom: "sunken",
@@ -365,7 +365,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Ironcast",
-      map: "/assets/conflict-maps/ironcast-dead.jpg",
+      map: { src: "/assets/conflict-originals/ironcast-dead.jpg", crop: [0.521, 0.047, 0.4475, 0.45], aspectRatio: 1.36418887 },
       name: "铁铸骷髅",
       en: "Ironcast Dead",
       kingdom: "stone",
@@ -381,7 +381,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Eggknight",
-      map: "/assets/conflict-maps/eggknight.jpg",
+      map: { src: "/assets/conflict-originals/eggknight.jpg", crop: [0.549, 0.579, 0.3805, 0.378], aspectRatio: 1.36227824 },
       name: "蛋蛋骑士",
       en: "Eggknight",
       kingdom: "stone",
@@ -395,7 +395,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_PuppetKing",
-      map: "/assets/conflict-maps/puppet-king-edelhardt.jpg",
+      map: { src: "/assets/conflict-originals/puppet-king-edelhardt.jpg", crop: [0.074, 0.6, 0.353, 0.353], aspectRatio: 1.36227824 },
       name: "傀儡王埃德尔哈特",
       en: "Puppet King Edelhardt",
       kingdom: "stone",
@@ -410,7 +410,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_DevilSmeltedFears",
-      map: "/assets/conflict-maps/devil-smelted-fears.jpg",
+      map: { src: "/assets/conflict-originals/devil-smelted-fears.jpg", crop: [0.6155, 0.044, 0.3385, 0.343], aspectRatio: 1.36164256 },
       name: "熔怖恶魔",
       en: "Devil of the Smelted Fears",
       kingdom: "stone",
@@ -425,7 +425,7 @@ window.KF_CONFLICT_SETUPS = {
     },
     {
       id: "M_Panzerdragon",
-      map: "/assets/conflict-maps/panzerdragon-veldr.jpg",
+      map: { src: "/assets/conflict-originals/panzerdragon-veldr.jpg", crop: [0.52, 0.507, 0.446, 0.446], aspectRatio: 1.3635514 },
       name: "装甲巨龙弗尔德",
       en: "Panzerdragon Veldr",
       kingdom: "stone",

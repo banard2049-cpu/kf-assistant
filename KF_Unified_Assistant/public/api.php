@@ -232,7 +232,7 @@ function public_aibp_auto_sheet_tokens(array $battle,array $rule): array {
     }elseif($monsterId==='M_Ironcast'&&$level>=2){
         $add('token-01',$value('ironcast','necrofusion'),16.0,66.5);
     }elseif($monsterId==='M_WhiteApe'){
-        $add('token-01',$rule['reinforcementTokens']??0,72.5,23.5);
+        $add('token-01',$rule['reinforcementTokens']??0,73.7,8.0);
         if($level>=2)$add('token-01',$rule['vengeanceTokens']??0,72.5,88.0);
     }elseif($monsterId==='M_KingLaidLow'&&$level>=2){
         $add('token-01',$value('kingLaidLow','putrid'),73.5,41.0);
