@@ -3337,6 +3337,7 @@
   function bind() {
     const current = mapState();
     const board = $(".map-board");
+    window.KFMapView.bindMapStage(board.querySelector(".map-stage"), window.KFMapView.stageGeometry(state, DATA));
     let clickTimer = 0;
     let tokenDrag = null;
     board.addEventListener("scroll", () => {
@@ -3363,11 +3364,11 @@
         tileId: token.dataset.tokenTile,
         startClientX: event.clientX,
         startClientY: event.clientY,
-        startX: Number(token.dataset.tokenX) || 50,
-        startY: Number(token.dataset.tokenY) || 50,
+        startX: Number.parseFloat(token.style.left),
+        startY: Number.parseFloat(token.style.top),
         radians: angle * Math.PI / 180,
-        x: Number(token.dataset.tokenX) || 50,
-        y: Number(token.dataset.tokenY) || 50,
+        x: Number.parseFloat(token.style.left),
+        y: Number.parseFloat(token.style.top),
         moved: false,
         snapshotted: false
       };
@@ -3417,11 +3418,15 @@
         tokenDrag.token.releasePointerCapture(event.pointerId);
       }
       if (tokenDrag.moved) {
-        tokenDrag.token.dataset.tokenX = String(tokenDrag.x);
-        tokenDrag.token.dataset.tokenY = String(tokenDrag.y);
+        const view = window.KFMapView;
+        const box = view?.stageGeometry(state, DATA)?.boxes.get(tokenDrag.tileId);
+        const source = view?.tileWarpPoint(box, { x: tokenDrag.x, y: tokenDrag.y }, true)
+          || { x: tokenDrag.x, y: tokenDrag.y };
+        tokenDrag.token.dataset.tokenX = String(source.x);
+        tokenDrag.token.dataset.tokenY = String(source.y);
         setTokenPosition(tokenDrag.kind, tokenDrag.id, tokenDrag.tileId, {
-          x: Number(tokenDrag.x.toFixed(2)),
-          y: Number(tokenDrag.y.toFixed(2))
+          x: Number(source.x.toFixed(2)),
+          y: Number(source.y.toFixed(2))
         });
         save();
       }

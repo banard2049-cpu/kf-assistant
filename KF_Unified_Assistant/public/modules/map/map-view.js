@@ -77,7 +77,7 @@
   };
   const ttsAngle = item => (((Number(item.rotation) || 180) - 180 + 540) % 360) - 180;
   const pathKey = (left, right) => [left, right].sort().join("|");
-  // Aligned layout (data/map-layout.js): tile centres and sizes solved from the printed path exits.
+  // Aligned layout: exact shared rectangles and the artwork's rectification mesh.
   const mapLayout = () => globalThis.KF_MAP_LAYOUT || null;
   const alignedTile = item => {
     const aligned = mapLayout()?.tiles?.[item?.id];
@@ -91,6 +91,42 @@
     const size = tileSize(item);
     return { x: item.x, y: item.y, width: size.width, height: size.height };
   };
+
+  // Saved percentages refer to the source artwork. Keep markers attached to that
+  // artwork after rectification, and invert the same mesh when a marker is dropped.
+  function tileWarpPoint(box, point, inverse = false) {
+    const mesh = box?.warp;
+    if (!mesh) return { x: clamp(point.x, 0, 100), y: clamp(point.y, 0, 100) };
+    const x = clamp(point.x, 0, 100) / 100;
+    const y = clamp(point.y, 0, 100) / 100;
+    const columns = mesh.x.length;
+    const interpolate = (points, weights) => ({
+      x: points.reduce((sum, p, i) => sum + p[0] * weights[i], 0) * 100,
+      y: points.reduce((sum, p, i) => sum + p[1] * weights[i], 0) * 100
+    });
+    for (let row = 0; row < mesh.y.length - 1; row++) {
+      if (!inverse && (y < mesh.y[row] || y > mesh.y[row + 1])) continue;
+      for (let col = 0; col < columns - 1; col++) {
+        if (!inverse && (x < mesh.x[col] || x > mesh.x[col + 1])) continue;
+        const source = [[mesh.x[col], mesh.y[row]], [mesh.x[col + 1], mesh.y[row]],
+          [mesh.x[col], mesh.y[row + 1]], [mesh.x[col + 1], mesh.y[row + 1]]];
+        const target = [mesh.points[row * columns + col], mesh.points[row * columns + col + 1],
+          mesh.points[(row + 1) * columns + col], mesh.points[(row + 1) * columns + col + 1]];
+        for (const indices of [[0, 1, 3], [0, 3, 2]]) {
+          const from = indices.map(i => (inverse ? target : source)[i]);
+          const [a, b, c] = from;
+          const denominator = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1]);
+          const wa = ((b[1] - c[1]) * (x - c[0]) + (c[0] - b[0]) * (y - c[1])) / denominator;
+          const wb = ((c[1] - a[1]) * (x - c[0]) + (a[0] - c[0]) * (y - c[1])) / denominator;
+          const weights = [wa, wb, 1 - wa - wb];
+          if (weights.every(value => value >= -1e-8)) {
+            return interpolate(indices.map(i => (inverse ? source : target)[i]), weights);
+          }
+        }
+      }
+    }
+    return { x: x * 100, y: y * 100 };
+  }
 
   function legalTileIds(state, data) {
     const current = record(state.maps?.[state.kingdom]);
@@ -127,19 +163,20 @@
     return { x: clamp(value.x, 0, 100), y: clamp(value.y, 0, 100) };
   }
 
-  function mapToken(source, label, item, kind, tileId, index, assetBase, interactive) {
+  function mapToken(source, label, item, kind, tileId, index, assetBase, interactive, box) {
     const position = savedTokenPosition(item, kind, tileId);
     const fallback = TOKEN_SLOTS[index % TOKEN_SLOTS.length];
     const x = position?.x ?? fallback[0];
     const y = position?.y ?? fallback[1];
+    const display = tileWarpPoint(box, { x, y });
     const data = interactive
       ? `draggable="false" data-map-token="${esc(item.id)}" data-token-kind="${kind}" data-token-tile="${esc(tileId)}" data-token-x="${x}" data-token-y="${y}"`
       : `aria-hidden="true" data-display-token-kind="${kind}"`;
     if (kind === "tile" && item.type === "custom") {
-      return `<span class="map-token custom-map-token" title="${esc(label)}" style="left:${x}%;top:${y}%" ${data}>${esc(label)}</span>`;
+      return `<span class="map-token custom-map-token" title="${esc(label)}" style="left:${display.x}%;top:${display.y}%" ${data}>${esc(label)}</span>`;
     }
     return source
-      ? `<img class="token-icon map-token" src="${esc(asset(source, assetBase))}" alt="${esc(label)}" title="${esc(label)}" style="left:${x}%;top:${y}%" ${data}>`
+      ? `<img class="token-icon map-token" src="${esc(asset(source, assetBase))}" alt="${esc(label)}" title="${esc(label)}" style="left:${display.x}%;top:${display.y}%" ${data}>`
       : "";
   }
 
@@ -167,7 +204,7 @@
     return /[\u3400-\u9fff]/.test(name) ? name : "骑士";
   }
 
-  function partyMarker(tileId, state, current, options) {
+  function partyMarker(tileId, state, current, options, box) {
     const { member, knight, name } = partyIdentity(state, options.party, options.mainlineKnight);
     const memberPortraitId = member?.type === "squire" ? member.squireId : member?.knightId;
     const knightPortraitId = knight?.heroId || (knight?.memberType === "squire" ? knight?.squireId : knight?.knightId);
@@ -175,10 +212,11 @@
     const saved = current.partyPositions?.[tileId];
     const x = Number.isFinite(saved?.x) ? clamp(saved.x, 0, 100) : 50;
     const y = Number.isFinite(saved?.y) ? clamp(saved.y, 0, 100) : 50;
+    const display = tileWarpPoint(box, { x, y });
     const attrs = options.interactive === false
       ? `aria-label="当前队伍：${esc(name)}"`
       : `aria-label="当前队伍：${esc(name)}" title="当前队伍：${esc(name)}（可拖动）" data-map-token="party" data-token-kind="party" data-token-tile="${esc(tileId)}" data-token-x="${x}" data-token-y="${y}"`;
-    return `<span class="party-location-token" role="img" ${attrs} style="left:${x}%;top:${y}%">
+    return `<span class="party-location-token" role="img" ${attrs} style="left:${display.x}%;top:${display.y}%">
       ${portraitId
         ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg?v=story-1" alt="" draggable="false">`
         : `<span class="party-location-fallback" aria-hidden="true">${esc(name.slice(0, 1) || "?")}</span>`}
@@ -199,8 +237,10 @@
       const geometry = tileGeometry(item);
       const angle = ttsAngle(item);
       const radians = angle * Math.PI / 180;
+      const face = current.showAll || (current.tileState?.[item.id] || "hidden") !== "hidden";
       return [item.id, {
         item, ...geometry, angle,
+        warp: face ? alignedTile(item)?.warp : null,
         halfWidth: Math.abs(Math.cos(radians)) * geometry.width / 2 + Math.abs(Math.sin(radians)) * geometry.height / 2,
         halfHeight: Math.abs(Math.sin(radians)) * geometry.width / 2 + Math.abs(Math.cos(radians)) * geometry.height / 2
       }];
@@ -217,8 +257,9 @@
   // Tile-local percentages (the rotated tile's own frame, as tokens have always been stored)
   // to world units and back.
   function tileLocalToWorld(box, point) {
-    const dx = (clamp(point.x, 0, 100) / 100 - .5) * box.width;
-    const dy = (clamp(point.y, 0, 100) / 100 - .5) * box.height;
+    const display = tileWarpPoint(box, point);
+    const dx = (display.x / 100 - .5) * box.width;
+    const dy = (display.y / 100 - .5) * box.height;
     const radians = box.angle * Math.PI / 180;
     return {
       x: box.x + dx * Math.cos(radians) - dy * Math.sin(radians),
@@ -232,10 +273,8 @@
     const radians = box.angle * Math.PI / 180;
     const localX = dx * Math.cos(radians) + dy * Math.sin(radians);
     const localY = -dx * Math.sin(radians) + dy * Math.cos(radians);
-    return {
-      x: Number(clamp((localX / box.width + .5) * 100, 0, 100).toFixed(2)),
-      y: Number(clamp((localY / box.height + .5) * 100, 0, 100).toFixed(2))
-    };
+    const source = tileWarpPoint(box, { x: (localX / box.width + .5) * 100, y: (localY / box.height + .5) * 100 }, true);
+    return { x: Number(source.x.toFixed(2)), y: Number(source.y.toFixed(2)) };
   }
 
   function tileAtWorld(geometry, point) {
@@ -377,7 +416,7 @@
       const box = geometry.boxes.get(item.id);
       const status = current.tileState?.[item.id] || "hidden";
       const face = current.showAll || status !== "hidden";
-      const source = item.image?.[face ? "face" : "back"] || item.image?.face;
+      const source = (face ? alignedTile(item)?.face : null) || item.image?.[face ? "face" : "back"] || item.image?.face;
       const monsters = list(current.monsters).filter(marker => marker.tileId === item.id);
       const classes = [
         "map-tile", current.selected === item.id ? "selected" : "", current.current === item.id ? "current" : "",
@@ -393,14 +432,102 @@
       const attributes = interactive
         ? `type="button" data-tile="${esc(item.id)}" title="${esc(tileLabel(item))}"`
         : `role="img" aria-label="${esc(tileLabel(item))}"`;
-      return `<${tag} class="${classes}" ${attributes} data-angle="${angle}"
+      return `<${tag} class="${classes}" ${attributes} data-map-tile-id="${esc(item.id)}" data-angle="${angle}"
         style="left:${(box.x - box.width / 2 - minX) / worldWidth * 100}%;top:${(box.y - box.height / 2 - minY) / worldHeight * 100}%;width:${box.width / worldWidth * 100}%;height:${box.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg">
         <img class="map-tile-image" src="${esc(asset(source, options.assetBase))}" alt="${esc(tileLabel(item))}" draggable="false">
-        ${current.current === item.id ? partyMarker(item.id, state, current, options) : ""}
-        ${mapTokens.map((entry, index) => mapToken(entry.source, entry.label, entry.record, entry.kind, item.id, index, options.assetBase, interactive)).join("")}
+        ${current.current === item.id ? partyMarker(item.id, state, current, options, box) : ""}
+        ${mapTokens.map((entry, index) => mapToken(entry.source, entry.label, entry.record, entry.kind, item.id, index, options.assetBase, interactive, box)).join("")}
       </${tag}>`;
     }).join("");
     return `<div class="map-stage" style="aspect-ratio:${worldWidth}/${worldHeight}">${cards}${renderMarkerLayer(geometry, state, data, options)}</div>`;
+  }
+
+  let activeMapStage = null;
+
+  // Separately clipped images can expose a subpixel fringe at their shared
+  // edge. Paint a narrow copy of the edge artwork underneath that fringe;
+  // tile geometry, hit areas, marker coordinates and printed exits stay fixed.
+  function bindMapStage(stage, geometry) {
+    activeMapStage?.dispose();
+    activeMapStage = null;
+    if (!stage || !geometry) return;
+    const nodes = [...stage.querySelectorAll("[data-map-tile-id]")].map(node => ({
+      node, box: geometry.boxes.get(node.dataset.mapTileId)
+    })).filter(item => item.box);
+    const byId = new Map(nodes.map(item => [item.box.item.id, item]));
+    const underlay = document.createElement("div");
+    underlay.className = "map-seam-underlay";
+    underlay.setAttribute("aria-hidden", "true");
+    underlay.style.cssText = "position:absolute;inset:0;pointer-events:none;z-index:0";
+    const seams = list(mapLayout()?.seams).filter(seam => byId.has(seam.a) && byId.has(seam.b)).map(seam => {
+      const owner = byId.get(seam.a), other = byId.get(seam.b);
+      const strip = document.createElement("div"), art = document.createElement("div");
+      strip.style.cssText = "position:absolute;overflow:hidden";
+      art.style.cssText = "position:absolute;left:0;top:0;transform-origin:0 0";
+      const image = owner.node.querySelector(".map-tile-image").cloneNode(false);
+      image.className = "map-seam-image";
+      image.alt = "";
+      image.style.cssText = "display:block;width:100%;height:100%;max-width:none";
+      art.append(image);
+      strip.append(art);
+      underlay.append(strip);
+      return { ...seam, owner, other, strip, art };
+    });
+    if (!seams.length) return;
+    stage.prepend(underlay);
+    const update = () => {
+      if (!stage.isConnected) return;
+      const ratio = window.devicePixelRatio || 1;
+      const rect = stage.getBoundingClientRect();
+      if (!(rect.width > 0 && rect.height > 0)) return;
+      const coordinate = value => Math.round(value * 1e7) / 1e7;
+      const pixelX = value => Math.round((rect.left + (coordinate(value) - geometry.minX) / geometry.worldWidth * rect.width) * ratio) / ratio - rect.left;
+      const pixelY = value => Math.round((rect.top + (coordinate(value) - geometry.minY) / geometry.worldHeight * rect.height) * ratio) / ratio - rect.top;
+      const paints = new Map();
+      for (const { box } of nodes) {
+        if (box.angle % 90 !== 0) continue;
+        const width = box.width / geometry.worldWidth * rect.width;
+        const height = box.height / geometry.worldHeight * rect.height;
+        const nativeWidth = Math.max(1, Math.round(width));
+        const nativeHeight = Math.max(1, Math.round(height));
+        const radians = box.angle * Math.PI / 180;
+        const cosine = Math.round(Math.cos(radians)), sine = Math.round(Math.sin(radians));
+        const a = cosine * width / nativeWidth, b = sine * width / nativeWidth;
+        const c = -sine * height / nativeHeight, d = cosine * height / nativeHeight;
+        const x = (box.x - geometry.minX) / geometry.worldWidth * rect.width - (a * nativeWidth + c * nativeHeight) / 2;
+        const y = (box.y - geometry.minY) / geometry.worldHeight * rect.height - (b * nativeWidth + d * nativeHeight) / 2;
+        paints.set(box.item.id, { a, b, c, d, x, y, nativeWidth, nativeHeight });
+      }
+      // GPU clipping can still soften a boundary at fractional Windows display
+      // scaling. Back only a narrow shared seam with the same artwork; the
+      // visible tile bounds and exits stay fixed. Keep the seam away from the
+      // underlay's own clipping edge so that edge cannot create another fringe.
+      const bleed = 1 / ratio;
+      for (const seam of seams) {
+        const p = paints.get(seam.a), a = seam.owner.box, b = seam.other.box;
+        if (!p) continue;
+        const vertical = seam.axis === "v";
+        const left = vertical ? pixelX(a.x + a.halfWidth) - bleed * 3 : pixelX(Math.max(a.x - a.halfWidth, b.x - b.halfWidth));
+        const top = vertical ? pixelY(Math.max(a.y - a.halfHeight, b.y - b.halfHeight)) : pixelY(a.y + a.halfHeight) - bleed * 3;
+        const width = vertical ? bleed * 6 : pixelX(Math.min(a.x + a.halfWidth, b.x + b.halfWidth)) - left;
+        const height = vertical ? pixelY(Math.min(a.y + a.halfHeight, b.y + b.halfHeight)) - top : bleed * 6;
+        Object.assign(seam.strip.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
+        seam.art.style.width = `${p.nativeWidth}px`;
+        seam.art.style.height = `${p.nativeHeight}px`;
+        seam.art.style.transform = `matrix(${p.a},${p.b},${p.c},${p.d},${p.x - left + (vertical ? bleed * 4 : 0)},${p.y - top + (vertical ? 0 : bleed * 4)})`;
+      }
+    };
+    const observer = new ResizeObserver(update);
+    observer.observe(stage);
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    activeMapStage = { dispose() {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+      underlay.remove();
+    } };
+    update();
   }
 
   function explorationCardById(data, kingdom, cardId) {
@@ -578,8 +705,8 @@
   }
 
   window.KFMapView = Object.freeze({
-    CLUES, PASSAGE_MARKER_TYPES, MARKER_TOKEN_UNITS, legalTileIds, renderMapStage, renderKingdomBoard, renderExplorationCard,
+    CLUES, PASSAGE_MARKER_TYPES, MARKER_TOKEN_UNITS, legalTileIds, renderMapStage, bindMapStage, renderKingdomBoard, renderExplorationCard,
     renderDistrictExplorationCards, renderClueTracking, renderDelveTracks, tileLabel,
-    stageGeometry, tileGeometry, tileAtWorld, tileLocalToWorld, worldToTileLocal, passagePoint, mapPassages, nearestPassage
+    stageGeometry, tileGeometry, tileAtWorld, tileWarpPoint, tileLocalToWorld, worldToTileLocal, passagePoint, mapPassages, nearestPassage
   });
 })();

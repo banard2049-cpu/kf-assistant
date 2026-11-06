@@ -166,6 +166,7 @@
         <section class="display-clue-panel sidebar-clue-panel" aria-label="骑士线索追踪"><div class="display-section-heading"><span>KNIGHT CLUES</span><strong>骑士线索追踪</strong></div>${clueTracking}</section>
       </aside>
     </section>`;
+    window.KFMapView.bindMapStage(root.querySelector(".map-stage"), window.KFMapView.stageGeometry(state, window.KF_MOD_DATA));
     requestAnimationFrame(() => requestAnimationFrame(keepPartyInMapViewport));
   }
 

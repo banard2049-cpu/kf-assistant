@@ -90,4 +90,5 @@ __pycache__/
 Thumbs.db
 Desktop.ini
 .claude
+.workbuddy/
 tmp

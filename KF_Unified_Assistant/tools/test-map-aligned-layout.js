@@ -20,14 +20,17 @@ const mapIndex = fs.readFileSync("public/modules/map/index.html", "utf8");
 const displayIndex = fs.readFileSync("public/modules/display/index.html", "utf8");
 const appSource = fs.readFileSync("public/modules/map/app.js", "utf8").replace(/\r\n/g, "\n");
 
-assert.ok(layout && layout.version === 1, "aligned layout data must be loaded");
+assert.ok(layout && layout.version === 2, "stitched map layout data must be loaded");
 const tiles = Object.values(data.maps).flatMap(kingdom => kingdom.tiles);
 for (const tile of tiles) {
   const aligned = layout.tiles[tile.id];
   assert.ok(aligned, `${tile.id} must have an aligned position`);
-  // Every face is printed at the same scale, so a tile's size follows its image.
-  assert.ok(Math.abs(aligned.width - tile.image.cellWidth / layout.pxPerUnit) < .01, `${tile.id} width follows its image`);
-  assert.ok(Math.abs(aligned.height - tile.image.cellHeight / layout.pxPerUnit) < .01, `${tile.id} height follows its image`);
+  // Tiny scan-size differences must not open seams in the integral printed grid.
+  assert.equal(aligned.width, Math.round(tile.image.cellWidth / layout.pxPerUnit), `${tile.id} width follows its printed grid`);
+  assert.equal(aligned.height, Math.round(tile.image.cellHeight / layout.pxPerUnit), `${tile.id} height follows its printed grid`);
+  assert.match(aligned.face, /^\/assets\/map\/aligned\/.+\.webp$/);
+  assert.equal(tile.image.face, aligned.face, `${tile.id} map and detail previews share the corrected face`);
+  assert.ok(aligned.warp?.points.length > 4, `${tile.id} has artwork rectification data`);
 }
 
 const byId = new Map(tiles.map(tile => [tile.id, tile]));
@@ -39,18 +42,55 @@ const extent = id => {
   const halfHeight = (turned ? aligned.width : aligned.height) / 2;
   return { left: aligned.x - halfWidth, right: aligned.x + halfWidth, top: aligned.y - halfHeight, bottom: aligned.y + halfHeight };
 };
-assert.ok(layout.passages.length >= 150, "passages for the connected tile pairs must be present");
+assert.equal(layout.seams.length, 199, "all physical seams, including edges without passages, are stitched");
+for (const seam of layout.seams) {
+  const a = extent(seam.a), b = extent(seam.b);
+  const gap = seam.axis === "v" ? a.right - b.left : a.bottom - b.top;
+  assert.ok(Math.abs(gap) < 1e-8, `${seam.a} ↔ ${seam.b}: the shared edge is exact`);
+}
+for (const kingdom of Object.values(data.maps)) {
+  for (let i = 0; i < kingdom.tiles.length; i++) {
+    for (const other of kingdom.tiles.slice(i + 1)) {
+      const a = extent(kingdom.tiles[i].id), b = extent(other.id);
+      const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      assert.ok(overlapX < 1e-8 || overlapY < 1e-8, `${kingdom.tiles[i].id} and ${other.id} never cover each other`);
+    }
+  }
+}
+assert.equal(layout.passages.length, 154, "all existing physical passages are preserved");
 for (const passage of layout.passages) {
   const a = byId.get(passage.a);
-  assert.ok(a && a.neighbors.includes(passage.b), `${passage.a} ↔ ${passage.b} must be a path connection`);
+  assert.ok(a && (a.neighbors.includes(passage.b) || byId.get(passage.b).neighbors.includes(passage.a)), `${passage.a} ↔ ${passage.b} must be a path connection`);
   const left = extent(passage.a);
   const right = extent(passage.b);
   const edge = passage.axis === "v"
     ? Math.min(...[left.left, left.right].flatMap(x => [right.left, right.right].map(y => Math.abs(x - y))))
     : Math.min(...[left.top, left.bottom].flatMap(x => [right.top, right.bottom].map(y => Math.abs(x - y))));
-  assert.ok(edge < .05, `${passage.a} ↔ ${passage.b}: the two tiles must meet edge to edge (gap ${edge.toFixed(3)})`);
+  assert.ok(edge < 1e-8, `${passage.a} ↔ ${passage.b}: the two tiles must meet edge to edge (gap ${edge.toFixed(3)})`);
   const onA = passage.axis === "v" ? Math.min(Math.abs(passage.x - left.left), Math.abs(passage.x - left.right)) : Math.min(Math.abs(passage.y - left.top), Math.abs(passage.y - left.bottom));
-  assert.ok(onA < .05, `${passage.a} ↔ ${passage.b}: the passage must sit on the shared edge`);
+  assert.ok(onA < 1e-8, `${passage.a} ↔ ${passage.b}: the passage must sit on the shared edge`);
+}
+
+// The actual printed source exits and saved marker positions use the same warp.
+for (const kingdom of Object.keys(data.maps)) {
+  const geometry = view.stageGeometry({ kingdom, maps: { [kingdom]: { showAll: true } } }, data);
+  for (const passage of layout.passages.filter(p => geometry.boxes.has(p.a))) {
+    for (const [id, source] of [[passage.a, passage.sourceA], [passage.b, passage.sourceB]]) {
+      const world = view.tileLocalToWorld(geometry.boxes.get(id), { x: source[0] * 100, y: source[1] * 100 });
+      assert.ok(Math.hypot(world.x - passage.x, world.y - passage.y) < 2e-8,
+        `${id}: its printed exit lands exactly on the common passage`);
+    }
+  }
+  for (const box of geometry.boxes.values()) {
+    for (const x of [0, 13, 37, 62, 89, 100]) {
+      for (const y of [0, 19, 44, 72, 100]) {
+        const world = view.tileLocalToWorld(box, { x, y });
+        const local = view.worldToTileLocal(box, world);
+        assert.ok(Math.abs(local.x - x) < .01 && Math.abs(local.y - y) < .01, `${box.item.id}: rectified marker round trip`);
+      }
+    }
+  }
 }
 
 // Rendering uses the aligned geometry.
@@ -96,8 +136,8 @@ assert.equal(view.nearestPassage(passages, { x: passage.x + 3, y: passage.y + 3 
 // Adjacency rules in the map app use the same aligned geometry.
 assert.match(appSource, /function alignedTileLayout\(item\)[\s\S]*?KF_MAP_LAYOUT\?\.tiles/);
 assert.match(appSource, /const centerX = aligned \? aligned\.x : item\.x;/);
-assert.match(mapIndex, /data\/map-layout\.js\?v=1"><\/script>\s*<script src="map-view\.js\?v=11">/);
-assert.match(displayIndex, /\.\.\/map\/data\/map-layout\.js\?v=1"><\/script>\s*<script src="\.\.\/map\/map-view\.js\?v=11">/);
+assert.match(mapIndex, /data\/map-layout\.js\?v=2"><\/script>\s*<script src="map-view\.js\?v=\d+">/);
+assert.match(displayIndex, /\.\.\/map\/data\/map-layout\.js\?v=2"><\/script>\s*<script src="\.\.\/map\/map-view\.js\?v=\d+">/);
 
 // Printed panzergates recorded on the tile faces.
 const printed = tiles.flatMap(tile => (tile.rules?.front?.armoredDoors || []).map(door => ({ tile, door })));
@@ -109,4 +149,4 @@ for (const { tile, door } of printed) {
     `${tile.id} ↔ ${door.target}: the printed door has a passage to sit on`);
 }
 
-console.log("map aligned layout: edges meet, passages on shared edges, marker layer and printed doors verified");
+console.log("map aligned layout: 199 exact seams, no overlapping tiles, 154 rectified passages, marker round trips and printed doors verified");
