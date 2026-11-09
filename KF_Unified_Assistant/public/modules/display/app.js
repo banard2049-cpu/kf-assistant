@@ -421,6 +421,7 @@
     "token-29":"httpssteamusercontentaakamaihdnetugc159373289066078412246415D2EB9E78B9BCE62F168752E882B6821C3806.png",
     "token-blood":"httpssteamusercontentaakamaihdnetugc121471199374279135890AFE0D6E4BBFE4427554C0AF999D31C14D91B1E7.png",
     "token-knighteater-berserk":"httpssteamusercontentaakamaihdnetugc10792521070176964E460F00E6C698AFEB4F862A2B09A8B61D30EB2CD.png",
+    "little-ser":"little-ser.png?v=5",
     "token-armor":"httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png"
   };
   function tokenSrc(id) {
@@ -429,13 +430,13 @@
   }
   function tokenShapeClass(id) {
     if (id === "token-armor") return "token-square";
-    return ["token-29", "token-blood"].includes(id) ? "token-free" : "";
+    return ["token-29", "token-blood", "little-ser"].includes(id) ? "token-free" : "";
   }
   function publicTokenStacks(tokens) {
     return (tokens || []).map(token => {
       const src=tokenSrc(token.assetId); if(!src)return "";
       const bogPosition = token.assetId === "bog-witch-encounter";
-      return `<span class="boss-sheet-token ${token.auto ? "auto-token" : ""}${bogPosition ? " bog-position-token" : ""}" style="left:${clamp(token.x,0,100)}%;top:${clamp(token.y,0,100)}%"><img class="${tokenShapeClass(token.assetId)}" src="${esc(src)}" alt="">${bogPosition ? "" : `<b>×${clamp(token.count||1,1,20)}</b>`}</span>`;
+      return `<span class="boss-sheet-token ${token.auto ? "auto-token" : ""}${bogPosition ? " bog-position-token" : ""}" style="left:${clamp(token.x,0,100)}%;top:${clamp(token.y,0,100)}%"><img class="${tokenShapeClass(token.assetId)}" src="${esc(src)}" alt="">${bogPosition || token.assetId === "little-ser" ? "" : `<b>×${clamp(token.count||1,1,20)}</b>`}</span>`;
     }).join("");
   }
   function bossSheetHtml(monster,battle) {

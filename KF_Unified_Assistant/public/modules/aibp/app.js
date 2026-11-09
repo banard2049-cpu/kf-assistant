@@ -42,6 +42,8 @@
     ["token-knighteater-berserk", "首要目标", "httpssteamusercontentaakamaihdnetugc10792521070176964E460F00E6C698AFEB4F862A2B09A8B61D30EB2CD.png"],
     ["token-armor", "盔甲", "httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png", "square"]
   ].map(([id, name, file, shape = "round"]) => ({ id, name, file, shape, src: `/assets/tokens/${file}` }));
+  const LITTLE_SER_ASSET = { id: "little-ser", name: "小猴子", shape: "free", src: "/assets/tokens/little-ser.png?v=5" };
+  const hasSonch = () => Array.isArray(window.KF_CAMPAIGN_PARTY) && window.KF_CAMPAIGN_PARTY.some(member => member.type !== "squire" && member.knightId === "ser-sonch");
   const tokenShapeClass = asset => asset.shape === "round" ? "" : `token-${asset.shape}`;
   const TOKEN_ASSET_IDS = new Set(TOKEN_ASSETS.map(asset => asset.id));
   const DEFAULT_MOB_MARKER_ASSET_IDS = { M_PalebloodWorms: "token-blood" };
@@ -1222,11 +1224,12 @@
     const sheetTokensByAsset = new Map();
     if (Array.isArray(raw?.sheetTokens)) {
       raw.sheetTokens.forEach((token, index) => {
-        if (!token || !TOKEN_ASSET_IDS.has(token.assetId)) return;
-        const count = clamp(token.count ?? 1, 1, MAX_SHEET_TOKENS_PER_TYPE);
+        if (!token || (!TOKEN_ASSET_IDS.has(token.assetId) && token.assetId !== LITTLE_SER_ASSET.id)) return;
+        const max = token.assetId === LITTLE_SER_ASSET.id ? 1 : MAX_SHEET_TOKENS_PER_TYPE;
+        const count = clamp(token.count ?? 1, 1, max);
         const existing = sheetTokensByAsset.get(token.assetId);
         if (existing) {
-          existing.count = clamp(existing.count + count, 1, MAX_SHEET_TOKENS_PER_TYPE);
+          existing.count = clamp(existing.count + count, 1, max);
           return;
         }
         sheetTokensByAsset.set(token.assetId, {
@@ -1448,6 +1451,7 @@
   }
 
   function save(render = true) {
+    if (!hasSonch()) state.battle.sheetTokens = state.battle.sheetTokens.filter(token => token.assetId !== LITTLE_SER_ASSET.id);
     state.battle.sheetTraits = normalizeSheetTraits(state.battle);
     const wingedDiscard = ensureWingedAiDiscard();
     if (wingedDiscard) {
@@ -4491,8 +4495,8 @@
   }
 
   function setSheetTokenCount(assetId, value) {
-    if (!TOKEN_ASSET_IDS.has(assetId)) return;
-    const desired = clamp(value, 0, MAX_SHEET_TOKENS_PER_TYPE);
+    if (!TOKEN_ASSET_IDS.has(assetId) && (assetId !== LITTLE_SER_ASSET.id || !hasSonch())) return;
+    const desired = clamp(value, 0, assetId === LITTLE_SER_ASSET.id ? 1 : MAX_SHEET_TOKENS_PER_TYPE);
     const existing = state.battle.sheetTokens.find(token => token.assetId === assetId);
     if (desired === (existing?.count || 0)) return;
     remember();
@@ -4572,14 +4576,15 @@
     return `<details class="sheet-token-tools" data-sheet-token-tools ${sheetTokenToolsOpen ? "open" : ""}>
       <summary>大卡 Token (${total})</summary>
       <div class="sheet-token-toolbar">
-        <div class="sheet-token-palette">${TOKEN_ASSETS.map(asset => {
+        <div class="sheet-token-palette">${[...TOKEN_ASSETS, ...(hasSonch() ? [LITTLE_SER_ASSET] : [])].map(asset => {
           const count = counts.get(asset.id) || 0;
+          const max = asset.id === LITTLE_SER_ASSET.id ? 1 : MAX_SHEET_TOKENS_PER_TYPE;
           return `<div class="sheet-token-choice" title="${esc(asset.name)}">
             <img class="${tokenShapeClass(asset)}" src="${esc(asset.src)}" alt="${esc(asset.name)}">
             <div class="sheet-token-counter">
               <button type="button" data-token-delta="${asset.id}" data-delta="-1" aria-label="减少 ${esc(asset.name)}" ${count ? "" : "disabled"}>-</button>
-              <input type="number" min="0" max="${MAX_SHEET_TOKENS_PER_TYPE}" value="${count}" data-token-count="${asset.id}" aria-label="${esc(asset.name)} 数量">
-              <button type="button" data-token-delta="${asset.id}" data-delta="1" aria-label="增加 ${esc(asset.name)}" ${count >= MAX_SHEET_TOKENS_PER_TYPE ? "disabled" : ""}>+</button>
+              <input type="number" min="0" max="${max}" value="${count}" data-token-count="${asset.id}" aria-label="${esc(asset.name)} 数量">
+              <button type="button" data-token-delta="${asset.id}" data-delta="1" aria-label="增加 ${esc(asset.name)}" ${count >= max ? "disabled" : ""}>+</button>
             </div>
           </div>`;
         }).join("")}</div>
@@ -4737,7 +4742,7 @@
       ? '<button type="button" class="sheet-rule-token-slot" data-knighteater-brute-slot style="left:72%;top:47.5%" title="放置 1 个凶残通用指示物">+</button>'
       : "";
     return `<div class="sheet-token-layer">${bogWitchPosition}${displayTokens.map(token => {
-      const asset = TOKEN_ASSETS.find(item => item.id === token.assetId);
+      const asset = TOKEN_ASSETS.find(item => item.id === token.assetId) || (token.assetId === "little-ser" && hasSonch() ? LITTLE_SER_ASSET : null);
       if (!asset) return "";
       const automatic = Boolean(token.autoSlot);
       const interactiveAuto = Boolean(token.autoAction);
@@ -6625,7 +6630,7 @@
       changeStonemasonArmor,
       setKingCurse, kingKnightDied, kingBow, kingVpAction, kingDrillAction,
       changeKingPutridCounter, resolveKingPutridPenance, recordP2WoundCounters,
-      setSheetTokenCount, setBogWitchPosition, changeMobMarker, toggleLictorDecoy, promoteLowest,
+      setSheetTokenCount, sheetTokenTools, sheetTokenLayer, setBogWitchPosition, changeMobMarker, toggleLictorDecoy, promoteLowest,
       defeatWarriorMuscularChest, recordWarriorRetribution, addWound, heal,
       spawnMob, completeMobAction, startMobRound, resolveMobActivation, resolveEtherealUnity, completeRatwolfSignature,
       resolveWingedNightmareAttack, resolveWingedAiResponse, ensureWingedAiDiscard,

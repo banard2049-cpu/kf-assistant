@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import shutil
 import zipfile
@@ -35,6 +36,8 @@ def build(version: str) -> Path:
         shutil.rmtree(stage)
     stage.mkdir(parents=True)
     copy_public(stage)
+    (stage / "public" / "app-version.js").write_text(
+        f"window.KF_APP_VERSION = {json.dumps(safe_version(version))};\n", encoding="utf-8")
     (stage / "data").mkdir()
     (stage / "backups").mkdir()
     shutil.copy2(DOCKER_SOURCE / "Dockerfile", stage / "Dockerfile")

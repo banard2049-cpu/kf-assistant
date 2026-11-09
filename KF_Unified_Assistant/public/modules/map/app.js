@@ -419,6 +419,8 @@
         discard: [],
         current: null,
         forcedCurrent: false,
+        littleSer: false,
+        littleSerChoice: null,
         peek: false,
         poiAdjustment: 0,
         districtEffects: {},
@@ -581,6 +583,8 @@
           .slice(0, EFFECT_MARKER_SLOTS.length)
           .map((marker, index) => ({ ...marker, ...effectMarkerPosition(marker, index) }));
       });
+      exp.littleSer = exp.littleSer === true;
+      if (!exp.littleSerChoice || !Array.isArray(exp.littleSerChoice.drawn) || exp.littleSerChoice.drawn.length !== 2 || exp.littleSerChoice.drawn.some((id, index) => exp.deck[index] !== id)) exp.littleSerChoice = null;
       if (!Object.hasOwn(exp, "resolvedRound")) exp.resolvedRound = null;
       if (!exp.scouting || typeof exp.scouting !== "object" || Array.isArray(exp.scouting)) {
         exp.scouting = { surveyAddedCount: 0, lastPeek: [], reordering: false };
@@ -791,6 +795,7 @@
       && exp.resolvedRound !== state.round
       && !exp.current
       && !state.mercenaries.pendingAction
+      && !exp.littleSerChoice
       && !scoutingState(exp).reordering;
   }
 
@@ -1645,6 +1650,7 @@
       if (exp.current && !exp.deck.includes(exp.current) && !exp.discard.includes(exp.current)) exp.deck.unshift(exp.current);
       exp.current = null;
       exp.forcedCurrent = false;
+      exp.littleSerChoice = null;
       exp.resolvedRound = null;
       exp.pendingClueDirections = [];
       setCurrentTile(current, id);
@@ -2253,7 +2259,7 @@
     const exp = current.exploration;
     const mercenaryPending = Boolean(state.mercenaries.pendingAction);
     const scouting = scoutingState(exp);
-    const deckLocked = mercenaryPending || scouting.reordering;
+    const deckLocked = mercenaryPending || scouting.reordering || exp.littleSerChoice;
     const start = tile(current.startingTile);
     const startNeighbors = (start?.neighbors || []).filter(id => tile(id));
     const surveys = surveyExplorationCards();
@@ -2298,7 +2304,8 @@
     const exp = current.exploration;
     const mercenaryPending = state.mercenaries.pendingAction;
     const scoutingReorderPending = scoutingState(exp).reordering;
-    const deckLocked = mercenaryPending || scoutingReorderPending;
+    const deckLocked = mercenaryPending || scoutingReorderPending || exp.littleSerChoice;
+    const hasSonch = state.knights.some(knight => knight.memberType !== "squire" && knight.knightId === "ser-sonch");
     exp.pendingClueDirections ||= [];
     const active = card(exp.current);
     const top = card(exp.deck[0]);
@@ -2315,7 +2322,7 @@
       : !top || deckLocked;
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">EXPLORATION DECK</div><h3>探索牌与兴趣点</h3></div><span class="badge">${exp.deck.length} 张 · 弃 ${exp.discard.length}</span></div>
-      ${shown ? cardView(shown.image, active || exp.peek ? "face" : "back") : '<div class="alert danger">牌组为空：远征失败</div>'}
+      ${shown ? `<div class="exploration-card-stack">${cardView(shown.image, active || exp.peek ? "face" : "back")}${hasSonch && exp.littleSer && !active ? '<img class="exploration-little-ser" src="/assets/tokens/little-ser.png?v=5" alt="小猴子已放在探索牌组上" title="小猴子在探索牌组上">' : ""}</div>` : '<div class="alert danger">牌组为空：远征失败</div>'}
       <p class="tiny">${active ? `${esc(active.name)}${active.special ? " · 特殊探索牌：结算后继续抽牌" : ""}` : "顶部只显示背面；兴趣点可以看正面但不抽走。"}</p>
       <div class="alert">
         最近旅行方向：<strong>${travelDirection()}</strong>。
@@ -2327,12 +2334,18 @@
         ${top && !top.blankBack ? `<div class="legend">${DIRECTIONS.map(([key, label]) => `<span class="badge">${label} ${clueName(top.cluesByDirection?.[key])}</span>`).join("")}</div>` : ""}
       </div>
       <div class="toolbar">
+        ${hasSonch ? `<button id="toggleLittleSer" class="small secondary" ${exp.littleSerChoice ? "disabled" : ""}>${exp.littleSer ? "移除小猴子" : "放置小猴子"}</button>` : ""}
         <button id="shuffleExploration" class="small secondary" ${deckLocked ? "disabled" : ""}>洗混</button>
         <button id="addSpecialExploration" class="small secondary" ${rules().specialExploration.length && !deckLocked ? "" : "disabled"}>加入特殊探索牌</button>
         <button id="peekExploration" class="small secondary" ${active || !top || deckLocked ? "disabled" : ""}>${exp.peek ? "盖回" : "兴趣点窥牌"}</button>
         <button id="${primaryActionId}" class="small" ${primaryActionDisabled ? "disabled" : ""}>${primaryActionLabel}</button>
         <button id="skipExplorationButton" class="small secondary" ${canSkipExplorationStep() ? "" : "disabled"}>跳过抽探索卡</button>
       </div>
+      ${hasSonch && exp.littleSer ? '<div class="alert">小猴子在探索牌组上：抽牌时抽两张，选择一张结算，另一张置于牌底。</div>' : ""}
+      ${exp.littleSerChoice ? `<div class="alert"><strong>小猴子：选择一张探索牌结算</strong><div class="mercenary-exploration-grid">${exp.littleSerChoice.drawn.map((id, index) => {
+        const item = card(id);
+        return `<div class="mercenary-exploration-card">${cardView(item?.image, "face")}<strong>${esc(item?.name || id)}</strong><button type="button" data-little-ser-choice="${index}">选择这张结算</button></div>`;
+      }).join("")}</div><p>另一张将放到牌组底部。</p></div>` : ""}
       ${active ? `<div class="fields">
         <label>效果类型<select id="effectType"><option value="instant" ${selectedEffectType === "instant" ? "selected" : ""}>立即</option><option value="district" ${selectedEffectType === "district" ? "selected" : ""}>地区</option><option value="active" ${selectedEffectType === "active" ? "selected" : ""}>激活</option></select></label>
         <label>地区<select id="effectDistrict">${rules().districts.map(d => `<option value="${d.id}" ${d.id === selectedEffectDistrict ? "selected" : ""}>${esc(d.name)}</option>`).join("")}</select></label>
@@ -2366,6 +2379,7 @@
         const item = card(cardId);
         return `<div class="mercenary-exploration-card"><span class="badge">${index + 1}</span>${cardView(item?.image, "face")}<strong>${esc(item?.name || cardId)}</strong></div>`;
       }).join("")}</div>
+      <div class="muted">点击卡牌查看大图</div>
       <div class="fields">
         <label>结算<select id="mercenaryResolveCard">${options}</select></label>
         ${definition.level === 3 ? `<label>弃置<select id="mercenaryDiscardCard">${pending.drawn.map((cardId, index) => {
@@ -2398,6 +2412,7 @@
           && state.step === 2
           && exp.resolvedRound !== state.round
           && !mercenaries.pendingAction
+          && !exp.littleSerChoice
           && (definition.level === 1 ? Boolean(exp.current && exp.deck.length) : Boolean(!exp.current && exp.deck.length >= count));
         const encounterAction = item.face === "B" && current.pendingEncounter
           ? face.action
@@ -2757,6 +2772,41 @@
     </div>${effectCardControls(slotKey)}`;
   }
 
+  function bindCardPreviews() {
+    let dialog = document.getElementById("cardPreviewDialog");
+    if (!dialog) {
+      dialog = document.createElement("dialog");
+      dialog.id = "cardPreviewDialog";
+      dialog.className = "card-preview-dialog";
+      dialog.setAttribute("aria-label", "卡牌大图");
+      dialog.innerHTML = '<div class="card-preview-bar"><strong>卡牌大图</strong><button type="button" class="small secondary">关闭</button></div><div class="card-preview-content"></div>';
+      document.body.appendChild(dialog);
+      dialog.querySelector("button").addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", event => { if (event.target === dialog) dialog.close(); });
+    }
+    $$("#app .rule-card, #app .mercenary-card-image").forEach(source => {
+      source.setAttribute("role", "button");
+      source.setAttribute("tabindex", "0");
+      source.setAttribute("aria-label", `查看${source.getAttribute("alt") || source.getAttribute("aria-label") || "卡牌"}大图`);
+      source.title = "点击查看大图";
+      const open = event => {
+        event.stopPropagation();
+        const content = dialog.querySelector(".card-preview-content");
+        const preview = source.cloneNode(false);
+        preview.removeAttribute("tabindex");
+        preview.removeAttribute("role");
+        preview.removeAttribute("id");
+        preview.className = source.matches("img") ? "card-preview-image" : "rule-card card-preview-image";
+        content.replaceChildren(preview);
+        dialog.showModal();
+      };
+      source.addEventListener("click", open);
+      source.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(event); }
+      });
+    });
+  }
+
   function kingdomEffectPlacements() {
     const zones = KINGDOM_PANEL_ZONES[state.kingdom];
     if (!zones) return "";
@@ -2821,12 +2871,11 @@
       const label = TILE_MARKERS.find(([id]) => id === marker.type)?.[1] || marker.type;
       const x = clamp(Number(marker.x) || 50, 2, 98);
       const y = clamp(Number(marker.y) || 50, 2, 98);
-      return `<span class="kingdom-board-marker" data-kingdom-marker="${esc(marker.id)}" data-marker-x="${x}" data-marker-y="${y}" style="left:${x}%;top:${y}%" title="${esc(label)}">
+      return `<button type="button" class="kingdom-board-marker" data-kingdom-marker="${esc(marker.id)}" data-marker-x="${x}" data-marker-y="${y}" style="left:${x}%;top:${y}%" title="${esc(label)}（可拖动，点击移除）" aria-label="${esc(label)}标记，可拖动，点击移除">
         ${source
           ? `<img class="kingdom-board-marker-image" src="${esc(source)}" alt="${esc(label)}" draggable="false">`
           : `<span class="kingdom-board-marker-fallback">${esc(label.slice(0, 1) || "?")}</span>`}
-        <button type="button" class="kingdom-board-marker-remove" data-remove-kingdom-marker="${esc(marker.id)}" title="移除${esc(label)}" aria-label="移除${esc(label)}">&times;</button>
-      </span>`;
+      </button>`;
     }).join("");
   }
 
@@ -2963,6 +3012,7 @@
     if (state.step === 2) {
       const exp = mapState().exploration;
       if (state.mercenaries.pendingAction) return { label: "先完成盗贼选牌", disabled: true };
+      if (exp.littleSerChoice) return { label: "先完成小猴子选牌", disabled: true };
       if (exp.current) return { label: "先结算探索牌", disabled: true };
       if (exp.resolvedRound === state.round) return { label: "进入故事步骤", disabled: false };
       return { label: exp.current ? "先结算探索牌" : "先抽取探索牌", disabled: true };
@@ -3042,6 +3092,7 @@
       </aside>
     </div>`;
     bind();
+    bindCardPreviews();
     const sidebar = $(".sidebar-scroll");
     const focusStory = focusStoryReminder && state.step === 3;
     focusStoryReminder = false;
@@ -3109,6 +3160,7 @@
       </div>
     </div>`;
     bind();
+    bindCardPreviews();
     if (kingdomPanelDialogOpen) openKingdomPanelDialog();
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
@@ -3145,6 +3197,7 @@
     const exp = current.exploration;
     if (!force && state.step !== 2) return toast("请先进入探索步骤");
     if (state.mercenaries.pendingAction) return toast("请先完成盗贼探索牌选择");
+    if (exp.littleSerChoice) return toast("请先完成小猴子选牌");
     if (scoutingState(exp).reordering) return toast("请先确认或取消斥候牌序调整");
     if (!force && exp.resolvedRound === state.round) return toast("本轮探索步骤已经完成");
     if (exp.current) return toast("请先结算当前探索牌");
@@ -3152,12 +3205,35 @@
       current.failed = "探索牌组为空";
       return save(true);
     }
+    const monkeyActive = exp.littleSer && state.knights.some(knight => knight.memberType !== "squire" && knight.knightId === "ser-sonch");
+    if (monkeyActive && exp.deck.length < 2) return toast("小猴子效果需要至少两张探索牌；请先移除小猴子或补充牌组");
     snapshot(force ? "强制抽取探索牌" : "抽取探索牌");
+    if (monkeyActive) {
+      exp.littleSerChoice = { drawn: exp.deck.slice(0, 2), force };
+      exp.peek = false;
+      clearScoutingPeek(exp);
+      addLog("小猴子：抽取两张探索牌，等待选择");
+      return save(true);
+    }
     exp.current = exp.deck.shift();
     exp.forcedCurrent = force;
     exp.peek = false;
     clearScoutingPeek(exp);
     if (force) addLog("强制抽取探索牌");
+    save(true);
+  }
+
+  function chooseLittleSerCard(index) {
+    const exp = mapState().exploration;
+    const pending = exp.littleSerChoice;
+    if (!pending || ![0, 1].includes(index) || pending.drawn.some((id, i) => exp.deck[i] !== id)) return toast("探索牌组已变化，无法完成选牌");
+    snapshot("小猴子选择探索牌");
+    exp.deck.splice(0, 2);
+    exp.current = pending.drawn[index];
+    exp.deck.push(pending.drawn[1 - index]);
+    exp.forcedCurrent = pending.force === true;
+    exp.littleSerChoice = null;
+    addLog(`小猴子：选择 ${card(exp.current)?.name || exp.current} 结算，另一张置于牌底`);
     save(true);
   }
 
@@ -3695,20 +3771,25 @@
       current.kingdomMarkers.push({ id: uid(), type, x, y });
       saveCritical(true);
     }));
-    $$("[data-remove-kingdom-marker]").forEach(button => button.addEventListener("click", event => {
+    $$("[data-kingdom-marker]").forEach(button => button.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
+      if (button.dataset.kingdomMarkerMoved === "true") {
+        delete button.dataset.kingdomMarkerMoved;
+        return;
+      }
       snapshot("移除王国版图标记");
-      current.kingdomMarkers = (current.kingdomMarkers || []).filter(marker => marker.id !== button.dataset.removeKingdomMarker);
+      current.kingdomMarkers = (current.kingdomMarkers || []).filter(marker => marker.id !== button.dataset.kingdomMarker);
       saveCritical(true);
     }));
 
     $$(".kingdom-board-scene").forEach(scene => {
       let markerDrag = null;
       scene.addEventListener("pointerdown", event => {
-        if (event.button !== 0 || event.target.closest("[data-remove-kingdom-marker]")) return;
+        if (event.button !== 0) return;
         const marker = event.target.closest("[data-kingdom-marker]");
         if (!marker) return;
+        delete marker.dataset.kingdomMarkerMoved;
         event.preventDefault();
         event.stopPropagation();
         marker.setPointerCapture(event.pointerId);
@@ -3759,6 +3840,7 @@
           if (record) {
             record.x = Number(markerDrag.x.toFixed(2));
             record.y = Number(markerDrag.y.toFixed(2));
+            if (event.type === "pointerup") markerDrag.marker.dataset.kingdomMarkerMoved = "true";
             saveCritical(false);
           }
         }
@@ -4014,7 +4096,7 @@
       const definition = MERCENARY_RULES.CATALOG[cardId];
       const exp = current.exploration;
       if (!hired || hired.face !== "A" || !definition || definition.level < 2) return;
-      if (state.step !== 2 || exp.resolvedRound === state.round || exp.current || state.mercenaries.pendingAction) {
+      if (state.step !== 2 || exp.resolvedRound === state.round || exp.current || state.mercenaries.pendingAction || exp.littleSerChoice || scoutingState(exp).reordering) {
         return toast("当前不能开始盗贼探索牌选择");
       }
       const pending = MERCENARY_RULES.beginExplorationChoice(cardId, exp.deck);
@@ -4178,6 +4260,17 @@
       current.exploration.peek = !current.exploration.peek;
       save(true);
     });
+    $("#toggleLittleSer")?.addEventListener("click", () => {
+      const exp = current.exploration;
+      if (exp.littleSerChoice || !state.knights.some(knight => knight.memberType !== "squire" && knight.knightId === "ser-sonch")) return;
+      snapshot(exp.littleSer ? "移除小猴子" : "放置小猴子");
+      exp.littleSer = !exp.littleSer;
+      addLog(exp.littleSer ? "将小猴子放在探索牌组上" : "从探索牌组移除小猴子");
+      save(true);
+    });
+    $$('[data-little-ser-choice]').forEach(button => button.addEventListener("click", () => {
+      chooseLittleSerCard(Number(button.dataset.littleSerChoice));
+    }));
     $("#drawExploration")?.addEventListener("click", () => drawExplorationCard());
     $("#forceDrawExploration")?.addEventListener("click", () => drawExplorationCard(true));
     $("#skipExplorationButton")?.addEventListener("click", skipExplorationStep);

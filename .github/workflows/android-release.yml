@@ -83,6 +83,8 @@ jobs:
         shell: pwsh
         run: |
           $version = '${{ steps.release.outputs.version }}'
+          node KF_Unified_Assistant/tools/stamp-version.cjs $version
+          if ($LASTEXITCODE -ne 0) { throw "Version stamping failed." }
           $output = Join-Path $env:GITHUB_WORKSPACE "KF-Unified-Assistant-Android-$version.apk"
           & .\KF_Unified_Assistant\tools\packaging\android\tools\build-release-apk.ps1 -Version $version -OutputPath $output -KeystorePath $env:KF_KEYSTORE -StorePassword $env:KF_STORE_PASSWORD -KeyAlias $env:KF_KEY_ALIAS -KeyPassword $env:KF_KEY_PASSWORD
           "APK_PATH=$output" >> $env:GITHUB_ENV

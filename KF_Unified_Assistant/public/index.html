@@ -82,6 +82,18 @@
         <label class="button file-button">导入存档<input id="importFile" type="file" accept=".json,application/json"></label>
         <button id="importResourcesButton" class="button import-resources-button" type="button">导入资源 ZIP</button>
       </div>
+      <section class="update-check" aria-label="软件更新">
+        <div class="update-check-heading"><strong>软件更新</strong><span id="appVersionLabel"></span></div>
+        <button id="checkUpdateButton" class="button" type="button">检查更新</button>
+        <p id="updateStatus" role="status" aria-live="polite"></p>
+        <div id="updateNotice" hidden>
+          <strong id="updateHeading"></strong>
+          <pre id="updateReport"></pre>
+          <div class="update-actions"><a id="updateGithubLink" class="button" href="https://github.com/banard2049-cpu/kf-assistant/releases" target="_blank" rel="noopener noreferrer">前往发布页</a><button id="skipUpdateButton" class="button" type="button">跳过此版本</button><button id="closeUpdateButton" class="button" type="button">关闭</button></div>
+          <p>请按平台下载更新，并保留存档和本地资源。Docker 用户请更新镜像。</p>
+        </div>
+        <a href="https://github.com/banard2049-cpu/kf-assistant/releases" target="_blank" rel="noopener noreferrer">GitHub 发布页</a>
+      </section>
       <p class="sidebar-user">当前用户：<span id="currentUser"></span></p>
     </aside>
     <div id="scrim" class="scrim"></div>
@@ -266,6 +278,8 @@
       </div>
     </form>
   </dialog>
+  <script src="/app-version.js?v=1"></script>
+  <script src="/update-check.js?v=1"></script>
   <script src="/monster-labels.js?v=4"></script>
   <script src="/knight-portrait-colors.js?v=1"></script>
   <script src="/modules/aibp/data/monster-data.js?v=10"></script>

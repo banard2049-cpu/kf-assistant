@@ -64,8 +64,8 @@ assert.equal(fogPng[25], 6, "fog PNG must include an alpha channel to avoid a wh
 assert.ok(!fs.existsSync(`public${fogAsset.replace(/\.png$/, ".jpg")}`), "the opaque JPEG must be removed");
 assert.ok(!fs.existsSync("public/assets/tokens/fog.png"), "the duplicate fog asset must be removed");
 
-assert.match(indexSource, /styles\.css\?v=85/);
-assert.match(indexSource, /data\/map-data\.js\?v=13/);
-assert.match(indexSource, /app\.js\?v=121/);
+assert.ok(Number(indexSource.match(/styles\.css\?v=(\d+)/)?.[1]) >= 85);
+assert.ok(Number(indexSource.match(/data\/map-data\.js\?v=(\d+)/)?.[1]) >= 13);
+assert.ok(Number(indexSource.match(/app\.js\?v=(\d+)/)?.[1]) >= 121);
 
 console.log("map custom markers: input, text rendering, persistence shape and styling verified");

@@ -334,3 +334,11 @@
 .presentation-controls>label{display:grid;grid-template-columns:1fr auto;gap:4px 8px;padding:7px 10px;font-size:12px}.presentation-controls>label input{grid-column:1/-1;width:100%}
 .presentation-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:7px 10px}.presentation-actions.icon-actions{grid-template-columns:repeat(4,1fr)}
 .presentation-actions.icon-actions button{min-height:36px;font-size:20px}.presentation-actions button.active{border-color:var(--red);background:#efe0d3;color:var(--red)}
+
+.update-check { margin: 16px 0; padding: 12px; border: 1px solid rgba(160, 145, 120, .4); border-radius: 8px; font-size: .88rem; }
+.update-check-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.update-check p { margin: 8px 0; }
+.update-check pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 200px; overflow: auto; font: inherit; }
+.update-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.update-check a { color: inherit; }
+@media print { .update-check { display: none; } }

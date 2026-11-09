@@ -424,6 +424,8 @@
         randomHighlights.has(item.id) ? "random-highlight" : "", interactive ? "" : "read-only"
       ].filter(Boolean).join(" ");
       const angle = box.angle;
+      const normalizedAngle = ((angle % 360) + 360) % 360;
+      const badgeCorner = normalizedAngle === 90 ? "left:0;top:0" : normalizedAngle === 180 ? "left:0;top:100%" : normalizedAngle === 270 ? "left:100%;top:100%" : "left:100%;top:0";
       const mapTokens = monsters.map(marker => ({
         record: marker, kind: "monster", source: data.tokens?.monsters?.[marker.monsterId] || "",
         label: monsterLabel(list(data.monsters).find(monster => monster.id === marker.monsterId)) || marker.monsterId
@@ -435,6 +437,7 @@
       return `<${tag} class="${classes}" ${attributes} data-map-tile-id="${esc(item.id)}" data-angle="${angle}"
         style="left:${(box.x - box.width / 2 - minX) / worldWidth * 100}%;top:${(box.y - box.height / 2 - minY) / worldHeight * 100}%;width:${box.width / worldWidth * 100}%;height:${box.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg">
         <img class="map-tile-image" src="${esc(asset(source, options.assetBase))}" alt="${esc(tileLabel(item))}" draggable="false">
+        ${status === "revealed" ? `<span class="map-tile-status-anchor" style="${badgeCorner}"><span class="map-tile-status">未探索</span></span>` : ""}
         ${current.current === item.id ? partyMarker(item.id, state, current, options, box) : ""}
         ${mapTokens.map((entry, index) => mapToken(entry.source, entry.label, entry.record, entry.kind, item.id, index, options.assetBase, interactive, box)).join("")}
       </${tag}>`;
