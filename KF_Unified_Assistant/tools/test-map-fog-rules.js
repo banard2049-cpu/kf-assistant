@@ -4,6 +4,13 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const fogRules = require("../public/modules/map/fog-rules.js");
 
+const targetTile = value => ({ rules: { back: { fogIntensity: value } } });
+assert.equal(fogRules.hasFogIntensity(targetTile(3)), true);
+for (const value of [0, null, undefined, -1, NaN]) {
+  assert.equal(fogRules.hasFogIntensity(targetTile(value)), false, "tiles without a positive fog intensity cannot be targets");
+}
+assert.equal(fogRules.hasFogIntensity({}), false);
+
 const fog = {
   deck: ["top", "next"],
   discard: [],
@@ -73,6 +80,21 @@ assert.deepEqual(discardOnlyFog, { deck: ["only"], discard: [] });
 fogRules.returnUsed(fog, { ...stay }, values => values);
 assert.deepEqual(fog.deck, ["next", "start", "corrected", "after"]);
 
+const withdrawal = {
+  active: true, started: true, intensity: 4, hazardPending: false, pendingDraw: null,
+  peek: { cards: [] }, deck: ["remaining"], discard: ["old-discard"],
+  route: [{ cardId: "low-a", value: -1 }, { cardId: "low-b", value: -1 }, { cardId: "high", value: 2 }],
+  used: [{ cardId: "face-down", value: -3 }, { cardId: "low-a", value: -1 }, { cardId: "low-b", value: -1 }, { cardId: "high", value: 2 }]
+};
+assert.equal(fogRules.withdraw(withdrawal, "low-b", values => values).cardId, "low-b");
+assert.deepEqual(withdrawal.discard, ["old-discard", "low-b"], "withdraw discards the chosen lowest revealed card");
+assert.deepEqual(withdrawal.deck, ["remaining", "face-down", "low-a", "high"], "other used cards return without recovering earlier discards");
+for (const blocked of [{ hazardPending: true }, { pendingDraw: {} }, { peek: { cards: ["peeked"] } }, { intensity: 3 }]) {
+  const attempt = { ...withdrawal, ...blocked, deck: [...withdrawal.deck], discard: [...withdrawal.discard] };
+  assert.equal(fogRules.withdraw(attempt, "low-a", values => values), null, "withdraw is unavailable while resolving a card or after reaching the target");
+  assert.deepEqual(attempt.discard, withdrawal.discard);
+}
+
 const blockedFog = {
   route: [{ cardId: "pivot", value: 1, x: 0, y: 0 }],
   used: [
@@ -99,6 +121,11 @@ assert.equal(new Set(legacyFog.used.map(item => `${item.x},${item.y}`)).size, 3)
 
 const appSource = fs.readFileSync("public/modules/map/app.js", "utf8");
 const indexSource = fs.readFileSync("public/modules/map/index.html", "utf8");
+assert.match(appSource, /FOG_RULES\.hasFogIntensity\(item\)/, "target list excludes tiles without fog intensity");
+assert.match(appSource, /!eligibleFogTargets\(\)\.includes\(target\)/, "starting fog checks the selected target again");
+const withdrawalHandler = appSource.split('$("#fogWithdraw")?.addEventListener')[1].split('$("#fogEmerge")?.addEventListener')[0];
+assert.match(withdrawalHandler, /state\.trackers\.time \+= 1/, "withdraw advances time");
+assert.doesNotMatch(withdrawalHandler, /changeThreat\(/, "withdraw does not increase threat");
 assert.match(appSource, /id="fogReshuffleDeck"/, "fog panel exposes the reshuffle action");
 assert.match(appSource, /FOG_RULES\.reshuffleDeck\(fog, shuffle\)/, "fog reshuffle action uses the tested rule");
 assert.ok(Number(indexSource.match(/fog-rules\.js\?v=(\d+)/)?.[1]) >= 6, "fog rules cache version is updated");

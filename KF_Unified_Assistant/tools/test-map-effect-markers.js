@@ -50,9 +50,9 @@ assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*touch-action: non
 assert.match(styleSource, /button\.effect-card-marker\.dragging \{/);
 assert.match(styleSource, /button\.effect-card-marker \{[\s\S]*border-radius: 0;/,
   "effect marker assets must not be forced into circles");
-assert.match(styleSource, /\.kingdom-board-dialog \.kingdom-board-layout \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\) clamp\(270px, 27vw, 380px\);/,
-  "district effect cards opened from the kingdom panel button must be slightly larger");
-assert.match(indexSource, /styles\.css\?v=83/);
-assert.match(indexSource, /app\.js\?v=115/);
+assert.match(styleSource, /\.kingdom-board-layout \{[^}]*grid-template-columns: minmax\(0, 1\.75fr\) minmax\(max\(320px, var\(--district-rail-min\)\), 1fr\);/,
+  "the kingdom panel must leave enough room for the two-column district cards");
+assert.match(indexSource, /styles\.css\?v=\d+/);
+assert.match(indexSource, /app\.js\?v=\d+/);
 
 console.log("map effect markers: defaults, migration, dragging, persistence and styling verified");

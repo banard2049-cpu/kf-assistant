@@ -488,3 +488,9 @@ body{height:100vh;overflow:hidden}
 .conflict-placement[data-kind="knight"] .board-marker.knight, .conflict-placement[data-kind="monster"] .board-marker.monster.monster-token-frame, .conflict-placement[data-kind="monster"] .board-marker.monster.boss-token-frame { inset: 6%; }
 
 
+
+.map-viewport {
+  background: #697574 url("../map/fog-complex.svg?v=2") repeat;
+  background-size: calc(2400px * var(--map-fog-zoom, 1)) calc(1600px * var(--map-fog-zoom, 1));
+  background-attachment: local;
+}

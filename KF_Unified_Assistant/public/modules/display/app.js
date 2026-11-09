@@ -155,7 +155,7 @@
     const scale = clamp(payload.presentation?.settings?.mapScale || 100,50,200);
     root.innerHTML = `<section class="map-scene">
       <div class="map-primary">
-        <div class="map-viewport"><div class="map-canvas" style="width:${scale}%">${mapStage}</div></div>
+        <div class="map-viewport" style="--map-fog-zoom:${scale / 100}"><div class="map-canvas" style="width:${scale}%">${mapStage}</div></div>
       </div>
       <aside class="map-side">
         <div class="map-side-scroll">

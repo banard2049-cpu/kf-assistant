@@ -5,7 +5,7 @@
   --blue: #68a6c2;
   --green: #66b27f;
 }
-.map-stage { position: relative; min-width: 720px; background: #17140f; }
+.map-stage { position: relative; min-width: 720px; background: transparent; }
 .map-tile {
   position: absolute;
   container-type: size;

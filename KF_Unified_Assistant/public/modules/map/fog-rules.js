@@ -11,6 +11,11 @@
     return Number.isFinite(value) ? value : 0;
   }
 
+  function hasFogIntensity(tile) {
+    const intensity = tile?.rules?.back?.fogIntensity;
+    return typeof intensity === "number" && Number.isFinite(intensity) && intensity > 0;
+  }
+
   function makeEntry(cardId, item, corrected = false) {
     return {
       cardId,
@@ -176,6 +181,16 @@
     fog.deck = shuffle([...fog.deck, ...returned]);
   }
 
+  function withdraw(fog, selectedId, shuffle) {
+    if (!fog.active || !fog.started || fog.pendingDraw || fog.hazardPending || (fog.peek?.cards || []).length || fog.route.length >= fog.intensity) return null;
+    const candidates = lowestEntries(fog);
+    const selected = candidates.find(item => item.cardId === selectedId) || candidates[0];
+    if (!selected) return null;
+    fog.discard.push(selected.cardId);
+    returnUsed(fog, selected, shuffle);
+    return selected;
+  }
+
   function discardTop(fog) {
     if (!fog.deck.length) return null;
     const discarded = fog.deck.shift();
@@ -225,6 +240,7 @@
 
   return {
     cardValue,
+    hasFogIntensity,
     makeEntry,
     updateTotal,
     outcome,
@@ -235,6 +251,7 @@
     canPlace,
     normalizeLayout,
     returnUsed,
+    withdraw,
     discardTop,
     reshuffleDeck,
     peekCards,

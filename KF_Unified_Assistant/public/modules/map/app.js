@@ -418,6 +418,7 @@
         deck: shuffle(rule.exploration.map(item => item.id)),
         discard: [],
         current: null,
+        forcedCurrent: false,
         peek: false,
         poiAdjustment: 0,
         districtEffects: {},
@@ -430,6 +431,7 @@
       },
       fog: {
         active: false,
+        origin: "",
         target: "",
         deck: shuffle(rule.deepFog.map(item => item.id)),
         discard: [],
@@ -535,6 +537,7 @@
       current.partyPositions = recordOrEmpty(current.partyPositions);
       const fog = current.fog;
       if (fog && typeof fog === "object") {
+        if (fog.active && !fog.origin) fog.origin = current.current;
         if (!Array.isArray(fog.deck)) fog.deck = [];
         if (!Array.isArray(fog.discard)) fog.discard = [];
         if (!fog.peek || typeof fog.peek !== "object" || Array.isArray(fog.peek)) {
@@ -620,6 +623,7 @@
   let pendingEncounterAutoStart = false;
   let kingdomPanelExpanded = true;
   let kingdomPanelDialogOpen = false;
+  let kingdomCardSizeObserver = null;
   let mapFocusFrame = 0;
   let focusStoryReminder = state.step === 3;
   // Marker drops re-render the map; keep the player's view instead of re-centring on the party.
@@ -1252,6 +1256,7 @@
     const explored = new Set(Object.entries(current.tileState).filter(([, status]) => status === "explored").map(([id]) => id));
     return kingdomData().tiles.filter(item =>
       current.tileState[item.id] !== "explored" &&
+      FOG_RULES.hasFogIntensity(item) &&
       item.neighbors.some(neighbor => explored.has(neighbor))
     ).map(item => item.id);
   }
@@ -1422,6 +1427,7 @@
     current.autoFocus = false;
     current.zoom = clamp(Number(nextZoom) || MAP_ZOOM_MIN, MAP_ZOOM_MIN, MAP_ZOOM_MAX);
     if (canvas) canvas.style.width = `${current.zoom * 100}%`;
+    board?.style.setProperty("--map-fog-zoom", current.zoom);
     keepPartyMarkerVisible(board, visiblePartyPoint);
     current.scrollLeft = board?.scrollLeft || 0;
     current.scrollTop = board?.scrollTop || 0;
@@ -1471,6 +1477,7 @@
     const desiredStageWidth = stageRect.width * scale;
     current.zoom = clamp(desiredStageWidth / board.clientWidth, MAP_ZOOM_MIN, MAP_ZOOM_MAX);
     canvas.style.width = `${current.zoom * 100}%`;
+    board.style.setProperty("--map-fog-zoom", current.zoom);
 
     const focusedRects = focusTiles.map(node => node.getBoundingClientRect());
     const focusedBounds = {
@@ -1637,6 +1644,7 @@
       const exp = current.exploration;
       if (exp.current && !exp.deck.includes(exp.current) && !exp.discard.includes(exp.current)) exp.deck.unshift(exp.current);
       exp.current = null;
+      exp.forcedCurrent = false;
       exp.resolvedRound = null;
       exp.pendingClueDirections = [];
       setCurrentTile(current, id);
@@ -2299,11 +2307,12 @@
     const directionalClue = top?.cluesByDirection?.[direction] || "";
     const selectedEffectType = explorationEffectType(active);
     const selectedEffectDistrict = explorationEffectDistrict();
-    const primaryActionId = active ? "resolveExploration" : "drawExploration";
-    const primaryActionLabel = active ? "确认效果" : "抽牌";
+    const forceDraw = state.step !== 2 || exp.resolvedRound === state.round;
+    const primaryActionId = active ? "resolveExploration" : forceDraw ? "forceDrawExploration" : "drawExploration";
+    const primaryActionLabel = active ? "确认效果" : forceDraw ? "强制抽牌" : "抽牌";
     const primaryActionDisabled = active
-      ? state.step !== 2 || mercenaryPending
-      : state.step !== 2 || exp.resolvedRound === state.round || !top || deckLocked;
+      ? (state.step !== 2 && !exp.forcedCurrent) || mercenaryPending
+      : !top || deckLocked;
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">EXPLORATION DECK</div><h3>探索牌与兴趣点</h3></div><span class="badge">${exp.deck.length} 张 · 弃 ${exp.discard.length}</span></div>
       ${shown ? cardView(shown.image, active || exp.peek ? "face" : "back") : '<div class="alert danger">牌组为空：远征失败</div>'}
@@ -2541,7 +2550,7 @@
       <div class="toolbar"><button id="fogDiscardTop" class="small danger" ${fog.deck.length && !peekActive ? "" : "disabled"}>弃置牌堆顶 1 张</button><button id="fogReshuffleDeck" class="small secondary" ${(fog.discard.length || fog.deck.length > 1) && !peekActive ? "" : "disabled"}>重洗牌组</button><span class="tiny">弃牌洗回未抽牌堆；当前牌与路径牌保持不变。</span></div>
       ${fog.active ? `
         <div class="fog-section-divider" aria-hidden="true"></div>
-        <p>目标 <strong>${esc(tileLabel(tile(fog.target)))}</strong> · 直线路径 ${fog.route.length}/${fog.intensity} 张 · 当前方向 ${headingLabel}<br>弥雾值 ${pathValue} + 满杯 ${fog.baneFull} = <strong>${fog.total}</strong></p>
+        <p>进入位置 <strong>${esc(tileLabel(tile(fog.origin || current.current)))}</strong> · 目标 <strong>${esc(tileLabel(tile(fog.target)))}</strong> · 直线路径 ${fog.route.length}/${fog.intensity} 张 · 当前方向 ${headingLabel}<br>弥雾值 ${pathValue} + 满杯 ${fog.baneFull} = <strong>${fog.total}</strong></p>
         <div class="fog-section-divider" aria-hidden="true"></div>
         <div class="fields fog-peek-fields">
           <label>查看数量<input id="fogPeekCount" type="number" min="1" max="${Math.max(1, fog.deck.length)}" step="1" value="${defaultPeekCount}" ${peekActive ? "disabled" : ""}></label>
@@ -2733,16 +2742,16 @@
   function effectCardControls(slotKey) {
     return `<div class="effect-card-controls">
       <select data-effect-marker-select="${esc(slotKey)}" aria-label="选择效果牌标记">
-        ${TILE_MARKERS.map(([id, name]) => `<option value="${id}" ${id === "generic" ? "selected" : ""}>${esc(name)}</option>`).join("")}
+        ${TILE_MARKERS.map(([id, name]) => `<option value="${id}" ${id === "generic" ? "selected" : ""}>${esc(name.replace(/(?:标记|线索)$/, ""))}</option>`).join("")}
       </select>
-      <button type="button" class="small secondary" data-add-effect-marker="${esc(slotKey)}">添加标记</button>
+      <button type="button" class="small secondary" data-add-effect-marker="${esc(slotKey)}">添加</button>
       <button type="button" class="small danger" data-discard-effect="${esc(slotKey)}">弃置</button>
     </div>`;
   }
 
   function placedEffectCard(item, slotKey) {
     const exp = mapState().exploration;
-    return `<div class="effect-card-stage">
+    return `<div class="effect-card-stage" style='${cardStyle(item.image, "face")}'>
       <div class="rule-card" role="img" aria-label="${esc(item.name)}" title="${esc(item.name)}" style='${cardStyle(item.image, "face")}'></div>
       ${effectMarkerLayer(exp, slotKey)}
     </div>${effectCardControls(slotKey)}`;
@@ -2770,7 +2779,7 @@
       ${rules().districts.map(district => {
         const item = card(exp.districtEffects[district.id]);
         return `<section class="kingdom-district-slot ${item ? "occupied" : "empty"}">
-          <div class="kingdom-district-slot-label"><span>${esc(district.name)}</span><small>${item ? esc(item.name) : "空卡位"}</small></div>
+          <div class="kingdom-district-slot-label"><span>${esc(district.name.split(/\s+/)[0])}</span></div>
           ${item
             ? placedEffectCard(item, `district:${district.id}`)
             : '<div class="kingdom-district-empty"><span>地区效果</span><strong>空</strong></div>'}
@@ -2825,9 +2834,9 @@
     return `<div class="kingdom-marker-toolbar">
       <strong>王国版图标记</strong>
       <select data-kingdom-marker-select aria-label="选择王国版图标记">
-        ${TILE_MARKERS.map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join("")}
+        ${TILE_MARKERS.map(([id, name]) => `<option value="${id}">${esc(name.replace(/(?:标记|线索)$/, ""))}</option>`).join("")}
       </select>
-      <button type="button" class="small secondary" data-add-kingdom-marker>添加标记</button>
+      <button type="button" class="small secondary" data-add-kingdom-marker>添加</button>
     </div>`;
   }
 
@@ -2843,7 +2852,10 @@
 
   function kingdomBoardLayout(panel) {
     return `<div class="kingdom-board-layout">
-      ${kingdomBoardScene(panel)}
+      <div class="kingdom-board-main">
+        ${kingdomMarkerToolbar()}
+        ${kingdomBoardScene(panel)}
+      </div>
       ${kingdomDistrictRail()}
     </div>`;
   }
@@ -2856,7 +2868,6 @@
         <span><span class="eyebrow">KINGDOM PANEL</span><strong>${esc(kingdomData().label)} · 王国面板</strong></span>
         <span class="kingdom-panel-toggle-copy"><span class="tiny">点击展开或折叠</span><span class="kingdom-panel-chevron" aria-hidden="true">⌄</span></span>
       </summary>
-      ${kingdomMarkerToolbar()}
       <div class="kingdom-panel-inline">${kingdomBoardLayout(panel)}</div>
     </details>
     <dialog id="kingdomPanelDialog" class="kingdom-board-dialog">
@@ -2864,7 +2875,6 @@
         <strong>${esc(kingdomData().label)} · 王国面板</strong>
         <button id="closeKingdomPanel" class="small secondary" type="button">关闭</button>
       </div>
-      ${kingdomMarkerToolbar()}
       ${kingdomBoardLayout(panel)}
     </dialog>
     <dialog id="kingdomMonsterActionDialog" class="kingdom-monster-action-dialog">
@@ -2953,6 +2963,7 @@
     if (state.step === 2) {
       const exp = mapState().exploration;
       if (state.mercenaries.pendingAction) return { label: "先完成盗贼选牌", disabled: true };
+      if (exp.current) return { label: "先结算探索牌", disabled: true };
       if (exp.resolvedRound === state.round) return { label: "进入故事步骤", disabled: false };
       return { label: exp.current ? "先结算探索牌" : "先抽取探索牌", disabled: true };
     }
@@ -2991,7 +3002,7 @@
             </div>
           </div>
           <div class="map-workspace has-marker-palette">
-            <section class="map-board" aria-label="王国地图"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
+            <section class="map-board" aria-label="王国地图" style="--map-fog-zoom:${current.zoom}"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
             ${markerPalette()}
           </div>
         </section>
@@ -3073,7 +3084,7 @@
         <div class="stack">
           ${current.fog.active && current.fog.started ? fogBoard(current.fog) : ""}
           <div class="map-workspace">
-            <section class="map-board"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
+            <section class="map-board" style="--map-fog-zoom:${current.zoom}"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
           </div>
           ${kingdomPanel()}
           ${tracksPanel()}
@@ -3129,22 +3140,24 @@
     }
   }
 
-  function drawExplorationCard() {
+  function drawExplorationCard(force = false) {
     const current = mapState();
     const exp = current.exploration;
-    if (state.step !== 2) return toast("请先进入探索步骤");
+    if (!force && state.step !== 2) return toast("请先进入探索步骤");
     if (state.mercenaries.pendingAction) return toast("请先完成盗贼探索牌选择");
     if (scoutingState(exp).reordering) return toast("请先确认或取消斥候牌序调整");
-    if (exp.resolvedRound === state.round) return toast("本轮探索步骤已经完成");
+    if (!force && exp.resolvedRound === state.round) return toast("本轮探索步骤已经完成");
     if (exp.current) return toast("请先结算当前探索牌");
     if (!exp.deck.length) {
       current.failed = "探索牌组为空";
       return save(true);
     }
-    snapshot("抽取探索牌");
+    snapshot(force ? "强制抽取探索牌" : "抽取探索牌");
     exp.current = exp.deck.shift();
+    exp.forcedCurrent = force;
     exp.peek = false;
     clearScoutingPeek(exp);
+    if (force) addLog("强制抽取探索牌");
     save(true);
   }
 
@@ -3337,6 +3350,19 @@
   function bind() {
     const current = mapState();
     const board = $(".map-board");
+    kingdomCardSizeObserver?.disconnect();
+    kingdomCardSizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const layout = entry.target.closest(".kingdom-board-layout");
+        const placement = layout?.querySelector(".kingdom-effect-placement.active");
+        const width = entry.target.getBoundingClientRect().width;
+        if (placement && width > 0) placement.style.setProperty("--district-card-width", `${width}px`);
+      }
+    });
+    $$(".kingdom-board-layout").forEach(layout => {
+      const districtCard = layout.querySelector(".kingdom-district-slot .effect-card-stage, .kingdom-district-slot .kingdom-district-empty");
+      if (districtCard) kingdomCardSizeObserver.observe(districtCard);
+    });
     window.KFMapView.bindMapStage(board.querySelector(".map-stage"), window.KFMapView.stageGeometry(state, DATA));
     let clickTimer = 0;
     let tokenDrag = null;
@@ -3593,8 +3619,9 @@
       if (state.step !== 0 || current.fog.active) return toast("请先完成当前步骤，再进入弥雾");
       const target = $("#fogTarget").value;
       if (!target) return toast("请选择弥雾目标");
+      if (!eligibleFogTargets().includes(target)) return toast("该板块没有弥雾浓度或不是有效的弥雾目标");
       const labeledIntensity = Number(tile(target)?.rules?.back?.fogIntensity);
-      const defaultIntensity = Number.isFinite(labeledIntensity) && labeledIntensity > 0 ? String(labeledIntensity) : "1";
+      const defaultIntensity = String(labeledIntensity);
       let requestedIntensity;
       try {
         requestedIntensity = prompt("输入目标板块背面的弥雾浓度：", defaultIntensity);
@@ -3614,6 +3641,7 @@
       current.fog = {
         ...current.fog,
         active: true,
+        origin: current.current,
         target,
         intensity,
         route: [],
@@ -4150,11 +4178,12 @@
       current.exploration.peek = !current.exploration.peek;
       save(true);
     });
-    $("#drawExploration")?.addEventListener("click", drawExplorationCard);
+    $("#drawExploration")?.addEventListener("click", () => drawExplorationCard());
+    $("#forceDrawExploration")?.addEventListener("click", () => drawExplorationCard(true));
     $("#skipExplorationButton")?.addEventListener("click", skipExplorationStep);
     $("#resolveExploration")?.addEventListener("click", () => {
-      if (state.step !== 2) return toast("请先进入探索步骤");
       const exp = current.exploration;
+      if (state.step !== 2 && !exp.forcedCurrent) return toast("请先进入探索步骤");
       const activeCard = card(exp.current);
       if (!activeCard) return;
       const type = $("#effectType").value;
@@ -4177,10 +4206,12 @@
         exp.discard.push(exp.current);
       }
       const wasSpecial = activeCard.special;
-      if (!wasSpecial) exp.resolvedRound = state.round;
+      const wasForced = exp.forcedCurrent;
+      if (!wasSpecial && !wasForced) exp.resolvedRound = state.round;
       addLog(`结算探索牌 ${activeCard.name}（${type === "instant" ? "立即" : type === "district" ? "地区" : "激活"}）`);
       exp.current = null;
-      if (wasSpecial) toast("特殊探索牌已结算：请继续抽取下一张牌");
+      exp.forcedCurrent = false;
+      if (wasSpecial) toast(wasForced ? "特殊探索牌已结算：请继续抽取下一张牌（必要时使用强制抽牌）" : "特殊探索牌已结算：请继续抽取下一张牌");
       save(true);
     });
 
@@ -4192,6 +4223,7 @@
     const clearFogSession = fog => {
       Object.assign(fog, {
         active: false,
+        origin: "",
         target: "",
         current: null,
         pendingDraw: null,
@@ -4413,14 +4445,19 @@
       const fog = current.fog;
       if (fogPeekState(fog).cards.length) return toast("请先确认或取消弥雾牌查看");
       if (fog.hazardPending) return toast("请先完成当前侵害效果");
+      if (!fog.active || !fog.started || fog.pendingDraw || fog.route.length >= fog.intensity || !lowestFogEntries(fog).length) return;
       snapshot("从弥雾撤回");
-      const lowest = selectedLowestFogEntry(fog);
-      if (lowest) fog.discard.push(lowest.cardId);
-      returnUsedFogCards(fog, lowest);
+      const origin = fog.origin || current.current;
+      const lowest = FOG_RULES.withdraw(fog, selectedLowestFogEntry(fog)?.cardId, shuffle);
+      if (!lowest) return;
       clearFogSession(fog);
-      changeThreat(1);
+      setCurrentTile(current, origin);
+      current.selected = origin;
+      current.travelRoute = [];
+      state.trackers.time += 1;
+      checkLimits();
       enterStep(2);
-      addLog("从弥雾撤回：弃置路径上弥雾值最低的牌，威胁 +1，进入探索步骤");
+      addLog(`从弥雾撤回至 ${tileLabel(tile(origin))}：弃置最低值牌 ${card(lowest.cardId)?.name || lowest.cardId}，时间 +1，进入探索步骤`);
       save(true);
     });
     $("#fogEmerge")?.addEventListener("click", () => {
@@ -4634,7 +4671,7 @@
       });
     });
     $("#nextStep")?.addEventListener("click", () => {
-      if (state.step === 2 && current.exploration.resolvedRound === state.round) {
+      if (state.step === 2 && current.exploration.resolvedRound === state.round && !current.exploration.current) {
         enterStep(3);
       } else if (state.step === 3) {
         state.round += 1;

@@ -12,7 +12,7 @@
 
 版本标签会自动构建 Windows/macOS portable 包和 Android APK，文件位于 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
 
-**更新到 v1.4.3 时，请同时应用 2026-11-06 地图修正版完整资源包。资源包单独提供，不上传到 GitHub Release。** 本版使用校正后的地图正面图，并修复通道错位及缩放接缝黑线；资源包也包含此前更新的六张先民护卫立绘。Web/portable 解压覆盖资源，Android 在主界面重新“导入资源 ZIP”；请先备份并保留存档。
+**更新到 v1.4.4 时，请同时更新至 2026-11-09 完整资源包。资源包单独提供，不上传到 GitHub Release。** 资源包包含校正后的地图和弥雾背景，以及此前更新的六张先民护卫立绘。Web/portable 解压覆盖资源，Android 在主界面重新“导入资源 ZIP”；请先备份并保留存档。
 
 ## Docker / NAS
 

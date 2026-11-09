@@ -228,6 +228,7 @@ main { padding: 12px 18px 28px; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 7px;
   padding: 8px 10px;
   border-top: 1px solid var(--line);
@@ -245,12 +246,18 @@ main { padding: 12px 18px 28px; }
   min-height: 32px;
   padding-block: 4px;
 }
-.kingdom-board-dialog > .kingdom-marker-toolbar { margin-bottom: 8px; }
 .kingdom-board-layout {
+  --board-aspect: calc(2392 / 1648);
+  --district-card-aspect: .702;
+  --district-tools-width: 40px;
+  --district-tools-gap: 3px;
+  --district-card-width-per-board-width: calc(var(--district-card-aspect) / var(--board-aspect));
+  /* Reserve two columns of full-height cards, including the toolbar height on the board side. */
+  --district-rail-min: calc((100% * var(--district-card-width-per-board-width) + 60px * var(--district-card-aspect) + 2 * (var(--district-tools-width) + var(--district-tools-gap)) + 4px) / (1 + var(--district-card-width-per-board-width)));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(240px, 25vw, 340px);
+  grid-template-columns: minmax(0, 1.75fr) minmax(max(320px, var(--district-rail-min)), 1fr);
   align-items: start;
-  width: min(100%, calc((95vh - 82px) * 1.4515 + 210px));
+  width: min(100%, calc((95vh - 132px) * 2.281));
   min-width: 680px;
   max-height: calc(95vh - 82px);
   margin: auto;
@@ -258,10 +265,7 @@ main { padding: 12px 18px 28px; }
   border: 1px solid #5a5545;
   background: #0d100e;
 }
-.kingdom-board-dialog .kingdom-board-layout {
-  grid-template-columns: minmax(0, 1fr) clamp(270px, 27vw, 380px);
-  width: min(100%, calc((95vh - 82px) * 1.4515 + 250px));
-}
+.kingdom-board-main { min-width: 0; }
 .kingdom-panel-inline .kingdom-board-layout {
   width: 100%;
   max-height: none;
@@ -274,7 +278,7 @@ main { padding: 12px 18px 28px; }
   align-self: center;
   width: 100%;
   max-height: none;
-  aspect-ratio: 2392 / 1648;
+  aspect-ratio: var(--board-aspect);
   margin: 0;
   overflow: hidden;
   background: #0d100e;
@@ -429,6 +433,7 @@ button.kingdom-board-marker-remove {
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 5px 7px rgba(0, 0, 0, .58));
 }
+.kingdom-effect-placement.active { width: var(--district-card-width, 24%); }
 .kingdom-effect-placement .rule-card {
   width: 100%;
   border: 2px solid var(--blue);
@@ -503,8 +508,8 @@ button.effect-card-marker .effect-marker-token {
 }
 .effect-card-controls select,
 .effect-card-controls button {
-  min-height: 30px;
-  padding: 4px 5px;
+  min-height: 38px;
+  padding: 6px 5px;
   font-size: 10px;
   white-space: nowrap;
 }
@@ -521,28 +526,52 @@ button.effect-card-marker .effect-marker-token {
   grid-auto-flow: column;
   align-self: stretch;
   min-width: 0;
+  height: 0;
+  min-height: 100%;
   max-height: calc(95vh - 84px);
-  overflow: auto;
+  overflow: clip;
   border-left: 2px solid var(--gold);
   background: #111714;
-  scrollbar-color: #6e6244 #111714;
-  scrollbar-width: thin;
 }
 .kingdom-district-slot {
   display: grid;
-  align-content: start;
-  gap: 6px;
+  grid-template-columns: var(--district-tools-width) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  column-gap: var(--district-tools-gap);
   min-width: 0;
   min-height: 0;
-  padding: 7px;
   border-bottom: 1px solid var(--line);
   border-right: 1px solid var(--line);
 }
+.kingdom-district-slot .effect-card-stage,
+.kingdom-district-empty {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  justify-self: end;
+  height: 100%;
+  aspect-ratio: var(--aspect, var(--district-card-aspect));
+}
+.kingdom-district-slot .effect-card-stage > .rule-card { height: 100%; }
+.kingdom-district-slot .effect-card-controls {
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3px;
+  margin: 0;
+  padding: 0 0 4px 1px;
+}
+.kingdom-district-slot .effect-card-controls :is(select, button) {
+  min-height: 36px;
+  padding: 4px 1px;
+}
+.kingdom-district-slot .effect-card-controls select { min-width: 0; width: 100%; padding-inline: 0; }
 .kingdom-district-slot:nth-child(even) { border-bottom: 0; }
 .kingdom-district-slot:nth-child(n + 3) { border-right: 0; }
 .kingdom-district-slot-label {
   display: grid;
+  align-content: start;
   min-width: 0;
+  padding: 4px 0 0 4px;
 }
 .kingdom-district-slot-label span,
 .kingdom-district-slot-label small {
@@ -551,6 +580,8 @@ button.effect-card-marker .effect-marker-token {
   white-space: nowrap;
 }
 .kingdom-district-slot-label span {
+  writing-mode: vertical-rl;
+  letter-spacing: .12em;
   color: var(--gold-soft);
   font-size: 11px;
   font-weight: 800;
@@ -569,7 +600,6 @@ button.effect-card-marker .effect-marker-token {
   display: grid;
   place-items: center;
   align-content: center;
-  aspect-ratio: .702;
   border: 1px dashed #56645b;
   color: var(--muted);
   background: #151c18;
@@ -1958,7 +1988,6 @@ label,
 }
 .map-shell,
 .map-board,
-.map-stage,
 .kingdom-board-image,
 .kingdom-panel-inline,
 .kingdom-board-dialog,
@@ -2241,3 +2270,9 @@ label,
 .story-effect { line-height: 1.65; }
 .story-condition { padding: 8px 10px; border-left: 3px solid var(--red); background: rgba(88, 16, 22, .18); }
 .story-reminder-footer, .story-empty { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+
+.map-board {
+  background: #697574 url("fog-complex.svg?v=2") repeat;
+  background-size: calc(2400px * var(--map-fog-zoom, 1)) calc(1600px * var(--map-fog-zoom, 1));
+  background-attachment: local;
+}
