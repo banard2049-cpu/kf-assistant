@@ -303,7 +303,7 @@ vm.runInContext(`
   ${[
     "setCurrentTile", "enterStep", "canSkipTravelStep", "skipTravelStep",
     "canSkipExplorationStep", "skipExplorationStep", "snapshot", "snapshotMap",
-    "undo", "finalizeTileResolution", "resolveBacktrack", "roundStepAction",
+    "undo", "finalizeTileResolution", "advanceBacktrack", "resolveBacktrack", "roundStepAction",
     "storyPointOfInterestReminder", "storyStepReminderText", "adjustStoryPointOfInterest"
   ].map(appFunction).join("\n")}
 
@@ -363,6 +363,7 @@ vm.runInContext(`
   enterStep(0);
   hiddenAfterStory = toastNode.hidden;
   resolveBacktrack("SK_Tile_M:1");
+  advanceBacktrack();
   skipExplorationStep();
   afterBacktrack = visibleReminder();
   backtrackToast = ({ text: storyStepReminderText() });

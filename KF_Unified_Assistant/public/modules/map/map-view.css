@@ -1,3 +1,8 @@
+@property --map-fog-zoom {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
 :root {
   --map-token-size: clamp(40px, 3.8vw, 56px);
   --gold: #c8a966;
@@ -18,14 +23,138 @@
   transform-origin: center;
   box-shadow: none;
 }
-.map-tile > .map-tile-image { display: block; width: 100%; height: 100%; object-fit: fill; border-radius: 0; pointer-events: none; }
+.map-tile > .map-tile-image,
+.map-flip-back > .map-tile-image { display: block; width: 100%; height: 100%; object-fit: fill; border-radius: 0; pointer-events: none; }
+.map-reveal-fog {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(var(--counter-rotation));
+}
+:is(.map-board, .map-viewport) .map-edge-fade {
+  --edge-fog-depth: calc(5px + min(7cqw, 7cqh, 26px));
+  --edge-fog-stops: #000 5px, #0006 calc(5px + (100% - 5px) * .2), #0002 calc(5px + (100% - 5px) * .5), transparent;
+  --edge-fog-cap: min(3cqw, 3cqh, 13px);
+  --edge-fog-cap-stops: #000 22%, #0008 37%, #0003 58%, transparent;
+  /* Give the mask room to extend past the artwork's fractional pixel edges. */
+  box-sizing: content-box;
+  padding: 3px;
+  margin: -3px;
+  mask: linear-gradient(#000, #000) subtract, var(--edge-fog-mask);
+}
+.map-flip-back { display: none; position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.map-arrival-fog-layer { position: absolute; z-index: 20; inset: 0; overflow: clip; pointer-events: none; }
+.map-arrival-fog { position: absolute; container-type: size; }
+.map-party-travel-layer { position: absolute; z-index: 25; inset: 0; overflow: clip; pointer-events: none; }
+.map-party-traveler { position: absolute; container-type: size; visibility: hidden; transform: translate(-50%, -50%); --counter-rotation: 0deg; }
+.map-party-traveler > .party-location-token { pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .map-tile.emerging-from-fog { animation: tile-arrival-details var(--arrival-duration) ease-out var(--arrival-delay) backwards; }
+  .map-seam-emerging,
+  .map-marker-token.emerging-from-fog { animation: tile-seam-emerges var(--arrival-duration) ease-out var(--arrival-delay) backwards; }
+  .map-tile:has(> .map-reveal-fog) { animation: map-tile-reveal-bleed var(--reveal-duration) linear var(--reveal-delay); }
+  .map-flip-back { display: block; animation: map-flip-back var(--reveal-duration) ease-in-out var(--reveal-delay) backwards; }
+  .map-party-traveler { animation: map-party-glide var(--party-duration) cubic-bezier(.24, .15, .32, 1) var(--party-delay) backwards; }
+  .map-party-traveler.relocating { animation-name: map-party-relocate; animation-timing-function: ease-in-out; }
+  .party-location-token.party-in-transit { animation: map-party-in-transit var(--party-duration) linear var(--party-delay) backwards; }
+  .map-arrival-fog::before,
+  .map-arrival-fog::after {
+    content: "";
+    position: absolute;
+    opacity: 0;
+    background: var(--fog-color) var(--fog-image) repeat;
+    background-size: var(--fog-size);
+    background-position: var(--fog-x) var(--fog-y);
+  }
+  .map-arrival-fog::before {
+    inset: 0;
+    mask-image: linear-gradient(106deg, transparent 20%, #000 76%),
+      radial-gradient(ellipse farthest-corner at 54% 50%, #000 52%, transparent 100%);
+    mask-composite: intersect;
+    mask-repeat: no-repeat;
+    animation: map-fog-retreat var(--arrival-duration) cubic-bezier(.38, 0, .35, 1) var(--arrival-delay);
+  }
+  .map-arrival-fog::after {
+    inset: -25% -30%;
+    background-position: calc(var(--fog-x) - 8cqw) calc(var(--fog-y) - 36cqh);
+    mask-image: radial-gradient(ellipse 49% 33% at 51% 49%, #000 6%, rgba(0, 0, 0, .48) 48%, transparent 100%);
+    animation: map-fog-wisp var(--arrival-duration) ease-in-out var(--arrival-delay);
+  }
+  .map-reveal-fog { opacity: .72; }
+  .map-reveal-fog::before {
+    inset: -4%;
+    background-position: calc(var(--fog-x) + 4cqw) calc(var(--fog-y) + 4cqh);
+    mask-image: radial-gradient(ellipse farthest-corner at 54% 50%, #000 60%, transparent 100%),
+      linear-gradient(to right, transparent, #000 2.8%, #000 97.2%, transparent),
+      linear-gradient(to bottom, transparent, #000 2.8%, #000 97.2%, transparent);
+    mask-size: 175% 175%, 100% 100%, 100% 100%;
+    mask-position: center;
+    animation: map-fog-reveal var(--reveal-duration) linear var(--reveal-delay);
+  }
+  .map-reveal-fog::after {
+    --fog-wisp-opacity: .28;
+    animation: map-fog-wisp var(--reveal-duration) ease-in-out var(--reveal-delay);
+  }
+}
+@keyframes map-party-glide {
+  from { left: var(--party-from-x); top: var(--party-from-y); opacity: var(--party-start-opacity); visibility: visible; }
+  to { left: var(--party-to-x); top: var(--party-to-y); opacity: 1; visibility: visible; }
+}
+@keyframes map-party-relocate {
+  0% { left: var(--party-from-x); top: var(--party-from-y); opacity: var(--party-start-opacity); visibility: visible; }
+  35% { left: var(--party-from-x); top: var(--party-from-y); opacity: 0; visibility: visible; animation-timing-function: step-end; }
+  58% { left: var(--party-to-x); top: var(--party-to-y); opacity: 0; visibility: visible; }
+  100% { left: var(--party-to-x); top: var(--party-to-y); opacity: 1; visibility: visible; }
+}
+@keyframes map-party-in-transit {
+  from, to { visibility: hidden; }
+}
+@keyframes map-tile-reveal-bleed {
+  from, to { overflow: visible; }
+}
+@keyframes map-flip-back {
+  0%, 4% { opacity: 1; }
+  36%, 100% { opacity: 0; }
+}
+@keyframes map-fog-reveal {
+  0% { opacity: 0; transform: translate(-3%, 4%) scale(.94); }
+  23% { opacity: .94; animation-timing-function: cubic-bezier(.2, .17, .48, 1); }
+  100% { opacity: 0; transform: translate(20%, -13%) scale(1.1); }
+}
+@keyframes map-fog-retreat {
+  0%, 7% {
+    opacity: 1;
+    mask-position: 100% 50%, center;
+    mask-size: 520% 100%, 225% 225%;
+    background-position: var(--fog-x) var(--fog-y);
+  }
+  100% {
+    opacity: 0;
+    mask-position: 0% 50%, center;
+    mask-size: 520% 100%, 105% 105%;
+    background-position: calc(var(--fog-x) + 24cqw) calc(var(--fog-y) - 14cqh);
+  }
+}
+@keyframes map-fog-wisp {
+  0%, 7% { opacity: 0; transform: translate(-4%, 5%) rotate(-8deg); }
+  41% { opacity: var(--fog-wisp-opacity, .42); }
+  100% { opacity: 0; transform: translate(26%, -19%) rotate(-12deg) scale(1.12); }
+}
+@keyframes tile-arrival-details {
+  0% { visibility: hidden; }
+  1% { visibility: visible; }
+  0%, 44% { outline-color: transparent; box-shadow: none; filter: none; }
+}
+@keyframes tile-seam-emerges {
+  0%, 50% { opacity: 0; visibility: hidden; }
+  100% { opacity: 1; visibility: visible; }
+}
 .map-tile.selected { outline: 3px solid var(--blue); outline-offset: 2px; z-index: 7; }
-.map-tile.current { outline: 4px solid var(--gold); outline-offset: 2px; z-index: 8; }
 .map-tile.legal { filter: drop-shadow(0 0 7px var(--green)); z-index: 6; }
 .map-tile.revealed-unexplored { outline: 3px dashed #df925a; outline-offset: 2px; }
-.map-tile-status-anchor { position: absolute; z-index: 10; width: 0; height: 0; transform: rotate(var(--counter-rotation)); pointer-events: none; }
-.map-tile-status { position: absolute; top: 4px; right: 4px; padding: 2px 5px; border: 1px solid #df925a; border-radius: 3px; color: #fff0de; background: rgba(45, 26, 16, .92); font-size: clamp(10px, 7cqw, 14px); font-weight: 700; line-height: 1.3; white-space: nowrap; }
 .map-tile.random-highlight { outline: 4px solid #d889ff; outline-offset: 3px; box-shadow: 0 0 0 2px rgba(216, 137, 255, .28), 0 0 16px rgba(216, 137, 255, .85); z-index: 9; }
+.map-tile.current:not(:focus-visible, .marker-drop-target) { outline: none; box-shadow: none; }
 .map-tile:has(.party-location-token),
 .map-tile:has(.party-location-token):has(.map-token) { z-index: 18; }
 .party-location-token {
@@ -33,10 +162,13 @@
   z-index: 35;
   display: grid;
   place-items: center;
-  width: clamp(38px, min(30cqw, 30cqh), 64px);
+  /* Same size on every tile; app.js sizes it from the map scale (see styles.css). */
+  box-sizing: border-box;
+  width: var(--party-token-size, calc(var(--map-token-size) * .84));
   aspect-ratio: 1;
   overflow: hidden;
-  border: 3px solid var(--gold);
+  border: solid var(--gold);
+  border-width: clamp(1px, calc(var(--party-token-size, 47px) * .07), 3px);
   border-radius: 50%;
   background: #121713;
   box-shadow: 0 0 0 2px rgba(15, 18, 16, .9), 0 5px 12px rgba(0, 0, 0, .78);
@@ -44,8 +176,9 @@
 }
 .party-location-token img,
 .party-location-fallback { grid-area: 1 / 1; width: 100%; height: 100%; }
+.party-location-token.default-corner { box-sizing: border-box; }
 .party-location-token img { display: block; object-fit: cover; }
-.party-location-fallback { display: grid; place-items: center; color: var(--gold-soft); font-size: 20px; font-weight: 900; }
+.party-location-fallback { display: grid; place-items: center; color: var(--gold-soft); font-size: calc(var(--party-token-size, 47px) * .42); font-weight: 900; }
 .map-tile:has(.map-token) { z-index: 15; }
 .map-tile .map-token {
   position: absolute;
@@ -182,6 +315,10 @@
   .delve-tracks { grid-template-columns: minmax(320px, 10fr) minmax(240px, 6fr) minmax(620px, 17fr); }
 }
 
+/* The door artwork is stored upside down. Apply the same rotation in every marker view. */
+img[src$="/assets/tokens/armored.png"],
+img[src$="/assets/tokens/triple-armored.png"] { rotate: 180deg; }
+
 /* Map markers live on their own layer above the tiles so they can sit on a passage between two
    tiles and be dragged across the whole map. */
 .map-marker-layer { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
@@ -192,7 +329,7 @@
   height: auto;
   aspect-ratio: 1;
   object-fit: contain;
-  transform: translate(-50%, -50%);
+  translate: -50% -50%;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .85));
   pointer-events: auto;
   cursor: grab;
@@ -239,7 +376,7 @@
   width: 46px;
   height: 46px;
   object-fit: contain;
-  transform: translate(-50%, -50%);
+  translate: -50% -50%;
   filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .8));
   pointer-events: none;
 }

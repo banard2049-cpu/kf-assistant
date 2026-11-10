@@ -128,21 +128,24 @@
     return { x: x * 100, y: y * 100 };
   }
 
+  function openTileLinks(origin, markers) {
+    if (!origin) return [];
+    const linked = new Set(list(origin.neighbors));
+    for (const marker of markers) {
+      if (marker.type !== "shortcut" || !marker.to) continue;
+      if (marker.from === origin.id) linked.add(marker.to);
+      if (marker.to === origin.id) linked.add(marker.from);
+    }
+    return [...linked].filter(tileId => !markers.some(marker =>
+      marker.to && pathKey(marker.from, marker.to) === pathKey(origin.id, tileId) && marker.type !== "shortcut"
+    ));
+  }
+
   function legalTileIds(state, data) {
     const current = record(state.maps?.[state.kingdom]);
     const origin = list(data.maps?.[state.kingdom]?.tiles).find(item => item.id === current.current);
-    if (!origin) return [];
-    const linked = new Set(list(origin.neighbors));
-    for (const marker of list(current.pathMarkers)) {
-      if (marker.type !== "shortcut" || !marker.to) continue;
-      if (marker.from === current.current) linked.add(marker.to);
-      if (marker.to === current.current) linked.add(marker.from);
-    }
-    const blocked = tileId => list(current.pathMarkers).some(marker =>
-      marker.to && pathKey(marker.from, marker.to) === pathKey(current.current, tileId) && marker.type !== "shortcut"
-    );
-    return [...linked].filter(tileId =>
-      list(current.placed).includes(tileId) && current.tileState?.[tileId] !== "explored" && !blocked(tileId)
+    return openTileLinks(origin, list(current.pathMarkers)).filter(tileId =>
+      list(current.placed).includes(tileId) && current.tileState?.[tileId] !== "explored"
     );
   }
 
@@ -209,18 +212,31 @@
     const memberPortraitId = member?.type === "squire" ? member.squireId : member?.knightId;
     const knightPortraitId = knight?.heroId || (knight?.memberType === "squire" ? knight?.squireId : knight?.knightId);
     const portraitId = memberPortraitId || knightPortraitId || heroIdFromName(name);
-    const saved = current.partyPositions?.[tileId];
-    const x = Number.isFinite(saved?.x) ? clamp(saved.x, 0, 100) : 50;
-    const y = Number.isFinite(saved?.y) ? clamp(saved.y, 0, 100) : 50;
+    const { x, y, defaultCorner } = partyPosition(current, box);
     const display = tileWarpPoint(box, { x, y });
     const attrs = options.interactive === false
       ? `aria-label="当前队伍：${esc(name)}"`
       : `aria-label="当前队伍：${esc(name)}" title="当前队伍：${esc(name)}（可拖动）" data-map-token="party" data-token-kind="party" data-token-tile="${esc(tileId)}" data-token-x="${x}" data-token-y="${y}"`;
-    return `<span class="party-location-token" role="img" ${attrs} style="left:${display.x}%;top:${display.y}%">
+    return `<span class="party-location-token${defaultCorner ? " default-corner" : ""}" role="img" ${attrs} style="left:${display.x}%;top:${display.y}%">
       ${portraitId
         ? `<img src="/assets/heroes/${esc(portraitId)}-avatar.jpg?v=story-1" alt="" draggable="false">`
         : `<span class="party-location-fallback" aria-hidden="true">${esc(name.slice(0, 1) || "?")}</span>`}
     </span>`;
+  }
+
+  function partyPosition(current, box) {
+    const saved = current.partyPositions?.[box.item.id];
+    if (!Number.isFinite(saved?.x) && !Number.isFinite(saved?.y)) {
+      const corner = worldToTileLocal(box, {
+        x: box.x - box.halfWidth / 2,
+        y: box.y + box.halfHeight / 2
+      });
+      return { ...corner, defaultCorner: true };
+    }
+    return {
+      x: Number.isFinite(saved?.x) ? clamp(saved.x, 0, 100) : 50,
+      y: Number.isFinite(saved?.y) ? clamp(saved.y, 0, 100) : 50
+    };
   }
 
   // World geometry of the visible map: every tile's centre, size and rotated half extents in map
@@ -360,7 +376,7 @@
     return tileLocalToWorld(box, saved || { x: fallback[0], y: fallback[1] });
   }
 
-  function renderMarkerLayer(geometry, state, data, options) {
+  function renderMarkerLayer(geometry, data, options, now) {
     const current = geometry.current;
     const shown = new Set(geometry.shown.map(item => item.id));
     const interactive = options.interactive !== false;
@@ -387,45 +403,229 @@
       const point = markerWorldPosition(geometry, marker, kind, index);
       if (!point) return "";
       const { left, top } = toStage(point);
-      const style = `left:${left}%;top:${top}%;--marker-size:${size}%`;
+      const arrival = kind === "path"
+        ? Math.max(mapMotion.arrivals.get(marker.from) ?? -Infinity, mapMotion.arrivals.get(marker.to) ?? -Infinity)
+        : mapMotion.arrivals.get(marker.tileId) ?? -Infinity;
+      const emerging = Number.isFinite(arrival) ? " emerging-from-fog" : "";
+      const delay = emerging ? `;--arrival-delay:${arrival - now}ms` : "";
+      const style = `left:${left}%;top:${top}%;--marker-size:${size}%${delay}`;
       const attrs = interactive
         ? `draggable="false" data-map-marker="${esc(marker.id)}" data-marker-kind="${kind}" data-marker-type="${esc(marker.type)}" title="${esc(label)}（可拖动，拖回右侧标记栏即删除）"`
         : `aria-hidden="true" data-display-marker-kind="${kind}"`;
       const bound = kind === "path" && marker.to ? " on-passage" : "";
       if (kind === "tile" && marker.type === "custom") {
-        return `<span class="map-marker-token custom-marker-token" style="${style}" ${attrs}>${esc(label)}</span>`;
+        return `<span class="map-marker-token custom-marker-token${emerging}" style="${style}" ${attrs}>${esc(label)}</span>`;
       }
       const source = markerSource(marker.type, data);
       return source
-        ? `<img class="map-marker-token${bound}" src="${esc(asset(source, options.assetBase))}" alt="${esc(label)}" style="${style}" ${attrs}>`
+        ? `<img class="map-marker-token${bound}${emerging}" src="${esc(asset(source, options.assetBase))}" alt="${esc(label)}" style="${style}" ${attrs}>`
         : "";
     }).join("");
     return `<div class="map-marker-layer${interactive ? "" : " read-only"}">${tokens}</div>`;
+  }
+
+  const mapMotion = {
+    kingdom: null, showAll: false, placed: new Set(), hidden: new Set(),
+    arrivals: new Map(), reveals: new Map(), partyTile: null, partyPoint: null, partyLinks: [], travel: null
+  };
+  const TILE_ARRIVAL_MS = 2300;
+  const TILE_REVEAL_MS = 2400;
+  const TILE_FLIP_MS = TILE_REVEAL_MS * .36; // map-flip-back finishes at 36%.
+  const PARTY_TRAVEL_MS = 700;
+  // Hold the token on the tile it came from until the destination fog has mostly
+  // cleared, so the party walks in on a readable tile instead of mid-dissolve.
+  const PARTY_AFTER_FOG = .5;
+  let partyView = null;
+
+  function partyMotionRemaining() {
+    if (!partyView?.stage.isConnected || !window.matchMedia("(prefers-reduced-motion: no-preference)").matches) return 0;
+    const travelEnd = (mapMotion.travel?.started ?? -Infinity) + PARTY_TRAVEL_MS;
+    const revealEnd = (mapMotion.reveals.get(mapMotion.partyTile) ?? -Infinity) + TILE_REVEAL_MS;
+    const neighbors = list(partyView.geometry.boxes.get(mapMotion.partyTile)?.item.neighbors);
+    const placementEnd = Math.max(...neighbors.map(id => (mapMotion.arrivals.get(id) ?? -Infinity) + TILE_ARRIVAL_MS));
+    return Math.max(0, Math.max(travelEnd, revealEnd, placementEnd) - Date.now());
+  }
+
+  function displayedPartyPoint() {
+    if (!partyView?.stage.isConnected || !partyView.token) return null;
+    const { stage, geometry, token, traveler } = partyView;
+    const travelerStyle = traveler?.isConnected ? getComputedStyle(traveler) : null;
+    const inTransit = travelerStyle?.visibility === "visible";
+    const marker = (inTransit ? traveler : token).getBoundingClientRect();
+    const map = stage.getBoundingClientRect();
+    if (!map.width || !map.height) return null;
+    return {
+      x: geometry.minX + (marker.left + marker.width / 2 - map.left) / map.width * geometry.worldWidth,
+      y: geometry.minY + (marker.top + marker.height / 2 - map.top) / map.height * geometry.worldHeight,
+      opacity: inTransit ? Number(travelerStyle.opacity) : 1
+    };
+  }
+
+  function updateMapMotion(kingdom, geometry, now) {
+    const { current, boxes } = geometry;
+    const placed = new Set(list(current.placed));
+    const hidden = new Set([...placed].filter(id => (current.tileState?.[id] || "hidden") === "hidden"));
+    const partyTile = current.current;
+    const box = current.showAll || placed.has(partyTile) ? boxes.get(partyTile) : null;
+    const partyPoint = box ? tileLocalToWorld(box, partyPosition(current, box)) : null;
+    const partyLinks = openTileLinks(box?.item, list(current.pathMarkers));
+    const newMap = mapMotion.kingdom !== kingdom || (partyView && !partyView.stage.isConnected);
+    const animateTiles = !newMap && !current.showAll && !mapMotion.showAll;
+
+    if (animateTiles) {
+      for (const id of mapMotion.hidden) {
+        if (placed.has(id) && !hidden.has(id)) mapMotion.reveals.set(id, now);
+      }
+      for (const [id, start] of mapMotion.reveals) {
+        if (!placed.has(id) || hidden.has(id) || now - start >= TILE_REVEAL_MS) mapMotion.reveals.delete(id);
+      }
+    } else {
+      mapMotion.arrivals.clear();
+      mapMotion.reveals.clear();
+    }
+    if (newMap) {
+      mapMotion.travel = null;
+    } else if (mapMotion.partyTile !== partyTile) {
+      const originVisible = current.showAll || placed.has(mapMotion.partyTile);
+      // Check the links at departure, before a tile reveal can add printed doors.
+      // A freshly revealed tile holds the token back until its fog has cleared;
+      // backtracking onto an already known tile has no reveal entry and moves at once.
+      const reveal = mapMotion.reveals.get(partyTile);
+      const fogWait = reveal === undefined ? 0 : Math.max(0, reveal + TILE_REVEAL_MS * PARTY_AFTER_FOG - now);
+      mapMotion.travel = partyPoint && mapMotion.partyPoint && originVisible
+        ? { from: displayedPartyPoint() || mapMotion.partyPoint, glide: mapMotion.partyLinks.includes(partyTile), started: now + fogWait }
+        : null;
+    }
+    if (animateTiles) {
+      const partyArrival = Math.max(now, (mapMotion.travel?.started ?? -Infinity) + PARTY_TRAVEL_MS);
+      const partyNeighbors = list(box?.item.neighbors);
+      for (const id of hidden) {
+        if (mapMotion.placed.has(id)) continue;
+        let start = partyNeighbors.includes(id) ? partyArrival : now;
+        for (const [source, reveal] of mapMotion.reveals) {
+          if (list(boxes.get(source)?.item.neighbors).includes(id)) start = Math.max(start, reveal + TILE_FLIP_MS);
+        }
+        mapMotion.arrivals.set(id, start);
+      }
+    }
+    for (const [id, start] of mapMotion.arrivals) {
+      if (!hidden.has(id) || now - start >= TILE_ARRIVAL_MS) mapMotion.arrivals.delete(id);
+    }
+    if (!partyPoint || (mapMotion.travel && now - mapMotion.travel.started >= PARTY_TRAVEL_MS)) mapMotion.travel = null;
+    Object.assign(mapMotion, { kingdom, showAll: Boolean(current.showAll), placed, hidden, partyTile, partyPoint, partyLinks });
+  }
+
+  function tileEdgeCoverage(box, neighbors) {
+    const left = box.x - box.halfWidth, right = box.x + box.halfWidth;
+    const top = box.y - box.halfHeight, bottom = box.y + box.halfHeight;
+    const width = right - left, height = bottom - top;
+    const coverage = { left: [], right: [], top: [], bottom: [] };
+    const edgeTolerance = 1e-5;
+    for (const other of neighbors) {
+      if (other === box) continue;
+      const west = other.x - other.halfWidth, east = other.x + other.halfWidth;
+      const north = other.y - other.halfHeight, south = other.y + other.halfHeight;
+      const x = [Math.max(0, (west - left) / width), Math.min(1, (east - left) / width)];
+      const y = [Math.max(0, (north - top) / height), Math.min(1, (south - top) / height)];
+      if (y[0] < y[1]) {
+        if (Math.abs(left - east) <= edgeTolerance) coverage.left.push(y);
+        if (Math.abs(right - west) <= edgeTolerance) coverage.right.push(y);
+      }
+      if (x[0] < x[1]) {
+        if (Math.abs(top - south) <= edgeTolerance) coverage.top.push(x);
+        if (Math.abs(bottom - north) <= edgeTolerance) coverage.bottom.push(x);
+      }
+    }
+    return coverage;
+  }
+
+  function tileEdgeFogMask(box, neighbors) {
+    if (box.angle % 90 !== 0) return "";
+    const masks = [];
+    const sides = ["top", "right", "bottom", "left"];
+    const turns = (box.angle / 90 + 4) % 4;
+    const coverage = tileEdgeCoverage(box, neighbors);
+    const depth = "var(--edge-fog-depth)";
+    for (const [index, worldSide] of sides.entries()) {
+      const localIndex = (index - turns + 4) % 4;
+      const side = sides[localIndex];
+      const vertical = side === "left" || side === "right";
+      const reverse = turns === 2 || turns === (index % 2 === 0 ? 1 : 3);
+      const ranges = reverse ? coverage[worldSide].map(([a, b]) => [1 - b, 1 - a]) : coverage[worldSide];
+      const addCap = (point, before) => {
+        const cap = "var(--edge-fog-cap)";
+        const anchor = `${point * 100}${vertical ? "cqh" : "cqw"}`;
+        const position = before ? `calc(${anchor} - ${cap})` : anchor;
+        const corner = vertical ? `${side} ${before ? "bottom" : "top"}` : `${before ? "right" : "left"} ${side}`;
+        const placement = vertical ? `${side} -3px top ${position} / ${depth} ${cap}` : `left ${position} ${side} -3px / ${cap} ${depth}`;
+        masks.push(`radial-gradient(ellipse 100% 100% at ${corner}, var(--edge-fog-cap-stops)) ${placement} no-repeat content-box no-clip`);
+      };
+      let cursor = 0;
+      ranges.sort(([a], [b]) => a - b).push([1, 1]);
+      for (const [start, end] of ranges) {
+        const gap = start - cursor;
+        if (gap > 1e-5) {
+          // Mask-position percentages refer to the space left over after sizing the mask.
+          const offset = cursor === 0 ? "0%" : `${cursor / (1 - gap) * 100}%`;
+          const length = `${gap * 100}%`;
+          const placement = vertical ? `${side} -3px top ${offset} / ${depth} ${length}` : `left ${offset} ${side} -3px / ${length} ${depth}`;
+          masks.push(`linear-gradient(to ${sides[(localIndex + 2) % 4]}, var(--edge-fog-stops)) ${placement} no-repeat content-box no-clip`);
+          if (cursor > 1e-5) addCap(cursor, true);
+          if (start < 1 - 1e-5) addCap(start, false);
+        }
+        cursor = Math.max(cursor, end);
+      }
+    }
+    return masks.join(",");
   }
 
   function renderMapStage(options = {}) {
     const state = record(options.state);
     const data = record(options.data);
     const geometry = stageGeometry(state, data);
-    if (!geometry) return "";
+    if (!geometry) {
+      mapMotion.kingdom = null;
+      return "";
+    }
     const { current, shown, minX, minY, worldWidth, worldHeight } = geometry;
+    const now = Date.now();
+    updateMapMotion(state.kingdom, geometry, now);
+    const partyDelay = mapMotion.travel ? `;--party-delay:${mapMotion.travel.started - now}ms` : "";
     const legal = new Set(Array.isArray(options.legalTileIds) ? options.legalTileIds : legalTileIds(state, data));
     const randomHighlights = new Set(list(current.randomTileHighlights));
     const interactive = options.interactive !== false;
+    const visibleBoxes = shown.map(item => geometry.boxes.get(item.id));
+    const fogClouds = [];
     const cards = shown.map(item => {
       const box = geometry.boxes.get(item.id);
+      const arrival = mapMotion.arrivals.get(item.id);
+      const arrivalDelay = arrival === undefined ? "" : `;--arrival-delay:${arrival - now}ms`;
+      if (arrivalDelay) {
+        const left = (box.x - box.halfWidth - minX) / worldWidth * 100;
+        const top = (box.y - box.halfHeight - minY) / worldHeight * 100;
+        const width = 2 * box.halfWidth / worldWidth * 100;
+        const height = 2 * box.halfHeight / worldHeight * 100;
+        fogClouds.push(`<div class="map-arrival-fog" style="left:${left}%;top:${top}%;width:${width}%;height:${height}%${arrivalDelay}"></div>`);
+      }
       const status = current.tileState?.[item.id] || "hidden";
       const face = current.showAll || status !== "hidden";
+      const selected = current.selected === item.id;
+      const reveal = mapMotion.reveals.get(item.id);
+      const revealDelay = reveal === undefined ? "" : `;--reveal-delay:${reveal - now}ms`;
       const source = (face ? alignedTile(item)?.face : null) || item.image?.[face ? "face" : "back"] || item.image?.face;
+      const fogSize = `width:${2 * box.halfWidth / box.width * 100}%;height:${2 * box.halfHeight / box.height * 100}%`;
+      // Selection must not change the artwork itself: the outline is the only marker,
+      // so the selected tile keeps the same edge fog as every other tile.
+      const edgeFogMask = tileEdgeFogMask(box, visibleBoxes);
+      const imageClass = edgeFogMask ? "map-tile-image map-edge-fade" : "map-tile-image";
+      const imageMask = edgeFogMask ? ` style="--edge-fog-mask:${edgeFogMask}"` : "";
       const monsters = list(current.monsters).filter(marker => marker.tileId === item.id);
       const classes = [
-        "map-tile", current.selected === item.id ? "selected" : "", current.current === item.id ? "current" : "",
+        "map-tile", selected ? "selected" : "", current.current === item.id ? "current" : "",
         legal.has(item.id) && !current.showAll ? "legal" : "", status === "revealed" ? "revealed-unexplored" : "",
-        randomHighlights.has(item.id) ? "random-highlight" : "", interactive ? "" : "read-only"
+        randomHighlights.has(item.id) ? "random-highlight" : "", arrivalDelay ? "emerging-from-fog" : "", interactive ? "" : "read-only"
       ].filter(Boolean).join(" ");
       const angle = box.angle;
-      const normalizedAngle = ((angle % 360) + 360) % 360;
-      const badgeCorner = normalizedAngle === 90 ? "left:0;top:0" : normalizedAngle === 180 ? "left:0;top:100%" : normalizedAngle === 270 ? "left:100%;top:100%" : "left:100%;top:0";
       const mapTokens = monsters.map(marker => ({
         record: marker, kind: "monster", source: data.tokens?.monsters?.[marker.monsterId] || "",
         label: monsterLabel(list(data.monsters).find(monster => monster.id === marker.monsterId)) || marker.monsterId
@@ -435,17 +635,124 @@
         ? `type="button" data-tile="${esc(item.id)}" title="${esc(tileLabel(item))}"`
         : `role="img" aria-label="${esc(tileLabel(item))}"`;
       return `<${tag} class="${classes}" ${attributes} data-map-tile-id="${esc(item.id)}" data-angle="${angle}"
-        style="left:${(box.x - box.width / 2 - minX) / worldWidth * 100}%;top:${(box.y - box.height / 2 - minY) / worldHeight * 100}%;width:${box.width / worldWidth * 100}%;height:${box.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg">
-        <img class="map-tile-image" src="${esc(asset(source, options.assetBase))}" alt="${esc(tileLabel(item))}" draggable="false">
-        ${status === "revealed" ? `<span class="map-tile-status-anchor" style="${badgeCorner}"><span class="map-tile-status">未探索</span></span>` : ""}
+        style="left:${(box.x - box.width / 2 - minX) / worldWidth * 100}%;top:${(box.y - box.height / 2 - minY) / worldHeight * 100}%;width:${box.width / worldWidth * 100}%;height:${box.height / worldHeight * 100}%;transform:rotate(${angle}deg);--counter-rotation:${-angle}deg${arrivalDelay}${revealDelay}">
+        <img class="${imageClass}" src="${esc(asset(source, options.assetBase))}" alt="${esc(tileLabel(item))}" draggable="false"${imageMask}>
+        ${revealDelay ? `<span class="map-flip-back" aria-hidden="true"><img class="${imageClass}" src="${esc(asset(item.image?.back || item.image?.face, options.assetBase))}" alt="" draggable="false"${imageMask}></span>
+          <span class="map-arrival-fog map-reveal-fog" aria-hidden="true" style="${fogSize}"></span>` : ""}
         ${current.current === item.id ? partyMarker(item.id, state, current, options, box) : ""}
         ${mapTokens.map((entry, index) => mapToken(entry.source, entry.label, entry.record, entry.kind, item.id, index, options.assetBase, interactive, box)).join("")}
       </${tag}>`;
     }).join("");
-    return `<div class="map-stage" style="aspect-ratio:${worldWidth}/${worldHeight}">${cards}${renderMarkerLayer(geometry, state, data, options)}</div>`;
+    const fogLayer = fogClouds.length ? `<div class="map-arrival-fog-layer" aria-hidden="true">${fogClouds.join("")}</div>` : "";
+    return `<div class="map-stage" style="aspect-ratio:${worldWidth}/${worldHeight};--arrival-duration:${TILE_ARRIVAL_MS}ms;--reveal-duration:${TILE_REVEAL_MS}ms;--party-duration:${PARTY_TRAVEL_MS}ms${partyDelay}">${cards}${fogLayer}${renderMarkerLayer(geometry, data, options, now)}</div>`;
   }
 
   let activeMapStage = null;
+  let mapFogTexture;
+
+  async function bakeMapFogTexture(source) {
+    try {
+      const image = new Image();
+      image.src = source;
+      await image.decode();
+      await new Promise(resolve => {
+        if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(resolve, { timeout: 1500 });
+        else window.setTimeout(resolve, 100);
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = 3600;
+      canvas.height = 2400;
+      const context = canvas.getContext("2d");
+      if (!context) return "";
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/webp", .95));
+      canvas.width = 0;
+      if (blob?.type !== "image/webp") return "";
+
+      const url = URL.createObjectURL(blob);
+      try {
+        const texture = new Image();
+        texture.src = url;
+        await texture.decode();
+        return `url("${url}")`;
+      } catch {
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      // Keep the CSS background if this browser cannot bake or display WebP.
+    }
+    return "";
+  }
+
+  function applyMapFogTexture(viewport) {
+    if (!mapFogTexture) {
+      const background = getComputedStyle(viewport).backgroundImage;
+      const source = /^url\("([^"]*\/fog-complex\.svg(?:\?[^"]*)?)"\)$/.exec(background)?.[1];
+      if (!source) return;
+      // Cache the conversion, including a failed attempt, for this page.
+      mapFogTexture = bakeMapFogTexture(source);
+    }
+    mapFogTexture.then(background => {
+      if (background && viewport.isConnected) viewport.style.backgroundImage = background;
+    });
+  }
+
+  function bindPartyTravel(stage, geometry) {
+    const token = stage.querySelector(".party-location-token");
+    partyView = { stage, geometry, token };
+    const travel = mapMotion.travel;
+    if (!travel || !token || !window.matchMedia("(prefers-reduced-motion: no-preference)").matches) return;
+    const elapsed = Date.now() - travel.started;
+    if (elapsed >= PARTY_TRAVEL_MS) return;
+
+    const { minX, minY, worldWidth, worldHeight, boxes } = geometry;
+    const box = boxes.get(mapMotion.partyTile);
+    const layer = document.createElement("div");
+    layer.className = "map-party-travel-layer";
+    layer.setAttribute("aria-hidden", "true");
+    const traveler = document.createElement("div");
+    traveler.className = "map-party-traveler";
+    traveler.classList.toggle("relocating", !travel.glide);
+    traveler.style.setProperty("--party-start-opacity", travel.from.opacity ?? 1);
+    // Match the destination tile's sizing container while the token crosses tile boundaries.
+    traveler.style.width = `${box.width / worldWidth * 100}%`;
+    traveler.style.height = `${box.height / worldHeight * 100}%`;
+    for (const [key, point] of [["from", travel.from], ["to", mapMotion.partyPoint]]) {
+      traveler.style.setProperty(`--party-${key}-x`, `${(point.x - minX) / worldWidth * 100}%`);
+      traveler.style.setProperty(`--party-${key}-y`, `${(point.y - minY) / worldHeight * 100}%`);
+    }
+    const clone = token.cloneNode(true);
+    clone.removeAttribute("data-map-token");
+    clone.style.left = "50%";
+    clone.style.top = "50%";
+    traveler.append(clone);
+    layer.append(traveler);
+    stage.append(layer);
+    token.classList.add("party-in-transit");
+    partyView.traveler = traveler;
+    traveler.addEventListener("animationend", () => {
+      token.classList.remove("party-in-transit");
+      layer.remove();
+    }, { once: true });
+  }
+
+  function alignMapFog(viewport, stage, patches) {
+    const background = getComputedStyle(viewport);
+    const frame = viewport.getBoundingClientRect();
+    // The scrollable fog starts at the viewport's padding edge. Use that same
+    // origin for each patch so it joins the surrounding texture.
+    const originX = frame.left + viewport.clientLeft - viewport.scrollLeft;
+    const originY = frame.top + viewport.clientTop - viewport.scrollTop;
+    const bounds = Array.from(patches, patch => patch.getBoundingClientRect());
+    stage.style.setProperty("--fog-image", background.backgroundImage);
+    stage.style.setProperty("--fog-color", background.backgroundColor);
+    stage.style.setProperty("--fog-size", background.backgroundSize);
+    patches.forEach((patch, index) => {
+      patch.style.setProperty("--fog-x", `${originX - bounds[index].left}px`);
+      patch.style.setProperty("--fog-y", `${originY - bounds[index].top}px`);
+    });
+  }
 
   // Separately clipped images can expose a subpixel fringe at their shared
   // edge. Paint a narrow copy of the edge artwork underneath that fringe;
@@ -453,7 +760,13 @@
   function bindMapStage(stage, geometry) {
     activeMapStage?.dispose();
     activeMapStage = null;
+    partyView?.traveler?.parentElement?.remove();
+    partyView?.token?.classList.remove("party-in-transit");
+    partyView = null;
     if (!stage || !geometry) return;
+    const viewport = stage.closest(".map-board, .map-viewport");
+    if (viewport) applyMapFogTexture(viewport);
+    bindPartyTravel(stage, geometry);
     const nodes = [...stage.querySelectorAll("[data-map-tile-id]")].map(node => ({
       node, box: geometry.boxes.get(node.dataset.mapTileId)
     })).filter(item => item.box);
@@ -466,20 +779,29 @@
       const owner = byId.get(seam.a), other = byId.get(seam.b);
       const strip = document.createElement("div"), art = document.createElement("div");
       strip.style.cssText = "position:absolute;overflow:hidden";
-      art.style.cssText = "position:absolute;left:0;top:0;transform-origin:0 0";
+      const arrival = Math.max(mapMotion.arrivals.get(seam.a) ?? -Infinity, mapMotion.arrivals.get(seam.b) ?? -Infinity);
+      if (Number.isFinite(arrival)) {
+        strip.className = "map-seam-emerging";
+        strip.style.setProperty("--arrival-delay", `${arrival - Date.now()}ms`);
+      }
+      art.style.cssText = "position:absolute;left:0;top:0;transform-origin:0 0;container-type:size";
       const image = owner.node.querySelector(".map-tile-image").cloneNode(false);
-      image.className = "map-seam-image";
+      image.classList.replace("map-tile-image", "map-seam-image");
       image.alt = "";
-      image.style.cssText = "display:block;width:100%;height:100%;max-width:none";
+      Object.assign(image.style, { display: "block", width: "100%", height: "100%", maxWidth: "none" });
       art.append(image);
       strip.append(art);
       underlay.append(strip);
       return { ...seam, owner, other, strip, art };
     });
-    if (!seams.length) return;
-    stage.prepend(underlay);
+    const fogPatches = stage.querySelectorAll(".map-arrival-fog");
+    const fogViewport = fogPatches.length && viewport;
+    if (!seams.length && !fogViewport) return;
+    if (seams.length) stage.prepend(underlay);
     const update = () => {
       if (!stage.isConnected) return;
+      if (fogViewport) alignMapFog(fogViewport, stage, fogPatches);
+      if (!seams.length) return;
       const ratio = window.devicePixelRatio || 1;
       const rect = stage.getBoundingClientRect();
       if (!(rect.width > 0 && rect.height > 0)) return;
@@ -522,10 +844,16 @@
     };
     const observer = new ResizeObserver(update);
     observer.observe(stage);
+    const fogZoomObserver = fogViewport ? new MutationObserver(() => alignMapFog(fogViewport, stage, fogPatches)) : null;
+    if (fogViewport) {
+      observer.observe(fogViewport);
+      fogZoomObserver.observe(fogViewport, { attributes: true, attributeFilter: ["style"] });
+    }
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
     activeMapStage = { dispose() {
       observer.disconnect();
+      fogZoomObserver?.disconnect();
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
       underlay.remove();
@@ -708,7 +1036,7 @@
   }
 
   window.KFMapView = Object.freeze({
-    CLUES, PASSAGE_MARKER_TYPES, MARKER_TOKEN_UNITS, legalTileIds, renderMapStage, bindMapStage, renderKingdomBoard, renderExplorationCard,
+    CLUES, PASSAGE_MARKER_TYPES, MARKER_TOKEN_UNITS, legalTileIds, renderMapStage, bindMapStage, partyMotionRemaining, renderKingdomBoard, renderExplorationCard,
     renderDistrictExplorationCards, renderClueTracking, renderDelveTracks, tileLabel,
     stageGeometry, tileGeometry, tileAtWorld, tileWarpPoint, tileLocalToWorld, worldToTileLocal, passagePoint, mapPassages, nearestPassage
   });

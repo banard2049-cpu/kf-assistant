@@ -15,6 +15,11 @@
   const MAP_ZOOM_MIN = 1;
   const MAP_ZOOM_MAX = 6;
   const MAP_FOCUS_PADDING = 28;
+  // Party token sizing: as many map units as it spans, the smallest it may get, and the
+  // share of --map-token-size it maxes out at (the rest of the map uses 1).
+  const PARTY_TOKEN_UNITS = 2;
+  const PARTY_TOKEN_MIN_PX = 16;
+  const PARTY_TOKEN_MAX_RATIO = .84;
   const CUSTOM_MARKER_MAX_LENGTH = 12;
   const TRACK_NOTE_MAX_LENGTH = 24;
   const STEPS = ["旅行", "王国板块", "探索", "故事"];
@@ -624,11 +629,17 @@
   let activeTool = STEP_TOOL[state.step] || (state.step === 3 ? "exploration" : "tile");
   let saveTimer = 0;
   let encounterNavigationTimer = 0;
+  let backtrackTimer = 0;
   let pendingEncounterAutoStart = false;
   let kingdomPanelExpanded = true;
   let kingdomPanelDialogOpen = false;
   let kingdomCardSizeObserver = null;
   let mapFocusFrame = 0;
+  // The board is a scroll container, so a smooth camera move means tweening the zoom and the
+  // scroll offsets together instead of snapping them to the freshly computed view.
+  let mapViewFrame = 0;
+  let lastMapGeometry = null;
+  const MAP_VIEW_TWEEN_MS = 340;
   let focusStoryReminder = state.step === 3;
   // Marker drops re-render the map; keep the player's view instead of re-centring on the party.
   let keepMapViewOnce = false;
@@ -900,7 +911,8 @@
       toast("遭遇战待处理：可使用 B 面盗贼，或选择继续进入遭遇");
       return;
     }
-    encounterNavigationTimer = setTimeout(openPendingEncounter, 180);
+    const motionRemaining = window.KFMapView.partyMotionRemaining?.() || 0;
+    encounterNavigationTimer = setTimeout(openPendingEncounter, Math.max(180, motionRemaining));
   }
 
   async function openKingdomWheelMonster(monsterId, level, districtId, destination, conflictLocation = "") {
@@ -1266,6 +1278,28 @@
     ).map(item => item.id);
   }
 
+  // Deep fog is the only legal way into a tile that no open path reaches.
+  // fogMoveTargetIntensity answers "is this tile fog-reachable at all" (button label),
+  // fogMoveIntensity answers "can the fog session start right now" (button action).
+  function fogMoveTargetIntensity(id) {
+    const item = tile(id);
+    if (!item || !FOG_RULES.hasFogIntensity(item)) return 0;
+    return eligibleFogTargets().includes(id) ? Number(item.rules.back.fogIntensity) || 0 : 0;
+  }
+
+  function fogMoveIntensity(id) {
+    const current = mapState();
+    const item = tile(id);
+    if (!item) return 0;
+    const busy = Boolean(current.tileResolution || current.pendingEncounter || current.fog.active
+      || state.mercenaries.pendingAction);
+    return FOG_RULES.travelIntensity(item, {
+      eligible: eligibleFogTargets().includes(id),
+      step: state.step,
+      busy
+    });
+  }
+
   function checkLimits() {
     const current = mapState();
     state.trackers = normalizeTrackers(state.trackers);
@@ -1408,6 +1442,132 @@
     else if (markerRect.bottom > safeBottom) board.scrollTop += markerRect.bottom - safeBottom;
   }
 
+  function updateZoomControls() {
+    const percent = Math.round(mapState().zoom * 100);
+    $$(".zoom-badge").forEach(badge => badge.replaceChildren(`${percent}%`));
+    $$('[data-zoom-slider]').forEach(slider => { slider.value = String(percent); });
+  }
+
+  // The party token has to stay readable without swallowing a small tile: size it from
+  // the map scale (one size for every tile) and let it shrink when the map is small.
+  function applyPartyTokenSize(stage = $(".map-stage"), geometry = lastMapGeometry) {
+    if (!stage || !geometry || !(geometry.worldWidth > 0)) return;
+    const stageRect = stage.getBoundingClientRect();
+    if (!(stageRect.width > 0)) return;
+    const base = parseFloat(getComputedStyle(stage).getPropertyValue("--map-token-size")) || 56;
+    const maxSize = base * PARTY_TOKEN_MAX_RATIO;
+    const scale = stageRect.width / geometry.worldWidth;
+    const size = clamp(scale * PARTY_TOKEN_UNITS, PARTY_TOKEN_MIN_PX, maxSize);
+    stage.style.setProperty("--party-token-size", `${size.toFixed(1)}px`);
+  }
+
+  function mapViewMotionAllowed() {
+    return typeof window.matchMedia !== "function"
+      || window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
+  }
+
+  function setMapViewZoom(board, canvas, zoom) {
+    if (canvas) canvas.style.width = `${zoom * 100}%`;
+    board?.style.setProperty("--map-fog-zoom", zoom);
+    // The token is sized from the rendered scale, so it has to follow the zoom too.
+    applyPartyTokenSize(canvas?.querySelector(".map-stage"));
+  }
+
+  function stopMapViewTween() {
+    if (!mapViewFrame) return;
+    cancelAnimationFrame(mapViewFrame);
+    mapViewFrame = 0;
+  }
+
+  // Glide the board camera from where it is now to `zoom`/`scrollLeft`/`scrollTop` instead of
+  // teleporting there. The stored camera follows the live frame so a rerender that lands in the
+  // middle of a tween (marker drops, panel toggles) resumes from the frame on screen.
+  function tweenMapView({ zoom, scrollLeft, scrollTop }) {
+    const current = mapState();
+    const board = $(".map-board");
+    const canvas = board?.querySelector(".map-canvas");
+    if (!board || !canvas) return;
+    stopMapViewTween();
+    const start = { zoom: current.zoom, left: board.scrollLeft, top: board.scrollTop };
+    const end = {
+      zoom: clamp(Number(zoom) || start.zoom, MAP_ZOOM_MIN, MAP_ZOOM_MAX),
+      left: Number(scrollLeft) || 0,
+      top: Number(scrollTop) || 0
+    };
+    const settle = () => {
+      setMapViewZoom(board, canvas, end.zoom);
+      board.scrollLeft = end.left;
+      board.scrollTop = end.top;
+      current.zoom = end.zoom;
+      current.scrollLeft = board.scrollLeft;
+      current.scrollTop = board.scrollTop;
+      updateZoomControls();
+      save();
+    };
+    const distance = Math.hypot(end.left - start.left, end.top - start.top);
+    const zoomMoves = Math.abs(end.zoom - start.zoom) >= .002;
+    if (!mapViewMotionAllowed() || (distance < 1 && !zoomMoves)) {
+      settle();
+      return;
+    }
+    // Longer pans take a little longer, but never so long that the host outruns the map.
+    const duration = clamp(240 + distance * .22, MAP_VIEW_TWEEN_MS, 520);
+    const began = performance.now();
+    const tick = now => {
+      const progress = Math.min(1, (now - began) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const zoomNow = start.zoom + (end.zoom - start.zoom) * eased;
+      // Most moves only pan; skip the style write (and the layout it costs) when the zoom holds.
+      if (zoomMoves) setMapViewZoom(board, canvas, zoomNow);
+      board.scrollLeft = start.left + (end.left - start.left) * eased;
+      board.scrollTop = start.top + (end.top - start.top) * eased;
+      current.zoom = zoomNow;
+      current.scrollLeft = board.scrollLeft;
+      current.scrollTop = board.scrollTop;
+      if (progress < 1) {
+        mapViewFrame = requestAnimationFrame(tick);
+        return;
+      }
+      mapViewFrame = 0;
+      settle();
+    };
+    mapViewFrame = requestAnimationFrame(tick);
+  }
+
+  // Every render rebuilds the stage, and a newly placed tile changes the stage's world extents,
+  // so the same scroll offset would land on different map content and the view would jump.
+  // Remember the world point under the middle of the board before the rebuild...
+  function captureMapView() {
+    const board = $(".map-board");
+    const stage = board?.querySelector(".map-stage");
+    const geometry = lastMapGeometry;
+    if (!board || !stage || !geometry || !board.clientWidth || !board.clientHeight) return null;
+    const stageRect = stage.getBoundingClientRect();
+    if (!(stageRect.width > 0 && stageRect.height > 0)) return null;
+    const boardRect = board.getBoundingClientRect();
+    return {
+      x: geometry.minX + (boardRect.left + board.clientLeft + board.clientWidth / 2 - stageRect.left)
+        / stageRect.width * geometry.worldWidth,
+      y: geometry.minY + (boardRect.top + board.clientTop + board.clientHeight / 2 - stageRect.top)
+        / stageRect.height * geometry.worldHeight
+    };
+  }
+
+  // ...and put that same world point back under the middle afterwards, so only the camera tween
+  // moves the view and the rebuild itself stays invisible.
+  function restoreMapViewAnchor(previous, board) {
+    const stage = board?.querySelector(".map-stage");
+    const geometry = lastMapGeometry;
+    if (!previous || !board || !stage || !geometry) return;
+    const stageRect = stage.getBoundingClientRect();
+    if (!(stageRect.width > 0 && stageRect.height > 0)) return;
+    const boardRect = board.getBoundingClientRect();
+    const centerX = boardRect.left + board.clientLeft + board.clientWidth / 2;
+    const centerY = boardRect.top + board.clientTop + board.clientHeight / 2;
+    board.scrollLeft += stageRect.left + (previous.x - geometry.minX) / geometry.worldWidth * stageRect.width - centerX;
+    board.scrollTop += stageRect.top + (previous.y - geometry.minY) / geometry.worldHeight * stageRect.height - centerY;
+  }
+
   function setMapZoom(nextZoom) {
     const current = mapState();
     const board = $(".map-board");
@@ -1431,13 +1591,11 @@
 
     current.autoFocus = false;
     current.zoom = clamp(Number(nextZoom) || MAP_ZOOM_MIN, MAP_ZOOM_MIN, MAP_ZOOM_MAX);
-    if (canvas) canvas.style.width = `${current.zoom * 100}%`;
-    board?.style.setProperty("--map-fog-zoom", current.zoom);
+    setMapViewZoom(board, canvas, current.zoom);
     keepPartyMarkerVisible(board, visiblePartyPoint);
     current.scrollLeft = board?.scrollLeft || 0;
     current.scrollTop = board?.scrollTop || 0;
-    $$(".zoom-badge").forEach(badge => badge.replaceChildren(`${Math.round(current.zoom * 100)}%`));
-    $$('[data-zoom-slider]').forEach(slider => { slider.value = String(Math.round(current.zoom * 100)); });
+    updateZoomControls();
     save();
   }
 
@@ -1446,61 +1604,57 @@
     const board = $(".map-board");
     const canvas = board?.querySelector(".map-canvas");
     const stage = canvas?.querySelector(".map-stage");
-    if (!board || !canvas || !stage || current.showAll) return;
+    if (!stage || !current.autoFocus || current.showAll || !board.clientWidth || !board.clientHeight) return;
 
-    const renderedTiles = [...stage.querySelectorAll("[data-tile]")];
-    const currentTile = renderedTiles.find(node => node.dataset.tile === current.current);
-    if (!currentTile || !board.clientWidth || !board.clientHeight) return;
-    const currentRect = currentTile.getBoundingClientRect();
-    const currentCenter = {
-      x: (currentRect.left + currentRect.right) / 2,
-      y: (currentRect.top + currentRect.bottom) / 2
-    };
-    const nearbyRadius = Math.max(currentRect.width, currentRect.height) * 2.75;
-    const focusTiles = renderedTiles.filter(node => {
-      const rect = node.getBoundingClientRect();
-      const distance = Math.hypot(
-        (rect.left + rect.right) / 2 - currentCenter.x,
-        (rect.top + rect.bottom) / 2 - currentCenter.y
-      );
-      return node === currentTile || distance <= nearbyRadius;
-    });
+    const geometry = window.KFMapView.stageGeometry(state, DATA);
+    const currentTile = geometry?.boxes.get(current.current);
+    if (!currentTile || !geometry.shown.some(item => item.id === current.current)) return;
+    const nearbyRadius = Math.max(currentTile.halfWidth, currentTile.halfHeight) * 5.5;
+    const nearby = geometry.shown.map(item => geometry.boxes.get(item.id)).filter(box =>
+      Math.hypot(box.x - currentTile.x, box.y - currentTile.y) <= nearbyRadius
+    );
+    const focusWidth = Math.max(...nearby.map(box => box.x + box.halfWidth))
+      - Math.min(...nearby.map(box => box.x - box.halfWidth));
+    const focusHeight = Math.max(...nearby.map(box => box.y + box.halfHeight))
+      - Math.min(...nearby.map(box => box.y - box.halfHeight));
 
-    const stageRect = stage.getBoundingClientRect();
-    const tileRects = focusTiles.map(node => node.getBoundingClientRect());
-    const bounds = {
-      left: Math.min(...tileRects.map(rect => rect.left)),
-      right: Math.max(...tileRects.map(rect => rect.right)),
-      top: Math.min(...tileRects.map(rect => rect.top)),
-      bottom: Math.max(...tileRects.map(rect => rect.bottom))
-    };
-    const focusWidth = Math.max(1, bounds.right - bounds.left);
-    const focusHeight = Math.max(1, bounds.bottom - bounds.top);
-    const availableWidth = Math.max(1, board.clientWidth - MAP_FOCUS_PADDING * 2);
-    const availableHeight = Math.max(1, board.clientHeight - MAP_FOCUS_PADDING * 2);
+    // Fit against the viewport before scrollbars, using tile sizes in map units.
+    // Both inputs stay fixed when a previous zoom changes the stage size.
+    const viewportWidth = board.offsetWidth - 2 * board.clientLeft;
+    const viewportHeight = board.offsetHeight - 2 * board.clientTop;
+    const availableWidth = Math.max(1, viewportWidth - MAP_FOCUS_PADDING * 2);
+    const availableHeight = Math.max(1, viewportHeight - MAP_FOCUS_PADDING * 2);
     const scale = Math.min(availableWidth / focusWidth, availableHeight / focusHeight);
-    const desiredStageWidth = stageRect.width * scale;
-    current.zoom = clamp(desiredStageWidth / board.clientWidth, MAP_ZOOM_MIN, MAP_ZOOM_MAX);
-    canvas.style.width = `${current.zoom * 100}%`;
-    board.style.setProperty("--map-fog-zoom", current.zoom);
+    const start = { zoom: current.zoom, left: board.scrollLeft, top: board.scrollTop };
+    const targetZoom = clamp(geometry.worldWidth * scale / viewportWidth, MAP_ZOOM_MIN, MAP_ZOOM_MAX);
 
-    const focusedRects = focusTiles.map(node => node.getBoundingClientRect());
-    const focusedBounds = {
-      left: Math.min(...focusedRects.map(rect => rect.left)),
-      right: Math.max(...focusedRects.map(rect => rect.right)),
-      top: Math.min(...focusedRects.map(rect => rect.top)),
-      bottom: Math.max(...focusedRects.map(rect => rect.bottom))
-    };
-    const boardRect = board.getBoundingClientRect();
-    board.scrollLeft += (focusedBounds.left + focusedBounds.right) / 2
-      - (boardRect.left + boardRect.right) / 2;
-    board.scrollTop += (focusedBounds.top + focusedBounds.bottom) / 2
-      - (boardRect.top + boardRect.bottom) / 2;
-    current.scrollLeft = board.scrollLeft;
-    current.scrollTop = board.scrollTop;
-    $(".zoom-badge")?.replaceChildren(`${Math.round(current.zoom * 100)}%`);
-    $$('[data-zoom-slider]').forEach(slider => { slider.value = String(Math.round(current.zoom * 100)); });
-    save();
+    // Measure where the focused tiles land at the target zoom, then rewind to the view that is
+    // on screen: the tween needs both its destination and the place it starts from. Nothing is
+    // painted between the measurement and the rewind, so this stays invisible.
+    setMapViewZoom(board, canvas, targetZoom);
+    const nearbyIds = new Set(nearby.map(box => box.item.id));
+    const focusedRects = [...stage.querySelectorAll("[data-tile]")]
+      .filter(node => nearbyIds.has(node.dataset.tile))
+      .map(node => node.getBoundingClientRect());
+    if (focusedRects.length) {
+      const focusedBounds = {
+        left: Math.min(...focusedRects.map(rect => rect.left)),
+        right: Math.max(...focusedRects.map(rect => rect.right)),
+        top: Math.min(...focusedRects.map(rect => rect.top)),
+        bottom: Math.max(...focusedRects.map(rect => rect.bottom))
+      };
+      const boardRect = board.getBoundingClientRect();
+      board.scrollLeft += (focusedBounds.left + focusedBounds.right) / 2
+        - (boardRect.left + board.clientLeft + board.clientWidth / 2);
+      board.scrollTop += (focusedBounds.top + focusedBounds.bottom) / 2
+        - (boardRect.top + board.clientTop + board.clientHeight / 2);
+    }
+    const target = { zoom: targetZoom, scrollLeft: board.scrollLeft, scrollTop: board.scrollTop };
+    setMapViewZoom(board, canvas, start.zoom);
+    board.scrollLeft = start.left;
+    board.scrollTop = start.top;
+    if (!focusedRects.length) return;
+    tweenMapView(target);
   }
 
   function scheduleMapFocus() {
@@ -1623,6 +1777,69 @@
     if (state.step !== 0) return "请先完成当前轮次，再开始新的旅行";
     if (!legalUnexplored().includes(id)) return "请选择路径相连且未被阻挡的未探索板块";
     return "";
+  }
+
+  // Single entry point for "travel through deep fog": the travel panel and the selected-tile
+  // panel both go through here, so a fog move always starts the same session.
+  function beginFog(target, intensity) {
+    const current = mapState();
+    const item = tile(target);
+    if (!item) return toast("目标板块不存在");
+    if (current.fog.active) return toast("请先完成当前弥雾流程");
+    const value = Number(intensity);
+    if (!Number.isFinite(value) || value < 1) return toast("弥雾浓度至少为 1");
+    snapshot(`进入弥雾，目标 ${tileLabel(item)}`);
+    current.placed = [...new Set([...current.placed, target])];
+    current.tileState[target] ||= "hidden";
+    current.fog.deck = shuffle(current.fog.deck);
+    if (!current.fog.deck.length) {
+      current.failed = "进入弥雾时牌组为空";
+      save(true);
+      return false;
+    }
+    current.fog = {
+      ...current.fog,
+      active: true,
+      origin: current.current,
+      target,
+      intensity: value,
+      route: [],
+      used: [],
+      total: 0,
+      current: current.fog.deck.shift(),
+      hazardPending: false,
+      started: false,
+      correctedEver: false,
+      baneHalf: false,
+      baneFull: 0,
+      heading: 0,
+      peek: { source: "top", cards: [], destinations: [] }
+    };
+    changeThreat(1);
+    addLog(`进入弥雾：威胁 +1，目标 ${tileLabel(item)}，浓度 ${value}`);
+    save(true);
+    const sidebar = $(".sidebar-scroll");
+    if (sidebar) sidebar.scrollTop = 0;
+    return true;
+  }
+
+  function fogMoveToSelected() {
+    const current = mapState();
+    const id = current.selected;
+    const printed = fogMoveTargetIntensity(id);
+    if (!printed) return toast("该板块不是有效的弥雾目标");
+    const item = tile(id);
+    // The concentration is printed on the tile back but may be labeled wrongly, so it stays editable here.
+    let requested;
+    try {
+      requested = prompt(`弥雾移动至此：${tileLabel(item)}\n\n该板块无法沿通路抵达，只能穿越弥雾进入。\n进入弥雾将威胁 +1；出现时才结算该板块，撤回则返回${tileLabel(tile(current.current))}。\n\n确认或修改目标板块背面的弥雾浓度：`, String(printed));
+    } catch {
+      requested = String(printed);
+    }
+    if (requested === null) return;
+    const intensity = Number(requested);
+    if (!Number.isFinite(intensity) || intensity < 1) return toast("弥雾浓度至少为 1");
+    beginFog(id, intensity);
   }
 
   function beginTile(id, force = false) {
@@ -1754,19 +1971,46 @@
     checkLimits();
   }
 
+  // Keep the route in the save so a refresh can continue an interrupted playback.
+  function advanceBacktrack() {
+    const current = mapState();
+    const pending = current.backtrackPlayback;
+    if (!pending) return;
+    if (pending.index >= pending.route.length - 1) {
+      const route = pending.route;
+      current.backtrackPlayback = null;
+      enterStep(2);
+      addLog(`走回头路：${route.map(id => tileLabel(tile(id))).join(" → ")}；时间 +1，额外威胁 +${Math.max(0, route.length - 2)}`);
+    } else {
+      pending.index += 1;
+      setCurrentTile(current, pending.route[pending.index]);
+      current.travelRoute = pending.route.slice(0, pending.index + 1);
+      if (pending.index === 1) {
+        state.trackers.time += 1;
+        checkLimits();
+      } else changeThreat(1);
+    }
+    save(true);
+  }
+
+  function scheduleBacktrack() {
+    if (backtrackTimer || !mapState().backtrackPlayback) return;
+    const current = mapState();
+    backtrackTimer = setTimeout(() => {
+      backtrackTimer = 0;
+      if (mapState() === current && current.backtrackPlayback) advanceBacktrack();
+      else scheduleBacktrack();
+    }, 800);
+  }
+
   function resolveBacktrack(target) {
     const current = mapState();
-    if (state.step !== 0 || current.fog.active) return toast("请先完成当前步骤，再结算走回头路");
+    if (state.step !== 0 || current.fog.active || current.backtrackPlayback) return toast("请先完成当前步骤，再结算走回头路");
     const route = shortestPath(current.current, target, { exploredOnly: true });
     if (route.length < 2) return toast("所选目标没有合法的已探索路线");
     snapshot(`走回头路至 ${tileLabel(tile(target))}`);
-    current.travelRoute = route;
-    setCurrentTile(current, target);
-    state.trackers.time += 1;
-    changeThreat(Math.max(0, route.length - 2));
-    enterStep(2);
-    addLog(`走回头路：${route.map(id => tileLabel(tile(id))).join(" → ")}；时间 +1，额外威胁 +${Math.max(0, route.length - 2)}`);
-    save(true);
+    current.backtrackPlayback = { route, index: 0 };
+    advanceBacktrack();
   }
 
   function explorationTopBack() {
@@ -1927,6 +2171,7 @@
     );
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">TRAVEL</div><h3>旅行</h3></div><span class="badge gold">当前位置 ${esc(tileLabel(tile(current.current)))}</span></div>
+      ${current.backtrackPlayback ? `<p class="alert" role="status">走回头路播放中：${current.backtrackPlayback.index} / ${current.backtrackPlayback.route.length - 1} 格</p>` : ""}
       <strong>正常移动</strong>
       <p class="muted">绿色高亮板块可双击直接前往。</p>
       <div class="legend">${legal.map(id => `<button class="small" data-begin="${esc(id)}">${esc(tileLabel(tile(id)))}</button>`).join("") || '<span class="muted">没有可直接前往的未探索板块</span>'}</div>
@@ -2082,6 +2327,14 @@
     const back = selected.rules?.back || {};
     const region = rules().districts.find(item => item.id === selected.rules?.region);
     const travelBlockReason = tileTravelBlockReason(selected.id);
+    // Fog coverage decides the label; a blocked path into a fog target never offers the
+    // destructive forced settlement any more.
+    const fogReachable = travelBlockReason ? fogMoveTargetIntensity(selected.id) : 0;
+    const beginButton = fogReachable
+      ? `<button id="selectedBeginButton" title="沿通路无法抵达，但该板块可通过弥雾进入（浓度 ${fogReachable}）；点击开始弥雾流程，威胁 +1">弥雾移动至此</button>`
+      : travelBlockReason
+        ? `<button id="selectedBeginButton" class="danger" title="${esc(travelBlockReason)}；点击确认后强制移动并结算">强制板块结算</button>`
+        : '<button id="selectedBeginButton">开始板块结算</button>';
     return `<section class="panel">
       <div class="panel-header"><div><div class="eyebrow">SELECTED TILE</div><h3>${esc(tileLabel(selected))}</h3></div><span class="badge ${status === "explored" ? "green" : ""}">${status === "hidden" ? "面朝下未探索" : status === "revealed" ? "已揭示未探索" : "已探索"}</span></div>
       ${cardView(selected.image, current.showAll || status !== "hidden" ? "face" : "back", "tile-card")}
@@ -2093,7 +2346,7 @@
         ${region ? `<span class="badge gold">${esc(region.name)}</span>` : ""}
       </div>
       <div class="toolbar">
-        <button id="selectedBeginButton" ${travelBlockReason ? `class="danger" title="${esc(travelBlockReason)}；点击确认后强制移动并结算"` : ""}>${travelBlockReason ? "强制板块结算" : "开始板块结算"}</button>
+        ${beginButton}
         <button id="earlyRevealButton" class="secondary" ${status === "hidden" && !current.showAll ? "" : "disabled"}>提前揭示</button>
         <button id="forceMovePartyButton" class="secondary" ${selected.id === current.current ? "disabled" : ""}>强制移动队伍至此</button>
       </div>
@@ -2534,8 +2787,9 @@
         const cardRect = currentCard.getBoundingClientRect();
         shell.scrollLeft += (cardRect.left + cardRect.right - shellRect.left - shellRect.right) / 2;
       }
-      const sticky = $(".delve-tracks-sticky");
-      const topInset = sticky ? sticky.getBoundingClientRect().height + 12 : 12;
+      const tracks = $(".delve-tracks-sticky");
+      const sticky = tracks && getComputedStyle(tracks).position === "sticky" ? tracks : $(".history-panel");
+      const topInset = sticky ? sticky.offsetHeight + (parseFloat(getComputedStyle(sticky).top) || 0) + 12 : 12;
       const rect = shell.getBoundingClientRect();
       const available = Math.max(0, window.innerHeight - topInset - 12);
       const desiredTop = topInset + Math.max(0, (available - rect.height) / 2);
@@ -3022,6 +3276,10 @@
 
   function render() {
     const current = mapState();
+    // Read the camera before the rebuild: the tween has to stop on the frame that is actually on
+    // screen, and the anchor point can only be measured while the old stage is still mounted.
+    stopMapViewTween();
+    const previousView = captureMapView();
     const sidebarScrollTop = $(".sidebar-scroll")?.scrollTop || 0;
     if (!TOOL_TABS.some(([id]) => id === activeTool)) activeTool = STEP_TOOL[state.step] || "tile";
 
@@ -3031,6 +3289,10 @@
     const toolPanel = (id, content) => `<div id="tool-panel-${id}" class="tool-panel stack" role="tabpanel" aria-labelledby="tool-tab-${id}" data-tool-panel="${id}" tabindex="0" ${activeTool === id ? "" : "hidden"}>${content}</div>`;
 
     const stepAction = roundStepAction();
+    const outlineKey = [
+      ["selected", "当前选中"], ["legal", "可前往探索"],
+      ["revealed", "已揭示未探索"], ["random", "本次随机展示"], ["drop-target", "标记放置目标"]
+    ].map(([kind, label]) => `<li><span class="map-outline-swatch ${kind}" aria-hidden="true"></span>${label}</li>`).join("");
     $("#app").innerHTML = `<div class="host-layout">
       <div class="map-column stack">
         <div class="delve-tracks-sticky">${tracksPanel()}</div>
@@ -3040,6 +3302,14 @@
             <div class="map-title">
               <div class="eyebrow">KINGDOM MAP · ROUND ${state.round}</div>
               <h2>${esc(kingdomData().label)}</h2>
+              <details class="map-outline-legend-compact">
+                <summary>外框图例</summary>
+                <ul aria-label="板块外框图例">${outlineKey}</ul>
+              </details>
+            </div>
+            <div class="map-outline-legend">
+              <strong>外框</strong>
+              <ul aria-label="板块外框图例">${outlineKey}</ul>
             </div>
             <div class="toolbar map-actions" aria-label="地图视图控制">
               <button class="small secondary" data-zoom="-0.2">缩小</button>
@@ -3052,7 +3322,7 @@
             </div>
           </div>
           <div class="map-workspace has-marker-palette">
-            <section class="map-board" aria-label="王国地图" style="--map-fog-zoom:${current.zoom}"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
+            <section class="map-board" aria-label="王国地图" style="--map-fog-zoom:${current.zoom}"><div class="map-canvas" style="width:${current.zoom * 100}%">${mapSvg()}</div></section>
             ${markerPalette()}
           </div>
         </section>
@@ -3060,21 +3330,21 @@
         ${kingdomPanel()}
       </div>
 
-      <aside class="host-sidebar" aria-label="主持工具">
-        <div class="sidebar-scroll stack">
+      <div class="host-sidebar">
+        <section class="panel history-panel" aria-label="最近记录与流程控制">
+          <div class="history-actions">
+            <details class="history-details">
+              <summary><span><span class="eyebrow">SETTLEMENT HISTORY</span><strong>最近记录</strong></span><span class="tiny">${state.log.length} 条</span></summary>
+              <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(window.KFMonsterLabels?.text(item.text) ?? item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
+            </details>
+            <button id="nextStep" ${stepAction.disabled ? "disabled" : ""}>${stepAction.label}</button>
+          </div>
+        </section>
+
+        <aside class="sidebar-scroll stack" aria-label="主持工具">
           ${state.step === 3 ? `<div class="sidebar-priority">${storyReminderPanel()}</div>` : ""}
           ${current.tileResolution ? `<div class="sidebar-priority">${tileResolutionPanel()}</div>` : ""}
           ${current.fog.active ? `<div class="sidebar-priority">${fogPanel()}</div>` : ""}
-          <section class="panel history-panel">
-            <div class="history-actions">
-              <details class="history-details">
-                <summary><span><span class="eyebrow">SETTLEMENT HISTORY</span><strong>最近记录</strong></span><span class="tiny">${state.log.length} 条</span></summary>
-                <div class="list">${state.log.slice(0, 8).map(item => `<div class="list-row"><span>${esc(window.KFMonsterLabels?.text(item.text) ?? item.text)}</span><time class="tiny">${new Date(item.at).toLocaleTimeString()}</time></div>`).join("") || '<span class="muted">暂无结算记录</span>'}</div>
-              </details>
-              <button id="nextStep" ${stepAction.disabled ? "disabled" : ""}>${stepAction.label}</button>
-            </div>
-          </section>
-
           <section class="tool-deck" aria-label="主持工具组">
             <div class="tool-deck-heading">
               <div><div class="eyebrow">HOST CONSOLE</div><h3>主持工具</h3></div>
@@ -3088,11 +3358,14 @@
             ${toolPanel("mercenary", mercenaryPanel())}
             ${toolPanel("party", cluesAndStoryPanel())}
           </section>
-        </div>
-      </aside>
+        </aside>
+      </div>
     </div>`;
+    $("#app").inert = Boolean(current.backtrackPlayback);
+    lastMapGeometry = window.KFMapView?.stageGeometry?.(state, DATA) || null;
     bind();
     bindCardPreviews();
+    scheduleBacktrack();
     const sidebar = $(".sidebar-scroll");
     const focusStory = focusStoryReminder && state.step === 3;
     focusStoryReminder = false;
@@ -3102,6 +3375,8 @@
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
     board.scrollTop = current.scrollTop || 0;
+    restoreMapViewAnchor(previousView, board);
+    applyPartyTokenSize();
     scheduleMapFocus();
   }
 
@@ -3135,7 +3410,7 @@
         <div class="stack">
           ${current.fog.active && current.fog.started ? fogBoard(current.fog) : ""}
           <div class="map-workspace">
-            <section class="map-board" style="--map-fog-zoom:${current.zoom}"><div class="map-canvas" style="width:${Math.round(current.zoom * 100)}%">${mapSvg()}</div></section>
+            <section class="map-board" style="--map-fog-zoom:${current.zoom}"><div class="map-canvas" style="width:${current.zoom * 100}%">${mapSvg()}</div></section>
           </div>
           ${kingdomPanel()}
           ${tracksPanel()}
@@ -3165,6 +3440,7 @@
     const board = $(".map-board");
     board.scrollLeft = current.scrollLeft || 0;
     board.scrollTop = current.scrollTop || 0;
+    applyPartyTokenSize();
   }
 
   function readResolutionFields() {
@@ -3595,9 +3871,30 @@
     $$("[data-zoom]").forEach(button => button.addEventListener("click", () => {
       setMapZoom(current.zoom + Number(button.dataset.zoom));
     }));
-    $$('[data-zoom-slider]').forEach(slider => slider.addEventListener("input", () => {
-      setMapZoom(Number(slider.value) / 100);
-    }));
+    $$('[data-zoom-slider]').forEach(slider => {
+      slider.addEventListener("input", () => setMapZoom(slider.valueAsNumber / 100));
+
+      const zoomFromPointer = event => {
+        const { left, width } = slider.getBoundingClientRect();
+        // The thumb's width leaves an eight-pixel endpoint target on each side.
+        const inset = 8;
+        const fraction = clamp((event.clientX - left - inset) / (width - 2 * inset), 0, 1);
+        const percent = Math.round((MAP_ZOOM_MIN + fraction * (MAP_ZOOM_MAX - MAP_ZOOM_MIN)) * 100);
+        if (percent !== slider.valueAsNumber || mapState().autoFocus) setMapZoom(percent / 100);
+      };
+      slider.addEventListener("pointerdown", event => {
+        if (!event.isPrimary || event.button !== 0) return;
+        event.preventDefault();
+        slider.focus({ preventScroll: true });
+        slider.setPointerCapture(event.pointerId);
+        zoomFromPointer(event);
+      });
+      for (const type of ["pointermove", "pointerup"]) {
+        slider.addEventListener(type, event => {
+          if (slider.hasPointerCapture(event.pointerId)) zoomFromPointer(event);
+        });
+      }
+    });
     $("#fitMap")?.addEventListener("click", () => {
       current.autoFocus = !current.showAll;
       current.zoom = 1;
@@ -3613,7 +3910,16 @@
     });
     $("#closeKingdomPanel")?.addEventListener("click", closeKingdomPanelDialog);
     $("#kingdomPanelDialog")?.addEventListener("cancel", event => event.preventDefault());
-    $("#selectedBeginButton")?.addEventListener("click", () => beginTile(current.selected, Boolean(tileTravelBlockReason(current.selected))));
+    $("#selectedBeginButton")?.addEventListener("click", () => {
+      const id = current.selected;
+      const blockReason = tileTravelBlockReason(id);
+      if (blockReason && fogMoveTargetIntensity(id)) {
+        // Fog is the rules-legal way in; explain why it cannot start yet instead of forcing a settlement.
+        if (!fogMoveIntensity(id)) return toast(blockReason === "请选择路径相连且未被阻挡的未探索板块" ? "该板块当前无法通过弥雾进入" : blockReason);
+        return fogMoveToSelected();
+      }
+      beginTile(id, Boolean(blockReason));
+    });
     $("#forceMovePartyButton")?.addEventListener("click", () => forceMoveParty(current.selected));
     $("#showSpecificKingdomTile")?.addEventListener("click", () => {
       const id = $("#showKingdomTileSelect")?.value;
@@ -3706,37 +4012,7 @@
       }
       const intensity = Number(requestedIntensity);
       if (!Number.isFinite(intensity) || intensity < 1) return;
-      snapshot(`进入弥雾，目标 ${tileLabel(tile(target))}`);
-      current.placed = [...new Set([...current.placed, target])];
-      current.tileState[target] ||= "hidden";
-      current.fog.deck = shuffle(current.fog.deck);
-      if (!current.fog.deck.length) {
-        current.failed = "进入弥雾时牌组为空";
-        return save(true);
-      }
-      current.fog = {
-        ...current.fog,
-        active: true,
-        origin: current.current,
-        target,
-        intensity,
-        route: [],
-        used: [],
-        total: 0,
-        current: current.fog.deck.shift(),
-        hazardPending: false,
-        started: false,
-        correctedEver: false,
-        baneHalf: false,
-        baneFull: 0,
-        heading: 0,
-        peek: { source: "top", cards: [], destinations: [] }
-      };
-      changeThreat(1);
-      addLog(`进入弥雾：威胁 +1，目标 ${tileLabel(tile(target))}，浓度 ${intensity}`);
-      save(true);
-      const sidebar = $(".sidebar-scroll");
-      if (sidebar) sidebar.scrollTop = 0;
+      beginFog(target, intensity);
     });
     $("#advanceTileButton")?.addEventListener("click", () => { readResolutionFields(); advanceTileResolution(); });
     $("#cancelTileButton")?.addEventListener("click", undo);
@@ -4859,5 +5135,11 @@
   if (completedEncounterConsumed) activeTool = STEP_TOOL[state.step] || activeTool;
   checkLimits();
   render();
+  // The token size depends on the rendered scale, so re-check it when the window changes.
+  let tokenSizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(tokenSizeTimer);
+    tokenSizeTimer = setTimeout(() => applyPartyTokenSize(), 160);
+  });
   if (completedEncounterConsumed || initialWheelSynced) save();
 })();

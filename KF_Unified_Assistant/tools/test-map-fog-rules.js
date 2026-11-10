@@ -11,6 +11,21 @@ for (const value of [0, null, undefined, -1, NaN]) {
 }
 assert.equal(fogRules.hasFogIntensity({}), false);
 
+// A blocked travel into a fog target becomes "弥雾移动至此" instead of a forced settlement.
+const fogTarget = targetTile(3);
+assert.equal(fogRules.travelIntensity(fogTarget, { eligible: true, step: 0, busy: false }), 3,
+  "a legal fog target reached outside a round is a fog move");
+assert.equal(fogRules.travelIntensity(fogTarget, { eligible: false, step: 0, busy: false }), 0,
+  "tiles outside the fog target list keep the forced settlement");
+assert.equal(fogRules.travelIntensity(fogTarget, { eligible: true, step: 2, busy: false }), 0,
+  "mid-round travel still forces the settlement");
+for (const busy of [true]) {
+  assert.equal(fogRules.travelIntensity(fogTarget, { eligible: true, step: 0, busy }), 0,
+    "an unresolved tile, encounter or fog session keeps the forced settlement");
+}
+assert.equal(fogRules.travelIntensity(targetTile(0), { eligible: true, step: 0, busy: false }), 0,
+  "tiles without a printed concentration cannot be entered through fog");
+
 const fog = {
   deck: ["top", "next"],
   discard: [],

@@ -132,7 +132,10 @@ for (const badge of [hostBadge, displayBadge]) {
 assert.equal(rules(hostCSS, ".sheet-token")[0]["container-type"], "inline-size");
 assert.equal(rules(displayCSS, ".boss-sheet-token")[0]["container-type"], "inline-size");
 assert.equal(rules(hostCSS, ".sheet-rule-token-slot")[0].border, "max(1px, .2cqw) dashed rgba(198, 154, 75, .9)");
-assert.equal(rules(hostCSS, ".young-devour-stage-overlay")[0].border, "max(1px, .22cqw) solid var(--gold-bright)");
+assert.equal(rules(hostCSS, ".young-devour-stage-overlay")[0].border, undefined);
+assert.equal(rules(hostCSS, ".young-devour-stage-overlay")[0]["box-shadow"], undefined);
+assert.equal(rules(hostCSS, ".young-devour-stage-overlay .young-devour-sheet-card")[0].border, "0");
+assert.equal(rules(hostCSS, ".young-devour-stage-overlay .young-devour-sheet-card")[0]["box-shadow"], "none");
 
 const stageStart = host.indexOf("  function sheetStageAspect(");
 const stageEnd = host.indexOf("\n  function ", stageStart + 10);

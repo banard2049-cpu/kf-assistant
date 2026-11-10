@@ -16,6 +16,17 @@
     return typeof intensity === "number" && Number.isFinite(intensity) && intensity > 0;
   }
 
+  // A fog move replaces a forced tile settlement only when the destination is a legal fog
+  // target, the concentration is printed, and the travel window is clean: round step 0 with
+  // no tile resolution, encounter, fog session or pending mercenary action in the way.
+  function travelIntensity(tile, options = {}) {
+    if (!hasFogIntensity(tile)) return 0;
+    if (options.eligible !== true) return 0;
+    if (Number(options.step) !== 0) return 0;
+    if (options.busy === true) return 0;
+    return Number(tile.rules.back.fogIntensity);
+  }
+
   function makeEntry(cardId, item, corrected = false) {
     return {
       cardId,
@@ -241,6 +252,7 @@
   return {
     cardValue,
     hasFogIntensity,
+    travelIntensity,
     makeEntry,
     updateTotal,
     outcome,

@@ -84,6 +84,51 @@ async function storyReminder(page, reason) {
     await page.locator("#tool-tab-travel").waitFor();
     const baseline = await readState(page);
 
+    // A multi-tile return applies costs one step at a time and resumes after reload.
+    const travel = structuredClone(baseline);
+    travel.kingdom = "SK";
+    travel.step = 0;
+    travel.trackers = { threat: 0, curse: 0, time: 0, unassignedClues: 0 };
+    Object.assign(travel.maps.SK, {
+      current: "SK_Tile_M:1", selected: "SK_Tile_M:1",
+      placed: ["SK_Tile_M:1", "SK_Tile_LS:1", "SK_Tile_M:3"],
+      tileState: { "SK_Tile_M:1": "explored", "SK_Tile_LS:1": "explored", "SK_Tile_M:3": "explored" },
+      pathMarkers: [], history: [], travelRoute: [], autoFocus: false
+    });
+    await page.evaluate(({ key, state }) => localStorage.setItem(key, JSON.stringify(state)), { key: SAVE_KEY, state: travel });
+    await page.reload();
+    await page.locator("#backtrackTarget").selectOption("SK_Tile_M:3");
+    await page.locator("#backtrackButton").click();
+    let returning = await readState(page);
+    assert.equal(returning.maps.SK.current, "SK_Tile_LS:1");
+    assert.equal(returning.trackers.time, 1);
+    assert.equal(returning.trackers.threat, 0);
+    assert.equal(returning.step, 0);
+    await page.reload();
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key)).maps.SK.current === "SK_Tile_M:3", SAVE_KEY);
+    returning = await readState(page);
+    assert.equal(returning.trackers.time, 1);
+    assert.equal(returning.trackers.threat, 1);
+    assert.equal(returning.step, 0);
+    await page.waitForFunction(key => JSON.parse(localStorage.getItem(key)).step === 2, SAVE_KEY);
+    await page.locator("#undoButton").click();
+    returning = await readState(page);
+    assert.equal(returning.maps.SK.current, "SK_Tile_M:1");
+    assert.equal(returning.trackers.time, 0);
+    assert.equal(returning.trackers.threat, 0);
+    assert.equal(returning.step, 0);
+
+    // Undo during playback must cancel the remaining steps as well.
+    await page.locator("#backtrackTarget").selectOption("SK_Tile_M:3");
+    await page.locator("#backtrackButton").click();
+    await page.locator("#undoButton").click();
+    await page.waitForTimeout(1000);
+    returning = await readState(page);
+    assert.equal(returning.maps.SK.current, "SK_Tile_M:1");
+    assert.equal(returning.trackers.time, 0);
+    assert.equal(returning.trackers.threat, 0);
+    assert.equal(returning.step, 0);
+
     // Resolve a real new tile before drawing exploration. The later reminder
     // must retain that top card's modifier instead of reading the next card.
     const arrival = await seedArrival(page, baseline, "SK_Tile_LS:1", "SK_Tile_M:3");
