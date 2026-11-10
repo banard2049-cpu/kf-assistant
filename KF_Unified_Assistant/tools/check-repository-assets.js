@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const repositoryRoot = path.resolve(__dirname, "../..");
 const allowedImages = new Set([
-  "KF_Unified_Assistant/public/modules/map/fog-complex.svg",
+  "KF_Unified_Assistant/public/modules/map/fog-complex.webp",
   "KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/ic_launcher.png"
 ]);
 const imageExtension = /\.(?:png|apng|jpe?g|jfif|gif|webp|avif|bmp|ico|cur|icns|svg|tiff?|heic|heif|psd|xcf|jxl)$/i;

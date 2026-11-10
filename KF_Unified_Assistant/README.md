@@ -86,7 +86,7 @@ python tools/extract-aibp-stat-icons.py --source "路径/Rulebook.pdf"
 
 Windows/macOS portable 包和 Android APK 位于仓库的 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。
 
-**更新到 v1.4.6 时，请同时更新至 2026-11-09 完整资源包。资源包单独提供，不上传到 GitHub Release。** 资源包包含校正后的地图和弥雾背景，以及此前更新的六张先民护卫立绘。Web/portable 解压覆盖资源，Android 重新“导入资源 ZIP”；更新前备份并保留 `data/` 与存档。
+**更新到 v1.4.7 时，请同时更新至 2026-11-10 完整资源包。资源包单独提供，不上传到 GitHub Release。** 新资源包包含更新后的贪食巨龙腹中地图和 WebP 弥雾背景。Web/portable 解压覆盖资源，Android 重新“导入资源 ZIP”；更新前备份并保留 `data/` 与存档。
 
 ## Docker / NAS
 

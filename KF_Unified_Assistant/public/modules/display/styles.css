@@ -490,7 +490,7 @@ body{height:100vh;overflow:hidden}
 
 
 .map-viewport {
-  background: #697574 url("../map/fog-complex.svg?v=2") repeat;
+  background: #697574 url("../map/fog-complex.webp?v=1") repeat;
   background-size: calc(2400px * var(--map-fog-zoom, 1)) calc(1600px * var(--map-fog-zoom, 1));
   background-attachment: local;
 }

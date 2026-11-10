@@ -24,6 +24,9 @@ $robocopyArgs = @(
 & robocopy.exe @robocopyArgs | Out-Host
 if ($LASTEXITCODE -ge 8) { throw "Web asset sync failed with robocopy exit code $LASTEXITCODE" }
 
+# The map fog is application artwork and ships even without a game resource ZIP.
+$FogTexture = "modules\map\fog-complex.webp"
+Copy-Item -LiteralPath (Join-Path $Public $FogTexture) -Destination (Join-Path $Target $FogTexture) -Force
 Copy-Item -LiteralPath $Bridge -Destination (Join-Path $Target "android-local-api.js") -Force
 $scriptTag = '<script src="/android-local-api.js"></script>'
 $utf8NoBom = New-Object System.Text.UTF8Encoding($false)

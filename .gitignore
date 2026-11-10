@@ -38,7 +38,7 @@ KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/
 *.xcf
 
 # Application-owned, generated map background.
-!KF_Unified_Assistant/public/modules/map/fog-complex.svg
+!KF_Unified_Assistant/public/modules/map/fog-complex.webp
 
 # The application launcher icon is code-owned release artwork, not a game resource.
 !KF_Unified_Assistant/tools/packaging/android/app/src/main/res/drawable-nodpi/

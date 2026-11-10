@@ -648,55 +648,6 @@
   }
 
   let activeMapStage = null;
-  let mapFogTexture;
-
-  async function bakeMapFogTexture(source) {
-    try {
-      const image = new Image();
-      image.src = source;
-      await image.decode();
-      await new Promise(resolve => {
-        if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(resolve, { timeout: 1500 });
-        else window.setTimeout(resolve, 100);
-      });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = 3600;
-      canvas.height = 2400;
-      const context = canvas.getContext("2d");
-      if (!context) return "";
-      context.drawImage(image, 0, 0, canvas.width, canvas.height);
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/webp", .95));
-      canvas.width = 0;
-      if (blob?.type !== "image/webp") return "";
-
-      const url = URL.createObjectURL(blob);
-      try {
-        const texture = new Image();
-        texture.src = url;
-        await texture.decode();
-        return `url("${url}")`;
-      } catch {
-        URL.revokeObjectURL(url);
-      }
-    } catch {
-      // Keep the CSS background if this browser cannot bake or display WebP.
-    }
-    return "";
-  }
-
-  function applyMapFogTexture(viewport) {
-    if (!mapFogTexture) {
-      const background = getComputedStyle(viewport).backgroundImage;
-      const source = /^url\("([^"]*\/fog-complex\.svg(?:\?[^"]*)?)"\)$/.exec(background)?.[1];
-      if (!source) return;
-      // Cache the conversion, including a failed attempt, for this page.
-      mapFogTexture = bakeMapFogTexture(source);
-    }
-    mapFogTexture.then(background => {
-      if (background && viewport.isConnected) viewport.style.backgroundImage = background;
-    });
-  }
 
   function bindPartyTravel(stage, geometry) {
     const token = stage.querySelector(".party-location-token");
@@ -764,8 +715,6 @@
     partyView?.token?.classList.remove("party-in-transit");
     partyView = null;
     if (!stage || !geometry) return;
-    const viewport = stage.closest(".map-board, .map-viewport");
-    if (viewport) applyMapFogTexture(viewport);
     bindPartyTravel(stage, geometry);
     const nodes = [...stage.querySelectorAll("[data-map-tile-id]")].map(node => ({
       node, box: geometry.boxes.get(node.dataset.mapTileId)
@@ -795,7 +744,7 @@
       return { ...seam, owner, other, strip, art };
     });
     const fogPatches = stage.querySelectorAll(".map-arrival-fog");
-    const fogViewport = fogPatches.length && viewport;
+    const fogViewport = fogPatches.length && stage.closest(".map-board, .map-viewport");
     if (!seams.length && !fogViewport) return;
     if (seams.length) stage.prepend(underlay);
     const update = () => {
