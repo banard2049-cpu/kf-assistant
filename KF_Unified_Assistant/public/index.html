@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#761923">
   <title>KF 一体化战役管理</title>
-  <link rel="stylesheet" href="/styles.css?v=31">
+  <link rel="stylesheet" href="/styles.css?v=34">
   <link rel="stylesheet" href="/modules/module-bridge.css?v=19">
   <link rel="stylesheet" href="/jura.css?v=27">
 </head>
@@ -76,6 +76,14 @@
         <div class="presentation-actions icon-actions"><button id="rotateConflict" type="button" class="button" title="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）" aria-label="旋转第二屏 AI/BP 区域 90 度（含大牌展示栏）">↺</button><button id="swapConflict" type="button" class="button" title="交换冲突版图与 AI/BP" aria-label="交换冲突版图与 AI/BP">⇄</button><button id="toggleConflictBoard" type="button" class="button" title="显示或隐藏冲突版图" aria-label="显示或隐藏冲突版图">◉</button><button id="alignConflictBottom" type="button" class="button" title="第二屏冲突地图当前居中，点击切换" aria-label="第二屏冲突地图当前居中，点击切换对齐方式">↕</button></div>
       </details>
       <details class="trash-panel"><summary>回收站</summary><div id="trashList" class="sheet-list"></div></details>
+      <section class="appearance-settings" aria-label="模块外观设置">
+        <div class="appearance-heading"><strong>模块外观</strong><span id="themeResolvedLabel" data-theme-resolved-label>跟随系统</span></div>
+        <div class="theme-switch" data-theme-control role="group" aria-label="模块配色">
+          <button type="button" data-theme-value="auto" aria-pressed="true" title="模块页跟随系统配色"><span aria-hidden="true">◐</span>跟随系统</button>
+          <button type="button" data-theme-value="light" aria-pressed="false" title="模块页使用浅色界面"><span aria-hidden="true">○</span>浅色</button>
+          <button type="button" data-theme-value="dark" aria-pressed="false" title="模块页使用深色界面"><span aria-hidden="true">●</span>深色</button>
+        </div>
+      </section>
       <div class="sidebar-tools">
         <button id="exportAll" class="button">导出存档</button>
         <label class="button file-button">导入骑士<input id="importKnightFile" type="file" accept=".json,application/json"></label>
@@ -279,6 +287,19 @@
     </form>
   </dialog>
   <script src="/app-version.js?v=1"></script>
+  <script src="/theme.js?v=3" data-scope="control"></script>
+  <script>
+    // 主控制台自身不换肤，切换后给一句反馈，说明影响范围
+    document.addEventListener("kf:theme", function (event) {
+      var el = document.getElementById("toast");
+      if (!el) return;
+      var names = { auto: "跟随系统", light: "浅色", dark: "深色" };
+      el.textContent = "模块配色：" + names[event.detail.pref] + "（主控制台不变）";
+      el.classList.add("show");
+      clearTimeout(el.t);
+      el.t = setTimeout(function () { el.classList.remove("show"); }, 2400);
+    });
+  </script>
   <script src="/update-check.js?v=1"></script>
   <script src="/monster-labels.js?v=4"></script>
   <script src="/knight-portrait-colors.js?v=1"></script>

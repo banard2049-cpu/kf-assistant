@@ -3574,10 +3574,21 @@
       }
     };
 
+    // Edge scrolling walks a marker across a map that is larger than the board. The palette
+    // sits flush against the board's right edge, so a marker picked up there crosses that
+    // edge on the way in: scrolling on entry yanked the map sideways before the host had
+    // even picked a target. Only start scrolling once the pointer has been over the board
+    // proper (or the drag never left the board to begin with).
     const autoScroll = (clientX, clientY) => {
       const rect = board.getBoundingClientRect();
       const edge = 28;
       if (!inside(rect, clientX, clientY)) return;
+      if (!drag.edgeScrollArmed) {
+        const overBoard = clientX > rect.left + edge && clientX < rect.right - edge
+          && clientY > rect.top + edge && clientY < rect.bottom - edge;
+        if (!overBoard && !drag.startedInBoard) return;
+        drag.edgeScrollArmed = true;
+      }
       if (clientX < rect.left + edge) board.scrollLeft -= 14;
       else if (clientX > rect.right - edge) board.scrollLeft += 14;
       if (clientY < rect.top + edge) board.scrollTop -= 14;
@@ -3598,7 +3609,17 @@
       ghost.hidden = true;
       document.body.append(ghost);
       handle.setPointerCapture(event.pointerId);
-      drag = { ...spec, handle, ghost, pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, moved: false };
+      drag = {
+        ...spec,
+        handle,
+        ghost,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        moved: false,
+        startedInBoard: inside(board.getBoundingClientRect(), event.clientX, event.clientY),
+        edgeScrollArmed: false
+      };
     };
 
     const move = event => {

@@ -342,3 +342,15 @@
 .update-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .update-check a { color: inherit; }
 @media print { .update-check { display: none; } }
+
+/* 外观（深色 / 浅色）设置 */
+.appearance-settings { margin-top: 16px; padding-top: 12px; border-top: 1px solid #b5aa9b; }
+.appearance-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.appearance-heading span { font-size: 11px; color: var(--muted); }
+.theme-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.theme-switch button { padding: 7px 3px; border: 1px solid #9b8e7d; background: #fffaf0; color: var(--ink); font-size: 12px; line-height: 1.2; }
+.theme-switch button span { display: block; font-size: 14px; line-height: 1.3; }
+.theme-switch button:hover { border-color: var(--red); }
+.theme-switch button.is-active { background: var(--red); border-color: var(--red); color: #fff; }
+.theme-switch button:focus-visible { outline: 2px solid var(--red); outline-offset: 1px; }
+@media print { .appearance-settings { display: none; } }

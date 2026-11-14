@@ -86,3 +86,7 @@
 .sheet-card>.panel-title>button{flex-shrink:0;white-space:nowrap}
 @media(max-width:760px){.map-panel>.panel-title{flex-direction:column;align-items:stretch}.map-controls{justify-content:flex-start;flex-wrap:wrap}.map-panel>.panel-title>div:first-child{min-width:0}}
 @media(max-width:520px){.growth-grid{grid-template-columns:1fr}.reward-choice-row{grid-template-columns:1fr}.sheet-name-row>label{flex-wrap:wrap}.sheet-name-row>label input{flex-basis:100%}}
+
+/* 骑士卡片是纸面底色，不能依赖原生 button 的默认文字色（浏览器深色方案下会变白）。 */
+.knight-choice{color:var(--ink)}
+.knight-choice strong{color:inherit}

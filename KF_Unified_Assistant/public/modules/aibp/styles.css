@@ -2697,3 +2697,15 @@ label,
 .squire-clue-adjust button:active { box-shadow: none; transform: none; }
 
 .guardian-track-figure { aspect-ratio: var(--card-aspect, .7); }
+
+/* --kf-red 在深色主题里是 #581016，直接当文字色会和深色纸面糊在一起。
+ * 只修“文字/图标”用色，红色按钮底色不受影响。 */
+.conflict-monster-rules h4,
+.aftermath-section h4,
+.conflict-flavor-heading h4,
+.conflict-disclosure { color: #e2a198; }
+
+html[data-theme="light"] .conflict-monster-rules h4,
+html[data-theme="light"] .aftermath-section h4,
+html[data-theme="light"] .conflict-flavor-heading h4,
+html[data-theme="light"] .conflict-disclosure { color: var(--kf-red); }
