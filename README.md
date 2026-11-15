@@ -1,102 +1,43 @@
 # KF 助手
 
-《Kingdoms Forlorn》的非官方战役管理工具，整合骑士档案、战役、地图深入、遭遇战和 AI/BP。项目不包含游戏图片等受版权保护的素材；请从你合法持有的本地副本补齐资源。
+[English](README.en.md)
 
-## 许可证：禁止商用
+《Kingdoms Forlorn》的非官方战役助手，用来管理骑士、地图深入、遭遇战和 AI/BP。
 
-本项目原创代码、文档及项目自有图标采用 [PolyForm Noncommercial License 1.0.0](LICENSE)，仅允许许可证规定的非商业用途，商业使用未获授权。允许在许可证范围内使用、修改和再分发；再分发必须保留完整许可证及 `Required Notice:` 版权声明。商业用途须另行获得相关版权所有者的书面授权。
+## 安装
 
-游戏名称、图片、规则文本、字体及其他第三方素材的权利归各自版权所有者所有，第三方组件和运行时仍遵循其自身许可证。本许可证不授予这些第三方内容的额外权利。应用内附带相同许可证：[public/LICENSE.txt](KF_Unified_Assistant/public/LICENSE.txt)。
+从 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases) 下载对应平台的安装包。
 
-## 从 Release 运行（推荐）
+| 平台 | 启动方式 |
+| --- | --- |
+| Windows | 解压 Windows x64 便携包，双击 `start-windows.bat`。 |
+| macOS | 解压便携包（Apple 芯片选 `arm64`，Intel 选 `x64`），双击 `start-macos.command`。 |
+| Android | 安装 APK，打开 KF 助手。 |
 
-版本标签会自动构建 Windows/macOS portable 包和 Android APK，文件位于 [GitHub Releases](https://github.com/banard2049-cpu/kf-assistant/releases)。下载对应平台的完整压缩包后解压运行；更新时保留旧目录中的 `data/` 和本地图片资源。 主界面侧栏的「检查更新」可查看最新正式版及更新说明，并打开发布页下载；也会定期自动检查。Docker 用户需按下方步骤更新镜像。
+Windows 和 macOS 的浏览器入口是 `http://127.0.0.1:8789/`。
 
-**更新到 v1.4.7 时，请同时更新至 2026-11-10 完整资源包。资源包单独提供，不上传到 GitHub Release。** 新资源包包含更新后的贪食巨龙腹中地图和 WebP 弥雾背景。Web/portable 解压覆盖资源，Android 在主界面重新“导入资源 ZIP”；请先备份并保留存档。
+从源码运行时，准备 PHP 8.2+（带 SQLite、mbstring 和 Argon2id 支持），进入 `KF_Unified_Assistant/`。Windows 运行 `start-windows.bat`，macOS 或 Linux 运行 `bash start-macos.sh`。
 
-## Docker / NAS
+### Docker / NAS
 
-服务器或 NAS 安装 Docker 后，执行一行命令即可从公开 GHCR 镜像部署：
+安装 Docker 和 Docker Compose 后，在要存放数据的目录执行下方命令。启动后访问 `http://服务器IP:8789/`。
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/banard2049-cpu/kf-assistant/main/tools/install-docker.sh | bash
 ```
 
-默认访问 `http://服务器IP:8789/`。脚本会把 `compose.yaml`、`data/` 和 `backups/` 放在执行命令时的当前目录；更新不会丢失这些目录。也可以通过 `KF_DIR=/目标目录` 指定安装位置。
-
-手动更新：
-
-```bash
-cd /你的部署目录
-docker compose pull
-docker compose up -d
-```
-
-也可以固定版本：
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/banard2049-cpu/kf-assistant/main/tools/install-docker.sh \
-  | KF_IMAGE=ghcr.io/banard2049-cpu/kf-assistant:1.0.9 bash
-```
-
-本地构建 Docker：
-
-```bash
-cd KF_Unified_Assistant
-./start-docker.sh
-```
-
-## 本地运行
-
-Windows：安装 PHP 8.2+（启用 `pdo_sqlite`），进入 `KF_Unified_Assistant`，运行：
-
-```bat
-check-windows.bat
-start-windows.bat
-```
-
-macOS/Linux：
-
-```bash
-cd KF_Unified_Assistant
-./start-macos.sh
-```
-
-默认地址为 `http://127.0.0.1:8789/`。
-
 ## 图片资源
 
-Git 仓库忽略 `png/jpg/jpeg/gif/webp/bmp/ico/svg` 等图片。现在所有模块共用同一个资源目录：`KF_Unified_Assistant/public/assets/`；模块目录下不再需要单独的 `assets/` 副本。
+游戏图片需单独准备，请使用从合法持有的游戏资源整理出的完整资源包。
 
-如果只是给已有安装包补齐或更新图片，压缩并分发 `public/assets/` 即可。推荐使用下方脚本生成 ZIP，它会收集该目录下的全部图片，并保留 `KF_Unified_Assistant/public/assets/...` 路径，Web 解压可直接覆盖，Android 的“导入资源 ZIP”也能识别。Android 导入成功后会整体替换旧资源，因此应使用完整资源包。不要把它当成完整程序包。
+- **便携版和源码运行**都将包里的 `KF_Unified_Assistant/public/assets/` 内容复制到应用目录下的 `public/assets/`。
+- 在 **Android** 的侧栏点「导入资源 ZIP」。导入会替换已有图片，请选完整 ZIP。
+- 使用 **Docker / NAS** 时，将图片放到 `compose.yaml` 同级的 `assets/`。
 
-如果要分发可运行的 Web/PHP 应用，仍需分发 Release 生成的完整压缩包（其中包含 HTML、JS、CSS、data、API 和 `public/assets`）。Android 直接分发 APK；Docker 分发镜像或完整 Docker 部署目录。Docker 的独立部署目录还需另行提供图片资源，并放在部署目录的 `assets/`（Compose 会挂载该目录）。
+## 开始游玩和更新
 
-在拥有完整图片资源的副本中，也可以用下面的脚本生成带仓库相对路径的资源 ZIP：
+首次打开后注册并登录。选择或新建战役，点击「新建骑士」添加队员，再从侧栏打开地图深入、遭遇战或 AI/BP。有旧进度时，使用「导入存档」。
 
-```powershell
-cd KF_Unified_Assistant\tools
-.\pack-ignored-images.ps1
-```
+更新前用侧栏「导出存档」备份。便携版换新包时保留 `data/` 和 `public/assets/`。Android 用新版 APK 覆盖安装。Docker 在原部署目录运行 `docker compose pull` 和 `docker compose up -d`。
 
-生成的资源 ZIP 不包含 `.env`、`data/`、`backups/` 或日志。Android 版可在主界面通过“导入资源 ZIP”恢复图片；资源包不再有 1 GB 上限，实际可导入大小取决于设备可用空间；导入时会暂时保留旧资源以便回滚，建议预留约资源包体积 2–3 倍的可用空间。
-
-## 数据与管理
-
-存档导入格式为 `kf-unified-campaign` v2。备份、列出用户或重置密码：
-
-```bash
-cd KF_Unified_Assistant
-php tools/admin.php backup
-php tools/admin.php compact
-php tools/admin.php list
-php tools/admin.php reset-password 用户名 新密码
-```
-
-主库存放当前存档及同步去重信息；完整备份单独保存在 `backups/*.db`，读取存档不会加载备份文件。更新后首次维护会自动把旧版同步日志中的完整模块快照转存为 `backups/*-operation-history.jsonl.gz`，并收缩主库；当前存档、模块内的撤销历史和同步操作 ID 均保留。未启用 gzip 时归档为 `.jsonl`。整理失败会保留原数据并在之后重试，也可运行 `compact` 立即整理。
-
-默认配置适合可信局域网。公网部署请配置 HTTPS、关闭开放注册并限制 `data/`、`backups/` 的访问。
-
-## 开发
-
-业务代码位于 `KF_Unified_Assistant/public/`，工具和测试位于 `KF_Unified_Assistant/tools/`。项目为玩家自制工具，与游戏发行商及版权方无关。
+本项目采用 [PolyForm Noncommercial 1.0.0 许可证](LICENSE)，仅限非商业用途。游戏素材归各自版权方所有。
