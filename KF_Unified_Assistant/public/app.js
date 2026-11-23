@@ -188,7 +188,17 @@ const openOfflineDb=()=>new Promise((resolve,reject)=>{
 });
 const idbGet=key=>new Promise((resolve,reject)=>{const r=offlineDb.transaction("sync").objectStore("sync").get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
 const idbSet=(key,value)=>new Promise((resolve,reject)=>{const tx=offlineDb.transaction("sync","readwrite");tx.objectStore("sync").put(value,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
-async function initOffline(){try{offlineDb=await openOfflineDb();const saved=await idbGet("pending"),campaignSaved=await idbGet("campaign-pending");if(Array.isArray(saved))pending.push(...saved);if(Array.isArray(campaignSaved))campaignPending.push(...campaignSaved);if(pending.length)sync();if(campaignPending.length)syncCampaign()}catch(e){console.warn("离线队列不可用",e)}}
+async function initOffline(){
+  try{
+    offlineDb=await openOfflineDb();
+    const saved=await idbGet("pending"),campaignSaved=await idbGet("campaign-pending");
+    if(Array.isArray(saved))pending.push(...saved);
+    if(Array.isArray(campaignSaved))campaignPending.push(...campaignSaved);
+    discardInvalidSheetNumbers();
+    if(pending.length)sync();
+    if(campaignPending.length)syncCampaign();
+  }catch(e){console.warn("离线队列不可用",e)}
+}
 const persistPending=()=>offlineDb&&idbSet("pending",pending).catch(()=>{});
 const persistCampaignPending=()=>offlineDb&&idbSet("campaign-pending",campaignPending).catch(()=>{});
 const api=async(path,options={})=>{
@@ -268,6 +278,28 @@ const setSave=(text,bad=false)=>{const el=$("#saveState");el.textContent=text;el
 const download=(name,data)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 const pathGet=(root,path)=>path.split(".").reduce((v,k)=>v?.[k],root);
 const pathSet=(root,path,value)=>{const keys=path.split(".");let t=root;for(let i=0;i<keys.length-1;i++){if(!t[keys[i]]||typeof t[keys[i]]!=="object")t[keys[i]]={};t=t[keys[i]]}t[keys.at(-1)]=value};
+const investigationNumberPath=/^story\.\d+\.investigations\.\d+\.success$/;
+const digitsOnly=/^[0-9]+$/;
+function sheetNumberLimit(path){
+  if(["bane","gold","leads","sigh"].includes(path))return 99999;
+  return investigationNumberPath.test(path)?99:null;
+}
+function sheetFieldValue(path,value){
+  if(investigationNumberPath.test(path))return investigationSuccessValue(value);
+  if(sheetNumberLimit(path)!==null&&!digitsOnly.test(String(value)))return "";
+  return value??"";
+}
+function discardInvalidSheetNumbers(){
+  let removed=false;
+  for(let index=pending.length-1;index>=0;index--){
+    const {path,value}=pending[index],limit=sheetNumberLimit(path);
+    if(limit===null||(value===""&&investigationNumberPath.test(path)))continue;
+    if(Number.isInteger(value)&&value>=0&&value<=limit)continue;
+    pending.splice(index,1);
+    removed=true;
+  }
+  if(removed)persistPending();
+}
 const op=(path,value)=>{
   pathSet(state,path,value);pending.push({id:compatibleUuid().replace(/-/g,""),userId:user?.id,sheetId:active,clientId,path,value,baseRevision:revision});
   persistPending();cacheSheet();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
@@ -285,6 +317,7 @@ function adjustSheetGold(sheetId,delta){
   const current=Number(active===sheetId?state?.gold:sheet.state?.gold)||0;
   const next=current+Math.trunc(Number(delta));
   if(!Number.isFinite(next)||next<0||next>99999)throw new Error("所选记录表的金钱不足。");
+  if(!Number.isInteger(next))throw new Error("所选记录表的金钱必须是 0 或正整数。");
   sheetOp(sheetId,"gold",next);return next;
 }
 const sheetSnapshots=new Map();
@@ -313,6 +346,7 @@ function showQueuedSaveState(){
 }
 async function sync(){
   if(syncing||!user||!pending.length||!navigator.onLine)return;
+  discardInvalidSheetNumbers();
   const ownerId=user.id,sheetId=pending.find(item=>operationReady(item,ownerId))?.sheetId;
   const batch=pending.filter(item=>item.sheetId===sheetId&&operationReady(item,ownerId)).slice(0,200);if(!batch.length){showQueuedSaveState();return}
   const batchIds=new Set(batch.map(item=>item.id));
@@ -376,13 +410,25 @@ async function loadCampaigns(preferred){
   localStorage.kfActiveCampaign=activeCampaign||"";renderCampaignSelect();
   if(activeCampaign){const campaignId=activeCampaign,detail=await api(`/api/campaigns/${campaignId}`);if(activeCampaign!==campaignId)return;campaignState=detail.campaign.state;campaignPending.filter(item=>item.campaignId===campaignId&&(!item.userId||item.userId===user?.id)).forEach(item=>pathSet(campaignState,item.path,item.value));campaignRevision=detail.campaign.revision;hydrateGameSettings();if(campaignPending.length)syncCampaign()}
 }
-function renderCampaignSelect(){$("#campaignSelect").innerHTML=campaigns.map(c=>`<option value="${c.id}" ${c.id===activeCampaign?"selected":""}>${esc(c.name)}</option>`).join("")}
+function campaignModuleUrl(path){
+  if(!activeCampaign||typeof location.href!=="string")return path;
+  const url=new URL(path,location.href);url.searchParams.set("campaignId",activeCampaign);
+  return url.pathname+url.search+url.hash;
+}
+function renderCampaignSelect(){
+  $("#campaignSelect").innerHTML=campaigns.map(c=>`<option value="${c.id}" ${c.id===activeCampaign?"selected":""}>${esc(c.name)}</option>`).join("");
+  if(typeof location.href!=="string")return;
+  for(const link of $$('a[href^="/modules/"]'))link.href=campaignModuleUrl(link.getAttribute("href"));
+  if(activeCampaign&&new URLSearchParams(location.search).has("campaignId")){
+    history.replaceState(history.state,"",campaignModuleUrl(location.pathname+location.search+location.hash));
+  }
+}
 async function loadSession(){
   const [{user:u},{registration}]=await Promise.all([api("/api/auth/me"),api("/api/config")]);user=u;canRegister=registration;
   if(user)showApp();else showAuth();
 }
 function showAuth(){$("#authView").classList.remove("hidden");$("#appView").classList.add("hidden");$("#authMode").classList.toggle("hidden",!canRegister);$("#authHint").textContent=canRegister?"":"服务器已关闭新用户注册"}
-async function showApp(){$("#authView").classList.add("hidden");$("#appView").classList.remove("hidden");$("#currentUser").textContent=user.username;await Promise.all([loadCampaigns(),loadSharedSettings()]);migrateLegacyJura();await refreshLists();sync();syncCampaign()}
+async function showApp(){$("#authView").classList.add("hidden");$("#appView").classList.remove("hidden");$("#currentUser").textContent=user.username;const linked=typeof location.search==="string"?new URLSearchParams(location.search).get("campaignId"):null;await Promise.all([loadCampaigns(linked),loadSharedSettings()]);migrateLegacyJura();await refreshLists();sync();syncCampaign()}
 async function refreshLists(){
   const suffix=`&campaignId=${encodeURIComponent(activeCampaign)}`;const [a,b]=await Promise.all([api(`/api/sheets?overview=1${suffix}`),api(`/api/sheets?trash=1${suffix}`)]);sheets=a.sheets;trash=b.sheets;renderLists();
   if(resumeAvailableOperations(pending,"sheetId",sheets)){persistPending();sync()}
@@ -650,7 +696,12 @@ function renderList(name){const arr=state[name];$(`#${name}`).innerHTML=arr.map(
 function renderValues(){
   if(!state)return;
   if(document.activeElement?.dataset?.path!=="notes")syncViceNotes();
-  $$("[data-path]",$("#sheetForm")).forEach(el=>{const v=pathGet(state,el.dataset.path);if(document.activeElement===el)return;if(el.type==="checkbox")el.checked=Boolean(v);else el.value=el.hasAttribute("data-investigation-success")?investigationSuccessValue(v):v??""});
+  $$("[data-path]",$("#sheetForm")).forEach(el=>{
+    if(document.activeElement===el)return;
+    const path=el.dataset.path,value=pathGet(state,path);
+    if(el.type==="checkbox")el.checked=Boolean(value);
+    else el.value=sheetFieldValue(path,value);
+  });
   $$("[data-heart]").forEach(el=>{const[i,n]=el.dataset.heart.split(".").map(Number);el.checked=rapportHearts(state.rapport[i]?.hearts)[n-1]})
 }
 function syncViceNotes(){
@@ -764,12 +815,38 @@ $("#deleteSheet").onclick=async()=>{if(confirm("将这张档案移入回收站�
 function knightExportPayload(){return {format:"kf-unified-knight",schemaVersion:1,exportedAt:new Date().toISOString(),sheet:{title:$("#sheetTitle").value||state?.knight||"骑士档案",state:structuredClone(state)}}}
 $("#exportKnight").onclick=()=>{if(!state)return toast("请先打开一张骑士档案");download(`kf-knight-${state.knightId||"sheet"}.json`,knightExportPayload());toast("骑士档案已导出")};
 $("#importKnightFile").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const payload=JSON.parse(await file.text());if(payload?.format!=="kf-unified-knight"||payload?.schemaVersion!==1||!payload?.sheet?.state)throw new Error("只支持 KF 骑士档案（版本 1）");const knightId=payload.sheet.state.knightId;if(!knightCatalog.some(item=>item.id===knightId))throw new Error("导入文件包含无效的骑士身份");await sync();let result;try{result=await api("/api/sheet-import",{method:"POST",body:JSON.stringify(payload)})}catch(error){if(error.status!==409||!error.data?.sheetId||!confirm(`${error.message}\n是否覆盖现有的${payload.sheet.state.knight||"骑士"}档案？`))throw error;result=await api("/api/sheet-import",{method:"POST",body:JSON.stringify({...payload,replaceSheetId:error.data.sheetId})})}await refreshLists();await openSheet(result.sheet.id);toast(result.replaced?"骑士档案已覆盖导入":"骑士档案已导入")}catch(err){toast(err.message)}finally{e.target.value=""}};
-$("#sheetForm").addEventListener("input",e=>{const el=e.target;if(!el.dataset.path)return;let value=el.type==="checkbox"?el.checked:el.type==="number"&&el.hasAttribute("data-investigation-success")&&el.value===""?"":el.type==="number"?Math.max(Number(el.min||-999),Math.min(Number(el.max||99999),Number(el.value)||0)):el.value;
+$("#sheetForm").addEventListener("beforeinput",e=>{
+  const el=e.target;
+  if(el.type==="number"&&sheetNumberLimit(el.dataset.path)!==null&&e.data&&!digitsOnly.test(e.data))e.preventDefault();
+});
+$("#sheetForm").addEventListener("input",e=>{
+  const el=e.target,path=el.dataset.path;
+  if(!path)return;
+  let value=el.type==="checkbox"?el.checked:el.value;
+  if(el.type==="number"){
+    const limit=sheetNumberLimit(path);
+    if(limit===null){
+      value=Math.max(Number(el.min||-999),Math.min(Number(el.max||99999),Number(el.value)||0));
+    }else if(el.validity?.badInput||(el.value&&!digitsOnly.test(el.value))){
+      el.value=String(sheetFieldValue(path,pathGet(state,path)));
+      return;
+    }else if(el.value!==""||!investigationNumberPath.test(path)){
+      const numeric=Number(el.value);
+      value=Math.min(limit,numeric);
+      if(numeric>limit)el.value=String(limit);
+    }
+  }
   if(el.dataset.path.startsWith("successfulInvestigations.")){if(!recordSuccessfulInvestigation(el.dataset.path,value))el.checked=false;renderValues();return}
   if(/^story\.\d+\.investigations\./.test(el.dataset.path)&&recordStoryInvestigation(el.dataset.path,value)){renderValues();return}
   op(el.dataset.path,value);renderValues()
 });
-$("#sheetForm").addEventListener("focusout",e=>{if(e.target.dataset.path==="notes")renderValues()});
+$("#sheetForm").addEventListener("focusout",e=>{
+  const el=e.target,path=el.dataset.path;
+  if(path==="notes")renderValues();
+  else if(el.type==="number"&&el.value===""&&sheetNumberLimit(path)!==null&&!investigationNumberPath.test(path)){
+    el.value=String(sheetFieldValue(path,pathGet(state,path)));
+  }
+});
 $("#sheetForm").addEventListener("click",e=>{const h=e.target.closest("[data-heart]");if(h){e.preventDefault();const[i,n]=h.dataset.heart.split(".").map(Number),hearts=rapportHearts(state.rapport[i]?.hearts);hearts[n-1]=!hearts[n-1];op(`rapport.${i}.hearts`,hearts);renderValues()}
   const rr=e.target.closest("[data-remove-rapport]");if(rr){state.rapport.splice(Number(rr.dataset.removeRapport),1);op("rapport",[...state.rapport]);renderRapport();renderValues()}
   const rl=e.target.closest("[data-remove-list]");if(rl){const[name,index]=rl.dataset.removeList.split(".");state[name].splice(Number(index),1);op(name,[...state[name]]);renderList(name);renderValues()}
@@ -792,11 +869,11 @@ function openEncounterAssistant(monster,level,type){
     if(!availableEncounterMonsters().some(item=>item.id===encounter.id))return toast("请选择这张特殊遭遇卡对应的主骑士");
     level=encounter.encounterLevels[0].level;type="special";
   }
-  localStorage.setItem("kfEncounterHandoff",JSON.stringify({
+  localStorage.setItem(`kfEncounterHandoff:${activeCampaign}`,JSON.stringify({
     id:compatibleUuid(),createdAt:Date.now(),campaignId:activeCampaign,source:"overview",
     monsterId:encounter?.id||"",monster,level:Number(level)||1,type:type||"normal",returnUrl:"/"
   }));
-  location.href="/modules/encounter/"
+  location.href=campaignModuleUrl("/modules/encounter/")
 }
 function startEncounterFrom(monster,level,type){openEncounterAssistant(monster,level,type)}
 $("#startEncounter").onclick=()=>startEncounterFrom($("#encounterMonster").value,Number($("#encounterLevel").value),$("#encounterType").value);

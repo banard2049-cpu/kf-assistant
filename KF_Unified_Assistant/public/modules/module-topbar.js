@@ -11,6 +11,13 @@
     ["display", "/modules/display/", "第二屏"],
   ];
 
+  const selectedCampaign = new URLSearchParams(location.search).get("campaignId") || localStorage.getItem("kfActiveCampaign");
+  const campaignHref = href => {
+    if (!selectedCampaign) return href;
+    const url = new URL(href, location.href);
+    url.searchParams.set("campaignId", selectedCampaign);
+    return url.pathname + url.search + url.hash;
+  };
   for (const header of document.querySelectorAll("header[data-unified-topbar]")) {
     if (header.classList.contains("unified-topbar")) continue;
     const moduleName = header.dataset.unifiedTopbar || document.body.dataset.kfModule || "overview";
@@ -28,7 +35,7 @@
         nav.append(separator);
       }
       const link = document.createElement("a");
-      link.href = href;
+      link.href = moduleName === "overview" ? href : campaignHref(href);
       link.textContent = label;
       if (id === moduleName) {
         link.className = "active";
@@ -37,6 +44,9 @@
       nav.append(link);
     }
     header.append(nav);
+    for (const link of header.querySelectorAll('a[href="editor.html"], a[href="attack-editor.html"], a[href="index.html"], a[href="./"]')) {
+      link.href = campaignHref(link.getAttribute("href"));
+    }
     for (const control of header.querySelectorAll("button, a, select, label.button, .deck-order-toggle")) {
       control.classList.add("unified-topbar-control");
     }

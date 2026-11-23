@@ -483,12 +483,112 @@ function map_state_round(mixed $value): int {
     $round=$value['round']??0;
     return is_int($round)?max(0,$round):0;
 }
-function resolve_campaign_sync_conflict(string $path,mixed $previous,mixed $incoming): array {
+const MAP_CLUE_TYPES = ['martial', 'errant', 'historic', 'mystic'];
+
+function map_clue_path(string $path): ?array {
+    if (!preg_match('/^modules\.map\.knights\.(0|[1-9][0-9]*)\.clues\.(martial|errant|historic|mystic)$/D', $path, $match)) return null;
+    return [(int)$match[1], $match[2]];
+}
+
+function map_squire_indexes(mixed $map): array {
+    $indexes = [];
+    if (!is_array($map['knights'] ?? null)) return $indexes;
+    foreach ($map['knights'] as $index => $knight) {
+        $id = $knight['sheetId'] ?? null;
+        if (($knight['memberType'] ?? null) === 'squire' && is_int($index) && is_string($id) && $id !== '') {
+            $indexes[$id] ??= $index;
+        }
+    }
+    return $indexes;
+}
+
+function map_clue_version_key(string $squireId, string $clue): string {
+    return "modules.map.squireClues.$squireId.$clue";
+}
+
+function migrate_indexed_map_clue_versions(array &$versions, mixed $map): void {
+    $squires = array_flip(map_squire_indexes($map));
+    foreach ($versions as $path => $revision) {
+        $cluePath = map_clue_path((string)$path);
+        if ($cluePath === null) continue;
+        [$index, $clue] = $cluePath;
+        // A newer whole map may have reordered the members or changed the
+        // clue, so only carry forward indexed edits after that snapshot.
+        if (isset($squires[$index]) && $revision > ($versions['modules.map'] ?? 0)) {
+            $key = map_clue_version_key((string)$squires[$index], $clue);
+            $versions[$key] = max($revision, $versions[$key] ?? 0);
+        }
+        unset($versions[$path]);
+    }
+}
+
+function resolve_map_clue_write(array $state, array $versions, array $op, array $cluePath, int $base): array {
+    [$index, $clue] = $cluePath;
+    $map = get_path($state, 'modules.map');
+    $indexes = map_squire_indexes($map);
+    $delta = $op['clueDelta'] ?? null;
+    if (array_key_exists('squireId', $op) || array_key_exists('clueDelta', $op)) {
+        $squireId = $op['squireId'] ?? null;
+        if (!is_string($squireId) || $squireId === '' || !in_array($delta, [-1, 1], true)) {
+            respond(400, ['error'=>'侍从线索调整无效']);
+        }
+        if (!isset($indexes[$squireId])) respond(409, ['error'=>'该侍从已不在地图队伍中']);
+        $index = $indexes[$squireId];
+    } else {
+        $squireId = array_search($index, $indexes, true);
+        if ($squireId === false) respond(409, ['error'=>'该侍从已不在地图队伍中']);
+    }
+    $key = map_clue_version_key((string)$squireId, $clue);
+    if ($delta === null) {
+        // An older client supplies an absolute count and an array index.
+        // After a competing edit neither is safe to apply without refreshing.
+        if (max($versions['modules.map'] ?? 0, $versions[$key] ?? 0) > $base) {
+            respond(409, ['error'=>'地图线索已有新修改，请刷新后重试']);
+        }
+        $value = $op['value'] ?? null;
+        if (!is_int($value) || $value < 0) respond(400, ['error'=>'侍从线索数值无效']);
+    } else {
+        $current = max(0, (int)($map['knights'][$index]['clues'][$clue] ?? 0));
+        $value = $current;
+        if ($delta < 0 || $current < PHP_INT_MAX) $value = max(0, $current + $delta);
+    }
+    return ["modules.map.knights.$index.clues.$clue", $key, $value];
+}
+
+function merge_newer_map_clues(array $previous, array $incoming, array $versions, int $base): array {
+    $previousIndexes = map_squire_indexes($previous);
+    foreach (map_squire_indexes($incoming) as $id => $index) {
+        if (!isset($previousIndexes[$id])) continue;
+        foreach (MAP_CLUE_TYPES as $clue) {
+            $current = $previous['knights'][$previousIndexes[$id]]['clues'][$clue] ?? 0;
+            if (($versions[map_clue_version_key((string)$id, $clue)] ?? 0) > $base && ($incoming['knights'][$index]['clues'][$clue] ?? 0) !== $current) {
+                $incoming['knights'][$index]['clues'][$clue] = $current;
+            }
+        }
+    }
+    return $incoming;
+}
+
+function record_map_clue_versions(mixed $previous, mixed $selected, array &$versions, int $revision): void {
+    $previousIndexes = map_squire_indexes($previous);
+    foreach (map_squire_indexes($selected) as $id => $index) {
+        foreach (MAP_CLUE_TYPES as $clue) {
+            $before = isset($previousIndexes[$id]) ? $previous['knights'][$previousIndexes[$id]]['clues'][$clue] ?? 0 : 0;
+            $after = $selected['knights'][$index]['clues'][$clue] ?? 0;
+            if ($before !== $after) $versions[map_clue_version_key((string)$id, $clue)] = $revision;
+        }
+    }
+}
+
+function resolve_campaign_sync_conflict(string $path, mixed $previous, mixed $incoming, array $versions, int $base): array {
     $result=['value'=>$incoming,'resolution'=>'incoming'];
     if($path!=='modules.map')return $result;
+    $merged = is_array($previous) && is_array($incoming) ? merge_newer_map_clues($previous, $incoming, $versions, $base) : $incoming;
+    if (($versions[$path] ?? 0) <= $base && $merged === $incoming) return $result;
     $previousRound=map_state_round($previous);$incomingRound=map_state_round($incoming);
     $result['previousRound']=$previousRound;$result['incomingRound']=$incomingRound;
     if($previousRound>$incomingRound){$result['value']=$previous;$result['resolution']='existing';}
+    elseif ($merged !== $incoming) {$result['value']=$merged;$result['resolution']='merged';}
     return $result;
 }
 function create_backup(PDO $db, string $backupDir, string $label='manual'): string {
@@ -603,13 +703,9 @@ function retain_active_aibp_history(PDO $db, string $activeCampaignId, string $u
     $q = $db->prepare('SELECT id,state_json FROM campaigns WHERE user_id=? AND deleted_at IS NULL AND id<>?');
     $q->execute([$userId, $activeCampaignId]);
     $update = $db->prepare('UPDATE campaigns SET state_json=?,revision=revision+1,updated_at=? WHERE id=?');
-    $deleteOps = $db->prepare("DELETE FROM campaign_operations WHERE campaign_id=? AND (field_path='aibp' OR field_path LIKE 'aibp.%' OR field_path='modules.aibp')");
     foreach ($q->fetchAll() as $other) {
         $state = json_decode($other['state_json'], true);
-        if (!is_array($state)) {
-            $deleteOps->execute([$other['id']]);
-            continue;
-        }
+        if (!is_array($state)) continue;
         $changed = false;
         foreach (['aibp', 'modules'] as $container) {
             if ($container === 'aibp') {
@@ -625,7 +721,6 @@ function retain_active_aibp_history(PDO $db, string $activeCampaignId, string $u
             }
         }
         if ($changed) $update->execute([json_encode($state, JSON_UNESCAPED_UNICODE), stamp(), $other['id']]);
-        $deleteOps->execute([$other['id']]);
     }
 }
 
@@ -711,11 +806,47 @@ try {
         $db->exec('BEGIN IMMEDIATE');
         try{$row=owned_campaign($db,$row['id'],$user['id']);if(!$row)throw new RuntimeException('Campaign disappeared during sync');
             $state=json_decode($row['state_json'],true);$versions=json_decode($row['field_versions_json'],true);$revision=(int)$row['revision'];if(!is_array($state))$state=[];if(!is_array($versions))$versions=[];
+            migrate_indexed_map_clue_versions($versions, get_path($state, 'modules.map'));
+            $appliedAibp = false;
             $exists=$db->prepare('SELECT seq FROM campaign_operations WHERE operation_id=?');$insert=$db->prepare('INSERT INTO campaign_operations(operation_id,campaign_id,user_id,client_id,field_path,value_json,base_revision,created_at) VALUES(?,?,?,?,?,?,?,?)');
             foreach($operations as $op){if(!is_array($op)||!preg_match('/^[A-Za-z0-9_-]{8,100}$/',(string)($op['id']??''))||!preg_match('/^[A-Za-z0-9_-]{8,100}$/',(string)($op['clientId']??'')))respond(400,['error'=>'战役同步操作无效']);
-                $exists->execute([$op['id']]);if($exists->fetch())continue;$path=(string)($op['path']??'');$incoming=$op['value']??null;validate_value($path,$incoming);$base=is_int($op['baseRevision']??null)?$op['baseRevision']:0;$selected=$incoming;
-                if(($versions[$path]??0)>$base){$previous=get_path($state,$path);$choice=resolve_campaign_sync_conflict($path,$previous,$incoming);$selected=$choice['value'];$conflict=['path'=>$path,'previous'=>$previous,'resolution'=>$choice['resolution']];if(isset($choice['previousRound'])){$conflict['previousRound']=$choice['previousRound'];$conflict['incomingRound']=$choice['incomingRound'];}$conflicts[]=$conflict;}
-                $revision++;set_path($state,$path,$selected);$versions[$path]=$revision;
+                $path = (string)($op['path'] ?? '');
+                $incoming = $op['value'] ?? null;
+                $exists->execute([$op['id']]);
+                if ($exists->fetch()) {
+                    // A retried map write may have committed with newer clues
+                    // merged in. Return the authoritative state again.
+                    if ($path === 'modules.map' && get_path($state, $path) !== $incoming) {
+                        $conflicts[] = ['path'=>$path, 'resolution'=>'merged'];
+                    }
+                    continue;
+                }
+                validate_value($path, $incoming);
+                $base = is_int($op['baseRevision'] ?? null) ? $op['baseRevision'] : 0;
+                $versionPath = $path;
+                $writePath = $path;
+                $selected = $incoming;
+                $cluePath = map_clue_path($path);
+                if ($cluePath !== null) {
+                    [$writePath, $versionPath, $selected] = resolve_map_clue_write($state, $versions, $op, $cluePath, $base);
+                } elseif ($path === 'modules.map' || ($versions[$path] ?? 0) > $base) {
+                    $previous = get_path($state, $path);
+                    $choice = resolve_campaign_sync_conflict($path, $previous, $incoming, $versions, $base);
+                    $selected = $choice['value'];
+                    if (($versions[$path] ?? 0) > $base || $selected !== $incoming) {
+                        $conflict = ['path'=>$path, 'previous'=>$previous, 'resolution'=>$choice['resolution']];
+                        if (isset($choice['previousRound'])) {
+                            $conflict['previousRound'] = $choice['previousRound'];
+                            $conflict['incomingRound'] = $choice['incomingRound'];
+                        }
+                        $conflicts[] = $conflict;
+                    }
+                }
+                $revision++;
+                if ($path === 'modules.map') record_map_clue_versions($previous, $selected, $versions, $revision);
+                set_path($state, $writePath, $selected);
+                $versions[$versionPath] = $revision;
+                $appliedAibp = $appliedAibp || is_aibp_operation_path($path);
                 // The authoritative current module state is already stored in
                 // campaigns.state_json.  The operations log is only ever read
                 // back for operation_id de-duplication, so storing the full
@@ -727,11 +858,15 @@ try {
                     : json_encode($incoming,JSON_UNESCAPED_UNICODE);
                 $insert->execute([$op['id'],$row['id'],$user['id'],$op['clientId'],$path,$loggedValue,$base,stamp()]);
             }
-            $q=$db->prepare('UPDATE campaigns SET state_json=?,field_versions_json=?,revision=?,updated_at=? WHERE id=?');$q->execute([json_encode($state,JSON_UNESCAPED_UNICODE),json_encode($versions),$revision,stamp(),$row['id']]);
+            if ($revision !== (int)$row['revision']) {
+                $q=$db->prepare('UPDATE campaigns SET state_json=?,field_versions_json=?,revision=?,updated_at=? WHERE id=?');$q->execute([json_encode($state,JSON_UNESCAPED_UNICODE),json_encode($versions),$revision,stamp(),$row['id']]);
+            }
             // The active AIBP campaign is the only one allowed to retain its
             // undo/step history.  Other campaigns keep their current state,
             // but their historical AIBP snapshots are discarded.
-            if (array_filter($operations, fn($op) => is_array($op) && is_aibp_operation_path($op['path'] ?? ''))) {
+            // Operation IDs remain necessary for offline retries even when
+            // their undo snapshots are cleared. A replay must not prune again.
+            if ($appliedAibp) {
                 retain_active_aibp_history($db, $row['id'], $user['id']);
             }
             $db->exec('COMMIT');

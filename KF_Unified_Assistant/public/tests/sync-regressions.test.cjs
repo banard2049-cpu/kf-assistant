@@ -8,21 +8,97 @@ const section = (start, end) => source.slice(source.indexOf(start), source.index
 const plain = value => JSON.parse(JSON.stringify(value));
 
 function harness() {
-  const requests = [], storage = new Map(), saves = [], timers = [];
+  const requests = [], storage = new Map(), saves = [], timers = [], pendingSaves = [];
+  let nextOperation = 0;
   const context = vm.createContext({
     user: { id: 'user-A' }, active: 'sheet-A', state: { knightId: 'stoneface', gold: 1 }, revision: 0,
     activeCampaign: 'campaign-A', campaignState: { kingdom: 'sunken' }, campaignRevision: 0,
-    pending: [], campaignPending: [], syncing: false, campaignSyncing: false,
+    pending: [], campaignPending: [], syncing: false, campaignSyncing: false, saveTimer: null,
+    clientId: 'client-A', compatibleUuid: () => `operation_${++nextOperation}`,
     navigator: { onLine: true }, sheets: [{ id: 'sheet-A' }, { id: 'sheet-B' }],
     api: (route, options) => new Promise((resolve, reject) => requests.push({ route, body: options?.body ? JSON.parse(options.body) : undefined, resolve, reject })),
     localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
-    persistPending() {}, persistCampaignPending() {}, setSave: (...args) => saves.push(args), renderValues() {}, toast() {},
+    persistPending: () => pendingSaves.push(plain(context.pending)), persistCampaignPending() {}, setSave: (...args) => saves.push(args), renderValues() {}, toast() {},
     renderAll() {}, closeSidebar() {}, renderLists() {}, showOverview() {}, viewMode: 'edit',
-    hydrateGameSettings() {}, renderCurrentModule() {}, setTimeout: callback => timers.push(callback), structuredClone,
+    hydrateGameSettings() {}, renderCurrentModule() {}, setTimeout: callback => timers.push(callback), clearTimeout() {}, structuredClone,
   });
-  vm.runInContext(section('const pathSet=', 'const op=') + section('const cacheSheet=', 'function campaignOp(') + section('async function syncCampaign(){', 'function hydrateGameSettings(') + section('let sheetOpenRequest=0;', 'function showEmpty(') + section('async function refreshLists(){', 'function renderLists('), context);
-  return { context, requests, storage, saves, timers };
+  vm.runInContext(section('const pathGet=', 'function campaignOp(') + section('async function syncCampaign(){', 'function hydrateGameSettings(') + section('let sheetOpenRequest=0;', 'function showEmpty(') + section('async function refreshLists(){', 'function renderLists('), context);
+  return { context, requests, storage, saves, timers, pendingSaves };
 }
+
+test('the gold input rejects decimals, negatives, and exponents and saves zero and positive integers', async () => {
+  const { context: c, requests } = harness();
+  const listeners = {};
+  c.$ = () => ({ addEventListener: (name, callback) => { listeners[name] = callback; } });
+  vm.runInContext(section('$("#importKnightFile").onchange=', '$("#sheetForm").addEventListener("focusout"'), c);
+  const gold = {
+    type: 'number', dataset: { path: 'gold' }, value: '1', min: '0', max: '99999', step: '1',
+    get valueAsNumber() { return this.value === '' ? NaN : Number(this.value); },
+    hasAttribute: () => false, validity: { badInput: false },
+  };
+
+  for (const invalid of ['1.5', '-2', '1e2']) {
+    gold.value = invalid;
+    listeners.input({ target: gold });
+    assert.equal(gold.value, '1', `invalid ${invalid} restores the previous value`);
+    assert.equal(c.state.gold, 1);
+    assert.equal(c.pending.length, 0);
+  }
+  for (const data of ['.', '-', '+', 'e', '1.5']) {
+    let prevented = false;
+    listeners.beforeinput({ target: gold, data, inputType: 'insertText', preventDefault: () => { prevented = true; } });
+    assert.ok(prevented, `invalid insertion ${data} is cancelled before editing the input`);
+  }
+  gold.value = '';
+  gold.validity.badInput = true;
+  listeners.input({ target: gold });
+  assert.equal(gold.value, '1', 'browser-sanitized invalid text is not treated as a cleared value');
+  assert.equal(c.pending.length, 0);
+  gold.validity.badInput = false;
+
+  for (const value of [0, 12]) {
+    const data = String(value);
+    listeners.beforeinput({ target: gold, data, inputType: 'insertText', preventDefault: () => assert.fail(`valid insertion ${data} was cancelled`) });
+    gold.value = data;
+    listeners.input({ target: gold });
+    assert.equal(c.state.gold, value);
+  }
+  const saving = c.sync();
+  assert.deepEqual(requests[0].body.operations.map(operation => operation.value), [0, 12]);
+  requests[0].resolve({ state: { gold: 12 }, revision: 1 });
+  await saving;
+  assert.equal(c.pending.length, 0);
+});
+
+test('legacy invalid numbers are removed from the durable queue while valid edits on both sheets sync', async () => {
+  const { context: c, requests, pendingSaves } = harness();
+  const investigationPath = 'story.0.investigations.0.success';
+  c.pending.push(
+    { id: 'bad-gold', sheetId: 'sheet-A', path: 'gold', value: 1.5 },
+    { id: 'good-gold', sheetId: 'sheet-A', path: 'gold', value: 2 },
+    { id: 'good-notes', sheetId: 'sheet-A', path: 'notes', value: 'Keep this edit' },
+    { id: 'bad-investigation', sheetId: 'sheet-B', path: investigationPath, value: 3.5 },
+    { id: 'clear-investigation', sheetId: 'sheet-B', path: investigationPath, value: '' },
+    { id: 'good-leads', sheetId: 'sheet-B', path: 'leads', value: 0 },
+  );
+
+  const ids = operations => Array.from(operations, operation => operation.id);
+  const first = c.sync();
+  assert.equal(requests[0].body.sheetId, 'sheet-A');
+  assert.deepEqual(ids(requests[0].body.operations), ['good-gold', 'good-notes']);
+  assert.deepEqual(ids(pendingSaves.at(-1)), ['good-gold', 'good-notes', 'clear-investigation', 'good-leads']);
+  requests[0].resolve({ state: { gold: 2, notes: 'Keep this edit' }, revision: 1 });
+  await first;
+
+  const second = c.sync();
+  assert.equal(requests[1].body.sheetId, 'sheet-B');
+  assert.deepEqual(ids(requests[1].body.operations), ['clear-investigation', 'good-leads']);
+  requests[1].resolve({ state: { leads: 0 }, revision: 1 });
+  await second;
+
+  assert.deepEqual(ids(c.pending), []);
+  assert.deepEqual(pendingSaves.at(-1), []);
+});
 
 test('a delayed sheet response updates only its original sheet and cache', async () => {
   const { context: c, requests, storage } = harness();

@@ -16,6 +16,11 @@ const settingsMethod = api.slice(api.indexOf("    private JSONObject userSetting
 const mergeSettingsMethod = api.slice(api.indexOf("    private void mergeSettings("), api.indexOf("    private JSONObject currentUser("));
 const copyRoute = api.slice(api.indexOf('if ("copy".equals(action) && "POST".equals(method))'), api.indexOf('if ("trash".equals(action)'));
 const importRoute = api.slice(api.indexOf("private JSONObject campaignImport("), api.indexOf("private JSONObject sheetImport("));
+const storeDb = api.slice(api.indexOf("    private static final class StoreDb"), api.lastIndexOf("\n}"));
+const requestMethod = api.slice(api.indexOf("    public synchronized String request("), api.indexOf("    private JSONObject dispatch("));
+const campaignSyncMethods = api.slice(api.indexOf("    private JSONObject campaignSync("), api.indexOf("    private JSONObject campaignExport("));
+const pathMethods = api.slice(api.indexOf("    private Object getPath("), api.indexOf("    private String route("));
+const mapSyncConstants = api.slice(api.indexOf("    private static final String MAP_PATH"), api.indexOf("    private static final Map<String, String> KNIGHTS"));
 assert.match(copyRoute, /CampaignStateImport\.rebindRogueCampaign\(copy\.getJSONObject\("state"\), copy\.getString\("id"\)\)/,
   "campaign copies must rebind the copied rogue bundle");
 assert.match(importRoute, /CampaignStateImport\.remapSheetReferences\(importedState, sheetMap\)/,
@@ -44,6 +49,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -59,16 +71,151 @@ public final class CampaignStateImportTest {
   }
   private static JSONObject copyObject(JSONObject value) throws JSONException { return value == null ? new JSONObject() : new JSONObject(value.toString()); }
   private static JSONArray copyArray(JSONArray value) throws JSONException { return value == null ? new JSONArray() : new JSONArray(value.toString()); }
-  private static JSONObject ok(JSONObject value) { return value; }
+  private static Object valueOrNull(Object value) { return value == null ? JSONObject.NULL : value; }
+  private static JSONObject envelope(int status, JSONObject body) throws JSONException {
+    return new JSONObject().put("status", status).put("body", body);
+  }
+  private static JSONObject ok(JSONObject value) throws JSONException { return envelope(200, value); }
+  private static JSONObject error(String message) throws JSONException { return new JSONObject().put("error", message); }
   ${settingsMethod}
   ${mergeSettingsMethod}
+  ${storeDb}
+  ${requestMethod}
+  ${campaignSyncMethods}
+  ${pathMethods}
+  ${mapSyncConstants}
+
+  private final StoreDb database = new StoreDb(new Context());
+  private static final class Uri { static Uri parse(String ignored) { return new Uri(); } }
+  private String route(Uri uri) { return "campaign-sync"; }
+  private JSONObject json(String value) throws JSONException { return new JSONObject(value); }
+  private String safeMessage(Exception error) { return error.toString(); }
+  private String now() { return "test time"; }
+  private JSONObject dispatch(JSONObject store, String method, String route, Uri uri, JSONObject data) throws JSONException {
+    return campaignSync(store, "owner", data);
+  }
+  private JSONObject activeCampaign(JSONObject store, String userId, String id) {
+    return store.getJSONObject("campaigns").getJSONObject(userId).optJSONObject(id);
+  }
+
+  // The JVM harness only exposes SQLite's scalar API. Android's native
+  // implementation returns the text directly without allocating a window.
+  private static final class Context { final SQLiteDatabase db = new SQLiteDatabase(); }
+  private static final class ContentValues extends HashMap<String, Object> {}
+  private static final class SQLiteDoneException extends RuntimeException {}
+  private static abstract class SQLiteOpenHelper {
+    private final SQLiteDatabase db;
+    SQLiteOpenHelper(Context context, String name, Object factory, int version) { db = context.db; }
+    SQLiteDatabase getReadableDatabase() { return db; }
+    SQLiteDatabase getWritableDatabase() { return db; }
+    public abstract void onCreate(SQLiteDatabase db);
+    public abstract void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion);
+  }
+  private static final class SQLiteDatabase {
+    static final int CONFLICT_REPLACE = 5;
+    String row;
+    void execSQL(String sql) {}
+    SQLiteStatement compileStatement(String sql) {
+      check("SELECT json FROM store WHERE id=1".equals(sql), "read the original save row in place");
+      return new SQLiteStatement(row);
+    }
+    long insertWithOnConflict(String table, String nullColumn, ContentValues values, int conflictAlgorithm) {
+      check("store".equals(table) && Integer.valueOf(1).equals(values.get("id")) && conflictAlgorithm == CONFLICT_REPLACE,
+        "keep writing the original row atomically");
+      row = (String) values.get("json");
+      return 1;
+    }
+  }
+  private static final class SQLiteStatement implements AutoCloseable {
+    private final String row;
+    SQLiteStatement(String row) { this.row = row; }
+    String simpleQueryForString() {
+      if (row == null) throw new SQLiteDoneException();
+      return row;
+    }
+    @Override public void close() {}
+  }
+
+  private static void checkLargeStore() throws Exception {
+    Context context = new Context();
+    StoreDb db = new StoreDb(context);
+    check(db.read().getJSONObject("campaigns").length() == 0, "a new database should have an empty campaign list");
+    String notes = "骑士🛡️".repeat(300_000);
+    JSONObject legacy = object("currentUserId", "owner", "campaigns", object("owner", object("notes", notes)));
+    context.db.row = legacy.toString();
+    check(context.db.row.getBytes(StandardCharsets.UTF_8).length > 3 * 1024 * 1024, "fixture must exceed the default cursor window");
+
+    JSONObject loaded = db.read();
+    check(notes.equals(loaded.getJSONObject("campaigns").getJSONObject("owner").getString("notes")),
+      "read the entire large legacy save including multibyte text");
+    loaded.getJSONObject("settings").put("owner", object("marker", true));
+    db.write(loaded);
+    JSONObject reopened = new StoreDb(context).read();
+    check(reopened.getJSONObject("settings").getJSONObject("owner").getBoolean("marker"), "large saves remain writable");
+    check(notes.equals(reopened.getJSONObject("campaigns").getJSONObject("owner").getString("notes")),
+      "a write and reopen must preserve the oversized content");
+  }
+
+  private static final String INDEXED_CLUE = "modules.map.knights.0.clues.martial";
+
+  private JSONObject sync(JSONObject... ops) throws Exception {
+    return new JSONObject(request("POST", "/api.php?route=campaign-sync", object("campaignId", "campaign", "operations", array((Object[]) ops)).toString()));
+  }
+  private static JSONObject op(String id, int base, String path, Object value) throws Exception {
+    return object("id", id, "baseRevision", base, "path", path, "value", value);
+  }
+  private static JSONObject map(int round, boolean reordered, int bartos, int caelia) throws Exception {
+    JSONObject left = object("sheetId", "squire:bartos", "memberType", "squire", "clues", object("martial", bartos));
+    JSONObject right = object("sheetId", "squire:caelia", "memberType", "squire", "clues", object("martial", caelia));
+    return object("round", round, "knights", reordered ? array(right, left) : array(left, right));
+  }
+  private static JSONObject acceptedMap(JSONObject response, String resolution) throws Exception {
+    check(response.getInt("status") == 200, "expected successful sync: " + response);
+    JSONObject body = response.getJSONObject("body");
+    if (resolution != null) check(resolution.equals(body.getJSONArray("conflicts").getJSONObject(0).getString("resolution")), "expected resolution " + resolution);
+    return body.getJSONObject("state").getJSONObject("modules").getJSONObject("map");
+  }
+  private static int clueAt(JSONObject map, int index) {
+    return map.getJSONArray("knights").getJSONObject(index).getJSONObject("clues").getInt("martial");
+  }
+  private void checkCampaignClueSync() throws Exception {
+    JSONObject record = object("state", object("modules", object("map", map(5, false, 2, 3))), "revision", 6,
+      "fieldVersions", object(MAP_PATH, 5, INDEXED_CLUE, 6, "modules.map.knights.1.clues.martial", 4), "appliedOps", new JSONObject());
+    database.write(object("campaigns", object("owner", object("campaign", record))));
+    JSONObject staleMap = op("stale", 5, MAP_PATH, map(6, true, 0, 1));
+    JSONObject merged = acceptedMap(sync(staleMap), "merged");
+    check(merged.getInt("round") == 6 && clueAt(merged, 1) == 2 && clueAt(merged, 0) == 1,
+      "carry forward the newer legacy clue by stable identity, ignoring older indexed revisions");
+
+    JSONObject relative = op("gain", 5, INDEXED_CLUE, 1).put("squireId", "squire:bartos").put("clueDelta", 1);
+    JSONObject gained = acceptedMap(sync(relative), null);
+    check(clueAt(gained, 1) == 3 && clueAt(gained, 0) == 1, "apply a delta to the correct squire after reordering");
+    check(clueAt(acceptedMap(sync(relative), null), 1) == 3, "retries must not repeat a clue delta");
+    check(clueAt(acceptedMap(sync(staleMap), "merged"), 1) == 3, "a stale map retry receives the authoritative map");
+    check(sync(op("absolute", 5, INDEXED_CLUE, 10)).getInt("status") == 409, "reject a legacy write with a stale index");
+
+    JSONObject lowered = acceptedMap(sync(op("lower", 5, MAP_PATH, map(4, false, 0, 1))), "existing");
+    check(lowered.getInt("round") == 6, "keep an existing higher round when a stale write loses arbitration");
+    check(clueAt(acceptedMap(sync(op("fresh", 20, MAP_PATH, map(7, true, 5, 1))), null), 1) == 5, "allow a fresh map to intentionally change a clue");
+    check(clueAt(acceptedMap(sync(op("next", 9, MAP_PATH, map(8, false, 0, 1))), "merged"), 0) == 5, "record clue revisions from whole-map writes");
+
+    JSONObject missing = op("missing", 20, INDEXED_CLUE, 1).put("squireId", "squire:missing").put("clueDelta", 1);
+    JSONObject result = sync(op("rollback", 20, "presentation.scene", "conflict"), missing);
+    check(result.getInt("status") == 409, "report a removed squire");
+    JSONObject after = activeCampaign(database.read(), "owner", "campaign");
+    check(!after.getJSONObject("state").has("presentation") && !after.getJSONObject("appliedOps").has("rollback"),
+      "a failed batch must persist neither earlier edits nor their operation IDs");
+  }
+
   public static void main(String[] args) throws Exception {
+    checkLargeStore();
     CampaignStateImportTest localApi = new CampaignStateImportTest();
+    localApi.checkCampaignClueSync();
     JSONObject store = object("settings", new JSONObject());
     JSONObject ledger = object("enabled", true, "level", 2, "shards", 14, "built", array("saints-sanctuary"), "loadouts", array(object("name", "saved setup")));
     localApi.userSettings(store, "owner", "PATCH", object("jura", ledger));
     ledger.put("shards", 999);
-    JSONObject savedSettings = localApi.userSettings(store, "owner", "GET", new JSONObject()).getJSONObject("settings");
+    JSONObject savedSettings = localApi.userSettings(store, "owner", "GET", new JSONObject()).getJSONObject("body").getJSONObject("settings");
     check(savedSettings.getJSONObject("jura").getInt("shards") == 14, "Android must persist a copied Jura ledger");
     savedSettings.getJSONObject("jura").put("shards", 888);
     check(store.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 14, "GET must not expose mutable stored data");
@@ -81,7 +228,7 @@ public final class CampaignStateImportTest {
     check(store.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 7, "legacy imports without a ledger cannot clear existing Jura");
     localApi.userSettings(store, "owner", "PATCH", object("jura", JSONObject.NULL));
     check(store.getJSONObject("settings").getJSONObject("owner").isNull("jura"), "explicit settings reset stores JSON null");
-    check(!localApi.userSettings(store, "other", "GET", new JSONObject()).getJSONObject("settings").has("jura"), "accounts keep separate ledgers");
+    check(!localApi.userSettings(store, "other", "GET", new JSONObject()).getJSONObject("body").getJSONObject("settings").has("jura"), "accounts keep separate ledgers");
     Map<String,String> sheets = new HashMap<>(); sheets.put("old-sheet", "new-sheet");
     JSONObject knight = object("id", "old-sheet", "sheetId", "old-sheet", "space", "7", "done", true);
     JSONObject undoKnight = object("id", "piece-1", "sheetId", "old-sheet", "clues", object("martial", 3));
@@ -127,7 +274,7 @@ public final class CampaignStateImportTest {
     check("unchanged".equals(legacy.opt("campaignId")) && legacy.opt("slots")==JSONObject.NULL,"legacy single-run saves must remain compatible");
     CampaignStateImport.remapSheetReferences(JSONObject.NULL,sheets);
     CampaignStateImport.remapSheetReferences(null,sheets);
-    System.out.println("Android campaign import passed: Jura save/import/reset/account isolation, copied/imported rogue bundles, inactive slots, nested sheet references, piece identity, unknown IDs, nulls and legacy saves.");
+    System.out.println("Android local saves passed: oversized legacy saves, stable squire clue sync, rejected batch rollback, Jura settings, and campaign import/copy.");
   }
 }`
 };

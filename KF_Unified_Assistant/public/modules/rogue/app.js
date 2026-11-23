@@ -4,9 +4,11 @@
   // v2 invalidates saves created before the node-coordinate extraction.  The
   // old payload stored hitbox coordinates, so keeping it would redraw circles
   // away from the printed nodes even after the manifest is corrected.
-  const KEY = "kf-rogue-path-v2";
+  const KEY = window.KF_MODULE_BOOTSTRAP?.storageKey || "kf-rogue-path-v2";
   const SLOTS_KEY = "kf-rogue-path-slots-v1";
   const ACTIVE_SLOT_KEY = "kf-rogue-path-active-slot-v1";
+  const HANDOFF_KEY = window.KF_MODULE_BRIDGE?.handoffKey?.("kfRogueHandoff") || "kfRogueHandoff";
+  const campaignUrl = path => window.KF_MODULE_BRIDGE?.campaignUrl?.(path) || path;
   const $ = q => document.querySelector(q);
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#39;"}[c]));
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -284,7 +286,7 @@
     state.history.push({ at: Date.now(), type: "battle-start", nodeId: node.id, ...result });
     save();
     const roster = state.roster.filter(member => member.alive).slice(0, 4).map(member => ({ id: member.id, sheetId: member.id, knightId: member.knightId, type: "knight", name: member.name, title: member.name }));
-    localStorage.setItem("kfRogueHandoff", JSON.stringify({
+    localStorage.setItem(HANDOFF_KEY, JSON.stringify({
       id: state.pendingBattle.handoffId, slotId: activeSlotId, createdAt: state.pendingBattle.startedAt,
       campaignId: campaignId(), roguePath: true, stage:state.stage, postgame:state.postgame, nodeId: node.id, kingdom: node.kingdom,
       nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId),
@@ -292,7 +294,7 @@
     }));
     renderMap();
     await window.KF_MODULE_BRIDGE?.flush?.();
-    location.href = "/modules/aibp/";
+    location.href = campaignUrl("/modules/aibp/");
   }
   function updateNodeSelection() {
     document.querySelectorAll("[data-node]").forEach(button => {
@@ -525,7 +527,7 @@
   }
   function clearBattleHandoff(pending) {
     try {
-      const handoff = JSON.parse(localStorage.getItem("kfRogueHandoff") || "null");
+      const handoff = JSON.parse(localStorage.getItem(HANDOFF_KEY) || "null");
       if (!handoff?.roguePath || handoff.campaignId !== campaignId()) return;
       if (handoff.slotId && handoff.slotId !== activeSlotId) return;
       if (pending.handoffId) {
@@ -539,7 +541,7 @@
         const owners = slots.filter(slot => matches(slot.state?.pendingBattle));
         if (!matches(pending) || owners.length !== 1 || owners[0].id !== activeSlotId) return;
       }
-      localStorage.removeItem("kfRogueHandoff");
+      localStorage.removeItem(HANDOFF_KEY);
     } catch { /* malformed or unrelated handoffs are not owned by this battle */ }
   }
   function resolve(result) {
@@ -599,7 +601,7 @@
     $("#runStatus").textContent = ({active:"进行中",won:"战役胜利",lost:"战役失败"})[state.status] || state.status;
     renderParty(); renderRewards(); renderResolution(); renderRewardChoice(); renderLinkEditor(); renderMap();
     const pending = state.pendingBattle;
-    $("#pendingNotice").innerHTML = pending ? `<p class="reward-item">待结算：${esc(pending.monster)} · <a href="/modules/aibp/">返回 AI/BP</a></p>` : "";
+    $("#pendingNotice").innerHTML = pending ? `<p class="reward-item">待结算：${esc(pending.monster)} · <a href="${esc(campaignUrl("/modules/aibp/"))}">返回 AI/BP</a></p>` : "";
   }
   $("#startRun").addEventListener("click", startRun);
   $("#newRun").addEventListener("click", () => { if (!confirm("新建肉鸽战役会建立一个新的存档，保留当前肉鸽进度，确定继续？")) return; createNewSlot(); });

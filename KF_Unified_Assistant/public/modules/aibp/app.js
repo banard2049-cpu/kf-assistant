@@ -14,7 +14,7 @@
     digestiveTrack: { min: 1, max: 4, step: 1, positions: ["N1", "N2", "N3", "N4"] },
     layout: { id: "belly_of_beast:default", label: "Belly of the Beast", monsterId: "__attached_monster__", kingdom: "both", levelVariant: "all", placements: [] }
   };
-  const STORAGE_KEY = "kf-aibp-assistant-v1";
+  const STORAGE_KEY = window.KF_MODULE_BOOTSTRAP?.storageKey || "kf-aibp-assistant-v1";
   const DECK_ORDER_VIEW_KEY = "kf-aibp-view-deck-order-v1";
   const VERSION = 10;
   const WOUND_PREFIX = "WOUND:";

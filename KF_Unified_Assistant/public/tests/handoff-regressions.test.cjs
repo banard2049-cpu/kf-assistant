@@ -6,6 +6,7 @@ const vm = require('node:vm');
 const read = relative => fs.readFileSync(path.join(__dirname, '..', relative), 'utf8');
 const source = read('modules/module-bridge.js');
 const KEY = 'kf-aibp-assistant-v1';
+const handoffKey = name => `${name}:A`;
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const plain = value => JSON.parse(JSON.stringify(value));
 const normal = extra => ({ id: 'normal', campaignId: 'A', monster: 'Normal boss', level: 2, createdAt: 20, ...extra });
@@ -21,7 +22,7 @@ async function bridgeHarness(entries) {
         if (selector.startsWith('[data-monster=')) selected = selector;
         if (selector === '#setupBattle') {
           setups.push(selected);
-          storage.set(KEY, JSON.stringify({ selected }));
+          storage.set(c.KF_MODULE_BOOTSTRAP.storageKey, JSON.stringify({ selected }));
         }
       },
     });
@@ -32,7 +33,11 @@ async function bridgeHarness(entries) {
     document: {
       body: {
         dataset: { kfModule: 'aibp', storageKey: KEY, originalApp: 'app.js' }, querySelector() { return null; },
-        append(node) { if (!storage.has(KEY)) storage.set(KEY, '{}'); node.onload(); },
+        append(node) {
+          const key = c.KF_MODULE_BOOTSTRAP.storageKey;
+          if (!storage.has(key)) storage.set(key, '{}');
+          node.onload();
+        },
       },
       querySelector: control, createElement() { return {}; }, addEventListener() {},
     },
@@ -61,7 +66,8 @@ test('a new normal conflict wins over a consumed rogue handoff and keeps the cam
   assert.deepEqual(h.setups, ['[data-monster="new"]']);
   assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
   assert.equal(h.c.KF_CAMPAIGN_PARTY.some(member => member.id === 'rogue-knight'), false);
-  assert.equal(JSON.parse(h.storage.get('kfEncounterHandoff')).appliedAibp, true);
+  assert.equal(JSON.parse(h.storage.get(handoffKey('kfEncounterHandoff'))).appliedAibp, true);
+  assert.equal(h.storage.has('kfEncounterHandoff'), false);
   assert.equal(h.events.find(event => event.type === 'kf:aibp-handoff').detail.id, 'normal');
   const reloaded = await bridgeHarness([...h.storage.entries()]);
   assert.deepEqual(reloaded.setups, []);
@@ -85,7 +91,7 @@ test('postgame handoffs use the stable monster ID and preserve the full level an
   const h = await bridgeHarness([['kfRogueHandoff', JSON.stringify(request)]]);
   assert.deepEqual(h.setups, ['[data-monster="old"]']);
   assert.equal(h.inputs.get('[data-level]').value, '9');
-  const applied = JSON.parse(h.storage.get('kfRogueHandoff'));
+  const applied = JSON.parse(h.storage.get(handoffKey('kfRogueHandoff')));
   assert.equal(applied.stage, 'withergraal');
   assert.equal(applied.postgame, true);
   assert.equal(applied.level, 9);
@@ -132,6 +138,7 @@ function resolutionHarness(handoff, { duplicateLegacy = false, legacy = false } 
   const c = vm.createContext({
     localStorage: { getItem: key => storage.get(key) ?? null, removeItem: key => storage.delete(key) },
     state, slots: [{ id: 'slot-A', state }, ...(duplicateLegacy ? [{ id: 'slot-B', state: plain(state) }] : [])], activeSlotId: 'slot-A',
+    HANDOFF_KEY: 'kfRogueHandoff',
     campaignId: () => 'A', nodeById: () => node, selectedNodeId: null,
     document: { querySelectorAll: () => [] }, save() {}, render() {}, rewardChoiceOptions: () => null,
     finalizeVictory: value => finalized.push(value),

@@ -3,9 +3,10 @@
 
   const data = window.KF_CONFLICT_SETUPS;
   const $ = selector => document.querySelector(selector);
+  const storageKey = window.KF_MODULE_BOOTSTRAP?.storageKey || "kf-conflict-setup-v1";
   const esc = value => String(value ?? "").replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
   const saved = (() => {
-    try { return JSON.parse(localStorage.getItem("kf-conflict-setup-v1") || "null") || {}; }
+    try { return JSON.parse(localStorage.getItem(storageKey) || "null") || {}; }
     catch { return {}; }
   })();
   const state = {
@@ -17,7 +18,7 @@
   };
 
   function persist() {
-    localStorage.setItem("kf-conflict-setup-v1", JSON.stringify({
+    localStorage.setItem(storageKey, JSON.stringify({
       monsterId: state.monsterId,
       kingdom: state.kingdom,
       level: state.level,

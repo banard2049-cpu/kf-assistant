@@ -117,8 +117,8 @@ test('campaign import remaps module/history references and display ETags follow 
     // changing current saves or losing operation-ID deduplication.
     const savedCampaign = (await api('campaigns/' + campaignId)).campaign;
     const databasePath = path.join(scratch, 'data/kf-knights.db');
-    const runPhpJson = source => {
-      const result = spawnSync(php, [...args, '-r', source, databasePath], { encoding: 'utf8', windowsHide: true });
+    const runPhpJson = (source, ...parameters) => {
+      const result = spawnSync(php, [...args, '-r', source, databasePath, ...parameters], { encoding: 'utf8', windowsHide: true });
       assert.equal(result.status, 0, result.stderr);
       return JSON.parse(result.stdout);
     };
@@ -179,6 +179,95 @@ test('campaign import remaps module/history references and display ETags follow 
     const publicBattle = (await api(displayRoute)).modules.aibp.battle;
     assert.deepEqual(publicBattle.sheetTraits, sheetTraits, 'The second screen must receive placed trait coordinates and size');
     assert.ok(!('aiDeck' in publicBattle) && !('bpDeck' in publicBattle), 'Public traits must not expose hidden deck contents');
+
+    const createCampaign = async name => (await api('campaigns', 'POST', { name })).campaign.id;
+    const saveCampaign = (id, ...operations) => api('campaign-sync', 'POST', { campaignId: id, operations });
+    const readCampaign = async id => (await api('campaigns/' + id)).campaign;
+
+    await t.test('map sync preserves independent clue changes and resolves stale indexes by squire identity', async () => {
+      const id = await createCampaign('clue synchronization');
+      const squire = (sheetId, martial = 0) => ({ sheetId, memberType: 'squire', clues: { martial } });
+      const bartos = 'squire:bartos', caelia = 'squire:caelia';
+      const firstMap = { round: 1, trackers: { time: 2 }, knights: [squire(bartos), squire(caelia)] };
+      const original = await saveCampaign(id, op('map_clue_initial', 'modules.map', firstMap));
+      const adjusted = await saveCampaign(id, {
+        ...op('map_clue_delta_1', 'modules.map.knights.0.clues.martial', 1, original.revision),
+        squireId: bartos, clueDelta: 1,
+      });
+      assert.deepEqual(adjusted.state.modules.map.knights, [squire(bartos, 1), squire(caelia)]);
+
+      const staleMap = { round: 2, trackers: { time: 3 }, knights: [squire(caelia), squire(bartos)] };
+      const staleWrite = op('map_clue_stale', 'modules.map', staleMap, original.revision);
+      const merged = await saveCampaign(id, staleWrite);
+      assert.equal(merged.conflicts[0].resolution, 'merged');
+      assert.deepEqual(merged.state.modules.map, { ...staleMap, knights: [squire(caelia), squire(bartos, 1)] });
+      const retried = await saveCampaign(id, staleWrite);
+      assert.equal(retried.revision, merged.revision);
+      assert.equal(retried.conflicts[0].resolution, 'merged');
+      assert.deepEqual(retried.state, merged.state);
+
+      const undo = { ...staleMap, round: 1, knights: [squire(caelia), squire(bartos)] };
+      const undone = await saveCampaign(id, op('map_clue_undo', 'modules.map', undo, merged.revision));
+      assert.deepEqual(undone.state.modules.map, undo, 'Fresh whole-map undo can intentionally change round and clues');
+
+      const latestMap = { ...undo, round: 3, knights: [squire(bartos, 4), squire(caelia, 2)] };
+      const latest = await saveCampaign(id, op('map_clue_latest', 'modules.map', latestMap, undone.revision));
+      const staleIndexUpdate = {
+        ...op('map_clue_delta_2', 'modules.map.knights.1.clues.martial', 1, undone.revision),
+        squireId: bartos, clueDelta: 1,
+      };
+      const afterReorder = await saveCampaign(id, staleIndexUpdate);
+      assert.deepEqual(afterReorder.state.modules.map, { ...latestMap, knights: [squire(bartos, 5), squire(caelia, 2)] });
+      const concurrentDelta = await saveCampaign(id, { ...staleIndexUpdate, id: 'map_clue_delta_3' });
+      assert.deepEqual(concurrentDelta.state.modules.map.knights, [squire(bartos, 6), squire(caelia, 2)]);
+
+      const staleLegacy = await fetch(url('campaign-sync'), {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: cookie },
+        body: JSON.stringify({ campaignId: id, operations: [
+          op('map_clue_legacy_stale', 'modules.map.knights.1.clues.martial', 1, undone.revision),
+        ] }),
+      });
+      assert.equal(staleLegacy.status, 409);
+      assert.deepEqual((await readCampaign(id)).state, concurrentDelta.state);
+
+      // Before this fix, a newer child revision was stored by array index.
+      // Simulate that legacy database metadata without changing its state.
+      runPhpJson(`
+        $db=new PDO("sqlite:".$argv[1]);
+        $q=$db->prepare("SELECT field_versions_json FROM campaigns WHERE id=?");$q->execute([$argv[2]]);
+        $versions=json_decode($q->fetchColumn(),true);
+        $versions["modules.map.knights.0.clues.martial"]=$versions["modules.map.squireClues.squire:bartos.martial"];
+        unset($versions["modules.map.squireClues.squire:bartos.martial"]);
+        $q=$db->prepare("UPDATE campaigns SET field_versions_json=? WHERE id=?");$q->execute([json_encode($versions),$argv[2]]);
+        echo json_encode($versions);
+      `, id);
+      const fromLegacy = await saveCampaign(id, op('map_clue_legacy_root', 'modules.map', { ...latestMap, round: 4 }, latest.revision));
+      assert.equal(fromLegacy.conflicts[0].resolution, 'merged');
+      assert.deepEqual(fromLegacy.state.modules.map.knights, [squire(bartos, 6), squire(caelia, 2)]);
+    });
+
+    await t.test('AIBP cleanup retains operation IDs and retry does not replay or prune', async () => {
+      const a = await createCampaign('battle A'), b = await createCampaign('battle B');
+      const battle = turn => ({ battle: { turn }, history: [{ turn: turn - 1 }] });
+      const firstA = op('battle_a_first', 'modules.aibp', battle(1));
+      await saveCampaign(a, firstA);
+      await saveCampaign(b, op('battle_b_first', 'modules.aibp', battle(1)));
+      const afterPruning = await readCampaign(a);
+      assert.deepEqual(afterPruning.state.modules.aibp, { ...battle(1), history: [] });
+
+      const advanced = await saveCampaign(a, op('battle_a_advanced', 'modules.aibp', battle(2), afterPruning.revision));
+      const retry = await saveCampaign(a, firstA);
+      assert.equal(retry.revision, advanced.revision);
+      assert.deepEqual(retry.state.modules.aibp, battle(2));
+
+      const beforeB = await readCampaign(b);
+      await saveCampaign(b, op('battle_b_advanced', 'modules.aibp', battle(2), beforeB.revision));
+      const latestA = await readCampaign(a), latestB = await readCampaign(b);
+      const anotherRetry = await saveCampaign(a, firstA);
+      assert.equal(anotherRetry.revision, latestA.revision);
+      assert.deepEqual(anotherRetry.state.modules.aibp, { ...battle(2), history: [] });
+      assert.deepEqual(await readCampaign(b), latestB, 'A duplicate cannot prune undo history from another campaign');
+    });
   } finally {
     const stopped = once(server, 'exit'); server.kill(); await stopped;
     // The directory contains only this test's newly created database and backups.

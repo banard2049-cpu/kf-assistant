@@ -2,9 +2,10 @@ package com.kingdomsforlorn.unified.local;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.webkit.JavascriptInterface;
 
@@ -22,14 +23,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 final class LocalApi {
+    private static final String MAP_PATH = "modules.map";
+    private static final String[] MAP_CLUES = {"martial", "errant", "historic", "mystic"};
+    private static final Pattern MAP_CLUE_PATH = Pattern.compile(
+            "modules\\.map\\.knights\\.(0|[1-9][0-9]*)\\.clues\\.(martial|errant|historic|mystic)");
     private static final Map<String, String> KNIGHTS = new HashMap<>();
     static {
         KNIGHTS.put("stoneface", "Stoneface");
@@ -55,7 +63,7 @@ final class LocalApi {
             String route = route(uri);
             JSONObject payload = json(body);
             JSONObject result = dispatch(store, method == null ? "GET" : method.toUpperCase(Locale.ROOT), route, uri, payload);
-            database.write(store);
+            if (result.optInt("status", 500) < 400) database.write(store);
             return result.toString();
         } catch (Exception error) {
             try {
@@ -194,6 +202,7 @@ final class LocalApi {
         JSONObject state = record.getJSONObject("state");
         JSONObject versions = record.getJSONObject("fieldVersions");
         JSONObject applied = record.getJSONObject("appliedOps");
+        migrateIndexedClueVersions(versions, getPath(state, MAP_PATH));
         int revision = record.optInt("revision");
         JSONArray conflicts = new JSONArray();
         JSONArray operations = data.optJSONArray("operations");
@@ -201,20 +210,198 @@ final class LocalApi {
             JSONObject operation = operations.optJSONObject(index);
             if (operation == null) continue;
             String operationId = operation.optString("id");
-            if (!operationId.isEmpty() && applied.has(operationId)) continue;
             String path = operation.optString("path");
-            int base = operation.optInt("baseRevision");
-            if (versions.optInt(path) > base) {
-                conflicts.put(new JSONObject().put("path", path).put("previous", valueOrNull(getPath(state, path))).put("resolution", "incoming"));
+            Object incoming = valueOrNull(operation.opt("value"));
+            Matcher cluePath = MAP_CLUE_PATH.matcher(path);
+            boolean clueWrite = cluePath.matches();
+            Object previous = valueOrNull(getPath(state, clueWrite ? MAP_PATH : path));
+            if (!operationId.isEmpty() && applied.has(operationId)) {
+                if (MAP_PATH.equals(path) && !previous.toString().equals(incoming.toString())) {
+                    conflicts.put(syncConflict(path, previous, "merged"));
+                }
+                continue;
             }
+            int base = operation.optInt("baseRevision");
             revision++;
-            setPath(state, path, valueOrNull(operation.opt("value")));
-            versions.put(path, revision);
+            if (clueWrite) {
+                JSONObject failure = applySquireClueWrite(previous, versions, operation, cluePath, base, revision);
+                if (failure != null) return failure;
+            } else {
+                Object selected = incoming;
+                boolean fieldConflict = versions.optInt(path) > base;
+                if (MAP_PATH.equals(path)) {
+                    selected = resolveMapSnapshot(previous, incoming, versions, base, fieldConflict, conflicts);
+                    recordMapClueVersions(previous, selected, versions, revision);
+                } else if (fieldConflict) {
+                    conflicts.put(syncConflict(path, previous, "incoming"));
+                }
+                setPath(state, path, selected);
+                versions.put(path, revision);
+            }
             if (!operationId.isEmpty()) applied.put(operationId, true);
         }
         trimObject(applied, 1500);
         record.put("revision", revision).put("updatedAt", now());
         return ok(new JSONObject().put("state", copyObject(state)).put("revision", revision).put("conflicts", conflicts));
+    }
+
+    private static String clueVersionKey(String id, String clue) {
+        return MAP_PATH + ".squireClues." + id + "." + clue;
+    }
+
+    private static JSONArray mapKnights(Object map) {
+        return map instanceof JSONObject ? ((JSONObject) map).optJSONArray("knights") : null;
+    }
+
+    private static String mapSquireId(JSONObject knight) {
+        if (knight == null || !"squire".equals(knight.optString("memberType"))) return "";
+        Object id = knight.opt("sheetId");
+        return id instanceof String ? (String) id : "";
+    }
+
+    private static Map<String, JSONObject> mapSquires(Object map) {
+        Map<String, JSONObject> squires = new LinkedHashMap<>();
+        JSONArray knights = mapKnights(map);
+        for (int index = 0; knights != null && index < knights.length(); index++) {
+            JSONObject knight = knights.optJSONObject(index);
+            String id = mapSquireId(knight);
+            if (!id.isEmpty()) squires.putIfAbsent(id, knight);
+        }
+        return squires;
+    }
+
+    private static JSONObject indexedMapSquire(Object map, String index) {
+        JSONArray knights = mapKnights(map);
+        if (knights == null) return null;
+        try {
+            JSONObject knight = knights.optJSONObject(Integer.parseInt(index));
+            return mapSquireId(knight).isEmpty() ? null : knight;
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    private static long mapClueCount(JSONObject knight, String clue) {
+        JSONObject clues = knight == null ? null : knight.optJSONObject("clues");
+        return clues == null ? 0 : clues.optLong(clue);
+    }
+
+    private static void writeMapClue(JSONObject knight, String clue, long count) throws JSONException {
+        JSONObject clues = knight.optJSONObject("clues");
+        if (clues == null) {
+            clues = new JSONObject();
+            knight.put("clues", clues);
+        }
+        clues.put(clue, count);
+    }
+
+    private static void migrateIndexedClueVersions(JSONObject versions, Object map) throws JSONException {
+        List<String> oldPaths = new ArrayList<>();
+        for (Iterator<String> keys = versions.keys(); keys.hasNext();) {
+            String key = keys.next();
+            if (MAP_CLUE_PATH.matcher(key).matches()) oldPaths.add(key);
+        }
+        for (String path : oldPaths) {
+            Matcher match = MAP_CLUE_PATH.matcher(path);
+            if (!match.matches()) continue;
+            int revision = versions.optInt(path);
+            String id = mapSquireId(indexedMapSquire(map, match.group(1)));
+            if (!id.isEmpty() && revision > versions.optInt(MAP_PATH)) {
+                String key = clueVersionKey(id, match.group(2));
+                versions.put(key, Math.max(revision, versions.optInt(key)));
+            }
+            versions.remove(path);
+        }
+    }
+
+    private JSONObject applySquireClueWrite(Object map, JSONObject versions, JSONObject operation, Matcher path,
+                                           int base, int revision) throws JSONException {
+        String clue = path.group(2);
+        boolean relative = operation.has("squireId") || operation.has("clueDelta");
+        Object id = operation.opt("squireId");
+        Object delta = operation.opt("clueDelta");
+        JSONObject knight;
+        if (relative) {
+            if (!(id instanceof String) || ((String) id).isEmpty() || !(delta instanceof Integer)
+                    || Math.abs((int) delta) != 1) {
+                return envelope(400, error("侍从线索调整无效"));
+            }
+            knight = mapSquires(map).get(id);
+        } else {
+            knight = indexedMapSquire(map, path.group(1));
+        }
+        if (knight == null) return envelope(409, error("该侍从已不在地图队伍中"));
+        String key = clueVersionKey(mapSquireId(knight), clue);
+        long count;
+        if (relative) {
+            long current = Math.max(0, mapClueCount(knight, clue));
+            int step = (int) delta;
+            count = current == Long.MAX_VALUE && step > 0 ? current : Math.max(0, current + step);
+        } else {
+            if (Math.max(versions.optInt(MAP_PATH), versions.optInt(key)) > base) {
+                return envelope(409, error("地图线索已有新修改，请刷新后重试"));
+            }
+            Object value = operation.opt("value");
+            if (!(value instanceof Integer || value instanceof Long) || ((Number) value).longValue() < 0) {
+                return envelope(400, error("侍从线索数值无效"));
+            }
+            count = ((Number) value).longValue();
+        }
+        writeMapClue(knight, clue, count);
+        versions.put(key, revision);
+        return null;
+    }
+
+    private static boolean mergeNewerMapClues(Object previous, Object incoming, JSONObject versions, int base) throws JSONException {
+        Map<String, JSONObject> existing = mapSquires(previous);
+        boolean merged = false;
+        for (Map.Entry<String, JSONObject> squire : mapSquires(incoming).entrySet()) {
+            String id = squire.getKey();
+            if (!existing.containsKey(id)) continue;
+            for (String clue : MAP_CLUES) {
+                long count = mapClueCount(existing.get(id), clue);
+                if (versions.optInt(clueVersionKey(id, clue)) > base && count != mapClueCount(squire.getValue(), clue)) {
+                    writeMapClue(squire.getValue(), clue, count);
+                    merged = true;
+                }
+            }
+        }
+        return merged;
+    }
+
+    private static void recordMapClueVersions(Object previous, Object selected, JSONObject versions, int revision) throws JSONException {
+        Map<String, JSONObject> existing = mapSquires(previous);
+        for (Map.Entry<String, JSONObject> squire : mapSquires(selected).entrySet()) {
+            String id = squire.getKey();
+            for (String clue : MAP_CLUES) {
+                if (mapClueCount(existing.get(id), clue) != mapClueCount(squire.getValue(), clue)) {
+                    versions.put(clueVersionKey(id, clue), revision);
+                }
+            }
+        }
+    }
+
+    private static long mapRound(Object map) {
+        Object round = map instanceof JSONObject ? ((JSONObject) map).opt("round") : null;
+        return round instanceof Integer || round instanceof Long ? Math.max(0, ((Number) round).longValue()) : 0;
+    }
+
+    private static JSONObject syncConflict(String path, Object previous, String resolution) throws JSONException {
+        return new JSONObject().put("path", path).put("previous", previous).put("resolution", resolution);
+    }
+
+    private static Object resolveMapSnapshot(Object previous, Object incoming, JSONObject versions, int base,
+                                             boolean fieldConflict, JSONArray conflicts) throws JSONException {
+        boolean merged = mergeNewerMapClues(previous, incoming, versions, base);
+        if (fieldConflict || merged) {
+            long previousRound = mapRound(previous);
+            long incomingRound = mapRound(incoming);
+            boolean useExisting = previousRound > incomingRound;
+            conflicts.put(syncConflict(MAP_PATH, previous, useExisting ? "existing" : merged ? "merged" : "incoming")
+                    .put("previousRound", previousRound).put("incomingRound", incomingRound));
+            if (useExisting) return previous;
+        }
+        return incoming;
     }
 
     private JSONObject campaignExport(JSONObject store, String userId, Uri uri) throws JSONException {
@@ -748,10 +935,13 @@ final class LocalApi {
 
         JSONObject read() throws JSONException {
             SQLiteDatabase db = getReadableDatabase();
-            try (Cursor cursor = db.rawQuery("SELECT json FROM store WHERE id=1", null)) {
-                if (cursor.moveToFirst()) return normalize(new JSONObject(cursor.getString(0)));
+            // Older saves can already exceed the CursorWindow limit. Read the
+            // existing text directly as a scalar without changing the schema.
+            try (SQLiteStatement statement = db.compileStatement("SELECT json FROM store WHERE id=1")) {
+                return normalize(new JSONObject(statement.simpleQueryForString()));
+            } catch (SQLiteDoneException empty) {
+                return normalize(new JSONObject());
             }
-            return normalize(new JSONObject());
         }
 
         void write(JSONObject store) {

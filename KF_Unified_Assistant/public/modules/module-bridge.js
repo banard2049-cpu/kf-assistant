@@ -4,11 +4,26 @@
   const body = document.body;
   const moduleName = body.dataset.kfModule;
   const stateModuleName = moduleName === "rogue" ? "roguePath" : moduleName;
-  const storageKey = body.dataset.storageKey;
+  const legacyStorageKey = body.dataset.storageKey;
   const originalApp = body.dataset.originalApp || "app.js?v=115";
-  const activeCampaign = localStorage.getItem("kfActiveCampaign") || "";
+  const activeCampaign = (typeof location.search === "string" && new URLSearchParams(location.search).get("campaignId"))
+    || localStorage.getItem("kfActiveCampaign") || "";
+  const storageKey = `kfModuleState:${activeCampaign}:${legacyStorageKey}`;
   const cacheKey = `kfModuleCache:${activeCampaign}:${stateModuleName}`;
-  const storageOwnerKey = `kfModuleStorageOwner:${storageKey}`;
+  const legacyOwnerKey = `kfModuleStorageOwner:${legacyStorageKey}`;
+  const handoffKey = name => `${name}:${activeCampaign}`;
+  const campaignUrl = path => {
+    if (!activeCampaign || typeof location.href !== "string") return path;
+    const url = new URL(path, location.href);
+    if (url.origin !== location.origin) return path;
+    url.searchParams.set("campaignId", activeCampaign);
+    return url.pathname + url.search + url.hash;
+  };
+  if (activeCampaign && typeof location.pathname === "string") {
+    const current = location.pathname + location.search + location.hash;
+    const scoped = campaignUrl(current);
+    if (current !== scoped) history.replaceState(history.state, "", scoped);
+  }
   let cache = (() => {
     try { return JSON.parse(localStorage.getItem(cacheKey) || "null") || {}; }
     catch { return {}; }
@@ -26,13 +41,13 @@
     ? valueSignature(cache.value) !== cache.acknowledgedSignature
     : cache.value !== cache.acknowledgedValue));
   const storeCache = () => {
-    // Keep one module snapshot, rather than duplicating its potentially large
-    // undo history just to remember which value the server acknowledged.
     if (typeof cache.acknowledgedValue === "string") {
       cache.acknowledgedSignature = valueSignature(cache.acknowledgedValue);
       delete cache.acknowledgedValue;
     }
-    localStorage.setItem(cacheKey, JSON.stringify(cache));
+    const { value, ...metadata } = cache;
+    // The campaign working key already stores the snapshot and its undo history.
+    localStorage.setItem(cacheKey, JSON.stringify({ ...metadata, scoped: true }));
   };
   const acknowledgeValue = (value, revision) => {
     cache.acknowledgedSignature = valueSignature(value);
@@ -41,17 +56,39 @@
     storeCache();
   };
   function captureCurrentValue() {
-    if (localStorage.getItem(storageOwnerKey) !== activeCampaign) return cache.value || "";
     const current = localStorage.getItem(storageKey) || "";
     if (current && current !== cache.value) {
       cache.value = current;
-      storeCache();
     }
     return current;
   }
-  // Capture changes made after the last polling tick before replacing the
-  // module's working storage, including a reload after going offline.
-  captureCurrentValue();
+  if (activeCampaign) {
+    // Recover edits written by an older client after its last polling tick,
+    // but never load another campaign's copy or an unowned legacy save.
+    if (!cache.scoped && !localStorage.getItem(storageKey)) {
+      const legacy = localStorage.getItem(legacyStorageKey);
+      const owner = localStorage.getItem(legacyOwnerKey);
+      const oldMap = moduleName === "map" && ["kf-map-host-v7", "kf-map-host-v6", "kf-map-host-v5"]
+        .filter(key => localStorage.getItem(`kfModuleStorageOwner:${key}`) === activeCampaign)
+        .map(key => localStorage.getItem(key)).find(Boolean);
+      const saved = (owner === activeCampaign && legacy) || cache.value || oldMap;
+      if (saved) localStorage.setItem(storageKey, saved);
+      if (legacy && !owner && !localStorage.getItem(`kfModuleLegacy:${legacyStorageKey}`)) {
+        localStorage.setItem(`kfModuleLegacy:${legacyStorageKey}`, legacy);
+      }
+    }
+    cache.value = localStorage.getItem(storageKey) || "";
+    if (!cache.scoped) storeCache();
+    for (const name of ["kfEncounterHandoff", "kfRogueHandoff"]) {
+      const legacy = localStorage.getItem(name);
+      if (!legacy) continue;
+      try {
+        if (JSON.parse(legacy)?.campaignId !== activeCampaign) continue;
+        if (!localStorage.getItem(handoffKey(name))) localStorage.setItem(handoffKey(name), legacy);
+        localStorage.removeItem(name);
+      } catch { /* A damaged legacy handoff cannot be resumed. */ }
+    }
+  }
   const rosterKey = `kfCampaignRoster:${activeCampaign}`;
   const mapUpstreamKey = `kfMapUpstream:${activeCampaign}`;
   const kingdomKey = `kfCampaignKingdom:${activeCampaign}`;
@@ -66,10 +103,7 @@
   }
   const phaseFromMapTime = value => Number(value) === 8 ? "preliminary" : "full";
   try {
-    const cachedMap = [storageKey, "kf-map-host-v6", "kf-map-host-v5"]
-      .filter(Boolean)
-      .map(key => JSON.parse(localStorage.getItem(key) || "null"))
-      .find(Boolean);
+    const cachedMap = JSON.parse(localStorage.getItem(`kfModuleState:${activeCampaign}:kf-map-host-v8`) || "null");
     window.KF_CLASH_PHASE = phaseFromMapTime(cachedMap?.trackers?.time);
   } catch {
     window.KF_CLASH_PHASE = "full";
@@ -124,7 +158,6 @@
   const prepareStorage = value => {
     if (value) localStorage.setItem(storageKey, JSON.stringify(value));
     else localStorage.removeItem(storageKey);
-    localStorage.setItem(storageOwnerKey, activeCampaign);
   };
 
   function exposeMapUpstream(campaignState) {
@@ -164,7 +197,7 @@
   function applyAuthoritativeConflict(result, batch) {
     const path = `modules.${stateModuleName}`;
     const serverWon = result.conflicts?.some(conflict =>
-      conflict.path === path && conflict.resolution === "existing"
+      conflict.path === path && ["existing", "merged"].includes(conflict.resolution)
     );
     if (!serverWon) return false;
     const selected = result.state?.modules?.[stateModuleName];
@@ -200,7 +233,7 @@
     const candidates = [];
     for (const key of keys) {
       try {
-        const value = JSON.parse(localStorage.getItem(key) || "null");
+        const value = JSON.parse(localStorage.getItem(handoffKey(key)) || "null");
         if (value?.campaignId !== activeCampaign) continue;
         if (value.roguePath && value.slotId) {
           const activeSlot = localStorage.getItem(`kf-rogue-path-active-slot-v1:${activeCampaign}`);
@@ -234,7 +267,7 @@
     const type = document.querySelector("#encounterType");
     if (type) { type.value = handoff.type || "normal"; type.dispatchEvent(new Event("change", { bubbles: true })); }
     handoff.appliedEncounter = true;
-    localStorage.setItem("kfEncounterHandoff", JSON.stringify(handoff));
+    localStorage.setItem(handoffKey("kfEncounterHandoff"), JSON.stringify(handoff));
   }
 
   function applyAibpHandoff() {
@@ -251,12 +284,12 @@
     document.querySelector("#setupBattle")?.click();
     handoff.appliedAibp = true;
     handoff.appliedAt = Date.now();
-    localStorage.setItem(handoff.roguePath ? "kfRogueHandoff" : "kfEncounterHandoff", JSON.stringify(handoff));
+    localStorage.setItem(handoffKey(handoff.roguePath ? "kfRogueHandoff" : "kfEncounterHandoff"), JSON.stringify(handoff));
     window.dispatchEvent(new CustomEvent("kf:aibp-handoff", { detail: handoff }));
   }
 
   function queueOperation(path, value, baseRevision = campaignRevision) {
-    if (path === `modules.${stateModuleName}` && cacheIsDirty() && Number.isInteger(cache.revision)) {
+    if (path === `modules.${stateModuleName}` && (moduleName === "map" || cacheIsDirty()) && Number.isInteger(cache.revision)) {
       baseRevision = Math.min(baseRevision, cache.revision);
     }
     operationQueue = operationQueue.filter(operation => operation.path !== path);
@@ -294,7 +327,7 @@
         captureCurrentValue();
         acknowledgeValue(JSON.stringify(savedModule.value), result.revision);
       }
-      status.textContent = serverWon === "deferred" ? "继续同步本机新修改…" : serverWon ? "已保留服务器较高轮次存档" : "已同步";
+      status.textContent = serverWon === "deferred" ? "继续同步本机新修改…" : "已同步";
     } catch (error) {
       operationQueue.unshift(...batch);
       queued = true;
@@ -315,17 +348,22 @@
   }
 
   async function flushCurrentValue() {
-    const current = captureCurrentValue();
-    if (current) {
-      lastValue = current;
-      queueOperation(`modules.${stateModuleName}`, JSON.parse(current));
-    }
+    queueCurrentValue();
     publishScene(true);
     const deadline = Date.now() + 1600;
     while ((saving || operationQueue.length) && Date.now() < deadline) {
       await drainQueue();
       await new Promise(resolve => setTimeout(resolve, 40));
     }
+  }
+
+  function queueCurrentValue() {
+    const current = captureCurrentValue();
+    if (!current) return;
+    const path = `modules.${stateModuleName}`;
+    if (current === lastValue && (!cacheIsDirty() || saving || operationQueue.some(operation => operation.path === path))) return;
+    lastValue = current;
+    queueOperation(path, JSON.parse(current));
   }
 
   let conflictClueMap = null;
@@ -341,12 +379,12 @@
     const index = map?.knights?.findIndex(item => item.sheetId === sheetId && item.memberType === "squire") ?? -1;
     if (index < 0) throw new Error("地图中没有该侍从的线索记录，请先打开地图初始化队伍");
     const value = Math.max(0, (Number(map.knights[index].clues?.[clue]) || 0) + delta);
-    const result = await api("campaign-sync", { method: "POST", body: JSON.stringify({ campaignId: activeCampaign, operations: [{ id: operationId(), clientId, path: `modules.map.knights.${index}.clues.${clue}`, value, baseRevision: campaignRevision }] }) });
+    const result = await api("campaign-sync", { method: "POST", body: JSON.stringify({ campaignId: activeCampaign, operations: [{ id: operationId(), clientId, path: `modules.map.knights.${index}.clues.${clue}`, value, baseRevision: campaignRevision, squireId: sheetId, clueDelta: delta }] }) });
     campaignRevision = result.revision;
     conflictClueMap = result.state?.modules?.map || await refreshConflictClues();
     return conflictClueMap;
   }
-  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue, publishScene, refreshConflictClues, adjustConflictClue, getConflictClues: () => conflictClueMap };
+  window.KF_MODULE_BRIDGE = { flush: flushCurrentValue, publishScene, refreshConflictClues, adjustConflictClue, getConflictClues: () => conflictClueMap, handoffKey, campaignUrl };
 
   async function boot() {
     if (!activeCampaign) {
@@ -354,10 +392,12 @@
       location.href = "/";
       return;
     }
+    let accountMismatch = false;
     try {
       const session = await api("auth/me");
       if (!session.user) { location.href = "/"; return; }
-      if (cache.userId && cache.userId !== session.user.id) cache = {};
+      accountMismatch = Boolean(cache.userId && cache.userId !== session.user.id);
+      if (accountMismatch) cache = {};
       cache.userId = session.user.id;
       const detail = await api(`campaigns/${activeCampaign}`);
       const roster = await api(`sheets?overview=1&campaignId=${encodeURIComponent(activeCampaign)}`);
@@ -414,17 +454,11 @@
         campaignRevision = Number.isInteger(cache.revision) ? cache.revision : 0;
         prepareStorage(JSON.parse(cache.value));
       } else {
-        // Preserve unowned pre-upgrade data without assigning another
-        // campaign's old working copy to the currently selected campaign.
-        const legacy = localStorage.getItem(storageKey);
-        if (legacy && !localStorage.getItem(storageOwnerKey) && legacy !== JSON.stringify(value)) {
-          localStorage.setItem(`kfModuleLegacy:${storageKey}`, legacy);
-        }
         prepareStorage(value);
         cache.value = value ? JSON.stringify(value) : "";
         acknowledgeValue(cache.value, campaignRevision);
       }
-      window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, serverState: value, offline: false };
+      window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, storageKey, serverState: value, offline: false };
       const handoff = readHandoff();
       if (handoff && ((moduleName === "encounter" && !handoff.appliedEncounter) || (moduleName === "aibp" && !handoff.appliedAibp))) {
         localStorage.removeItem(storageKey);
@@ -441,11 +475,11 @@
       publishScene(true);
       watchCurrentValue();
     } catch (error) {
-      const cached = cache.value || (localStorage.getItem(storageOwnerKey) === activeCampaign ? localStorage.getItem(storageKey) : null);
+      const cached = accountMismatch ? null : cache.value || localStorage.getItem(storageKey);
       if (cached) {
         prepareStorage(JSON.parse(cached));
         campaignRevision = Number.isInteger(cache.revision) ? cache.revision : 0;
-        window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, serverState: null, offline: true };
+        window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, storageKey, serverState: null, offline: true };
         lastValue = cached;
         status.textContent = navigator.onLine ? error.message : "离线使用本机暂存";
         await script();
@@ -471,9 +505,8 @@
   }
 
   addEventListener("online", () => {
-    const current = captureCurrentValue();
-    if (current) pushValue(current);
-    else drainQueue();
+    queueCurrentValue();
+    drainQueue();
   });
   addEventListener("focus", () => publishScene());
   addEventListener("pointerdown", () => publishScene(), { passive: true });

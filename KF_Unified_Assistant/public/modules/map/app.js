@@ -8,9 +8,12 @@
   const MERCENARY_RULES = window.KF_MERCENARY_RULES;
   const POI_RULES = window.KF_POINT_OF_INTEREST_RULES;
   const SAVE_VERSION = 8;
-  const SAVE_KEY = "kf-map-host-v8";
-  const LEGACY_SAVE_KEYS = ["kf-map-host-v7", "kf-map-host-v6", "kf-map-host-v5"];
-  const ENCOUNTER_HANDOFF_KEY = "kfEncounterHandoff";
+  const bootstrap = window.KF_MODULE_BOOTSTRAP;
+  const SAVE_KEY = bootstrap?.storageKey || "kf-map-host-v8";
+  const LEGACY_SAVE_KEYS = bootstrap?.storageKey ? [] : ["kf-map-host-v7", "kf-map-host-v6", "kf-map-host-v5"];
+  const ENCOUNTER_HANDOFF_KEY = window.KF_MODULE_BRIDGE?.handoffKey?.("kfEncounterHandoff") || "kfEncounterHandoff";
+  const campaignId = () => bootstrap?.campaignId ?? (localStorage.getItem("kfActiveCampaign") || "");
+  const campaignUrl = path => window.KF_MODULE_BRIDGE?.campaignUrl?.(path) || path;
   const TTS_CARD_HEIGHT = 3.06;
   const MAP_ZOOM_MIN = 1;
   const MAP_ZOOM_MAX = 6;
@@ -869,11 +872,10 @@
       current.pendingEncounter = null;
       return save(true);
     }
-    const campaignId = localStorage.getItem("kfActiveCampaign") || "";
     const existing = readEncounterHandoff();
     if (existing?.source === "map" && existing?.mapEncounter?.monsterTokenId === marker.id && !existing.completedEncounter) {
       await window.KF_MODULE_BRIDGE?.flush?.();
-      location.href = "/modules/encounter/";
+      location.href = campaignUrl("/modules/encounter/");
       return;
     }
     const monster = DATA.monsters.find(item => item.id === marker.monsterId);
@@ -883,7 +885,7 @@
     localStorage.setItem(ENCOUNTER_HANDOFF_KEY, JSON.stringify({
       id: uid(),
       createdAt: Date.now(),
-      campaignId,
+      campaignId: campaignId(),
       source: "map",
       monsterId: marker.monsterId,
       monster: monster.name,
@@ -899,7 +901,7 @@
       }
     }));
     await window.KF_MODULE_BRIDGE?.flush?.();
-    location.href = "/modules/encounter/";
+    location.href = campaignUrl("/modules/encounter/");
   }
 
   function schedulePendingEncounter() {
@@ -925,7 +927,7 @@
     localStorage.setItem(ENCOUNTER_HANDOFF_KEY, JSON.stringify({
       id: uid(),
       createdAt: Date.now(),
-      campaignId: localStorage.getItem("kfActiveCampaign") || "",
+      campaignId: campaignId(),
       source: "map-wheel",
       monsterId,
       monster: monster.name,
@@ -940,7 +942,7 @@
       }
     }));
     await window.KF_MODULE_BRIDGE?.flush?.();
-    location.href = target;
+    location.href = campaignUrl(target);
   }
 
   function triggerPendingEncounter(markerId) {
@@ -1018,8 +1020,7 @@
   function consumeCompletedEncounter() {
     const handoff = readEncounterHandoff();
     if (!handoff?.completedEncounter || handoff.source !== "map" || !handoff.mapEncounter) return false;
-    const activeCampaign = localStorage.getItem("kfActiveCampaign") || "";
-    if (handoff.campaignId && handoff.campaignId !== activeCampaign) return false;
+    if (handoff.campaignId && handoff.campaignId !== campaignId()) return false;
     const kingdom = handoff.mapEncounter.interruptedKingdom;
     if (!state.maps[kingdom]) return false;
     const current = state.maps[kingdom];
@@ -5147,7 +5148,7 @@
     focusStoryReminder = state.step === 3;
     checkLimits();
     render();
-    const updateMessage = `检测到并发修改，已保留服务器上轮次更多的第 ${state.round} 轮存档`;
+    const updateMessage = `检测到并发修改，已同步服务器上的第 ${state.round} 轮进度`;
     toast(updateMessage);
   });
 

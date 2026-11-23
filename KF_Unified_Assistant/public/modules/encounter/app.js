@@ -19,7 +19,9 @@
   // tokens)". Each token rolls one placement die and follows minion placement, even though
   // the level still uses the vassal encounter board and its 1x1 monster footprint.
   const MOB_PLACEMENT_MONSTERS = new Set(["M_KnightFen"]);
-  const KEY = "kf-encounter-assistant-v1";
+  const KEY = window.KF_MODULE_BOOTSTRAP?.storageKey || "kf-encounter-assistant-v1";
+  const HANDOFF_KEY = window.KF_MODULE_BRIDGE?.handoffKey?.("kfEncounterHandoff") || "kfEncounterHandoff";
+  const campaignId = () => window.KF_MODULE_BOOTSTRAP?.campaignId ?? (localStorage.getItem("kfActiveCampaign") || "");
   const CORRECTION_KEY = "kf-encounter-card-corrections-v1";
   const PHASES = ["setup", "position", "monster", "knight", "resolution"];
   const PHASE_LABELS = ["设置", "放置", "怪物轮", "骑士轮", "结算"];
@@ -833,9 +835,8 @@
 
   function readEncounterHandoff() {
     try {
-      const handoff = JSON.parse(localStorage.getItem("kfEncounterHandoff") || "null");
-      const campaignId = localStorage.getItem("kfActiveCampaign") || "";
-      return !handoff?.campaignId || handoff.campaignId === campaignId ? handoff : null;
+      const handoff = JSON.parse(localStorage.getItem(HANDOFF_KEY) || "null");
+      return !handoff?.campaignId || handoff.campaignId === campaignId() ? handoff : null;
     } catch {
       return null;
     }
@@ -863,15 +864,15 @@
         level: state.level,
         scrapes: state.scrapes
       };
-      localStorage.setItem("kfEncounterHandoff", JSON.stringify(handoff));
+      localStorage.setItem(HANDOFF_KEY, JSON.stringify(handoff));
     } else if (handoff?.returnUrl) {
-      localStorage.removeItem("kfEncounterHandoff");
+      localStorage.removeItem(HANDOFF_KEY);
     }
     state = blankState();
     save();
     if (handoff?.returnUrl) {
       await window.KF_MODULE_BRIDGE?.flush?.();
-      location.href = handoff.returnUrl;
+      location.href = window.KF_MODULE_BRIDGE?.campaignUrl?.(handoff.returnUrl) || handoff.returnUrl;
       return;
     }
     toast("遭遇已完成");
@@ -1421,11 +1422,11 @@
   $("#importFile").addEventListener("change", e => { if (e.target.files[0]) importSave(e.target.files[0]); e.target.value = ""; });
   $("#newEncounter").addEventListener("click", () => { if (confirm("开始新的遭遇战？当前遭遇状态会被清空。")) { state = blankState(); save(); } });
   window.addEventListener("storage", event => {
-    const campaignId = localStorage.getItem("kfActiveCampaign") || "";
-    if (![ `kfCampaignRoster:${campaignId}`, `kfCampaignOptions:${campaignId}` ].includes(event.key)) return;
+    const id = campaignId();
+    if (![ `kfCampaignRoster:${id}`, `kfCampaignOptions:${id}` ].includes(event.key)) return;
     try {
-      window.KF_CAMPAIGN_PARTY = JSON.parse(localStorage.getItem(`kfCampaignRoster:${campaignId}`) || "[]");
-      window.KF_CAMPAIGN_OPTIONS = JSON.parse(localStorage.getItem(`kfCampaignOptions:${campaignId}`) || "{}");
+      window.KF_CAMPAIGN_PARTY = JSON.parse(localStorage.getItem(`kfCampaignRoster:${id}`) || "[]");
+      window.KF_CAMPAIGN_OPTIONS = JSON.parse(localStorage.getItem(`kfCampaignOptions:${id}`) || "{}");
       state = normalize(state); save();
     } catch { /* Ignore incomplete cached campaign updates. */ }
   });

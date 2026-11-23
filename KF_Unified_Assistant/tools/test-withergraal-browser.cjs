@@ -198,7 +198,7 @@ const server=http.createServer((req,res)=>{
     assert.equal(moneySettled.advancedClaims["wither-7-princess-1"].alternative,1);
     assert.deepEqual(moneySettled.unlockedPrincesses,[]);
     // A true high-level handoff must arrive at AI/BP without being clamped.
-    await page.evaluate(id=>localStorage.setItem("kfRogueHandoff",JSON.stringify({id:"postgame-request",campaignId:id,roguePath:true,slotId:"run-a",stage:"withergraal",postgame:true,nodeId:"postgame-node",monsterId:"M_Toadragon",monster:"Toadragon of the Great Marsh",level:9,createdAt:Date.now(),rogueRoster:[{id:"rogue-1",knightId:"kara",type:"knight",name:"Kara"}]})),campaignId);
+    await page.evaluate(id=>localStorage.setItem(window.KF_MODULE_BRIDGE.handoffKey("kfRogueHandoff"),JSON.stringify({id:"postgame-request",campaignId:id,roguePath:true,slotId:"run-a",stage:"withergraal",postgame:true,nodeId:"postgame-node",monsterId:"M_Toadragon",monster:"Toadragon of the Great Marsh",level:9,createdAt:Date.now(),rogueRoster:[{id:"rogue-1",knightId:"kara",type:"knight",name:"Kara"}]})),campaignId);
     await page.goto(base+"/modules/aibp/");
     await page.locator('[data-level]').waitFor({state:"attached"});
     await page.waitForFunction(()=>document.querySelector('[data-level]')?.value==="9");
@@ -256,7 +256,7 @@ const server=http.createServer((req,res)=>{
     assert.ok(moved.x>beforeDrag.x+5,"dragging changes the saved panel position");
     assert.ok(moved.y>beforeDrag.y+3,"vertical dragging follows the source panel");
     await page.waitForFunction(({id,x,y})=>{
-      const trait=JSON.parse(localStorage.getItem("kf-aibp-assistant-v1")||"{}").battle?.sheetTraits?.find(item=>item.cardId===id);
+      const trait=JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.sheetTraits?.find(item=>item.cardId===id);
       return trait?.x===x&&trait?.y===y&&trait?.width===32;
     },{id:placedId,...moved});
     await flush(page);
@@ -277,7 +277,7 @@ const server=http.createServer((req,res)=>{
     await display.locator(".boss-sheet-stage").screenshot({path:path.join(scratch,"display-panel-trait.png")});
     await placed.locator(`[data-sheet-trait-remove="${placedId}"]`).click();
     await placed.waitFor({state:"detached"});
-    await page.waitForFunction(()=>JSON.parse(localStorage.getItem("kf-aibp-assistant-v1")||"{}").battle?.sheetTraits?.length===0);
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.sheetTraits?.length===0);
     await flush(page);
     await mirrored.waitFor({state:"detached"});
     assert.equal(await display.locator(`[data-postgame-card="${placedId}"]`).count(),1,
@@ -302,7 +302,7 @@ const server=http.createServer((req,res)=>{
     assert.ok(statPosition.x>25&&statPosition.y>20,"the level stat image can be dragged");
     assert.equal(statPosition.width,32);
     await page.waitForFunction(({id,x,y,width})=>{
-      const placement=JSON.parse(localStorage.getItem("kf-aibp-assistant-v1")||"{}").battle?.sheetTraits?.find(item=>item.cardId===id);
+      const placement=JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.sheetTraits?.find(item=>item.cardId===id);
       return placement?.x===x&&placement?.y===y&&placement?.width===width;
     },{id:statId,...statPosition});
     await flush(page);await page.reload();await stat.waitFor({state:"visible"});
@@ -329,14 +329,14 @@ const server=http.createServer((req,res)=>{
     if(!await page.locator("[data-deck-config]").evaluate(element=>element.open))await page.locator("[data-deck-config] summary").click();
     await page.locator('[data-level]').fill("8");
     await stat.waitFor({state:"detached"});
-    await page.waitForFunction(()=>JSON.parse(localStorage.getItem("kf-aibp-assistant-v1")||"{}").battle?.level===8);
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.level===8);
     await flush(page);await mirroredStat.waitFor({state:"detached"});
     await display.waitForFunction(()=>document.querySelector('[data-postgame-card="postgame-toadragon-8-level"]'));
     assert.equal(await display.locator(`[data-postgame-card="${statId}"]`).count(),0,"changing level removes the old stat image");
     // Level changes re-render and close the deck configuration disclosure.
     if(!await page.locator("[data-deck-config]").evaluate(element=>element.open))await page.locator("[data-deck-config] summary").click();
     await page.locator('[data-level]').fill("9");
-    await page.waitForFunction(()=>JSON.parse(localStorage.getItem("kf-aibp-assistant-v1")||"{}").battle?.level===9);
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.level===9);
     await flush(page);
     await display.waitForFunction(()=>document.querySelector('[data-postgame-card="postgame-toadragon-9-level"]'));
     assert.equal(await display.locator(".display-mob-slot [data-postgame-card]").count(),8,"the current stat row returns to the reference track");

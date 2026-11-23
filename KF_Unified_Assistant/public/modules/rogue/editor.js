@@ -4,7 +4,7 @@
   const $=selector=>document.querySelector(selector);
   const clone=value=>JSON.parse(JSON.stringify(value));
   const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const STORAGE="kf-rogue-path-v2",LOCAL="kf-rogue-map-editor-local-v1";
+  const STORAGE=window.KF_MODULE_BOOTSTRAP?.storageKey||"kf-rogue-path-v2",LOCAL="kf-rogue-map-editor-local-v1";
   const standalone=window.KF_ROGUE_EDITOR_STANDALONE===true;
   const campaign=standalone?"":String(window.KF_MODULE_BOOTSTRAP?.campaignId||localStorage.getItem("kfActiveCampaign")||"");
   const source=new Map(RULES.ALL_NODES.map(node=>[node.id,node]));
