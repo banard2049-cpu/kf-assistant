@@ -6,8 +6,8 @@
   const stateModuleName = moduleName === "rogue" ? "roguePath" : moduleName;
   const legacyStorageKey = body.dataset.storageKey;
   const originalApp = body.dataset.originalApp || "app.js?v=115";
-  const activeCampaign = (typeof location.search === "string" && new URLSearchParams(location.search).get("campaignId"))
-    || localStorage.getItem("kfActiveCampaign") || "";
+  const navigationParams = typeof location.search === "string" ? new URLSearchParams(location.search) : null;
+  const activeCampaign = navigationParams?.get("campaignId") || localStorage.getItem("kfActiveCampaign") || "";
   const storageKey = `kfModuleState:${activeCampaign}:${legacyStorageKey}`;
   const cacheKey = `kfModuleCache:${activeCampaign}:${stateModuleName}`;
   const legacyOwnerKey = `kfModuleStorageOwner:${legacyStorageKey}`;
@@ -270,22 +270,30 @@
     localStorage.setItem(handoffKey("kfEncounterHandoff"), JSON.stringify(handoff));
   }
 
-  function applyAibpHandoff() {
+  function applyAibpHandoff(rogueSave) {
+    const requestId = navigationParams?.get("rogueBattle");
+    if (requestId) {
+      const slotId = navigationParams.get("rogueSlot");
+      const run = (rogueSave?.campaignId === activeCampaign && Array.isArray(rogueSave.slots))
+        ? rogueSave.slots.find(slot => slot.id === slotId)?.state : null;
+      const battle = run?.pendingBattle;
+      if (battle?.handoffId !== requestId || !Array.isArray(run.roster)) {
+        status.textContent = "未找到要继续的肉鸽冲突";
+        return;
+      }
+      const rogueRoster = run.roster.filter(member => member.alive).slice(0, 4).map(member => ({
+        id: member.id, sheetId: member.id, knightId: member.knightId, type: "knight", name: member.name, title: member.name
+      }));
+      if (!window.KF_AIBP_HANDOFF?.({ ...battle, id: requestId, slotId, roguePath: true, stage: run.stage, postgame: run.postgame, rogueRoster })) {
+        status.textContent = "无法打开要继续的肉鸽冲突";
+      }
+      return;
+    }
     const handoff = readHandoff();
-    if (!handoff || handoff.appliedAibp) return;
-    const monsters = window.KF_MONSTER_DATA?.monsters || [];
-    const monster = monsters.find(item => item.id === handoff.monsterId)
-      || monsters.find(item => item.name === handoff.monster);
-    const button = monster && document.querySelector(`[data-monster="${monster.id}"]`);
-    if (!button) return;
-    button.click();
-    const level = document.querySelector("[data-level]");
-    if (level) { level.value = String(handoff.level); level.dispatchEvent(new Event("input", { bubbles: true })); }
-    document.querySelector("#setupBattle")?.click();
+    if (!handoff || handoff.appliedAibp || !window.KF_AIBP_HANDOFF?.(handoff)) return;
     handoff.appliedAibp = true;
     handoff.appliedAt = Date.now();
     localStorage.setItem(handoffKey(handoff.roguePath ? "kfRogueHandoff" : "kfEncounterHandoff"), JSON.stringify(handoff));
-    window.dispatchEvent(new CustomEvent("kf:aibp-handoff", { detail: handoff }));
   }
 
   function queueOperation(path, value, baseRevision = campaignRevision) {
@@ -428,16 +436,8 @@
       window.KF_CAMPAIGN_KNIGHTS = partyKnights;
       window.KF_CAMPAIGN_SQUIRES = squires;
       window.KF_CAMPAIGN_PARTY = [...partyKnights, ...squires];
-      try {
-        const rogueHandoff = readHandoff();
-        if (moduleName === "aibp" && rogueHandoff?.roguePath && rogueHandoff.campaignId === activeCampaign && Array.isArray(rogueHandoff.rogueRoster)) {
-          window.KF_CAMPAIGN_KNIGHTS = rogueHandoff.rogueRoster;
-          window.KF_CAMPAIGN_SQUIRES = [];
-          window.KF_CAMPAIGN_PARTY = rogueHandoff.rogueRoster;
-        }
-      } catch { /* malformed handoff is ignored */ }
       window.KF_CAMPAIGN_KINGDOM = campaignState.kingdom || campaignState.map?.activeKingdom || campaignState.monsterPool?.kingdom || "";
-      // Five-player rules apply only while a fifth member actually takes part (a rogue roster never does).
+      // Five-player rules require a fifth member in the campaign party.
       window.KF_CAMPAIGN_OPTIONS = {
         fivePlayer: fivePlayer && window.KF_CAMPAIGN_PARTY.length >= 5,
         leaderSheetId: String(campaignState.leaderSheetId || "")
@@ -460,14 +460,14 @@
       }
       window.KF_MODULE_BOOTSTRAP = { campaignId: activeCampaign, storageKey, serverState: value, offline: false };
       const handoff = readHandoff();
-      if (handoff && ((moduleName === "encounter" && !handoff.appliedEncounter) || (moduleName === "aibp" && !handoff.appliedAibp))) {
+      if (moduleName === "encounter" && handoff && !handoff.appliedEncounter) {
         localStorage.removeItem(storageKey);
       }
       lastValue = localStorage.getItem(storageKey) || "";
       status.textContent = `${detail.campaign.name} · 已同步`;
       await script();
       if (moduleName === "encounter") applyEncounterHandoff();
-      if (moduleName === "aibp") applyAibpHandoff();
+      if (moduleName === "aibp") applyAibpHandoff(campaignState.modules?.roguePath);
       if (dirty || captureCurrentValue() !== lastValue) {
         lastValue = captureCurrentValue();
         if (lastValue) queueOperation(`modules.${stateModuleName}`, JSON.parse(lastValue));
@@ -484,7 +484,12 @@
         status.textContent = navigator.onLine ? error.message : "离线使用本机暂存";
         await script();
         if (moduleName === "encounter") applyEncounterHandoff();
-        if (moduleName === "aibp") applyAibpHandoff();
+        if (moduleName === "aibp") {
+          const localRogue = localStorage.getItem(`kfModuleState:${activeCampaign}:kf-rogue-path-v2`);
+          let rogueSave;
+          try { rogueSave = JSON.parse(localRogue || "null"); } catch { /* Invalid local Rogue snapshot. */ }
+          applyAibpHandoff(rogueSave);
+        }
         captureCurrentValue();
         queued = true;
         watchCurrentValue();

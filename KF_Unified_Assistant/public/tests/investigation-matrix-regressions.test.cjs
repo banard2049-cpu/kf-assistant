@@ -20,7 +20,8 @@ function harness() {
   const c = vm.createContext({
     state, pending: [], user: { id: 'user-A' }, active: 'sheet-A', clientId: 'client-A', revision: 2, saveTimer: null,
     navigator: { onLine: false }, compatibleUuid: () => `operation_${++serial}`,
-    persistPending() {}, cacheSheet() { cached.push(plain(state)); }, setSave() {}, clearTimeout() {}, setTimeout() {}, sync() {},
+    enqueueLocalOperation(queue, fields) { c.pending.push({id:c.compatibleUuid(),userId:c.user.id,...fields}); },
+    cacheSheet() { cached.push(plain(state)); }, setSave() {}, clearTimeout() {}, setTimeout() {}, sync() {},
     renderValues() {}, $: () => ({ addEventListener: (name, callback) => { listeners[name] = callback; } }),
   });
   vm.runInContext(section('const investigationSuccessValue=', 'function rapportHearts(')

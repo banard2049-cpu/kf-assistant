@@ -29,6 +29,7 @@ function resolve_dir(string $root, string $value): string {
 
 // Minimum seconds between maintenance() sweeps; see that function.
 const MAINTENANCE_INTERVAL = 60;
+const MAX_REQUEST_BYTES = 10_000_000;
 
 $dataDir = resolve_dir($root, env_value('DATA_DIR', 'data'));
 $backupDir = resolve_dir($root, env_value('BACKUP_DIR', 'backups'));
@@ -117,11 +118,16 @@ function respond(int $status, array $body, array $headers = []): never {
     echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
-function request_data(): array {
-    $raw = file_get_contents('php://input');
-    if (strlen($raw ?: '') > 10_000_000) respond(413, ['error' => '请求内容过大']);
+function request_data(bool $preserveObjects = false): array {
+    $raw = file_get_contents('php://input', length: MAX_REQUEST_BYTES + 1);
+    if (strlen($raw ?: '') > MAX_REQUEST_BYTES) respond(413, ['error' => '请求内容过大']);
     if ($raw === '' || $raw === false) return [];
     try {
+        if ($preserveObjects) {
+            $data = json_decode($raw, false, 512, JSON_THROW_ON_ERROR);
+            if (!$data instanceof stdClass) respond(400, ['error' => 'JSON 格式无效']);
+            return (array)$data;
+        }
         $data = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
         if (!is_array($data)) respond(400, ['error' => 'JSON 格式无效']);
         return $data;
@@ -361,11 +367,11 @@ function knight_sheets_signature(PDO $db, string $userId): string {
 
 // Remap references in module states and their undo snapshots as well as the
 // campaign roster. Internal piece IDs are unrelated and must remain unchanged.
-function remap_imported_sheet_references(array $value, array $sheetMap): array {
+function remap_imported_sheet_references(array|stdClass $value, array $sheetMap): array|stdClass {
     foreach($value as $key=>&$item){
         if(is_string($item)&&in_array($key,['sheetId','leaderSheetId'],true))$item=$sheetMap[$item]??$item;
         elseif($key==='party'&&is_array($item))$item=array_map(fn($id)=>is_string($id)?($sheetMap[$id]??$id):$id,$item);
-        elseif(is_array($item))$item=remap_imported_sheet_references($item,$sheetMap);
+        elseif(is_array($item)||$item instanceof stdClass)$item=remap_imported_sheet_references($item,$sheetMap);
     }
     unset($item);
     return $value;
@@ -444,6 +450,60 @@ function store_user_settings(PDO $db,string $userId,array $settings): void {
 function public_user_settings(array $settings): array {
     $markers=normalize_story_markers($settings['storyMarkers']??[]);
     return ['storyMarkers'=>$markers?:new stdClass(),'passwords'=>normalize_password_records($settings['passwords']??[]),'jura'=>is_array($settings['jura']??null)?$settings['jura']:null];
+}
+function apply_user_settings_operations(array $settings, array $operations): array {
+    $applied = is_array($settings['_appliedOperations'] ?? null) ? $settings['_appliedOperations'] : [];
+    $markers = normalize_story_markers($settings['storyMarkers'] ?? []);
+    $passwords = array_column(normalize_password_records($settings['passwords'] ?? []), null, 'id');
+    $jura = $settings['jura'] ?? null;
+    foreach ($operations as $operation) {
+        $id = is_array($operation) ? ($operation['id'] ?? null) : null;
+        if (!is_string($id) || !preg_match('/^[A-Za-z0-9_-]{8,100}$/D', $id) || !array_key_exists('value', $operation)) {
+            respond(400, ['error' => '账号共享记录操作无效']);
+        }
+        if (isset($applied[$id])) continue;
+        $value = $operation['value'];
+        $key = $operation['key'] ?? null;
+        switch ($operation['section'] ?? '') {
+            case 'storyMarkers':
+                if (!is_string($key) || !is_bool($value) || !normalize_story_markers([$key => true])) {
+                    respond(400, ['error' => '永久故事标记无效']);
+                }
+                if ($value) $markers[$key] = true;
+                else unset($markers[$key]);
+                break;
+            case 'passwords':
+                if (!is_string($key) || !preg_match('/^[A-Za-z0-9_-]{8,100}$/D', $key)) {
+                    respond(400, ['error' => '密码记录无效']);
+                }
+                if ($value === null) {
+                    unset($passwords[$key]);
+                } elseif (is_array($value) && ($value['create'] ?? false) === true) {
+                    if (count($passwords) < 100) $passwords[$key] ??= ['id'=>$key,'matrix'=>array_fill(0,6,'dot'),'number'=>''];
+                } elseif (is_array($value) && is_string($value['number'] ?? null) && preg_match('/^[0-9]{0,8}$/D', $value['number'])) {
+                    if (isset($passwords[$key])) $passwords[$key]['number'] = $value['number'];
+                } elseif (is_array($value) && is_int($value['cell'] ?? null) && $value['cell'] >= 0 && $value['cell'] < 6
+                    && in_array($value['symbol'] ?? null, ['dot','filled','outline'], true)) {
+                    if (isset($passwords[$key])) $passwords[$key]['matrix'][$value['cell']] = $value['symbol'];
+                } else respond(400, ['error' => '密码记录无效']);
+                break;
+            case 'jura':
+                if ($value !== null && !is_array($value)) respond(400, ['error' => '尤拉记录无效']);
+                $jura = $value;
+                break;
+            case 'legacy':
+                if (!is_array($value)) respond(400, ['error' => '旧版共享记录无效']);
+                $markers = normalize_story_markers($value['storyMarkers'] ?? []);
+                $passwords = array_column(normalize_password_records($value['passwords'] ?? []), null, 'id');
+                $jura = is_array($value['jura'] ?? null) ? $value['jura'] : null;
+                break;
+            default:
+                respond(400, ['error' => '账号共享记录操作无效']);
+        }
+        $applied[$id] = true;
+    }
+    return ['storyMarkers'=>$markers,'passwords'=>array_values($passwords),'jura'=>$jura,
+        '_appliedOperations'=>array_slice($applied,-2048,null,true)];
 }
 function &path_ref(array &$root, array $parts): mixed {
     $ref =& $root;
@@ -755,11 +815,25 @@ try {
     $defaultCampaignId=ensure_default_campaign($db,$user['id']);
     if ($route === 'user-settings' && $method === 'GET') respond(200,['settings'=>public_user_settings(load_user_settings($db,$user['id']))]);
     if ($route === 'user-settings' && $method === 'PATCH') {
-        $data=request_data();if(!array_key_exists('storyMarkers',$data)&&!array_key_exists('passwords',$data)&&!array_key_exists('jura',$data))respond(400,['error'=>'账号共享记录无效']);
+        $data=request_data();
+        $hasOperations=array_key_exists('operations',$data);
+        if($hasOperations&&(!is_array($data['operations'])||!array_is_list($data['operations'])||count($data['operations'])>200))respond(400,['error'=>'账号共享记录操作无效']);
+        if(!$hasOperations&&!array_key_exists('storyMarkers',$data)&&!array_key_exists('passwords',$data)&&!array_key_exists('jura',$data))respond(400,['error'=>'账号共享记录无效']);
         if(array_key_exists('storyMarkers',$data)&&!is_array($data['storyMarkers']))respond(400,['error'=>'永久故事标记无效']);
         if(array_key_exists('passwords',$data)&&!is_array($data['passwords']))respond(400,['error'=>'密码记录无效']);
         if(array_key_exists('jura',$data)&&$data['jura']!==null&&!is_array($data['jura']))respond(400,['error'=>'尤拉记录无效']);
-        $settings=load_user_settings($db,$user['id']);if(array_key_exists('storyMarkers',$data))$settings['storyMarkers']=normalize_story_markers($data['storyMarkers']);if(array_key_exists('passwords',$data))$settings['passwords']=normalize_password_records($data['passwords']);if(array_key_exists('jura',$data))$settings['jura']=$data['jura'];store_user_settings($db,$user['id'],$settings);
+        $db->exec('BEGIN IMMEDIATE');
+        try{
+            $settings=load_user_settings($db,$user['id']);
+            if($hasOperations)$settings=apply_user_settings_operations($settings,$data['operations']);
+            else{
+                if(array_key_exists('storyMarkers',$data))$settings['storyMarkers']=normalize_story_markers($data['storyMarkers']);
+                if(array_key_exists('passwords',$data))$settings['passwords']=normalize_password_records($data['passwords']);
+                if(array_key_exists('jura',$data))$settings['jura']=$data['jura'];
+            }
+            store_user_settings($db,$user['id'],$settings);
+            $db->exec('COMMIT');
+        }catch(Throwable $error){$db->exec('ROLLBACK');throw $error;}
         respond(200,['settings'=>public_user_settings($settings)]);
     }
     if ($route === 'campaigns' && $method === 'GET') {
@@ -875,25 +949,83 @@ try {
     if ($route === 'campaign-export' && $method === 'GET') {
         $id=(string)($_GET['campaignId']??'');$row=owned_campaign($db,$id,$user['id']);if(!$row)respond(404,['error'=>'战役不存在']);
         $q=$db->prepare('SELECT id,title,state_json FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL ORDER BY created_at');$q->execute([$user['id']]);$sheets=[];
-        foreach($q->fetchAll() as $sheet)$sheets[]=['id'=>$sheet['id'],'title'=>$sheet['title'],'state'=>json_decode($sheet['state_json'],true)];
-        respond(200,['format'=>'kf-unified-campaign','schemaVersion'=>2,'exportedAt'=>stamp(),'shared'=>public_user_settings(load_user_settings($db,$user['id'])),'campaign'=>['name'=>$row['name'],'state'=>json_decode($row['state_json'],true),'sheets'=>$sheets]]);
+        foreach($q->fetchAll() as $sheet)$sheets[]=['id'=>$sheet['id'],'title'=>$sheet['title'],'state'=>json_decode($sheet['state_json'])];
+        $backup = ['format'=>'kf-unified-campaign','schemaVersion'=>2,'exportedAt'=>stamp(),'shared'=>public_user_settings(load_user_settings($db,$user['id'])),'campaign'=>['name'=>$row['name'],'state'=>json_decode($row['state_json']),'sheets'=>$sheets]];
+        $encoded = json_encode($backup, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR);
+        if (strlen($encoded) > MAX_REQUEST_BYTES) respond(413, ['error'=>'战役存档超过可导入的大小，无法生成可恢复的存档文件']);
+        echo $encoded;
+        exit;
     }
     if ($route === 'campaign-import' && $method === 'POST') {
-        $data=request_data();if(($data['format']??'')!=='kf-unified-campaign'||($data['schemaVersion']??0)!==2||!is_array($data['campaign']??null))respond(400,['error'=>'只支持新版 KF 一体化战役存档（版本 2）']);
-        $payload=$data['campaign'];$sharedImport=is_array($data['shared']??null)?$data['shared']:[];$importedStoryMarkers=normalize_story_markers($sharedImport['storyMarkers']??[]);$importedPasswords=normalize_password_records($sharedImport['passwords']??[]);$importedJura=is_array($sharedImport['jura']??null)?$sharedImport['jura']:null;$id=uuid4();$time=stamp();$state=is_array($payload['state']??null)?$payload['state']:default_campaign_state();$state['schemaVersion']=2;$state['presentation']=default_presentation_state();$sourceSheets=array_slice(is_array($payload['sheets']??null)?$payload['sheets']:[],0,100);$sheetMap=[];$catalog=knight_catalog();$seenTitles=[];$q=$db->prepare('SELECT title FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');$q->execute([$user['id']]);foreach($q->fetchAll(PDO::FETCH_COLUMN) as $title)$seenTitles[(string)$title]=true;
-        foreach($sourceSheets as &$sheet)if(is_array($sheet)){
-            $sheetState=$sheet['state']??null;$knightId=is_array($sheetState)?(string)($sheetState['knightId']??''):'';
-            if(!isset($catalog[$knightId]))respond(400,['error'=>'导入文件包含无效的骑士身份']);
-            $title=unique_title_from_set($seenTitles,$sheet['title']??'');$sheet['_resolvedTitle']=$title;$sheetMap[(string)($sheet['id']??uuid4())]=uuid4();
-        } unset($sheet);
-        $state=remap_imported_sheet_references($state,$sheetMap);
-        if(is_array($state['modules']['roguePath']['slots']??null))$state['modules']['roguePath']['campaignId']=$id;
-        $state['party']=array_values(is_array($state['party']??null)?$state['party']:[]);$db->beginTransaction();
-        try{$q=$db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');$q->execute([$id,$user['id'],title_value($payload['name']??'导入战役').'（导入）',json_encode($state,JSON_UNESCAPED_UNICODE),$time,$time]);
-            $insert=$db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');
-            foreach($sourceSheets as $sheet)if(is_array($sheet)&&is_array($sheet['state']??null)){$oldId=(string)($sheet['id']??'');$sheetState=$sheet['state'];$knightId=(string)$sheetState['knightId'];$sheetState['knight']=$catalog[$knightId];$insert->execute([$sheetMap[$oldId]??uuid4(),$user['id'],null,(string)($sheet['_resolvedTitle']??title_value($sheet['title']??'')),json_encode($sheetState,JSON_UNESCAPED_UNICODE),$time,$time]);}
+        $data = request_data(preserveObjects: true);
+        if (($data['format'] ?? '') !== 'kf-unified-campaign' || ($data['schemaVersion'] ?? 0) !== 2 || !(($data['campaign'] ?? null) instanceof stdClass)) {
+            respond(400, ['error'=>'只支持新版 KF 一体化战役存档（版本 2）']);
+        }
+        $payload = $data['campaign'];
+        $state = $payload->state ?? null;
+        $sourceSheets = $payload->sheets ?? null;
+        $sharedImport = $data['shared'] ?? new stdClass();
+        if (!($state instanceof stdClass) || !is_array($sourceSheets) || !($sharedImport instanceof stdClass)) {
+            respond(400, ['error'=>'战役存档缺少有效的战役状态、骑士档案列表或共享记录']);
+        }
+        if ((property_exists($state, 'party') && !is_array($state->party))
+            || (isset($state->modules) && !($state->modules instanceof stdClass) && $state->modules !== [])
+            || (isset($sharedImport->storyMarkers) && !($sharedImport->storyMarkers instanceof stdClass) && $sharedImport->storyMarkers !== [])
+            || (isset($sharedImport->passwords) && !is_array($sharedImport->passwords))
+            || (isset($sharedImport->jura) && !($sharedImport->jura instanceof stdClass) && $sharedImport->jura !== [])) {
+            respond(400, ['error'=>'战役存档中的队伍、模块或共享记录格式无效']);
+        }
+        $importedStoryMarkers = normalize_story_markers((array)($sharedImport->storyMarkers ?? []));
+        $passwords = $sharedImport->passwords ?? [];
+        if (array_filter($passwords, fn($record) => !($record instanceof stdClass))) {
+            respond(400, ['error'=>'战役存档中的密码记录格式无效']);
+        }
+        $importedPasswords = normalize_password_records(array_map(fn($record) => (array)$record, $passwords));
+        $importedJura = ($sharedImport->jura ?? null) instanceof stdClass ? (array)$sharedImport->jura : null;
+        $sheetMap = [];
+        $sheets = [];
+        $catalog = knight_catalog();
+        foreach ($sourceSheets as $index => $sheet) {
+            $sheetState = $sheet instanceof stdClass ? ($sheet->state ?? null) : null;
+            $knightId = $sheetState instanceof stdClass ? ($sheetState->knightId ?? null) : null;
+            if (!is_string($knightId) || !isset($catalog[$knightId])) {
+                respond(400, ['error'=>'第 '.($index + 1).' 张骑士档案的内容或骑士身份无效']);
+            }
+            $oldId = $sheet->id ?? '';
+            if (!is_string($oldId) || ($oldId !== '' && isset($sheetMap[$oldId]))) {
+                respond(400, ['error'=>'第 '.($index + 1).' 张骑士档案的编号无效或重复']);
+            }
+            $newId = uuid4();
+            if ($oldId !== '') $sheetMap[$oldId] = $newId;
+            $sheetState = array_replace(default_state($knightId), (array)$sheetState, ['knight'=>$catalog[$knightId]]);
+            $sheets[] = ['id'=>$newId, 'title'=>$sheet->title ?? '', 'state'=>json_encode($sheetState, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)];
+        }
+        $id = uuid4();
+        $time = stamp();
+        $state = remap_imported_sheet_references(array_replace(default_campaign_state(), (array)$state), $sheetMap);
+        $state['schemaVersion'] = 2;
+        $state['presentation'] = default_presentation_state();
+        if (is_array($state['modules']->roguePath->slots ?? null)) $state['modules']->roguePath->campaignId = $id;
+        $encodedState = json_encode($state, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        $db->exec('BEGIN IMMEDIATE');
+        try {
+            $q = $db->prepare('SELECT title FROM knight_sheets WHERE user_id=? AND deleted_at IS NULL');
+            $q->execute([$user['id']]);
+            $seenTitles = array_fill_keys($q->fetchAll(PDO::FETCH_COLUMN), true);
+            $q = $db->prepare('INSERT INTO campaigns(id,user_id,name,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?)');
+            $q->execute([$id,$user['id'],title_value($payload->name??'导入战役').'（导入）',$encodedState,$time,$time]);
+            $insert = $db->prepare('INSERT INTO knight_sheets(id,user_id,campaign_id,title,state_json,created_at,updated_at) VALUES(?,?,?,?,?,?,?)');
+            foreach ($sheets as $sheet) {
+                $title = unique_title_from_set($seenTitles, $sheet['title']);
+                $insert->execute([$sheet['id'],$user['id'],null,$title,$sheet['state'],$time,$time]);
+            }
             if($importedStoryMarkers||$importedPasswords||$importedJura!==null){$settings=load_user_settings($db,$user['id']);$settings['storyMarkers']=array_replace(normalize_story_markers($settings['storyMarkers']??[]),$importedStoryMarkers);$settings['passwords']=normalize_password_records(array_merge(normalize_password_records($settings['passwords']??[]),$importedPasswords));if($importedJura!==null)$settings['jura']=$importedJura;store_user_settings($db,$user['id'],$settings);}
-            $db->commit();}catch(Throwable $e){$db->rollBack();throw $e;}respond(201,['id'=>$id]);
+            $db->exec('COMMIT');
+        } catch (Throwable $e) {
+            $db->exec('ROLLBACK');
+            throw $e;
+        }
+        respond(201, ['id'=>$id]);
     }
     if ($route === 'sheet-import' && $method === 'POST') {
         $data=request_data();

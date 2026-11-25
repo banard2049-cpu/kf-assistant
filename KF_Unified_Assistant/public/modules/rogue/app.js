@@ -277,24 +277,27 @@
     selectedNodeId = null;
     save(); render();
   }
-  async function openNode(node) {
+  function openNode(node) {
     if (!isAvailable(node)) return;
     const result = RULES.randomResult(node.level, node.kingdom);
     state.pendingBattle = { handoffId: `rogue-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`, nodeId: node.id, kingdom: node.kingdom, nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId), level: result.level, startedAt: Date.now() };
     state.currentNodeId = node.id;
     selectedNodeId = null;
     state.history.push({ at: Date.now(), type: "battle-start", nodeId: node.id, ...result });
-    save();
-    const roster = state.roster.filter(member => member.alive).slice(0, 4).map(member => ({ id: member.id, sheetId: member.id, knightId: member.knightId, type: "knight", name: member.name, title: member.name }));
-    localStorage.setItem(HANDOFF_KEY, JSON.stringify({
-      id: state.pendingBattle.handoffId, slotId: activeSlotId, createdAt: state.pendingBattle.startedAt,
-      campaignId: campaignId(), roguePath: true, stage:state.stage, postgame:state.postgame, nodeId: node.id, kingdom: node.kingdom,
-      nodeLevel: node.level, roll: result.roll, monsterId: result.monsterId, monster: monsterNameById(result.monsterId),
-      level: result.level, rogueRoster: roster, returnUrl: "/modules/rogue/"
-    }));
     renderMap();
+    return resumePendingBattle();
+  }
+  async function resumePendingBattle() {
+    const battle = state.pendingBattle;
+    if (!battle) return;
+    battle.handoffId ||= `rogue-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const slotId = activeSlotId;
+    const requestId = battle.handoffId;
+    save();
     await window.KF_MODULE_BRIDGE?.flush?.();
-    location.href = campaignUrl("/modules/aibp/");
+    if (activeSlotId !== slotId || state.pendingBattle?.handoffId !== requestId) return;
+    const query = new URLSearchParams({ rogueSlot: slotId, rogueBattle: requestId });
+    location.href = campaignUrl(`/modules/aibp/?${query}`);
   }
   function updateNodeSelection() {
     document.querySelectorAll("[data-node]").forEach(button => {
@@ -624,6 +627,7 @@
     if (!Object.keys(choices).length) return;
     finalizeVictory(state.pendingRewardChoice, choices);
   });
+  $("#resumePendingBattle")?.addEventListener("click", resumePendingBattle);
   $("#continueWithergraal")?.addEventListener("click", () => {
     if (!RULES.enterWithergraal(state)) return;
     viewStage = state.stage; selectedNodeId = null; linkAnchorId = null;

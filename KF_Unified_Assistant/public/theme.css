@@ -284,9 +284,22 @@ html[data-theme="light"] .marker-palette {
 
 html[data-theme="light"] .marker-palette-trash {
   background: #f6e3de;
+  color: var(--kf-red);
+}
+
+html[data-theme="light"] .marker-palette.delete-target .marker-palette-trash {
+  background: #ecd0c8;
+}
+
+html[data-theme="light"] .marker-palette-trash svg {
+  filter: none;
 }
 
 /* 节奏条格子 */
+html[data-theme="light"] .delve-track-logo img {
+  filter: brightness(18%);
+}
+
 html[data-theme="light"] button.delve-track-cell {
   background: #f7eedb;
   border-color: #c0a877;
@@ -436,6 +449,20 @@ html[data-theme="light"] body[data-kf-module="encounter"] {
   background: var(--kf-bg);
 }
 
+/* 图例位于棋盘外的纸色面板上，保留它和棋盘标记对应的四种色相。 */
+html[data-theme="light"] .match-legend .legend-one { --legend-ink: #215f91; }
+html[data-theme="light"] .match-legend .legend-two { --legend-ink: #785607; }
+html[data-theme="light"] .match-legend .legend-both { --legend-ink: #3b6824; }
+html[data-theme="light"] .match-legend .legend-attack { --legend-ink: #a33026; }
+
+/* 卡牌检查页的模型与攻击格保留深色底，箭头和攻击标记需要浅色前景。 */
+html[data-theme="light"] .attack-grid .attack-cell:is(.footprint, .attack) {
+  color: #fff8ea;
+}
+html[data-theme="light"] .attack-grid .attack-cell.footprint:disabled {
+  opacity: 1;
+}
+
 /* 遭遇战「当前放置模型」选择卡是 <button>，深色底 #191a18，选中态深棕 #3a311d，
  * 浅色下整排棋子卡在纸面上显得过暗。转成浅纸面，选中态用红系高亮保持可辨识。 */
 html[data-theme="light"] .placement-piece-option {
@@ -534,6 +561,14 @@ html[data-theme="light"] :is(.level-stat, .fool-deck-preview, .terrain-selection
   border-color: var(--kf-line);
 }
 
+/* 等级属性 SVG 使用固定浅金色，纸色面板上用深金色显示。 */
+html[data-theme="light"] .level-stat img { filter: brightness(50%); }
+html[data-theme="light"] .aibp-panel .level-stat strong,
+html[data-theme="light"] .squire-clue-adjust strong { color: var(--kf-gold); }
+
+html[data-theme="light"] .squire-clue-member { background: var(--kf-surface); }
+html[data-theme="light"] .squire-clue-resource { background: var(--kf-surface-2); }
+
 /* AI/BP 各卡片容器：深色版用 rgba(9,12,10,…) 半透明黑蒙层压在纸面上，
  * 浅色下必须转成浅色蒙层，否则整列/整块变灰，文字也发灰看不清。 */
 html[data-theme="light"] body[data-kf-module="aibp"] :is(.aibp-column, .summary-chip, .task, .encounter-option,
@@ -576,6 +611,10 @@ html[data-theme="light"] body[data-kf-module="rogue"] {
   color: var(--kf-ink);
 }
 
+html[data-theme="light"] .map-legend .legend-swatch.available {
+  border-color: var(--kf-gold);
+}
+
 html[data-theme="light"] .rogue-head {
   background: #f3ebdb;
   color: var(--kf-ink);
@@ -584,6 +623,10 @@ html[data-theme="light"] .rogue-head {
 /* ------------------------------------------------------------- 装备预览 */
 html[data-theme="light"] body[data-kf-module="equipment"] {
   background: var(--kf-bg);
+}
+
+html[data-theme="light"] body[data-kf-module="equipment"] .empty-symbol {
+  color: var(--kf-muted);
 }
 
 /* ------------------------------------------------------------------ 弹窗 */

@@ -109,23 +109,26 @@ test('belly board reload preserves terrain, Fool cards, overlays and display set
 });
 
 function encounterHarness() {
-  const nodes = new Map(), blobs = [], downloads = [];
+  const nodes = new Map(), blobs = [], downloads = [], monsterButtons = [];
   const node = id => {
     if (!nodes.has(id)) nodes.set(id, { innerHTML: '', textContent: '', hidden: false, addEventListener() {}, querySelector() { return null; }, querySelectorAll() { return []; }, style: { setProperty() {} } });
     return nodes.get(id);
   };
   const c = vm.createContext({ window: { addEventListener() {} },
-    document: { querySelector: node, querySelectorAll() { return []; }, createElement() { return { click() { downloads.push(this.download); } }; } },
+    document: { querySelector: node, querySelectorAll(selector) { return selector === '[data-monster]' ? monsterButtons : []; }, createElement() { return { click() { downloads.push(this.download); } }; } },
     localStorage: { getItem() { return null; }, setItem() {} }, console, Date, Math, Blob,
     URL: { createObjectURL(blob) { blobs.push(blob); return 'blob:test'; }, revokeObjectURL() {} }, URLSearchParams,
     location: { search: '?campaignId=test' }, navigator: { onLine: true }, setTimeout() {}, clearTimeout() {}, requestAnimationFrame() {},
   });
   for (const relative of ['data/encounter-data.js', 'encounter-catalog.js', 'encounter-view.js']) vm.runInContext(read('modules/encounter/' + relative), c);
+  for (const monster of c.window.KF_ENCOUNTER_DATA.monsters.filter(item => !item.special).slice(0, 2)) {
+    monsterButtons.push({ dataset: { monster: monster.id }, addEventListener(event, handler) { this[event] = handler; } });
+  }
   c.window.KF_CAMPAIGN_PARTY = [{ id: 'sheet', name: 'Stoneface', knightId: 'stoneface', type: 'knight' }];
   c.window.KF_CAMPAIGN_OPTIONS = { leaderSheetId: 'sheet' };
   const source = read('modules/encounter/app.js');
   vm.runInContext(source.slice(0, source.lastIndexOf('  renderApp();')) + 'window.testApi={exportSave,importSave,blankState,state:()=>state};})();', c);
-  return { c, nodes, blobs, downloads, api: c.window.testApi };
+  return { c, nodes, blobs, downloads, monsterButtons, api: c.window.testApi };
 }
 
 test('encounter export downloads a valid save and legacy configs do not break import', async () => {
@@ -136,6 +139,21 @@ test('encounter export downloads a valid save and legacy configs do not break im
   saved.state.scrapes = 7; saved.configs = { legacy: true };
   await api.importSave({ text: async () => JSON.stringify(saved) });
   assert.equal(api.state().scrapes, 7); assert.equal(nodes.get('#toast').textContent, '存档已导入');
+});
+
+test('switching encounter monsters resets the combat counters for the new monster', async () => {
+  const { api, monsterButtons } = encounterHarness();
+  const initial = { ...api.blankState(), scrapes: 3, phase: 'knight', criticalUsed: true,
+    dragonRoarDone: true, pool: { opportunity: 2, break: 1 } };
+  await api.importSave({ text: async () => JSON.stringify(initial) });
+  const next = monsterButtons.find(button => button.dataset.monster !== initial.monsterId);
+  next.click();
+  assert.equal(api.state().monsterId, next.dataset.monster);
+  assert.equal(api.state().phase, 'setup');
+  assert.equal(api.state().scrapes, 0);
+  assert.equal(api.state().criticalUsed, false);
+  assert.equal(api.state().dragonRoarDone, false);
+  assert.deepEqual(plain(api.state().pool), { opportunity: 0, break: 0 });
 });
 
 test('second-screen active BP follows the selected mob slot side', () => {
@@ -150,4 +168,58 @@ test('second-screen active BP follows the selected mob slot side', () => {
   c.window.testDisplay.renderConflict(payload); assert.ok(active().includes(card.image.back));
   payload.modules.aibp.bpTrack[0].side = 'face';
   c.window.testDisplay.renderConflict(payload); assert.ok(active().includes(card.image.face));
+});
+
+const saveFile = payload => ({ text: async () => JSON.stringify(payload) });
+
+test('malformed encounter imports and rendering errors preserve the current and saved encounter', async () => {
+  const { c, api, nodes } = encounterHarness();
+  const writes = [];
+  c.localStorage.setItem = (_key, value) => writes.push(JSON.parse(value));
+  const valid = { ...api.blankState(), scrapes: 8 };
+  await api.importSave(saveFile({ app: 'KF Encounter Assistant', version: 1, state: valid }));
+  const before = plain(api.state());
+  assert.equal(writes[0].scrapes, 8);
+  for (const file of [
+    { app: 'Another module', version: 1, state: valid },
+    { ...valid, history: [{ monsterId: valid.monsterId }] },
+    { ...valid, monsters: [null] }
+  ]) {
+    await api.importSave(saveFile(file));
+    assert.match(nodes.get('#toast').textContent, /导入失败/);
+    assert.deepEqual(plain(api.state()), before);
+  }
+  let failRender = true;
+  Object.defineProperty(nodes.get('#app'), 'innerHTML', { set() {
+    if (failRender) { failRender = false; throw new Error('render failed'); }
+  } });
+  await api.importSave(saveFile({ ...valid, scrapes: 1 }));
+  assert.match(nodes.get('#toast').textContent, /render failed/);
+  assert.deepEqual(plain(api.state()), before);
+  assert.equal(writes.length, 1);
+});
+
+test('AI/BP import rejects incompatible and partial saves and preserves the original on storage failure', async () => {
+  const { c, api, nodes } = aibpHarness();
+  api.selectMonster('M_WhiteApe'); api.rebuild();
+  const valid = plain(api.state());
+  const writes = [];
+  c.localStorage.setItem = (_key, value) => writes.push(JSON.parse(value));
+  await api.importSave(saveFile(valid));
+  assert.equal(writes[0].battle.monsterId, 'M_WhiteApe');
+  const before = plain(api.state());
+  for (const file of [
+    { ...valid, version: 9 },
+    { version: 10, battle: { monsterId: 'M_WhiteApe' } },
+    { ...valid, encounters: { ...valid.encounters, M_PuppetKing: { battle: { aiDeck: [] } } } },
+  ]) {
+    await api.importSave(saveFile(file));
+    assert.match(nodes.get('#toast').textContent, /导入失败/);
+    assert.deepEqual(plain(api.state()), before);
+  }
+  assert.equal(writes.length, 1);
+  c.localStorage.setItem = () => { throw new Error('storage full'); };
+  await api.importSave(saveFile(valid));
+  assert.match(nodes.get('#toast').textContent, /storage full/);
+  assert.deepEqual(plain(api.state()), before);
 });

@@ -48,7 +48,6 @@ public final class MainActivity extends Activity {
         resourceStore = new ResourceStore(this);
         localApi = new LocalApi(this);
         secondScreenServer = new LocalSecondScreenServer(this, resourceStore, localApi);
-        try { secondScreenServer.start(); } catch (Exception error) { Toast.makeText(this, "局域网第二屏启动失败", Toast.LENGTH_LONG).show(); }
         webView = new WebView(this);
         FrameLayout content = WebViewSafeArea.wrap(this, webView);
         setContentView(content);
@@ -177,6 +176,11 @@ public final class MainActivity extends Activity {
         @JavascriptInterface
         public String lanDisplayUrl(String campaignId) {
             return secondScreenServer == null ? "" : secondScreenServer.displayUrl(campaignId);
+        }
+
+        @JavascriptInterface
+        public void stopLanDisplay() {
+            if (secondScreenServer != null) secondScreenServer.stop();
         }
 
         @JavascriptInterface

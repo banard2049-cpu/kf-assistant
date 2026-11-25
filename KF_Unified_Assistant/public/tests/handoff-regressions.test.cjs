@@ -12,50 +12,38 @@ const plain = value => JSON.parse(JSON.stringify(value));
 const normal = extra => ({ id: 'normal', campaignId: 'A', monster: 'Normal boss', level: 2, createdAt: 20, ...extra });
 const rogue = extra => ({ id: 'rogue', campaignId: 'A', roguePath: true, slotId: 'slot-A', nodeId: 'node-A', monsterId: 'old', monster: 'Rogue boss', level: 1, createdAt: 10, rogueRoster: [{ id: 'rogue-knight', type: 'knight' }], ...extra });
 
-async function bridgeHarness(entries) {
+async function bridgeHarness(entries, { search = '', roguePath = null } = {}) {
   const storage = new Map([['kfActiveCampaign', 'A'], ['kf-rogue-path-active-slot-v1:A', 'slot-A'], ...entries]);
-  const setups = [], events = [], inputs = new Map();let selected = '';
-  const control = selector => {
-    if (!inputs.has(selector)) inputs.set(selector, {
-      value: '', dispatchEvent() {},
-      click() {
-        if (selector.startsWith('[data-monster=')) selected = selector;
-        if (selector === '#setupBattle') {
-          setups.push(selected);
-          storage.set(c.KF_MODULE_BOOTSTRAP.storageKey, JSON.stringify({ selected }));
-        }
-      },
-    });
-    return inputs.get(selector);
-  };
+  const setups = [];
+  let loadedBattle;
   const c = vm.createContext({
-    navigator: { onLine: true }, location: {}, Uint8Array,
+    navigator: { onLine: true }, location: { search }, URLSearchParams, Uint8Array,
     document: {
       body: {
         dataset: { kfModule: 'aibp', storageKey: KEY, originalApp: 'app.js' }, querySelector() { return null; },
         append(node) {
           const key = c.KF_MODULE_BOOTSTRAP.storageKey;
-          if (!storage.has(key)) storage.set(key, '{}');
+          loadedBattle = JSON.parse(storage.get(key) || 'null');
           node.onload();
         },
       },
-      querySelector: control, createElement() { return {}; }, addEventListener() {},
+      querySelector() { return {}; }, createElement() { return {}; }, addEventListener() {},
     },
     localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value), removeItem: key => storage.delete(key) },
     fetch: async url => ({ ok: true, json: async () => {
       if (url.includes('auth')) return { user: { id: 'user-A' } };
       if (url.includes('sheets')) return { sheets: [{ id: 'sheet-A', title: 'Campaign knight', state: { knightId: 'stoneface' } }] };
       if (url.includes('campaign-sync')) return { revision: 11 };
-      return { campaign: { revision: 10, name: 'A', state: { party: ['sheet-A'], modules: { aibp: { saved: true } } } } };
+      return { campaign: { revision: 10, name: 'A', state: { party: ['sheet-A'], modules: { aibp: { saved: true }, roguePath } } } };
     } }),
     addEventListener() {}, setInterval() {}, setTimeout() {},
     Event: class {}, CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },
   });
   c.window = c;
-  c.dispatchEvent = event => events.push(event);
-  c.KF_MONSTER_DATA = { monsters: [{ id: 'old', name: 'Rogue boss' }, { id: 'new', name: 'Normal boss' }] };
+  c.dispatchEvent = () => {};
+  c.KF_AIBP_HANDOFF = handoff => { setups.push(plain(handoff)); return true; };
   vm.runInContext(source, c); await tick(); await tick();
-  return { c, storage, setups, events, inputs };
+  return { c, storage, setups, loadedBattle };
 }
 
 test('a new normal conflict wins over a consumed rogue handoff and keeps the campaign roster after reload', async () => {
@@ -63,12 +51,12 @@ test('a new normal conflict wins over a consumed rogue handoff and keeps the cam
     ['kfRogueHandoff', JSON.stringify(rogue({ appliedAibp: true }))],
     ['kfEncounterHandoff', JSON.stringify(normal())],
   ]);
-  assert.deepEqual(h.setups, ['[data-monster="new"]']);
+  assert.deepEqual(h.setups.map(setup => setup.id), ['normal']);
+  assert.deepEqual(h.loadedBattle, { saved: true });
   assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
   assert.equal(h.c.KF_CAMPAIGN_PARTY.some(member => member.id === 'rogue-knight'), false);
   assert.equal(JSON.parse(h.storage.get(handoffKey('kfEncounterHandoff'))).appliedAibp, true);
   assert.equal(h.storage.has('kfEncounterHandoff'), false);
-  assert.equal(h.events.find(event => event.type === 'kf:aibp-handoff').detail.id, 'normal');
   const reloaded = await bridgeHarness([...h.storage.entries()]);
   assert.deepEqual(reloaded.setups, []);
   assert.equal(reloaded.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
@@ -79,23 +67,24 @@ test('a newer rogue request uses the rogue roster instead of an older ordinary h
     ['kfRogueHandoff', JSON.stringify(rogue({ createdAt: 30 }))],
     ['kfEncounterHandoff', JSON.stringify(normal({ appliedAibp: true }))],
   ]);
-  assert.deepEqual(h.setups, ['[data-monster="old"]']);
-  assert.deepEqual(plain(h.c.KF_CAMPAIGN_PARTY), rogue().rogueRoster);
+  assert.deepEqual(h.setups.map(setup => setup.id), ['rogue']);
+  assert.deepEqual(h.setups[0].rogueRoster, rogue().rogueRoster);
+  assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
   const reloaded = await bridgeHarness([...h.storage.entries()]);
   assert.deepEqual(reloaded.setups, []);
-  assert.deepEqual(plain(reloaded.c.KF_CAMPAIGN_PARTY), rogue().rogueRoster);
+  assert.equal(reloaded.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
 });
 
 test('postgame handoffs use the stable monster ID and preserve the full level and stage', async () => {
   const request = rogue({ monster: 'old translated name', level: 9, stage: 'withergraal', postgame: true });
   const h = await bridgeHarness([['kfRogueHandoff', JSON.stringify(request)]]);
-  assert.deepEqual(h.setups, ['[data-monster="old"]']);
-  assert.equal(h.inputs.get('[data-level]').value, '9');
+  assert.equal(h.setups[0].monsterId, 'old');
+  assert.equal(h.setups[0].level, 9);
   const applied = JSON.parse(h.storage.get(handoffKey('kfRogueHandoff')));
   assert.equal(applied.stage, 'withergraal');
   assert.equal(applied.postgame, true);
   assert.equal(applied.level, 9);
-  assert.equal(h.events.find(event => event.type === 'kf:aibp-handoff').detail.stage, 'withergraal');
+  assert.equal(h.setups[0].stage, 'withergraal');
 });
 
 test('the newest of two pending sources is selected consistently for both battle and roster', async () => {
@@ -104,8 +93,8 @@ test('the newest of two pending sources is selected consistently for both battle
       ['kfRogueHandoff', JSON.stringify(rogue({ createdAt: rogueIsNewer ? 30 : 10 }))],
       ['kfEncounterHandoff', JSON.stringify(normal())],
     ]);
-    assert.deepEqual(h.setups, [`[data-monster="${rogueIsNewer ? 'old' : 'new'}"]`]);
-    assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, rogueIsNewer ? 'rogue-knight' : 'sheet-A');
+    assert.deepEqual(h.setups.map(setup => setup.id), [rogueIsNewer ? 'rogue' : 'normal']);
+    assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
   }
 });
 
@@ -114,7 +103,7 @@ test('legacy consumed rogue requests and malformed records cannot hide a fresh n
     const h = await bridgeHarness([
       ['kfRogueHandoff', stale], ['kfEncounterHandoff', JSON.stringify(normal({ createdAt: undefined }))],
     ]);
-    assert.deepEqual(h.setups, ['[data-monster="new"]']);
+    assert.deepEqual(h.setups.map(setup => setup.id), ['normal']);
     assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
   }
 });
@@ -124,9 +113,29 @@ test('handoffs belonging to another campaign or rogue slot cannot override the c
     const h = await bridgeHarness([
       ['kfRogueHandoff', JSON.stringify(unrelated)], ['kfEncounterHandoff', JSON.stringify(normal())],
     ]);
-    assert.deepEqual(h.setups, ['[data-monster="new"]']);
+    assert.deepEqual(h.setups.map(setup => setup.id), ['normal']);
     assert.equal(h.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
   }
+});
+
+test('only an exact explicit request resumes a Rogue battle saved by another device', async () => {
+  const pendingBattle = { handoffId: 'remote-request', monsterId: 'old', level: 9 };
+  const roster = [
+    { id: 'living', knightId: 'stoneface', name: 'Rogue knight', alive: true },
+    { id: 'dead', knightId: 'kara', name: 'Fallen knight', alive: false }
+  ];
+  const roguePath = { campaignId: 'A', slots: [{ id: 'remote-slot', state: { pendingBattle, roster, stage: 'withergraal' } }] };
+  for (const search of ['', '?rogueSlot=other-slot&rogueBattle=remote-request', '?rogueSlot=remote-slot&rogueBattle=old-request']) {
+    const ordinary = await bridgeHarness([], { search, roguePath });
+    assert.deepEqual(ordinary.setups, []);
+    assert.deepEqual(ordinary.loadedBattle, { saved: true });
+  }
+  const resumed = await bridgeHarness([], { search: '?rogueSlot=remote-slot&rogueBattle=remote-request', roguePath });
+  assert.equal(resumed.setups[0].level, 9);
+  assert.equal(resumed.setups[0].slotId, 'remote-slot');
+  assert.equal(resumed.setups[0].stage, 'withergraal');
+  assert.deepEqual(resumed.setups[0].rogueRoster.map(member => member.id), ['living']);
+  assert.equal(resumed.c.KF_CAMPAIGN_KNIGHTS[0].id, 'sheet-A');
 });
 
 function resolutionHarness(handoff, { duplicateLegacy = false, legacy = false } = {}) {

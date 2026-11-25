@@ -8,6 +8,47 @@ const plain = value => JSON.parse(JSON.stringify(value));
 const mapSource = read('modules/map/app.js');
 const mapFunction = (name, next) => mapSource.slice(mapSource.indexOf(`  function ${name}(`), mapSource.indexOf(`\n\n  function ${next}(`));
 
+test('map imports check both kingdoms and their undo records before replacing the current map', async () => {
+  const messages = [], writes = [];
+  const c = vm.createContext({ messages, writes });
+  vm.runInContext(`
+    const SAVE_VERSION = 8, SAVE_KEY = "map", STEPS = [0, 1, 2, 3], STEP_TOOL = {};
+    const window = {}, clearTimeout = () => {}, toast = value => messages.push(value);
+    const tile = id => id === "start" ? { id } : null, kingdomData = code => ({ label: code });
+    const applySavedTileRegionCorrections = value => value, normalizeSavedMapState = value => value;
+    let state = { round: 2 }, activeTool = "tile", focusStoryReminder = false;
+    let saveTimer, encounterNavigationTimer, pendingEncounterAutoStart, failWrite = false;
+    const localStorage = { setItem: (_key, value) => {
+      if (failWrite) throw new Error("storage full");
+      writes.push(JSON.parse(value));
+    } };
+    const render = () => {};
+    let importFile;
+    const $ = () => ({ addEventListener: (_event, handler) => { importFile = handler; } });
+    ${mapSource.slice(mapSource.indexOf('  function prepareImportedMap('), mapSource.indexOf('  addEventListener("kf:map-upstream"'))}
+    this.load = value => importFile({ target: { files: [{ text: async () => JSON.stringify(value) }] } });
+    this.current = () => state;
+    this.blockStorage = () => { failWrite = true; };
+  `, c);
+  const kingdom = { current: 'start', placed: ['start'], tileState: { start: 'explored' },
+    monsters: [], tileMarkers: [], travelRoute: [], history: [], exploration: { deck: [], discard: [] }, fog: { deck: [], discard: [] } };
+  const backup = { version: 6, kingdom: 'SK', step: 0, round: 7, knights: [], log: [],
+    maps: { SK: kingdom, POS: { ...kingdom } } };
+  const invalid = { ...backup, maps: { ...backup.maps, POS: { ...kingdom, history: [{ map: {} }] } } };
+  await c.load(invalid);
+  assert.equal(c.current().round, 2);
+  assert.equal(writes.length, 0);
+  assert.match(messages.at(-1), /导入失败.*POS/);
+  await c.load(backup);
+  assert.equal(c.current().round, 7);
+  assert.equal(writes[0].version, 8);
+  c.blockStorage();
+  await c.load({ ...backup, round: 10 });
+  assert.equal(c.current().round, 7);
+  assert.equal(writes.length, 1);
+  assert.match(messages.at(-1), /storage full/);
+});
+
 test('undo restores clue awards together with map time and preserves existing knight identity', () => {
   const c = vm.createContext({ console });
   vm.runInContext(`

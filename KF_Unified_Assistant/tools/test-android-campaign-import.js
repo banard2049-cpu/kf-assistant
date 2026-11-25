@@ -16,11 +16,16 @@ const settingsMethod = api.slice(api.indexOf("    private JSONObject userSetting
 const mergeSettingsMethod = api.slice(api.indexOf("    private void mergeSettings("), api.indexOf("    private JSONObject currentUser("));
 const copyRoute = api.slice(api.indexOf('if ("copy".equals(action) && "POST".equals(method))'), api.indexOf('if ("trash".equals(action)'));
 const importRoute = api.slice(api.indexOf("private JSONObject campaignImport("), api.indexOf("private JSONObject sheetImport("));
+const exportRoute = api.slice(api.indexOf("    private JSONObject campaignExport("), api.indexOf("    private JSONObject displayState("));
 const storeDb = api.slice(api.indexOf("    private static final class StoreDb"), api.lastIndexOf("\n}"));
-const requestMethod = api.slice(api.indexOf("    public synchronized String request("), api.indexOf("    private JSONObject dispatch("));
+const requestMethod = api.slice(api.indexOf("    public synchronized String request("), api.indexOf("    synchronized long authorizeSecondScreen("));
 const campaignSyncMethods = api.slice(api.indexOf("    private JSONObject campaignSync("), api.indexOf("    private JSONObject campaignExport("));
 const pathMethods = api.slice(api.indexOf("    private Object getPath("), api.indexOf("    private String route("));
 const mapSyncConstants = api.slice(api.indexOf("    private static final String MAP_PATH"), api.indexOf("    private static final Map<String, String> KNIGHTS"));
+const knightCatalog = api.slice(api.indexOf("    private static final Map<String, String> KNIGHTS"), api.indexOf("    private final StoreDb database"));
+const campaignRecords = api.slice(api.indexOf("    private JSONObject defaultCampaignState("), api.indexOf("    private JSONObject activeCampaign("));
+const sortedRecords = api.slice(api.indexOf("    private List<JSONObject> sortedRecords("), api.indexOf("    private Object getPath("));
+const recordIds = api.slice(api.indexOf("    private String title("), api.indexOf("    private String safeMessage("));
 assert.match(copyRoute, /CampaignStateImport\.rebindRogueCampaign\(copy\.getJSONObject\("state"\), copy\.getString\("id"\)\)/,
   "campaign copies must rebind the copied rogue bundle");
 assert.match(importRoute, /CampaignStateImport\.remapSheetReferences\(importedState, sheetMap\)/,
@@ -50,9 +55,12 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.nio.charset.StandardCharsets;
@@ -84,14 +92,28 @@ public final class CampaignStateImportTest {
   ${campaignSyncMethods}
   ${pathMethods}
   ${mapSyncConstants}
+  ${knightCatalog}
+  ${campaignRecords}
+  ${sortedRecords}
+  ${recordIds}
+  ${importRoute}
+  ${exportRoute}
 
   private final StoreDb database = new StoreDb(new Context());
-  private static final class Uri { static Uri parse(String ignored) { return new Uri(); } }
-  private String route(Uri uri) { return "campaign-sync"; }
+  private long sessionGeneration;
+  private static final class Uri {
+    final String path;
+    Uri(String path) { this.path = path; }
+    static Uri parse(String path) { return new Uri(path); }
+    String getQueryParameter(String key) { return path.substring(path.indexOf("=") + 1); }
+  }
+  private String route(Uri uri) { return uri.path.split("[?]")[0]; }
   private JSONObject json(String value) throws JSONException { return new JSONObject(value); }
   private String safeMessage(Exception error) { return error.toString(); }
   private String now() { return "test time"; }
   private JSONObject dispatch(JSONObject store, String method, String route, Uri uri, JSONObject data) throws JSONException {
+    if ("campaign-import".equals(route)) return campaignImport(store, "owner", data);
+    if ("campaign-export".equals(route)) return campaignExport(store, "owner", uri);
     return campaignSync(store, "owner", data);
   }
   private JSONObject activeCampaign(JSONObject store, String userId, String id) {
@@ -207,10 +229,60 @@ public final class CampaignStateImportTest {
       "a failed batch must persist neither earlier edits nor their operation IDs");
   }
 
+  private void checkCampaignBackup() throws Exception {
+    JSONObject initial = object("settings", object("owner", object("jura", object("shards", 1))), "campaigns", object("owner", new JSONObject()),
+      "sheets", object("owner", new JSONObject()));
+    database.write(initial);
+    JSONArray sheets = new JSONArray();
+    for (int i = 0; i < 105; i++) {
+      sheets.put(object("id", "legacy-" + i, "title", "Imported " + i,
+        "state", object("knightId", "stoneface", "notes", "Knight " + i, "choices", new JSONObject())));
+    }
+    JSONObject backup = object("format", "kf-unified-campaign", "schemaVersion", 2, "shared", object("jura", object("shards", 9)),
+      "campaign", object("name", "Campaign", "state", object("party", array("legacy-104"), "leaderSheetId", "legacy-104",
+        "modules", object("map", object("knights", array(object("sheetId", "legacy-104"))))), "sheets", sheets));
+    Object finalSheet = sheets.get(104);
+    for (Object invalid : new Object[]{JSONObject.NULL, sheets.get(0)}) {
+      sheets.put(104, invalid);
+      JSONObject response = new JSONObject(request("POST", "campaign-import", backup.toString()));
+      check(response.getInt("status") == 400 && response.getJSONObject("body").getString("error").contains("105"),
+        "reject a bad or repeated source record beyond the former truncation point");
+      JSONObject after = database.read();
+      check(after.getJSONObject("campaigns").getJSONObject("owner").length() == 0
+        && after.getJSONObject("sheets").getJSONObject("owner").length() == 0
+        && after.getJSONObject("settings").getJSONObject("owner").getJSONObject("jura").getInt("shards") == 1,
+        "rejected imports must preserve campaigns, sheets, and settings");
+    }
+    sheets.put(104, finalSheet);
+    JSONObject restored = new JSONObject(request("POST", "campaign-import", backup.toString()));
+    check(restored.getInt("status") == 201, "import the complete campaign");
+    String campaignId = restored.getJSONObject("body").getString("id");
+    JSONObject exported = new JSONObject(request("GET", "campaign-export?campaignId=" + campaignId, "{}"));
+    check(exported.getInt("status") == 200, "export a restored campaign");
+    JSONObject campaign = exported.getJSONObject("body").getJSONObject("campaign");
+    JSONObject state = campaign.getJSONObject("state");
+    String finalId = state.getJSONArray("party").getString(0);
+    check(!"legacy-104".equals(finalId) && finalId.equals(state.getString("leaderSheetId"))
+      && finalId.equals(state.getJSONObject("modules").getJSONObject("map").getJSONArray("knights").getJSONObject(0).getString("sheetId")),
+      "references to the last sheet must use its new ID");
+    JSONArray roundTrip = campaign.getJSONArray("sheets");
+    check(roundTrip.length() == 105, "export all 105 restored knight sheets");
+    boolean found = false;
+    for (int i = 0; i < roundTrip.length(); i++) {
+      JSONObject entry = roundTrip.getJSONObject(i);
+      if (finalId.equals(entry.getString("id"))) {
+        JSONObject sheet = entry.getJSONObject("state");
+        found = "Knight 104".equals(sheet.getString("notes")) && sheet.getJSONObject("choices").length() == 0;
+      }
+    }
+    check(found, "preserve data in the final sheet");
+  }
+
   public static void main(String[] args) throws Exception {
     checkLargeStore();
     CampaignStateImportTest localApi = new CampaignStateImportTest();
     localApi.checkCampaignClueSync();
+    localApi.checkCampaignBackup();
     JSONObject store = object("settings", new JSONObject());
     JSONObject ledger = object("enabled", true, "level", 2, "shards", 14, "built", array("saints-sanctuary"), "loadouts", array(object("name", "saved setup")));
     localApi.userSettings(store, "owner", "PATCH", object("jura", ledger));
@@ -229,6 +301,18 @@ public final class CampaignStateImportTest {
     localApi.userSettings(store, "owner", "PATCH", object("jura", JSONObject.NULL));
     check(store.getJSONObject("settings").getJSONObject("owner").isNull("jura"), "explicit settings reset stores JSON null");
     check(!localApi.userSettings(store, "other", "GET", new JSONObject()).getJSONObject("body").getJSONObject("settings").has("jura"), "accounts keep separate ledgers");
+    JSONObject mark = object("id", "setting_mark_1", "section", "storyMarkers", "key", "fear-traitors-crossing", "value", true);
+    JSONObject erase = object("id", "setting_mark_2", "section", "storyMarkers", "key", "fear-traitors-crossing", "value", false);
+    JSONObject createPassword = object("id", "setting_password_add", "section", "passwords", "key", "password_1", "value", object("create", true));
+    JSONObject editPassword = object("id", "setting_password_edit", "section", "passwords", "key", "password_1", "value", object("cell", 2, "symbol", "filled"));
+    localApi.userSettings(store, "owner", "PATCH", object("operations", array(mark, createPassword, editPassword)));
+    JSONObject juraEdit = object("id", "setting_jura_edit", "section", "jura", "value", object("shards", 19));
+    JSONObject combined = localApi.userSettings(store, "owner", "PATCH", object("operations", array(juraEdit))).getJSONObject("body").getJSONObject("settings");
+    check(combined.getJSONObject("storyMarkers").optBoolean("fear-traitors-crossing"), "a Jura edit preserves account markers");
+    check(combined.getJSONArray("passwords").getJSONObject(2).getJSONArray("matrix").getString(2).equals("filled"), "a Jura edit preserves password cells");
+    JSONObject cleared = localApi.userSettings(store, "owner", "PATCH", object("operations", array(erase, mark))).getJSONObject("body").getJSONObject("settings");
+    check(!cleared.getJSONObject("storyMarkers").has("fear-traitors-crossing"), "retries cannot restore a marker cleared after the original write");
+    check(!cleared.has("_appliedOperations"), "private retry metadata is not exported as user settings");
     Map<String,String> sheets = new HashMap<>(); sheets.put("old-sheet", "new-sheet");
     JSONObject knight = object("id", "old-sheet", "sheetId", "old-sheet", "space", "7", "done", true);
     JSONObject undoKnight = object("id", "piece-1", "sheetId", "old-sheet", "clues", object("martial", 3));

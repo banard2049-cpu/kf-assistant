@@ -92,7 +92,7 @@
 
   function rosterKnights(existing = []) {
     const roster = campaignParty().slice(0, partyLimit());
-    if (!roster.length) return [{ id: uid(), name: "骑士 1", heroId: DATA.heroes?.[0]?.id || "", roll: roll(), space: "", facing: 0, action: "", done: false }];
+    if (!roster.length) return existing.length ? existing : [{ id: uid(), name: "骑士 1", heroId: DATA.heroes?.[0]?.id || "", roll: roll(), space: "", facing: 0, action: "", done: false }];
     const usedPrevious = new Set();
     return roster.map((member, index) => {
       const previous = existing.find(item => !usedPrevious.has(item.id) && (item.sheetId === member.id || (!item.sheetId && item.name === member.name)));
@@ -949,6 +949,12 @@
     $$("[data-monster]").forEach(b => b.addEventListener("click", () => mutate(() => {
       if (!availableMonsters().some(monster => monster.id === b.dataset.monster)) return;
       const wasSpecial = Boolean(specialEncounter());
+      if (state.monsterId !== b.dataset.monster) {
+        state.scrapes = 0;
+        state.criticalUsed = false;
+        state.pool = { opportunity: 0, break: 0 };
+        state.dragonRoarDone = false;
+      }
       state.monsterId = b.dataset.monster; state.level = currentMonster().encounterLevels[0].level; state.phase = "setup"; state.monsters = [];
       state.targets = []; state.specialMonsterCount = specialEncounter()?.countRange?.[0] || 1;
       state.knights = rosterKnights(state.knights);
@@ -1408,13 +1414,44 @@
     const blob = new Blob([JSON.stringify({ app: "KF Encounter Assistant", version: 1, state }, null, 2)], { type: "application/json" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `kf-encounter-${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(a.href);
   }
+  function prepareImportedEncounter(payload) {
+    const isRecord = value => value && typeof value === "object" && !Array.isArray(value);
+    const isPiece = piece => isRecord(piece) && typeof piece.id === "string" && piece.id.length > 0;
+    const isSnapshot = snapshot => isRecord(snapshot) && snapshot.version === 1
+      && DATA.monsters.find(monster => monster.id === snapshot.monsterId)?.encounterLevels.some(level => level.level === snapshot.level)
+      && PHASES.includes(snapshot.phase)
+      && ["knights", "monsters"].every(key => Array.isArray(snapshot[key]) && snapshot[key].every(isPiece))
+      && (!Object.hasOwn(snapshot, "customPieces") || (Array.isArray(snapshot.customPieces) && snapshot.customPieces.every(isPiece)))
+      && (!Object.hasOwn(snapshot, "targets") || Array.isArray(snapshot.targets))
+      && (!Object.hasOwn(snapshot, "log") || (Array.isArray(snapshot.log) && snapshot.log.every(isRecord)));
+    const raw = isRecord(payload) && Object.hasOwn(payload, "state") ? payload.state : payload;
+    if (!isRecord(payload) || (Object.hasOwn(payload, "app") && payload.app !== "KF Encounter Assistant")
+        || (raw !== payload && payload.version !== 1) || !isSnapshot(raw)
+        || !availableMonsters().some(monster => monster.id === raw.monsterId)
+        || (Object.hasOwn(raw, "history") && (!Array.isArray(raw.history) || !raw.history.every(isSnapshot)))) {
+      throw new Error("不是兼容的遭遇战存档，或当前战役不可使用存档中的怪物");
+    }
+    // Legacy configs had no runtime meaning; card corrections use their own import/export.
+    return normalize(raw);
+  }
+
   async function importSave(file) {
     try {
-      const payload = JSON.parse(await file.text());
-      state = normalize(payload.state || payload);
-      // Legacy configs had no runtime meaning; card corrections use their own import/export.
-      save(); toast("存档已导入");
-    } catch { toast("无法导入：文件格式不正确"); }
+      const candidate = prepareImportedEncounter(JSON.parse(await file.text()));
+      const previous = state;
+      state = candidate;
+      try {
+        renderApp();
+        save(false);
+      } catch (error) {
+        state = previous;
+        renderApp();
+        throw error;
+      }
+      toast("存档已导入");
+    } catch (error) {
+      toast(`导入失败：${error.message}`);
+    }
   }
   $("#undo").addEventListener("click", undo);
   $("#exportSave").addEventListener("click", exportSave);

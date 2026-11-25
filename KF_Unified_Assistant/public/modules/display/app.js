@@ -7,7 +7,9 @@
   const connectionText = document.querySelector("#connectionText");
   const connectionDot = document.querySelector("#connectionDot");
   const query = new URLSearchParams(location.search);
-  const activeCampaign = query.get("campaignId") || query.get("c") || localStorage.getItem("kfActiveCampaign") || "";
+  const sharedDisplay = query.has("c");
+  const activeCampaign = sharedDisplay ? query.get("c") : query.get("campaignId") || localStorage.getItem("kfActiveCampaign") || "";
+  if (sharedDisplay) document.querySelector(".unified-module-bar")?.remove();
   const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
   const clamp = (value, min, max) => Math.min(max, Math.max(min, Number(value) || 0));
   const cardinalFacing = value => {
@@ -866,7 +868,10 @@
       etag=response.headers.get("ETag")||"";lastSuccess=Date.now();setConnection("已同步","live");render(data);
     } catch(error) {
       setConnection(navigator.onLine?"同步中断":"离线","stale");
-      if(!lastPayload)stateView("无法读取战役",error.message,"!");
+      if(sharedDisplay){
+        lastPayload=null;
+        stateView("第二屏已断开","请从主控台重新打开或复制分享网址。","!");
+      }else if(!lastPayload)stateView("无法读取战役",error.message,"!");
     }
   }
 

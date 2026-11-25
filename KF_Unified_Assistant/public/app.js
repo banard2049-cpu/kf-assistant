@@ -1,4 +1,5 @@
 import {createJuraPanel} from "./jura.js?v=21";
+import {openOfflineOperations} from "./offline-operations.js?v=1";
 
 const monsterLabel = value => window.KFMonsterLabels?.name(value) ?? (typeof value === "string" ? value : value?.name || value?.id || "");
 const monsterRank = value => window.KFMonsterLabels?.rank(value) ?? "";
@@ -27,7 +28,7 @@ function notesWithViceEffects(sheet){
 }
 let user=null,sheets=[],trash=[],active=null,state=null,revision=0,canRegister=false,isRegister=false,search="",saveTimer=null,syncing=false,viewMode="overview",gameSettings={leaderSheetId:"",kingdom:"sunken",districts:3,devourDragon:false,fivePlayer:false};
 let campaigns=[],activeCampaign=null,campaignState=null,campaignRevision=0,campaignSyncing=false,campaignSaveTimer=null;
-let sharedSettings={storyMarkers:{},passwords:[],jura:null},sharedSettingsSaveTimer=null,sharedSettingsDirty=false;
+let sharedSettings={storyMarkers:{},passwords:[],jura:null},sharedSettingsSaveTimer=null,sharedSettingsWrite=null;
 let activeSquireSlot=-1;
 const campaignPending=[];
 const knightCatalog=[
@@ -179,28 +180,43 @@ function campaignMapState(){
   return nested||{tiles:map.tiles||[],partyTile:map.partyTile||"",markers:map.markers||[],round:map.round||0};
 }
 const clientId=localStorage.kfClientId||(localStorage.kfClientId=compatibleUuid().replace(/-/g,""));
-const pending=[];
+const pending=[],settingsPending=[];
+const localQueues={sheet:pending,campaign:campaignPending,settings:settingsPending};
 let offlineDb=null;
-const openOfflineDb=()=>new Promise((resolve,reject)=>{
-  const request=indexedDB.open("kf-knight-sheet",1);
-  request.onupgradeneeded=()=>request.result.createObjectStore("sync");
-  request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)
-});
-const idbGet=key=>new Promise((resolve,reject)=>{const r=offlineDb.transaction("sync").objectStore("sync").get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});
-const idbSet=(key,value)=>new Promise((resolve,reject)=>{const tx=offlineDb.transaction("sync","readwrite");tx.objectStore("sync").put(value,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});
+let lastQueuedAt=0;
+const warnOfflineError=error=>console.warn("离线队列不可用",error);
+function enqueueLocalOperation(queue, fields){
+  lastQueuedAt=Math.max(Date.now()*1000,lastQueuedAt+1);
+  const operation=structuredClone({id:compatibleUuid().replace(/-/g,""),userId:user?.id,clientId,queuedAt:lastQueuedAt,...fields});
+  localQueues[queue].push(operation);
+  return offlineDb?.put(queue,operation).catch(warnOfflineError);
+}
+function removeLocalOperations(queue, ids){
+  const entries=localQueues[queue],removed=new Set(ids);
+  for(let index=entries.length-1;index>=0;index--)if(removed.has(entries[index].id))entries.splice(index,1);
+  if(removed.size)offlineDb?.remove(queue,removed).catch(warnOfflineError);
+}
+async function readLocalOperations(){
+  if(!offlineDb)return;
+  try{
+    const known=Object.fromEntries(Object.entries(localQueues).map(([queue,entries])=>[queue,new Set(entries.map(item=>item.id))]));
+    const stored=await offlineDb.read();
+    for(const [queue,entries] of Object.entries(localQueues))for(const item of entries)known[queue].add(item.id);
+    for(const {queue,operation} of stored){
+      if(!Object.hasOwn(localQueues,queue)||typeof operation.id!=="string"||known[queue].has(operation.id))continue;
+      known[queue].add(operation.id);
+      localQueues[queue].push(operation);
+    }
+    for(const entries of Object.values(localQueues))entries.sort((a,b)=>(a.queuedAt||0)-(b.queuedAt||0));
+  }catch(error){warnOfflineError(error)}
+}
 async function initOffline(){
   try{
-    offlineDb=await openOfflineDb();
-    const saved=await idbGet("pending"),campaignSaved=await idbGet("campaign-pending");
-    if(Array.isArray(saved))pending.push(...saved);
-    if(Array.isArray(campaignSaved))campaignPending.push(...campaignSaved);
+    offlineDb=await openOfflineOperations();
+    await readLocalOperations();
     discardInvalidSheetNumbers();
-    if(pending.length)sync();
-    if(campaignPending.length)syncCampaign();
-  }catch(e){console.warn("离线队列不可用",e)}
+  }catch(error){warnOfflineError(error)}
 }
-const persistPending=()=>offlineDb&&idbSet("pending",pending).catch(()=>{});
-const persistCampaignPending=()=>offlineDb&&idbSet("campaign-pending",campaignPending).catch(()=>{});
 const api=async(path,options={})=>{
   const raw=path.replace(/^\/api\/?/,""),parts=raw.split("?"),target=`/api.php?route=${encodeURIComponent(parts[0])}${parts[1]?`&${parts[1]}`:""}`;
   const res=await fetch(target,{credentials:"same-origin",headers:{"Content-Type":"application/json",...(options.headers||{})},...options});
@@ -224,7 +240,61 @@ const normalizePasswordRecords=value=>{
   });
 };
 const sharedSettingsCacheKey=()=>`kf-user-settings-${user?.id||"guest"}`;
-const cacheSharedSettings=dirty=>localStorage.setItem(sharedSettingsCacheKey(),JSON.stringify({settings:sharedSettings,dirty:Boolean(dirty)}));
+const normalizedSharedSettings=value=>({
+  storyMarkers:normalizePermanentStoryMarkers(value?.storyMarkers),
+  passwords:normalizePasswordRecords(value?.passwords),
+  jura:value?.jura&&typeof value.jura==="object"?value.jura:null,
+});
+const pendingSettings=()=>user?settingsPending.filter(item=>item.userId===user.id).sort((a,b)=>a.queuedAt-b.queuedAt):[];
+function applySharedSettingsOperation(settings,{section,key,value}){
+  switch(section){
+    case "storyMarkers":
+      if(value)settings.storyMarkers[key]=true;
+      else delete settings.storyMarkers[key];
+      break;
+    case "passwords": {
+      const index=settings.passwords.findIndex(record=>record.id===key);
+      if(value===null){
+        if(index>=0)settings.passwords.splice(index,1);
+      }else if(value.create&&index<0){
+        if(settings.passwords.length<100)settings.passwords.push({id:key,matrix:Array(6).fill("dot"),number:""});
+      }else if(index>=0){
+        if(Object.hasOwn(value,"number"))settings.passwords[index].number=value.number;
+        if(Number.isInteger(value.cell))settings.passwords[index].matrix[value.cell]=value.symbol;
+      }
+      break;
+    }
+    case "jura":
+      settings.jura=value;
+      break;
+    case "legacy":
+      Object.assign(settings,normalizedSharedSettings(value));
+      break;
+  }
+}
+function restoreSharedSettings(value,force=false){
+  const previous=sharedSettings,canonical=normalizedSharedSettings(structuredClone(value));
+  sharedSettings=structuredClone(canonical);
+  for(const operation of pendingSettings())applySharedSettingsOperation(sharedSettings,operation);
+  if(force||JSON.stringify(previous.storyMarkers)!==JSON.stringify(sharedSettings.storyMarkers))renderPermanentStoryMarkers();
+  if(force||JSON.stringify(previous.passwords)!==JSON.stringify(sharedSettings.passwords))renderPasswordRecords();
+  if(!force&&JSON.stringify(previous.jura)!==JSON.stringify(sharedSettings.jura))juraPanel.render();
+  return canonical;
+}
+function cacheSharedSettings(settings){
+  try{localStorage.setItem(sharedSettingsCacheKey(),JSON.stringify({settings}))}
+  catch(error){warnOfflineError(error)}
+}
+function legacySettingsOperationId(ownerId,settings){
+  const text=JSON.stringify([ownerId,settings]);
+  let first=2166136261,second=5381;
+  for(let index=0;index<text.length;index++){
+    const code=text.charCodeAt(index);
+    first=Math.imul(first^code,16777619);
+    second=Math.imul(second,33)^code;
+  }
+  return `legacy-${first>>>0}-${second>>>0}`;
+}
 function renderPermanentStoryMarkers(){
   const markers=normalizePermanentStoryMarkers(sharedSettings.storyMarkers),total=permanentStoryMarkerIds.size,checked=Object.keys(markers).length;
   sharedSettings.storyMarkers=markers;
@@ -250,28 +320,67 @@ function renderPasswordRecords(){
     <button type="button" class="remove-row no-print" data-remove-password aria-label="删除密码 ${index+1}">×</button>
   </article>`).join(""):`<p class="password-empty">尚未记录密码</p>`;
 }
-async function saveSharedSettings(){
+function saveSharedSettings(){
   clearTimeout(sharedSettingsSaveTimer);sharedSettingsSaveTimer=null;
-  const storyMarkers=normalizePermanentStoryMarkers(sharedSettings.storyMarkers),passwords=normalizePasswordRecords(sharedSettings.passwords),jura=sharedSettings.jura&&typeof sharedSettings.jura==="object"?sharedSettings.jura:null;sharedSettings={storyMarkers,passwords,jura};cacheSharedSettings(true);setSave(navigator.onLine?"保存账号记录中…":"账号记录离线暂存",!navigator.onLine);
-  if(!navigator.onLine){sharedSettingsDirty=true;return}
-  try{await api("/api/user-settings",{method:"PATCH",body:JSON.stringify({storyMarkers,passwords,jura})});sharedSettingsDirty=false;cacheSharedSettings(false);setSave("已保存")}
-  catch(error){sharedSettingsDirty=true;cacheSharedSettings(true);setSave("账号记录等待同步",true)}
+  if(sharedSettingsWrite)return sharedSettingsWrite;
+  const ownerId=user?.id,batch=pendingSettings().slice(0,200);
+  if(!batch.length||!navigator.onLine)return;
+  setSave("保存账号记录中…");
+  sharedSettingsWrite=(async()=>{
+    let accepted=false;
+    try{
+      const data=await api("/api/user-settings",{method:"PATCH",body:JSON.stringify({operations:batch})});
+      removeLocalOperations("settings",batch.map(item=>item.id));
+      accepted=true;
+      if(user?.id!==ownerId)return;
+      cacheSharedSettings(restoreSharedSettings(data.settings));
+      showQueuedSaveState();
+    }catch(error){
+      if(user?.id===ownerId)setSave("账号记录等待同步",true);
+    }finally{
+      sharedSettingsWrite=null;
+      if((accepted||user?.id!==ownerId)&&pendingSettings().length)scheduleSharedSettingsSave();
+    }
+  })();
+  return sharedSettingsWrite;
 }
-function queueSharedSettingsSave(){sharedSettingsDirty=true;cacheSharedSettings(true);clearTimeout(sharedSettingsSaveTimer);sharedSettingsSaveTimer=setTimeout(saveSharedSettings,300)}
+function scheduleSharedSettingsSave(){
+  clearTimeout(sharedSettingsSaveTimer);
+  sharedSettingsSaveTimer=setTimeout(saveSharedSettings,300);
+}
+function queueSharedSettingsSave(section,value,key){
+  enqueueLocalOperation("settings",{section,value,key});
+  setSave(navigator.onLine?"保存账号记录中…":"账号记录离线暂存",!navigator.onLine);
+  scheduleSharedSettingsSave();
+}
 async function loadSharedSettings(){
+  const ownerId=user?.id;
   let cached=null;try{cached=JSON.parse(localStorage.getItem(sharedSettingsCacheKey())||"null")}catch{}
+  // Older versions stored a full dirty draft. Move it into the same durable
+  // queue once, so it survives reloads even before the account is reachable.
+  if(cached?.dirty&&cached.settings&&!pendingSettings().some(item=>item.section==="legacy")){
+    const id=legacySettingsOperationId(ownerId,cached.settings);
+    await enqueueLocalOperation("settings",{id,queuedAt:-1,section:"legacy",value:cached.settings});
+  }
+  if(user?.id!==ownerId)return;
   try{
-    const data=await api("/api/user-settings"),remote={storyMarkers:normalizePermanentStoryMarkers(data.settings?.storyMarkers),passwords:normalizePasswordRecords(data.settings?.passwords),jura:data.settings?.jura&&typeof data.settings.jura==="object"?data.settings.jura:null};
-    sharedSettings=cached?.dirty?{storyMarkers:normalizePermanentStoryMarkers(cached.settings?.storyMarkers),passwords:normalizePasswordRecords(cached.settings?.passwords),jura:cached.settings?.jura&&typeof cached.settings.jura==="object"?cached.settings.jura:null}:remote;
-    sharedSettingsDirty=Boolean(cached?.dirty);cacheSharedSettings(sharedSettingsDirty);renderPermanentStoryMarkers();renderPasswordRecords();if(sharedSettingsDirty)queueSharedSettingsSave();
-  }catch(error){sharedSettings={storyMarkers:normalizePermanentStoryMarkers(cached?.settings?.storyMarkers),passwords:normalizePasswordRecords(cached?.settings?.passwords),jura:cached?.settings?.jura&&typeof cached.settings.jura==="object"?cached.settings.jura:null};sharedSettingsDirty=Boolean(cached);renderPermanentStoryMarkers();renderPasswordRecords();if(cached)setSave("账号记录离线暂存",true)}
+    const data=await api("/api/user-settings");
+    if(user?.id!==ownerId)return;
+    const canonical=restoreSharedSettings(data.settings,true);
+    if(!cached?.dirty)cacheSharedSettings(canonical);
+    if(pendingSettings().length)scheduleSharedSettingsSave();
+  }catch(error){
+    if(user?.id!==ownerId)return;
+    restoreSharedSettings(cached?.settings,true);
+    if(pendingSettings().length)setSave("账号记录离线暂存",true);
+  }
 }
 function migrateLegacyJura(){
   const current=sharedSettings.jura;
   if(current&&typeof current==="object"&&Object.keys(current).length)return;
   const legacy=campaignState?.modules?.jura;
   if(!legacy||typeof legacy!=="object"||Array.isArray(legacy)||!Object.keys(legacy).length)return;
-  sharedSettings.jura=legacy;queueSharedSettingsSave();
+  sharedSettings.jura=legacy;queueSharedSettingsSave("jura",legacy);
 }
 const toast=(message)=>{const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(el.t);el.t=setTimeout(()=>el.classList.remove("show"),2600)};
 const setSave=(text,bad=false)=>{const el=$("#saveState");el.textContent=text;el.style.color=bad?"#f2b0a7":""};
@@ -290,27 +399,24 @@ function sheetFieldValue(path,value){
   return value??"";
 }
 function discardInvalidSheetNumbers(){
-  let removed=false;
-  for(let index=pending.length-1;index>=0;index--){
-    const {path,value}=pending[index],limit=sheetNumberLimit(path);
-    if(limit===null||(value===""&&investigationNumberPath.test(path)))continue;
-    if(Number.isInteger(value)&&value>=0&&value<=limit)continue;
-    pending.splice(index,1);
-    removed=true;
-  }
-  if(removed)persistPending();
+  const invalid=pending.filter(({path,value})=>{
+    const limit=sheetNumberLimit(path);
+    if(limit===null||(value===""&&investigationNumberPath.test(path)))return false;
+    return !Number.isInteger(value)||value<0||value>limit;
+  });
+  if(invalid.length)removeLocalOperations("sheet",invalid.map(item=>item.id));
 }
 const op=(path,value)=>{
-  pathSet(state,path,value);pending.push({id:compatibleUuid().replace(/-/g,""),userId:user?.id,sheetId:active,clientId,path,value,baseRevision:revision});
-  persistPending();cacheSheet();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
+  pathSet(state,path,value);enqueueLocalOperation("sheet",{sheetId:active,path,value,baseRevision:revision});
+  cacheSheet();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
 };
 const cacheSheet=()=>active&&localStorage.setItem(`kf-sheet-${active}`,JSON.stringify({state,revision}));
 function sheetOp(sheetId,path,value){
   const summary=sheets.find(sheet=>sheet.id===sheetId);if(!summary)throw new Error("未找到这张骑士记录表。");
   if(summary.state)pathSet(summary.state,path,value);
   if(active===sheetId&&state){pathSet(state,path,value);cacheSheet();renderValues()}
-  pending.push({id:compatibleUuid().replace(/-/g,""),userId:user?.id,sheetId,clientId,path,value,baseRevision:active===sheetId?revision:(Number(summary.revision)||0)});
-  persistPending();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
+  enqueueLocalOperation("sheet",{sheetId,path,value,baseRevision:active===sheetId?revision:(Number(summary.revision)||0)});
+  setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(saveTimer);saveTimer=setTimeout(sync,450);
 }
 function adjustSheetGold(sheetId,delta){
   const sheet=sheets.find(item=>item.id===sheetId);if(!sheet)throw new Error("未找到这张骑士记录表。");
@@ -331,16 +437,21 @@ function latestSheetSnapshot(ownerId,id,snapshot){
 function blockUnavailableOperations(queue,key,id,ownerId,error){
   if(![403,404,410].includes(error.status))return false;
   // Keep unavailable records in the durable queue without blocking other saves.
-  queue.filter(item=>item[key]===id&&operationOwnedBy(item,ownerId)).forEach(item=>{item.syncBlocked=error.status});
+  const matches=localQueues[queue].filter(item=>item[key]===id&&operationOwnedBy(item,ownerId));
+  matches.forEach(item=>{item.syncBlocked=error.status});
+  offlineDb?.setBlocked(queue,matches.map(item=>item.id),error.status).catch(warnOfflineError);
   return true;
 }
 function resumeAvailableOperations(queue,key,records){
-  const available=new Set(records.map(record=>record.id));let resumed=false;
-  queue.forEach(item=>{if(item.syncBlocked&&operationOwnedBy(item,user?.id)&&available.has(item[key])){delete item.syncBlocked;resumed=true}});
-  return resumed;
+  const available=new Set(records.map(record=>record.id));
+  const resumed=localQueues[queue].filter(item=>item.syncBlocked&&operationOwnedBy(item,user?.id)&&available.has(item[key]));
+  if(!resumed.length)return false;
+  resumed.forEach(item=>{delete item.syncBlocked});
+  offlineDb?.setBlocked(queue,resumed.map(item=>item.id),null).catch(warnOfflineError);
+  return true;
 }
 function showQueuedSaveState(){
-  const owned=[...pending,...campaignPending].filter(item=>operationOwnedBy(item,user?.id));
+  const owned=[...pending,...campaignPending,...pendingSettings()].filter(item=>operationOwnedBy(item,user?.id));
   if(owned.some(item=>item.syncBlocked))setSave("部分档案不可用，修改已保留本机",true);
   else setSave(owned.length?"保存中…":"已保存");
 }
@@ -349,36 +460,34 @@ async function sync(){
   discardInvalidSheetNumbers();
   const ownerId=user.id,sheetId=pending.find(item=>operationReady(item,ownerId))?.sheetId;
   const batch=pending.filter(item=>item.sheetId===sheetId&&operationReady(item,ownerId)).slice(0,200);if(!batch.length){showQueuedSaveState();return}
-  const batchIds=new Set(batch.map(item=>item.id));
   syncing=true;
   try{const data=await api("/api/sync",{method:"POST",body:JSON.stringify({sheetId,operations:batch})});
-    for(let i=pending.length-1;i>=0;i--)if(batchIds.has(pending[i].id))pending.splice(i,1);
+    removeLocalOperations("sheet",batch.map(item=>item.id));
     if(user?.id!==ownerId)return;
     const snapshot=latestSheetSnapshot(ownerId,sheetId,data),mergedState=snapshot.state;pending.filter(item=>item.sheetId===sheetId&&operationOwnedBy(item,ownerId)).forEach(item=>pathSet(mergedState,item.path,item.value));
     const summary=sheets.find(s=>s.id===sheetId);if(summary){summary.state=structuredClone(mergedState);summary.revision=snapshot.revision}
     localStorage.setItem(`kf-sheet-${sheetId}`,JSON.stringify({state:mergedState,revision:snapshot.revision}));
     if(active===sheetId){state=mergedState;revision=snapshot.revision;if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项跨设备修改`);renderValues()}showQueuedSaveState()}
-  catch(e){const blocked=blockUnavailableOperations(pending,"sheetId",sheetId,ownerId,e);if(user?.id===ownerId){if(blocked)showQueuedSaveState();else setSave("等待网络",true)}}
-  finally{persistPending();syncing=false;if(user&&pending.some(item=>operationReady(item,user.id)))setTimeout(sync,600)}
+  catch(e){const blocked=blockUnavailableOperations("sheet","sheetId",sheetId,ownerId,e);if(user?.id===ownerId){if(blocked)showQueuedSaveState();else setSave("等待网络",true)}}
+  finally{syncing=false;if(user&&pending.some(item=>operationReady(item,user.id)))setTimeout(sync,600)}
 }
 function campaignOp(path,value){
-  pathSet(campaignState,path,value);campaignPending.push({id:compatibleUuid().replace(/-/g,""),userId:user?.id,campaignId:activeCampaign,clientId,path,value,baseRevision:campaignRevision});
-  persistCampaignPending();setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(campaignSaveTimer);campaignSaveTimer=setTimeout(syncCampaign,350);
+  pathSet(campaignState,path,value);enqueueLocalOperation("campaign",{campaignId:activeCampaign,path,value,baseRevision:campaignRevision});
+  setSave(navigator.onLine?"保存中…":"离线暂存",!navigator.onLine);clearTimeout(campaignSaveTimer);campaignSaveTimer=setTimeout(syncCampaign,350);
 }
 async function syncCampaign(){
   if(campaignSyncing||!user||!campaignPending.length||!navigator.onLine)return;
   const ownerId=user.id,campaignId=campaignPending.find(item=>operationReady(item,ownerId))?.campaignId;
   const batch=campaignPending.filter(item=>item.campaignId===campaignId&&operationReady(item,ownerId)).slice(0,200);if(!batch.length){showQueuedSaveState();return}
-  const ids=new Set(batch.map(item=>item.id));
   campaignSyncing=true;
   try{const data=await api("/api/campaign-sync",{method:"POST",body:JSON.stringify({campaignId,operations:batch})});
-    for(let i=campaignPending.length-1;i>=0;i--)if(ids.has(campaignPending[i].id))campaignPending.splice(i,1);
+    removeLocalOperations("campaign",batch.map(item=>item.id));
     if(user?.id!==ownerId)return;
     showQueuedSaveState();if(activeCampaign!==campaignId)return;
     const mergedState=data.state;campaignPending.filter(item=>item.campaignId===campaignId&&(!item.userId||item.userId===ownerId)).forEach(item=>pathSet(mergedState,item.path,item.value));
     campaignState=mergedState;campaignRevision=data.revision;hydrateGameSettings();renderCurrentModule();if(data.conflicts?.length)toast(`已合并 ${data.conflicts.length} 项战役修改`)}
-  catch(e){const blocked=blockUnavailableOperations(campaignPending,"campaignId",campaignId,ownerId,e);if(user?.id===ownerId){if(blocked)showQueuedSaveState();else setSave("等待网络",true)}}
-  finally{persistCampaignPending();campaignSyncing=false;if(user&&campaignPending.some(item=>operationReady(item,user.id)))setTimeout(syncCampaign,600)}
+  catch(e){const blocked=blockUnavailableOperations("campaign","campaignId",campaignId,ownerId,e);if(user?.id===ownerId){if(blocked)showQueuedSaveState();else setSave("等待网络",true)}}
+  finally{campaignSyncing=false;if(user&&campaignPending.some(item=>operationReady(item,user.id)))setTimeout(syncCampaign,600)}
 }
 function hydrateGameSettings(){if(!campaignState)return;gameSettings={leaderSheetId:campaignState.leaderSheetId||"",kingdom:campaignState.kingdom||"sunken",districts:(campaignState.kingdom||"sunken")==="sunken"?3:4,devourDragon:Boolean(campaignState.optionalRules?.devourDragon),fivePlayer:Boolean(campaignState.optionalRules?.fivePlayer)};renderPresentationControls()}
 // 五人模式（规则书 P77）把出征队伍从 4 席扩到 5 席。
@@ -401,10 +510,11 @@ function renderPresentationControls(){
   const boardAlignLabel={top:"靠上",center:"居中",bottom:"靠下"}[boardAlign];
   alignButton?.classList.toggle("active",boardAlign!=="center");
   if(alignButton){alignButton.textContent={top:"↑",center:"↕",bottom:"↓"}[boardAlign];alignButton.title=`第二屏冲突地图当前${boardAlignLabel}，点击切换`;alignButton.setAttribute("aria-label",`第二屏冲突地图当前${boardAlignLabel}，点击切换对齐方式`)}
+  refreshDisplayUrlHint();
 }
 async function loadCampaigns(preferred){
   const data=await api("/api/campaigns");campaigns=data.campaigns;
-  if(resumeAvailableOperations(campaignPending,"campaignId",campaigns))persistCampaignPending();
+  resumeAvailableOperations("campaign","campaignId",campaigns);
   activeCampaign=preferred||localStorage.kfActiveCampaign||activeCampaign||data.defaultCampaignId||campaigns[0]?.id;
   if(!campaigns.some(c=>c.id===activeCampaign))activeCampaign=campaigns[0]?.id;
   localStorage.kfActiveCampaign=activeCampaign||"";renderCampaignSelect();
@@ -431,7 +541,7 @@ function showAuth(){$("#authView").classList.remove("hidden");$("#appView").clas
 async function showApp(){$("#authView").classList.add("hidden");$("#appView").classList.remove("hidden");$("#currentUser").textContent=user.username;const linked=typeof location.search==="string"?new URLSearchParams(location.search).get("campaignId"):null;await Promise.all([loadCampaigns(linked),loadSharedSettings()]);migrateLegacyJura();await refreshLists();sync();syncCampaign()}
 async function refreshLists(){
   const suffix=`&campaignId=${encodeURIComponent(activeCampaign)}`;const [a,b]=await Promise.all([api(`/api/sheets?overview=1${suffix}`),api(`/api/sheets?trash=1${suffix}`)]);sheets=a.sheets;trash=b.sheets;renderLists();
-  if(resumeAvailableOperations(pending,"sheetId",sheets)){persistPending();sync()}
+  if(resumeAvailableOperations("sheet","sheetId",sheets))sync();
   if(active&&!sheets.some(s=>s.id===active)){active=null;state=null}
   if(viewMode==="overview"||!active)showOverview();
 }
@@ -722,26 +832,49 @@ if(typeof ResizeObserver==="function"){
   notesLayoutObserver.observe($(".virtues-panel"));notesLayoutObserver.observe($(".notes-panel h2"));
 }
 function closeSidebar(){$("#sidebar").classList.remove("open");$("#scrim").classList.remove("open")}
+let androidSharedCampaign=null;
 function secondScreenUrl(){
-  if(window.KFAndroidFiles?.lanDisplayUrl)return String(window.KFAndroidFiles.lanDisplayUrl(activeCampaign||"")||"");
+  if(window.KFAndroidFiles?.lanDisplayUrl){
+    const url=String(window.KFAndroidFiles.lanDisplayUrl(activeCampaign||"")||"");
+    if(url){androidSharedCampaign=activeCampaign;refreshDisplayUrlHint()}
+    return url;
+  }
   return new URL(`/modules/display/?campaignId=${encodeURIComponent(activeCampaign||"")}`,location.href).href
 }
-function refreshDisplayUrlHint(){const output=$("#displayUrlHint");if(!output)return;const url=secondScreenUrl();output.textContent=url||"请连接 Wi-Fi 或开启手机热点"}
-const juraPanel=createJuraPanel({root:$("#juraPanel"),getState:()=>sharedSettings.jura,getCampaignId:()=>"shared",save:value=>{sharedSettings.jura=value;queueSharedSettingsSave()},notify:toast,catalog:window.KF_JURA_DATA||{},getSheets:()=>knightSheets(),adjustGold:adjustSheetGold});
+function stopDisplayShare(){
+  window.KFAndroidFiles?.stopLanDisplay?.();
+  androidSharedCampaign=null;
+  refreshDisplayUrlHint();
+}
+function refreshDisplayUrlHint(){
+  const output=$("#displayUrlHint");if(!output)return;
+  const stopButton=$("#stopDisplayShare");
+  if(stopButton)stopButton.hidden=!window.KFAndroidFiles?.stopLanDisplay;
+  if(window.KFAndroidFiles?.lanDisplayUrl){
+    output.textContent=androidSharedCampaign&&androidSharedCampaign===activeCampaign?"当前战役已开始局域网分享。":"打开第二屏或复制网址可开始局域网分享。";
+  }else output.textContent=secondScreenUrl();
+}
+const juraPanel=createJuraPanel({root:$("#juraPanel"),getState:()=>sharedSettings.jura,getCampaignId:()=>"shared",save:value=>{sharedSettings.jura=value;queueSharedSettingsSave("jura",value)},notify:toast,catalog:window.KF_JURA_DATA||{},getSheets:()=>knightSheets(),adjustGold:adjustSheetGold});
 $("#openJura").onclick=()=>{showOverview();closeSidebar();$("#juraPanel").scrollIntoView({behavior:"smooth",block:"start"})};
 $("#authMode").onclick=()=>{isRegister=!isRegister;$("#authSubmit").textContent=isRegister?"注册":"登录";$("#authMode").textContent=isRegister?"已有账号？登录":"没有账号？注册";$("#authPassword").autocomplete=isRegister?"new-password":"current-password"};
 $("#authForm").onsubmit=async e=>{e.preventDefault();try{const route=isRegister?"register":"login";const data=await api(`/api/auth/${route}`,{method:"POST",body:JSON.stringify({username:$("#authUsername").value,password:$("#authPassword").value})});user=data.user;await showApp()}catch(err){$("#authHint").textContent=err.message}};
-$("#logoutButton").onclick=async()=>{await api("/api/auth/logout",{method:"POST"});user=null;active=null;state=null;campaigns=[];activeCampaign=null;campaignState=null;sharedSettings={storyMarkers:{},passwords:[],jura:null};sharedSettingsDirty=false;renderPermanentStoryMarkers();renderPasswordRecords();showAuth()};
+$("#logoutButton").onclick=async()=>{await api("/api/auth/logout",{method:"POST"});stopDisplayShare();user=null;active=null;state=null;campaigns=[];activeCampaign=null;campaignState=null;sharedSettings={storyMarkers:{},passwords:[],jura:null};clearTimeout(sharedSettingsSaveTimer);sharedSettingsSaveTimer=null;renderPermanentStoryMarkers();renderPasswordRecords();showAuth()};
 $("#menuButton").onclick=()=>{$("#sidebar").classList.add("open");$("#scrim").classList.add("open");refreshDisplayUrlHint()};$("#closeSidebar").onclick=$("#scrim").onclick=closeSidebar;
 $("#searchSheets").oninput=e=>{search=e.target.value;renderLists()};
-$("#permanentStoryMarkerGroups").onchange=e=>{const input=e.target.closest("[data-permanent-story-marker]");if(!input)return;const id=input.dataset.permanentStoryMarker;if(!permanentStoryMarkerIds.has(id))return;if(input.checked)sharedSettings.storyMarkers[id]=true;else delete sharedSettings.storyMarkers[id];renderPermanentStoryMarkers();queueSharedSettingsSave()};
-$("#addPasswordRecord").onclick=()=>{sharedSettings.passwords.push({id:compatibleUuid().replace(/-/g,""),matrix:Array(6).fill("dot"),number:""});renderPasswordRecords();queueSharedSettingsSave()};
+$("#permanentStoryMarkerGroups").onchange=e=>{const input=e.target.closest("[data-permanent-story-marker]");if(!input)return;const id=input.dataset.permanentStoryMarker;if(!permanentStoryMarkerIds.has(id))return;if(input.checked)sharedSettings.storyMarkers[id]=true;else delete sharedSettings.storyMarkers[id];renderPermanentStoryMarkers();queueSharedSettingsSave("storyMarkers",input.checked,id)};
+$("#addPasswordRecord").onclick=()=>{
+  if(sharedSettings.passwords.length>=100)return;
+  const id=compatibleUuid().replace(/-/g,"");
+  sharedSettings.passwords.push({id,matrix:Array(6).fill("dot"),number:""});
+  renderPasswordRecords();queueSharedSettingsSave("passwords",{create:true},id);
+};
 $("#passwordRecords").addEventListener("click",e=>{
   const row=e.target.closest("[data-password-record]");if(!row)return;const index=sharedSettings.passwords.findIndex(record=>record.id===row.dataset.passwordRecord);if(index<0)return;
-  const cell=e.target.closest("[data-password-cell]");if(cell){const position=Number(cell.dataset.passwordCell),current=sharedSettings.passwords[index].matrix[position],next=passwordSymbolOrder[(passwordSymbolOrder.indexOf(current)+1)%passwordSymbolOrder.length];sharedSettings.passwords[index].matrix[position]=next;renderPasswordRecords();queueSharedSettingsSave();return}
-  if(e.target.closest("[data-remove-password]")){sharedSettings.passwords.splice(index,1);renderPasswordRecords();queueSharedSettingsSave()}
+  const id=sharedSettings.passwords[index].id;
+  const cell=e.target.closest("[data-password-cell]");if(cell){const position=Number(cell.dataset.passwordCell),current=sharedSettings.passwords[index].matrix[position],next=passwordSymbolOrder[(passwordSymbolOrder.indexOf(current)+1)%passwordSymbolOrder.length];sharedSettings.passwords[index].matrix[position]=next;renderPasswordRecords();queueSharedSettingsSave("passwords",{cell:position,symbol:next},id);return}
+  if(e.target.closest("[data-remove-password]")){sharedSettings.passwords.splice(index,1);renderPasswordRecords();queueSharedSettingsSave("passwords",null,id)}
 });
-$("#passwordRecords").addEventListener("input",e=>{const input=e.target.closest("[data-password-number]"),row=e.target.closest("[data-password-record]");if(!input||!row)return;const record=sharedSettings.passwords.find(item=>item.id===row.dataset.passwordRecord);if(!record)return;const cleaned=input.value.replace(/\D/g,"").slice(0,8);if(input.value!==cleaned)input.value=cleaned;record.number=cleaned;queueSharedSettingsSave()});
+$("#passwordRecords").addEventListener("input",e=>{const input=e.target.closest("[data-password-number]"),row=e.target.closest("[data-password-record]");if(!input||!row)return;const record=sharedSettings.passwords.find(item=>item.id===row.dataset.passwordRecord);if(!record)return;const cleaned=input.value.replace(/\D/g,"").slice(0,8);if(input.value!==cleaned)input.value=cleaned;record.number=cleaned;queueSharedSettingsSave("passwords",{number:cleaned},record.id)});
 $("#sheetList").onclick=e=>{const b=e.target.closest("[data-sheet]");if(b)openSheet(b.dataset.sheet)};
 $("#overviewButton").onclick=()=>{showOverview();closeSidebar()};
 $(".module-nav").onclick=e=>{const button=e.target.closest("[data-module]");if(button)button.dataset.module==="overview"?showOverview():showModule(button.dataset.module)};
@@ -759,7 +892,8 @@ $("#overview").onclick=e=>{const leader=e.target.closest("[data-leader-sheet]");
 $("#overview").onkeydown=e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open-sheet]")){e.preventDefault();openSheet(e.target.dataset.openSheet)}};
 $("#overviewNew").onclick=()=>$("#newSheet").click();
 $("#openDisplay").onclick=()=>{const url=secondScreenUrl();if(!url)return toast("请先连接 Wi-Fi 或开启手机热点");if(window.KFAndroidFiles?.openExternalUrl)window.KFAndroidFiles.openExternalUrl(url);else window.open(url,"kf-second-screen","noopener")};
-$("#copyDisplayUrl").onclick=async()=>{const url=secondScreenUrl();if(!url)return toast("请先连接 Wi-Fi 或开启手机热点");try{await navigator.clipboard.writeText(url);toast(`第二屏局域网地址已复制：${url}`)}catch{toast("无法访问剪贴板")}};
+$("#copyDisplayUrl").onclick=async()=>{const url=secondScreenUrl();if(!url)return toast("请先连接 Wi-Fi 或开启手机热点");try{await navigator.clipboard.writeText(url);toast("第二屏地址已复制")}catch{toast("无法访问剪贴板")}};
+$("#stopDisplayShare")?.addEventListener("click",()=>{stopDisplayShare();toast("已停止第二屏分享")});
 $("#mapScale").oninput=e=>{$("#mapScaleValue").textContent=`${e.target.value}%`};
 $("#mapScale").onchange=e=>campaignOp("presentation.settings.mapScale",Math.max(50,Math.min(200,Number(e.target.value)||100)));
 $("#conflictScale").oninput=e=>{$("#conflictScaleValue").textContent=`${e.target.value}%`};
@@ -854,7 +988,7 @@ $("#sheetForm").addEventListener("click",e=>{const h=e.target.closest("[data-hea
 $("#addRapport").onclick=()=>{state.rapport.push({knight:"",hearts:[false,false,false],favor:""});op("rapport",[...state.rapport]);renderRapport();renderValues()};
 $("#matrixLock").onclick=()=>{op("choicesUnlocked",!Boolean(state.choicesUnlocked));renderMatrix();renderValues();toast(state.choicesUnlocked?"抉择矩阵已解锁":"抉择矩阵已锁定")};
 $$(".add-list").forEach(b=>b.onclick=()=>{state[b.dataset.list].push("");op(b.dataset.list,[...state[b.dataset.list]]);renderList(b.dataset.list);renderValues()});
-$("#exportAll").onclick=async()=>{try{await Promise.all([sync(),syncCampaign(),saveSharedSettings()]);if(pending.some(item=>operationOwnedBy(item,user?.id))||campaignPending.some(item=>operationOwnedBy(item,user?.id))||sharedSettingsDirty)return toast("修改仍在保存，请在显示已保存后再导出存档");download("kf-unified-save.json",await api(`/api/campaign-export?campaignId=${encodeURIComponent(activeCampaign)}`))}catch(error){toast(error.message)}};
+$("#exportAll").onclick=async()=>{try{await syncLocalOperations();if(pending.some(item=>operationOwnedBy(item,user?.id))||campaignPending.some(item=>operationOwnedBy(item,user?.id))||pendingSettings().length)return toast("修改仍在保存，请在显示已保存后再导出存档");download("kf-unified-save.json",await api(`/api/campaign-export?campaignId=${encodeURIComponent(activeCampaign)}`))}catch(error){toast(error.message)}};
 $("#importFile").onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const data=JSON.parse(await file.text()),created=await api("/api/campaign-import",{method:"POST",body:JSON.stringify(data)});await Promise.all([loadCampaigns(created.id),loadSharedSettings()]);migrateLegacyJura();await refreshLists();showOverview();toast("存档导入完成，账号共享记录已合并")}catch(err){toast(err.message)}finally{e.target.value=""}};
 $("#partyTile").onchange=e=>campaignOp(campaignMapPath("partyTile"),e.target.value.trim());$("#mapRound").onchange=e=>campaignOp(campaignMapPath("round"),Math.max(0,Number(e.target.value)||0));
 $("#advanceMapRound").onclick=()=>{campaignOp(campaignMapPath("round"),(campaignMapState().round||0)+1);renderMap()};
@@ -888,6 +1022,16 @@ $("#addWound").onclick=()=>{const a=campaignState.aibp||{},wounds=[...(a.wounds|
 $("#promotionLevel").onchange=e=>pushAIBP(`晋升调整为 ${e.target.value}`,{promotion:Math.max(0,Math.min(4,Number(e.target.value)||0))});
 $("#undoAIBP").onclick=()=>{const a=campaignState.aibp||{},before=a.undo;if(!before)return toast("没有可撤销的 AI/BP 操作");Object.entries(before).forEach(([key,value])=>campaignOp(`aibp.${key}`,value));campaignOp("aibp.undo",null);campaignOp("aibp.history",[...(a.history||[]),{at:new Date().toISOString(),text:"撤销上一步操作"}].slice(-30));renderAIBP();toast("已撤销上一步 AI/BP 操作")};
 $("#printButton").onclick=()=>window.print();
-addEventListener("online",()=>{setSave("正在同步…");sync();syncCampaign();if(sharedSettingsDirty)saveSharedSettings()});addEventListener("offline",()=>setSave("离线暂存",true));
+async function syncLocalOperations(){
+  await readLocalOperations();
+  if(!user||!navigator.onLine)return;
+  if(!pending.some(item=>operationOwnedBy(item,user.id))&&!campaignPending.some(item=>operationOwnedBy(item,user.id))&&!pendingSettings().length){
+    showQueuedSaveState();return;
+  }
+  await Promise.all([sync(),syncCampaign(),saveSharedSettings()]);
+}
+addEventListener("online",()=>{setSave("正在同步…");syncLocalOperations()});
+addEventListener("focus",()=>{if(user&&navigator.onLine)syncLocalOperations()});
+addEventListener("offline",()=>setSave("离线暂存",true));
 setInterval(()=>{if(!user)return;if(viewMode==="edit"&&active&&!pending.some(item=>item.sheetId===active&&operationOwnedBy(item,user.id))&&!syncing&&navigator.onLine)openSheet(active);else if(viewMode==="overview"&&navigator.onLine)refreshLists()},15000);
 initOffline().finally(()=>loadSession().catch(e=>toast(e.message)));

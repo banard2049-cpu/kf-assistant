@@ -50,6 +50,7 @@ final class LocalApi {
     }
 
     private final StoreDb database;
+    private long sessionGeneration;
 
     LocalApi(Context context) {
         database = new StoreDb(context.getApplicationContext());
@@ -63,7 +64,12 @@ final class LocalApi {
             String route = route(uri);
             JSONObject payload = json(body);
             JSONObject result = dispatch(store, method == null ? "GET" : method.toUpperCase(Locale.ROOT), route, uri, payload);
-            if (result.optInt("status", 500) < 400) database.write(store);
+            if (result.optInt("status", 500) < 400) {
+                database.write(store);
+                if ("auth/logout".equals(route) || "auth/login".equals(route) || "auth/register".equals(route)) {
+                    sessionGeneration++;
+                }
+            }
             return result.toString();
         } catch (Exception error) {
             try {
@@ -72,6 +78,22 @@ final class LocalApi {
                 return "{\"status\":500,\"body\":{\"error\":\"本地存档处理失败\"}}";
             }
         }
+    }
+
+    synchronized long authorizeSecondScreen(String campaignId) throws JSONException {
+        if (campaignId == null || campaignId.isEmpty()) return -1;
+        JSONObject store = database.read();
+        JSONObject user = currentUser(store);
+        return user != null && activeCampaign(store, user.getString("id"), campaignId) != null ? sessionGeneration : -1;
+    }
+
+    synchronized JSONObject readSecondScreen(String campaignId, long generation) throws JSONException {
+        if (campaignId == null || campaignId.isEmpty() || generation != sessionGeneration) return null;
+        JSONObject store = database.read();
+        JSONObject user = currentUser(store);
+        if (user == null) return null;
+        JSONObject response = displayState(store, user.getString("id"), campaignId);
+        return response.optInt("status") == 200 ? response.optJSONObject("body") : null;
     }
 
     private JSONObject dispatch(JSONObject store, String method, String route, Uri uri, JSONObject data) throws Exception {
@@ -143,12 +165,112 @@ final class LocalApi {
         JSONObject settings = all.optJSONObject(userId);
         if (settings == null) settings = new JSONObject().put("storyMarkers", new JSONObject()).put("passwords", new JSONArray());
         if ("PATCH".equals(method)) {
-            if (data.has("storyMarkers")) settings.put("storyMarkers", copyObject(data.optJSONObject("storyMarkers")));
-            if (data.has("passwords")) settings.put("passwords", copyArray(data.optJSONArray("passwords")));
-            if (data.has("jura")) settings.put("jura", data.optJSONObject("jura") == null ? JSONObject.NULL : copyObject(data.optJSONObject("jura")));
+            if (data.has("operations")) {
+                JSONArray operations = data.optJSONArray("operations");
+                if (operations == null || operations.length() > 200) return envelope(400, error("账号共享记录操作无效"));
+                settings = applyUserSettingsOperations(settings, operations);
+                if (settings == null) return envelope(400, error("账号共享记录操作无效"));
+            } else {
+                if (data.has("storyMarkers")) settings.put("storyMarkers", copyObject(data.optJSONObject("storyMarkers")));
+                if (data.has("passwords")) settings.put("passwords", copyArray(data.optJSONArray("passwords")));
+                if (data.has("jura")) settings.put("jura", data.optJSONObject("jura") == null ? JSONObject.NULL : copyObject(data.optJSONObject("jura")));
+            }
             all.put(userId, settings);
         }
-        return ok(new JSONObject().put("settings", copyObject(settings)));
+        return ok(new JSONObject().put("settings", publicUserSettings(settings)));
+    }
+
+    private JSONObject publicUserSettings(JSONObject settings) throws JSONException {
+        JSONObject visible = new JSONObject().put("storyMarkers", copyObject(settings == null ? null : settings.optJSONObject("storyMarkers")))
+                .put("passwords", copyArray(settings == null ? null : settings.optJSONArray("passwords")));
+        if (settings != null && settings.has("jura")) {
+            JSONObject jura = settings.optJSONObject("jura");
+            visible.put("jura", jura == null ? JSONObject.NULL : copyObject(jura));
+        }
+        return visible;
+    }
+
+    private JSONObject applyUserSettingsOperations(JSONObject settings, JSONArray operations) throws JSONException {
+        JSONObject current = publicUserSettings(settings);
+        JSONObject applied = copyObject(settings.optJSONObject("_appliedOperations"));
+        for (int index = 0; index < operations.length(); index++) {
+            JSONObject operation = operations.optJSONObject(index);
+            String id = operation == null ? "" : operation.optString("id");
+            if (!id.matches("[A-Za-z0-9_-]{8,100}") || !operation.has("value")) return null;
+            if (applied.has(id)) continue;
+            String key = operation.optString("key");
+            Object value = operation.opt("value");
+            switch (operation.optString("section")) {
+                case "storyMarkers":
+                    if (!key.matches("[a-z0-9-]{1,80}") || !(value instanceof Boolean)) return null;
+                    JSONObject markers = current.getJSONObject("storyMarkers");
+                    if ((Boolean) value) markers.put(key, true);
+                    else markers.remove(key);
+                    break;
+                case "passwords":
+                    if (!key.matches("[A-Za-z0-9_-]{8,100}")
+                            || !applyPasswordOperation(current.getJSONArray("passwords"), key, value)) return null;
+                    break;
+                case "jura":
+                    if (!(value instanceof JSONObject) && value != JSONObject.NULL) return null;
+                    current.put("jura", value);
+                    break;
+                case "legacy":
+                    if (!(value instanceof JSONObject)) return null;
+                    current = publicUserSettings((JSONObject) value);
+                    break;
+                default:
+                    return null;
+            }
+            applied.put(id, true);
+        }
+        trimObject(applied, 2048);
+        return current.put("_appliedOperations", applied);
+    }
+
+    private boolean applyPasswordOperation(JSONArray passwords, String key, Object value) throws JSONException {
+        int index = 0;
+        JSONObject record = null;
+        for (; index < passwords.length(); index++) {
+            JSONObject candidate = passwords.optJSONObject(index);
+            if (candidate != null && key.equals(candidate.optString("id"))) {
+                record = candidate;
+                break;
+            }
+        }
+        if (value == JSONObject.NULL) {
+            if (record != null) passwords.remove(index);
+            return true;
+        }
+        if (!(value instanceof JSONObject)) return false;
+        JSONObject edit = (JSONObject) value;
+        if (Boolean.TRUE.equals(edit.opt("create"))) {
+            if (record == null && passwords.length() < 100) {
+                JSONArray matrix = new JSONArray();
+                for (int cell = 0; cell < 6; cell++) matrix.put("dot");
+                passwords.put(new JSONObject().put("id", key).put("matrix", matrix).put("number", ""));
+            }
+            return true;
+        }
+        Object number = edit.opt("number");
+        if (number instanceof String && ((String) number).matches("[0-9]{0,8}")) {
+            if (record != null) record.put("number", number);
+            return true;
+        }
+        Object cell = edit.opt("cell");
+        String symbol = edit.optString("symbol");
+        if (!(cell instanceof Integer) || (Integer) cell < 0 || (Integer) cell >= 6
+                || !("dot".equals(symbol) || "filled".equals(symbol) || "outline".equals(symbol))) return false;
+        if (record != null) {
+            JSONArray matrix = record.optJSONArray("matrix");
+            if (matrix == null) {
+                matrix = new JSONArray();
+                for (int position = 0; position < 6; position++) matrix.put("dot");
+                record.put("matrix", matrix);
+            }
+            matrix.put((Integer) cell, symbol);
+        }
+        return true;
     }
 
     private JSONObject campaigns(JSONObject store, String userId, String defaultId, String method, Uri uri, JSONObject data) throws JSONException {
@@ -409,8 +531,6 @@ final class LocalApi {
         if (campaign == null) return envelope(404, error("战役不存在"));
         JSONArray exportedSheets = new JSONArray();
         JSONObject sheets = sheetBucket(store, userId);
-        Set<String> usedTitles = new HashSet<>();
-        for (JSONObject existing : sortedRecords(sheets)) if (!isDeleted(existing)) usedTitles.add(existing.optString("title"));
         for (JSONObject sheet : sortedRecords(sheets)) if (!isDeleted(sheet)) {
             exportedSheets.put(new JSONObject().put("id", sheet.getString("id")).put("title", sheet.getString("title"))
                     .put("state", copyObject(sheet.getJSONObject("state"))));
@@ -420,12 +540,16 @@ final class LocalApi {
         JSONObject payload = new JSONObject().put("name", campaign.getString("name"))
                 .put("state", copyObject(campaign.getJSONObject("state"))).put("sheets", exportedSheets);
         return ok(new JSONObject().put("format", "kf-unified-campaign").put("schemaVersion", 2).put("exportedAt", now())
-                .put("shared", copyObject(settings)).put("campaign", payload));
+                .put("shared", publicUserSettings(settings)).put("campaign", payload));
     }
 
     private JSONObject displayState(JSONObject store, String userId, String defaultCampaignId, Uri uri) throws JSONException {
         String campaignId = uri.getQueryParameter("campaignId");
         if (campaignId == null || campaignId.isEmpty()) campaignId = defaultCampaignId;
+        return displayState(store, userId, campaignId);
+    }
+
+    private JSONObject displayState(JSONObject store, String userId, String campaignId) throws JSONException {
         JSONObject campaign = activeCampaign(store, userId, campaignId);
         if (campaign == null) return envelope(404, error("战役不存在"));
         JSONObject state = campaign.getJSONObject("state");
@@ -465,38 +589,75 @@ final class LocalApi {
         if (!"kf-unified-campaign".equals(data.optString("format")) || data.optInt("schemaVersion") != 2 || data.optJSONObject("campaign") == null)
             return envelope(400, error("只支持新版 KF 一体化战役存档（版本 2）"));
         JSONObject payload = data.getJSONObject("campaign");
-        JSONObject importedState = copyObject(payload.optJSONObject("state"));
-        if (importedState.length() == 0) importedState = defaultCampaignState();
-        importedState.put("schemaVersion", 2);
-        JSONObject sheets = sheetBucket(store, userId);
-        Set<String> usedTitles = new HashSet<>();
-        for (JSONObject existing : sortedRecords(sheets)) if (!isDeleted(existing)) usedTitles.add(existing.optString("title"));
+        JSONObject sourceState = payload.optJSONObject("state");
         JSONArray sourceSheets = payload.optJSONArray("sheets");
+        JSONObject shared = data.optJSONObject("shared");
+        if (sourceState == null || sourceSheets == null || (!data.isNull("shared") && shared == null))
+            return envelope(400, error("战役存档缺少有效的战役状态、骑士档案列表或共享记录"));
+        Object modules = sourceState.opt("modules");
+        if ((sourceState.has("party") && sourceState.optJSONArray("party") == null)
+                || (!sourceState.isNull("modules") && !(modules instanceof JSONObject)
+                && !(modules instanceof JSONArray && ((JSONArray) modules).length() == 0)))
+            return envelope(400, error("战役存档中的队伍或模块格式无效"));
+        if (shared != null) {
+            Object markers = shared.opt("storyMarkers");
+            Object jura = shared.opt("jura");
+            JSONArray passwords = shared.optJSONArray("passwords");
+            if ((!shared.isNull("storyMarkers") && !(markers instanceof JSONObject)
+                    && !(markers instanceof JSONArray && ((JSONArray) markers).length() == 0))
+                    || (!shared.isNull("jura") && !(jura instanceof JSONObject)
+                    && !(jura instanceof JSONArray && ((JSONArray) jura).length() == 0))
+                    || (!shared.isNull("passwords") && passwords == null))
+                return envelope(400, error("战役存档中的共享记录格式无效"));
+            for (int index = 0; passwords != null && index < passwords.length(); index++) {
+                if (passwords.optJSONObject(index) == null)
+                    return envelope(400, error("战役存档中的密码记录格式无效"));
+            }
+        }
+
+        Set<String> usedTitles = new HashSet<>();
+        JSONObject currentSheets = store.getJSONObject("sheets").optJSONObject(userId);
+        if (currentSheets != null) for (JSONObject existing : sortedRecords(currentSheets)) {
+            if (!isDeleted(existing)) usedTitles.add(existing.optString("title"));
+        }
         Map<String, String> sheetMap = new HashMap<>();
-        for (int index = 0; sourceSheets != null && index < Math.min(100, sourceSheets.length()); index++) {
+        List<JSONObject> preparedSheets = new ArrayList<>();
+        for (int index = 0; index < sourceSheets.length(); index++) {
             JSONObject source = sourceSheets.optJSONObject(index);
             JSONObject state = source == null ? null : source.optJSONObject("state");
-            String knightId = state == null ? "" : state.optString("knightId");
-            if (!KNIGHTS.containsKey(knightId)) return envelope(400, error("导入文件包含无效的骑士身份"));
+            Object identity = state == null ? null : state.opt("knightId");
+            if (!(identity instanceof String) || !KNIGHTS.containsKey(identity))
+                return envelope(400, error("第 " + (index + 1) + " 张骑士档案的内容或骑士身份无效"));
+            String knightId = (String) identity;
+            Object sourceId = source.isNull("id") ? "" : source.opt("id");
+            if (!(sourceId instanceof String) || (!((String) sourceId).isEmpty() && sheetMap.containsKey(sourceId)))
+                return envelope(400, error("第 " + (index + 1) + " 张骑士档案的编号无效或重复"));
+            String oldId = (String) sourceId;
+            String newId = uuid();
+            if (!oldId.isEmpty()) sheetMap.put(oldId, newId);
+            JSONObject preparedState = defaultKnightState(knightId, "");
+            for (Iterator<String> keys = state.keys(); keys.hasNext();) {
+                String key = keys.next();
+                preparedState.put(key, state.get(key));
+            }
+            preparedState.put("knight", KNIGHTS.get(knightId));
             String sheetTitle = uniqueTitle(usedTitles, source.optString("title", KNIGHTS.get(knightId)));
-            source.put("_resolvedTitle", sheetTitle);
-            sheetMap.put(source.optString("id", uuid()), uuid());
+            preparedSheets.add(newSheet(newId, sheetTitle, preparedState));
         }
+        JSONObject importedState = defaultCampaignState();
+        JSONObject copiedState = copyObject(sourceState);
+        for (Iterator<String> keys = copiedState.keys(); keys.hasNext();) {
+            String key = keys.next();
+            importedState.put(key, copiedState.get(key));
+        }
+        importedState.put("schemaVersion", 2);
         CampaignStateImport.remapSheetReferences(importedState, sheetMap);
         JSONObject campaign = newCampaign(title(payload.optString("name", "导入战役")) + "（导入）", importedState);
         CampaignStateImport.rebindRogueCampaign(campaign.getJSONObject("state"), campaign.getString("id"));
+        JSONObject sheets = sheetBucket(store, userId);
+        for (JSONObject record : preparedSheets) sheets.put(record.getString("id"), record);
         campaignBucket(store, userId).put(campaign.getString("id"), campaign);
-        for (int index = 0; sourceSheets != null && index < Math.min(100, sourceSheets.length()); index++) {
-            JSONObject source = sourceSheets.optJSONObject(index);
-            JSONObject state = source == null ? null : source.optJSONObject("state");
-            if (state == null) continue;
-            String knightId = state.optString("knightId");
-            JSONObject copy = copyObject(state).put("knight", KNIGHTS.get(knightId));
-            String newId = sheetMap.get(source.optString("id"));
-            JSONObject record = newSheet(newId == null ? uuid() : newId, source.optString("_resolvedTitle", title(source.optString("title", KNIGHTS.get(knightId)))), copy);
-            sheets.put(record.getString("id"), record);
-        }
-        mergeSettings(store, userId, data.optJSONObject("shared"));
+        mergeSettings(store, userId, shared);
         return envelope(201, new JSONObject().put("id", campaign.getString("id")));
     }
 

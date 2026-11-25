@@ -18,11 +18,15 @@ function harness() {
     navigator: { onLine: true }, sheets: [{ id: 'sheet-A' }, { id: 'sheet-B' }],
     api: (route, options) => new Promise((resolve, reject) => requests.push({ route, body: options?.body ? JSON.parse(options.body) : undefined, resolve, reject })),
     localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
-    persistPending: () => pendingSaves.push(plain(context.pending)), persistCampaignPending() {}, setSave: (...args) => saves.push(args), renderValues() {}, toast() {},
+    pendingSettings: () => [], setSave: (...args) => saves.push(args), renderValues() {}, toast() {},
     renderAll() {}, closeSidebar() {}, renderLists() {}, showOverview() {}, viewMode: 'edit',
     hydrateGameSettings() {}, renderCurrentModule() {}, setTimeout: callback => timers.push(callback), clearTimeout() {}, structuredClone,
   });
-  vm.runInContext(section('const pathGet=', 'function campaignOp(') + section('async function syncCampaign(){', 'function hydrateGameSettings(') + section('let sheetOpenRequest=0;', 'function showEmpty(') + section('async function refreshLists(){', 'function renderLists('), context);
+  context.localQueues = { sheet: context.pending, campaign: context.campaignPending };
+  const snapshotQueue = async () => { pendingSaves.push(plain(context.pending)); };
+  context.offlineDb = { put: snapshotQueue, remove: snapshotQueue, setBlocked: snapshotQueue };
+  vm.runInContext(section('let lastQueuedAt=0;', 'async function readLocalOperations(')
+    + section('const pathGet=', 'function campaignOp(') + section('async function syncCampaign(){', 'function hydrateGameSettings(') + section('let sheetOpenRequest=0;', 'function showEmpty(') + section('async function refreshLists(){', 'function renderLists('), context);
   return { context, requests, storage, saves, timers, pendingSaves };
 }
 
@@ -211,7 +215,7 @@ test('restoring a campaign only resumes the current account and available record
     { userId: 'user-A', campaignId: 'deleted', syncBlocked: 404 },
     { userId: 'user-B', campaignId: 'restored', syncBlocked: 404 },
   );
-  assert.equal(c.resumeAvailableOperations(c.campaignPending, 'campaignId', [{ id: 'restored' }]), true);
+  assert.equal(c.resumeAvailableOperations('campaign', 'campaignId', [{ id: 'restored' }]), true);
   assert.deepEqual(plain(c.campaignPending).map(item => item.syncBlocked ?? null), [null, 404, 404]);
 });
 

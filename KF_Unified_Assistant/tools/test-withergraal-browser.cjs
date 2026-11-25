@@ -197,13 +197,41 @@ const server=http.createServer((req,res)=>{
     assert.equal(moneySettled.roster[1].gold,42);
     assert.equal(moneySettled.advancedClaims["wither-7-princess-1"].alternative,1);
     assert.deepEqual(moneySettled.unlockedPrincesses,[]);
-    // A true high-level handoff must arrive at AI/BP without being clamped.
-    await page.evaluate(id=>localStorage.setItem(window.KF_MODULE_BRIDGE.handoffKey("kfRogueHandoff"),JSON.stringify({id:"postgame-request",campaignId:id,roguePath:true,slotId:"run-a",stage:"withergraal",postgame:true,nodeId:"postgame-node",monsterId:"M_Toadragon",monster:"Toadragon of the Great Marsh",level:9,createdAt:Date.now(),rogueRoster:[{id:"rogue-1",knightId:"kara",type:"knight",name:"Kara"}]})),campaignId);
-    await page.goto(base+"/modules/aibp/");
+    // A fresh browser opens the ordinary battle until the user asks to resume a saved Rogue battle.
+    const resumeRun=clone(state.modules.roguePath.slots[0].state);
+    const resumeNode=rules.getStageNodes(resumeRun).find(node=>node.level===9);
+    resumeRun.pendingBattle={handoffId:"postgame-request",nodeId:resumeNode.id,kingdom:resumeNode.kingdom,monsterId:"M_Toadragon",monster:"Toadragon of the Great Marsh",level:9,roll:1};
+    state.modules.roguePath=bundle(resumeRun);revision++;
+    page=await open();await page.goto(base+"/modules/aibp/");
+    await page.locator('[data-level]').waitFor({state:"attached"});
+    await page.locator('[data-draw="ai"]').first().click();
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey))?.battle?.activeAI);
+    await flush(page);
+    const ordinary=clone(state.modules.aibp);
+    assert.notEqual(ordinary.battle.monsterId,"M_Toadragon");
+    assert.ok(ordinary.history.length);
+
+    page=await open();await page.goto(base+"/modules/rogue/");
+    await page.locator("#resumePendingBattle").click();
+    await page.waitForURL("**/modules/aibp/?**");
     await page.locator('[data-level]').waitFor({state:"attached"});
     await page.waitForFunction(()=>document.querySelector('[data-level]')?.value==="9");
+    await flush(page);
+    const postgame=clone(state.modules.aibp.battle);
+    assert.equal(postgame.rogueBattle.id,"postgame-request");
+    assert.deepEqual(postgame.rogueBattle.roster.map(member=>member.name),resumeRun.roster.filter(member=>member.alive).map(member=>member.name));
+    assert.deepEqual(state.modules.aibp.encounters[ordinary.battle.monsterId].history,ordinary.history);
+    assert.equal(state.modules.aibp.encounters[ordinary.battle.monsterId].battle.activeAI,ordinary.battle.activeAI);
+
+    page=await open();await page.goto(base+"/modules/rogue/");
+    await page.locator("#resumePendingBattle").click();
+    await page.waitForURL("**/modules/aibp/?**");
+    await page.waitForFunction(()=>document.querySelector('[data-level]')?.value==="9");
+    const resumed=await page.evaluate(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)).battle);
+    assert.deepEqual(resumed.aiDeck,postgame.aiDeck,"a different browser resumes the exact conflict deck");
+    assert.equal(resumed.conflictBoard.createdAt,postgame.conflictBoard.createdAt);
     assert.equal(await page.locator(".postgame-reference-card").count(),8,"seven cumulative trait groups plus current stat row");
-    await page.locator('[data-preview="postgame-toadragon-9-traits"]').click();
+    await page.locator('.postgame-reference-name[data-preview="postgame-toadragon-9-traits"]').click();
     await page.locator(".postgame-preview-modal").waitFor({state:"visible"});
     const image=page.locator(".postgame-preview-modal .crop-card");
     assert.ok(await image.count());
@@ -327,7 +355,7 @@ const server=http.createServer((req,res)=>{
     await page.locator("[data-sheet-stage]").screenshot({path:path.join(scratch,"panel-level.png")});
     await display.locator(".boss-sheet-stage").screenshot({path:path.join(scratch,"display-panel-level.png")});
     if(!await page.locator("[data-deck-config]").evaluate(element=>element.open))await page.locator("[data-deck-config] summary").click();
-    await page.locator('[data-level]').fill("8");
+    await page.locator('[data-level]').selectOption("8");
     await stat.waitFor({state:"detached"});
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.level===8);
     await flush(page);await mirroredStat.waitFor({state:"detached"});
@@ -335,7 +363,7 @@ const server=http.createServer((req,res)=>{
     assert.equal(await display.locator(`[data-postgame-card="${statId}"]`).count(),0,"changing level removes the old stat image");
     // Level changes re-render and close the deck configuration disclosure.
     if(!await page.locator("[data-deck-config]").evaluate(element=>element.open))await page.locator("[data-deck-config] summary").click();
-    await page.locator('[data-level]').fill("9");
+    await page.locator('[data-level]').selectOption("9");
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem(window.KF_MODULE_BOOTSTRAP.storageKey)||"{}").battle?.level===9);
     await flush(page);
     await display.waitForFunction(()=>document.querySelector('[data-postgame-card="postgame-toadragon-9-level"]'));

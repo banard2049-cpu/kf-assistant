@@ -86,6 +86,44 @@ test('campaign import remaps module/history references and display ETags follow 
     assert.equal(copied.modules.roguePath.campaignId, copyId);
     assert.equal(copied.modules.roguePath.slots[0].state.partyName, 'saved run');
 
+    await t.test('a campaign backup round-trips every sheet and rejects an invalid tail atomically', async () => {
+      const backup = structuredClone(exported);
+      const sourceSheets = Array.from({ length: 105 }, (_, index) => ({
+        ...structuredClone(exported.campaign.sheets[0]),
+        id: 'legacy-' + index,
+        title: 'Imported knight ' + index,
+      }));
+      sourceSheets.at(-1).state.notes = 'Final knight 騎士 🛡️';
+      sourceSheets.at(-1).state.choices = {};
+      backup.campaign.sheets = sourceSheets;
+      backup.campaign.state.party = [sourceSheets.at(-1).id];
+      backup.campaign.state.leaderSheetId = sourceSheets.at(-1).id;
+      backup.campaign.state.modules.map.knights[0].sheetId = sourceSheets.at(-1).id;
+      const beforeSheets = (await api('sheets')).sheets.length;
+      const beforeCampaigns = (await api('campaigns')).campaigns.length;
+      const invalid = structuredClone(backup);
+      invalid.shared.jura.shards = 99;
+      for (const badSheet of [null, invalid.campaign.sheets[0]]) {
+        invalid.campaign.sheets[104] = badSheet;
+        const response = await fetch(url('campaign-import'), { method: 'POST',
+          headers: { 'Content-Type': 'application/json', Cookie: cookie }, body: JSON.stringify(invalid) });
+        assert.equal(response.status, 400);
+        assert.match((await response.json()).error, /105/);
+      }
+      assert.equal((await api('sheets')).sheets.length, beforeSheets);
+      assert.equal((await api('campaigns')).campaigns.length, beforeCampaigns);
+      assert.deepEqual((await api('user-settings')).settings.jura, juraRecord);
+
+      const restoredId = (await api('campaign-import', 'POST', backup)).id;
+      const restored = await api('campaign-export?campaignId=' + restoredId);
+      assert.equal(restored.campaign.sheets.length, beforeSheets + sourceSheets.length);
+      const finalId = restored.campaign.state.party[0];
+      assert.notEqual(finalId, sourceSheets.at(-1).id);
+      assert.equal(restored.campaign.state.leaderSheetId, finalId);
+      assert.equal(restored.campaign.state.modules.map.knights[0].sheetId, finalId);
+      assert.deepEqual(restored.campaign.sheets.find(entry => entry.id === finalId).state, sourceSheets.at(-1).state);
+    });
+
     const syncVirtue = (id, value, base) => api('sync', 'POST', { sheetId: sheet.id, operations: [op(id, 'virtues.bravery.value', value, base)] });
     await syncVirtue('virtue_operation1', 2, 0);
     const displayRoute = 'display-state?campaignId=' + campaignId;

@@ -5096,25 +5096,70 @@
     link.click();
     URL.revokeObjectURL(link.href);
   });
-  $("#importInput").addEventListener("change", event => {
+  function prepareImportedMap(imported) {
+    const isRecord = value => value && typeof value === "object" && !Array.isArray(value);
+    const isStep = value => Number.isInteger(value) && value >= 0 && value < STEPS.length;
+    const isRound = value => Number.isInteger(value) && value > 0;
+    const isRecordList = value => Array.isArray(value) && value.every(isRecord);
+    const isStringList = value => Array.isArray(value) && value.every(item => typeof item === "string");
+    const hasDeck = value => isRecord(value) && isStringList(value.deck) && isStringList(value.discard);
+    const isMap = (current, code) => isRecord(current) && Boolean(tile(current.current, code))
+      && isStringList(current.placed) && isRecord(current.tileState)
+      && isRecordList(current.monsters) && isRecordList(current.tileMarkers)
+      && (current.pathMarkers === undefined || isRecordList(current.pathMarkers))
+      && isStringList(current.travelRoute) && hasDeck(current.exploration) && hasDeck(current.fog)
+      && (current.exploration.pendingClueDirections === undefined || isRecordList(current.exploration.pendingClueDirections));
+    const codes = ["SK", "POS"];
+    if (!isRecord(imported) || ![5, 6, 7, SAVE_VERSION].includes(imported.version) || !codes.includes(imported.kingdom)) {
+      throw new Error("不是兼容的 v5-v8 地图存档");
+    }
+    if (!isStep(imported.step) || !isRound(imported.round) || !Array.isArray(imported.knights)
+        || !imported.knights.every(knight => isRecord(knight) && isRecord(knight.clues)) || !isRecordList(imported.log)) {
+      throw new Error("地图存档缺少有效的轮次、队伍或结算记录");
+    }
+    for (const code of codes) {
+      const current = imported.maps?.[code];
+      if (!isMap(current, code) || !Array.isArray(current.history) || !current.history.every(item =>
+        isRecord(item) && isMap(item.map, code) && isStep(item.step) && isRound(item.round)
+        && (item.knightClues === undefined || (isRecord(item.knightClues) && Object.values(item.knightClues).every(isRecord)))
+      )) {
+        throw new Error(`${kingdomData(code).label}的地图、牌组或撤销记录不完整`);
+      }
+    }
+    imported.version = SAVE_VERSION;
+    return normalizeSavedMapState(applySavedTileRegionCorrections(imported));
+  }
+
+  $("#importInput").addEventListener("change", async event => {
     const file = event.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
+    event.target.value = "";
+    try {
+      const candidate = prepareImportedMap(JSON.parse(await file.text()));
+      const previous = state;
+      const previousTool = activeTool;
+      const previousStoryFocus = focusStoryReminder;
+      state = candidate;
+      activeTool = STEP_TOOL[state.step] || "tile";
+      focusStoryReminder = state.step === 3;
       try {
-        const imported = JSON.parse(reader.result);
-        if (![5, 6, 7, SAVE_VERSION].includes(imported.version) || !imported.maps?.SK || !imported.maps?.POS) throw new Error("不是 v5-v8 地图存档");
-        imported.version = SAVE_VERSION;
-        state = normalizeSavedMapState(applySavedTileRegionCorrections(imported));
-        activeTool = STEP_TOOL[state.step] || "tile";
-        focusStoryReminder = state.step === 3;
-        save(true);
-        toast("存档导入成功");
+        render();
+        localStorage.setItem(SAVE_KEY, JSON.stringify(state));
       } catch (error) {
-        toast(`导入失败：${error.message}`);
+        state = previous;
+        activeTool = previousTool;
+        focusStoryReminder = previousStoryFocus;
+        render();
+        throw error;
       }
-    };
-    reader.readAsText(file);
+      clearTimeout(saveTimer);
+      clearTimeout(encounterNavigationTimer);
+      pendingEncounterAutoStart = false;
+      window.KF_MODULE_BRIDGE?.flush?.();
+      toast("存档导入成功");
+    } catch (error) {
+      toast(`导入失败：${error.message}`);
+    }
   });
 
   addEventListener("kf:map-upstream", event => {

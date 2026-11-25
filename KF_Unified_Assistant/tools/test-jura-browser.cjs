@@ -23,7 +23,9 @@ const server = http.createServer((req, res) => {
       else if (route === 'user-settings') {
         if (req.method === 'PATCH') {
           const payload = JSON.parse(body);
-          Object.assign(shared, payload);
+          for (const operation of payload.operations || []) {
+            if (operation.section === 'jura') shared.jura = operation.value;
+          }
         }
         value = { settings: shared };
       }
@@ -105,7 +107,8 @@ const server = http.createServer((req, res) => {
     await panel.locator('[data-jura-loadout-name]').fill('测试配装');
     const loadoutSaved = page.waitForResponse(response => new URL(response.url()).searchParams.get('route') === 'user-settings'
       && response.request().method() === 'PATCH' && response.ok()
-      && response.request().postDataJSON()?.jura?.loadouts?.some(item => item.name === '测试配装'));
+      && response.request().postDataJSON()?.operations?.some(operation =>
+        operation.section === 'jura' && operation.value?.loadouts?.some(item => item.name === '测试配装')));
     await panel.locator('[data-jura-loadout-save] button[type="submit"]').click();
     await loadoutSaved;
     await page.waitForFunction(() => document.querySelector('#saveState').textContent === '已保存');

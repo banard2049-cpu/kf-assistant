@@ -43,7 +43,9 @@
     ["token-armor", "盔甲", "httpssteamusercontentaakamaihdnetugc10253072582350080078E89257D8FD942C3FA0350726E80F48FC7AEF6B99.png", "square"]
   ].map(([id, name, file, shape = "round"]) => ({ id, name, file, shape, src: `/assets/tokens/${file}` }));
   const LITTLE_SER_ASSET = { id: "little-ser", name: "小猴子", shape: "free", src: "/assets/tokens/little-ser.png?v=5" };
-  const hasSonch = () => Array.isArray(window.KF_CAMPAIGN_PARTY) && window.KF_CAMPAIGN_PARTY.some(member => member.type !== "squire" && member.knightId === "ser-sonch");
+  const battleRoster = (battle = state.battle) => Array.isArray(battle?.rogueBattle?.roster)
+    ? battle.rogueBattle.roster : window.KF_CAMPAIGN_PARTY || [];
+  const hasSonch = () => battleRoster().some(member => member.type !== "squire" && member.knightId === "ser-sonch");
   const tokenShapeClass = asset => asset.shape === "round" ? "" : `token-${asset.shape}`;
   const TOKEN_ASSET_IDS = new Set(TOKEN_ASSETS.map(asset => asset.id));
   const DEFAULT_MOB_MARKER_ASSET_IDS = { M_PalebloodWorms: "token-blood" };
@@ -317,7 +319,7 @@
     const setup = CONFLICT_SETUPS.monsters.find(item => item.id === monster?.id);
     if (!setup) return "";
 
-    const campaignKingdom = window.KF_CAMPAIGN_KINGDOM === "stone" ? "stone" : "sunken";
+    const campaignKingdom = conflictKingdom();
     const levelKey = Number(level) >= 2 ? "2+" : "1";
     const map = setup.mapsByKingdom?.[campaignKingdom] || setup.mapsByLevel?.[levelKey] || setup.map;
     const [mapX, mapY, mapWidth, mapHeight] = map.crop;
@@ -684,8 +686,9 @@
     return counts;
   }
 
-  function conflictKingdom() {
-    return String(window.KF_CAMPAIGN_KINGDOM || "").toLowerCase().includes("stone") ? "stone" : "sunken";
+  function conflictKingdom(battle = state.battle) {
+    const kingdom = String(battle?.rogueBattle?.kingdom || window.KF_CAMPAIGN_KINGDOM || "").toLowerCase();
+    return kingdom === "pos" || kingdom.includes("stone") ? "stone" : "sunken";
   }
 
   function isBellyConflict(battle = state?.battle) {
@@ -737,7 +740,7 @@
       "怪物轮开始时：翻转本卡。若只剩一名骑士存活，忽略此效果。"
     ])
   });
-  const fivePlayerMode = () => window.KF_CAMPAIGN_OPTIONS?.fivePlayer === true;
+  const fivePlayerMode = (battle = state.battle) => !battle?.rogueBattle && window.KF_CAMPAIGN_OPTIONS?.fivePlayer === true;
   const accursedState = (battle = state.battle) => battle?.accursed || null;
   const accursedIntercepts = (battle = state.battle) => {
     const accursed = accursedState(battle);
@@ -912,8 +915,7 @@
     return extras;
   }
 
-  function normalizeExtraKnightPlacements(raw, layout) {
-    const partyCount = Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY.length : 0;
+  function normalizeExtraKnightPlacements(raw, layout, partyCount) {
     const printed = (layout?.placements || []).filter(item => item.kind === "knight").length;
     const missing = Math.max(0, partyCount - printed);
     if (!Array.isArray(raw) || raw.length < missing) return extraKnightPlacements(layout, partyCount);
@@ -932,9 +934,8 @@
     });
   }
 
-  function conflictKnightAssignments(layout, extraPlacements = []) {
+  function conflictKnightAssignments(layout, extraPlacements, party) {
     const starts = [...(layout?.placements || []), ...extraPlacements].filter(placement => placement.kind === "knight");
-    const party = Array.isArray(window.KF_CAMPAIGN_PARTY) ? window.KF_CAMPAIGN_PARTY : [];
     return starts.slice(0, party.length).flatMap((placement, index) => {
       const member = party[index] || {};
       const heroId = member.type === "squire" ? member.squireId : member.knightId;
@@ -998,7 +999,8 @@
   }
 
   function buildConflictBoard(monster, level, battle = null) {
-    const requestedKingdom = conflictKingdom();
+    const requestedKingdom = conflictKingdom(battle);
+    const party = battleRoster(battle);
     const belly = isBellyConflict(battle);
     const layout = belly ? bellyLayout(monster) : conflictLayout(monster, level, requestedKingdom);
     if (!layout) return null;
@@ -1025,7 +1027,7 @@
       max: Number(BELLY_BOARD.digestiveTrack?.max) || 4,
       step: Number(BELLY_BOARD.digestiveTrack?.step) || 1
     } : null;
-    const extraPlacements = extraKnightPlacements(layout);
+    const extraPlacements = extraKnightPlacements(layout, party.length);
     return {
       layoutId: layout.id,
       boardId: belly ? "belly_of_beast" : "standard",
@@ -1036,7 +1038,7 @@
       level: Number(level) || 1,
       resolvedOrientations,
       extraPlacements,
-      knightAssignments: conflictKnightAssignments(layout, extraPlacements),
+      knightAssignments: conflictKnightAssignments(layout, extraPlacements, party),
       mobAssignments: numberable.slice(0, numbers.length).map((placement, index) => ({ placementId: placement.id, number: numbers[index] })),
       terrain: defaultConflictTerrain(layout, resolvedOrientations),
       showStarts: true,
@@ -1068,7 +1070,8 @@
       const choices = window.KF_CONFLICT_BOARD_DATA?.randomOrientations?.[placement.orientation] || [0];
       resolvedOrientations[placement.id] = choices[Math.floor(Math.random() * choices.length)];
     }
-    const extraPlacements = normalizeExtraKnightPlacements(raw?.extraPlacements, layout);
+    const party = battleRoster(battle);
+    const extraPlacements = normalizeExtraKnightPlacements(raw?.extraPlacements, layout, party.length);
     const placementIds = new Set(layout.placements.map(item => item.id));
     const knightPlacementIds = new Set([...layout.placements, ...extraPlacements].filter(item => item.kind === "knight").map(item => item.id));
     const usedKnightPlacements = new Set();
@@ -1117,7 +1120,7 @@
       resolvedOrientations,
       extraPlacements,
       knightAssignments: knightAssignments.length && extraPlacements.every(item => knightAssignments.some(assigned => assigned.placementId === item.id))
-        ? knightAssignments : conflictKnightAssignments(layout, extraPlacements),
+        ? knightAssignments : conflictKnightAssignments(layout, extraPlacements, party),
       mobAssignments: mobAssignments.length ? mobAssignments : (fallback?.mobAssignments || []),
       terrain: normalizeConflictTerrain(raw?.terrain, layout, resolvedOrientations),
       showStarts: raw?.showStarts !== false,
@@ -1303,8 +1306,8 @@
       conflictLocation: monster.id === "M_YoungDevour" ? "" : String(raw?.conflictLocation || ""),
       conflictType: monster.id === "M_YoungDevour" ? "normal" : (raw?.conflictLocation === "巨兽之腹" || raw?.conflictType === "belly_of_beast" ? "belly_of_beast" : "normal"),
       deckOrderVisible: raw?.deckOrderVisible !== false,
-      accursed: normalizeAccursed(raw?.accursed)
-        || (fivePlayerMode() ? { side: "active", lastKnight: false } : null),
+      accursed: raw?.rogueBattle ? null : normalizeAccursed(raw?.accursed)
+        || (fivePlayerMode(raw || null) ? { side: "active", lastKnight: false } : null),
       log: Array.isArray(raw?.log) ? raw.log.slice(-100) : []
     };
     normalized.conflictBoard = normalizeConflictBoard(raw?.conflictBoard, monster, level, normalized);
@@ -1450,7 +1453,7 @@
     };
   }
 
-  function save(render = true) {
+  function save(render = true, immediate = false) {
     if (!hasSonch()) state.battle.sheetTokens = state.battle.sheetTokens.filter(token => token.assetId !== LITTLE_SER_ASSET.id);
     state.battle.sheetTraits = normalizeSheetTraits(state.battle);
     const wingedDiscard = ensureWingedAiDiscard();
@@ -1471,10 +1474,12 @@
     state.updatedAt = Date.now();
     clearTimeout(saveTimer);
     $("#saveStatus").textContent = "保存中…";
-    saveTimer = setTimeout(() => {
+    const persist = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       $("#saveStatus").textContent = "已保存";
-    }, 80);
+    };
+    if (immediate) persist();
+    else saveTimer = setTimeout(persist, 80);
     if (render) renderApp();
   }
 
@@ -1613,11 +1618,11 @@
     const rule = bossRule(monster);
     if (rule?.patientCards?.length) {
       battle.ruleState.patient.deck = shuffle(rule.patientCards.map(card => card.id));
-      const party = (window.KF_CAMPAIGN_PARTY || []).map(item => String(item.name || item.title || "").trim()).filter(Boolean);
+      const party = battleRoster(battle).map(item => String(item.name || item.title || "").trim()).filter(Boolean);
       for (const name of party) battle.ruleState.severityByKnight[name] = 9;
     }
     if (rule?.kind === "king-laid-low") {
-      const living = (window.KF_CAMPAIGN_PARTY || []).map(item => String(item.name || item.title || "").trim()).filter(Boolean);
+      const living = battleRoster(battle).map(item => String(item.name || item.title || "").trim()).filter(Boolean);
       battle.ruleState.kingLaidLow.livingKnights = [...new Set(living)];
       if (living.length) battle.ruleState.kingLaidLow.curseHolder = living[Math.floor(Math.random() * living.length)];
     }
@@ -5045,7 +5050,7 @@
     }
 
     if (rule.kind === "bog-witch") {
-      const party = window.KF_CAMPAIGN_PARTY || [];
+      const party = battleRoster();
       const holders = [...new Set(["沼地女巫", ...party.map(item => item.name || item.title).filter(Boolean)])];
       body = `<div class="rule-form-row">
           <label>附着目标<select data-bog-holder>${holders.map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join("")}<option value="__custom__">其他骑士</option></select></label>
@@ -5196,7 +5201,7 @@
   function activeReferenceCards(monster, battle) {
     const setup = mobConflictSetup(monster);
     const conditional = new Map((setup?.conditionalCards || []).map(item => [item.id, item]));
-    const kingdomTrait = window.KF_CAMPAIGN_KINGDOM === "stone" ? "Trait_POS" : "Trait_SK";
+    const kingdomTrait = conflictKingdom(battle) === "stone" ? "Trait_POS" : "Trait_SK";
     const base = monster.cards.filter(card => {
       if (!["SIG", "Trait", "Trait_SK", "Trait_POS", "BPX"].includes(card.kind)) return false;
       if (allMobTacticIds(monster).includes(card.id)) return false;
@@ -5520,7 +5525,7 @@
 
   let squireClueBusy = false;
   function squireCluesHtml() {
-    const squires = (window.KF_CAMPAIGN_PARTY || []).filter(member => member.type === "squire");
+    const squires = battleRoster().filter(member => member.type === "squire");
     if (!squires.length) return "";
     const map = window.KF_MODULE_BRIDGE?.getConflictClues?.();
     const records = map?.knights || [];
@@ -6506,31 +6511,54 @@
     URL.revokeObjectURL(link.href);
   }
 
+  function prepareImportedBattle(raw) {
+    const isRecord = value => value && typeof value === "object" && !Array.isArray(value);
+    const isCardList = value => Array.isArray(value) && value.every(id => typeof id === "string" && id.length > 0);
+    const isBattle = (battle, monsterId) => isRecord(battle) && monsterById(monsterId)
+      && (!Object.hasOwn(battle, "monsterId") || battle.monsterId === monsterId)
+      && isCardList(battle.aiDeck) && isCardList(battle.bpDeck)
+      && ["aiDiscard", "aiRemoved", "bpDiscard", "bpDamage", "bpRemoved"].every(
+        key => !Object.hasOwn(battle, key) || isCardList(battle[key])
+      )
+      && (!Object.hasOwn(battle, "bpTrack") || (Array.isArray(battle.bpTrack) && battle.bpTrack.every(isRecord)));
+    const isHistory = (history, monsterId) => history === undefined
+      || (Array.isArray(history) && history.every(battle => isBattle(battle, monsterId)));
+    if (!isRecord(raw) || Number(raw.version) !== VERSION) throw new Error("只支持版本 10 的 AI/BP 冲突存档");
+    const battle = Object.hasOwn(raw, "battle") ? raw.battle : raw;
+    if (!isBattle(battle, battle?.monsterId) || !isHistory(raw.history, battle.monsterId)
+        || (Object.hasOwn(raw, "selectedMonsterId") && !monsterById(raw.selectedMonsterId))
+        || (Object.hasOwn(raw, "encounters") && (!isRecord(raw.encounters)
+          || !Object.entries(raw.encounters).every(([id, encounter]) => isRecord(encounter)
+            && isBattle(encounter.battle, id) && isHistory(encounter.history, id))))) {
+      throw new Error("AI/BP 冲突存档的怪物、牌组或历史记录无效");
+    }
+    const candidate = validateState(raw);
+    if (!Object.hasOwn(battle, "deckOrderVisible")) {
+      candidate.battle.deckOrderVisible = deckOrderVisible;
+      candidate.encounters[candidate.battle.monsterId].battle.deckOrderVisible = deckOrderVisible;
+    }
+    return candidate;
+  }
+
   async function importSave(file) {
     try {
-      const raw = JSON.parse(await file.text());
-      if (Number(raw?.version || 0) !== VERSION) {
-        const monster = monsterById(state.battle.monsterId);
-        state = defaultState();
-        state.battle = emptyBattle(monster);
-        state.battle.deckOrderVisible = deckOrderVisible;
-        state.selectedMonsterId = monster.id;
-        initializeBattle(monster);
-        syncCurrentEncounter();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-        toast("旧版存档不兼容，已为当前怪物建立新冲突");
-        return renderApp();
-      }
-      const next = validateState(raw);
-      if (!Object.prototype.hasOwnProperty.call(raw?.battle || {}, "deckOrderVisible")) {
-        next.battle.deckOrderVisible = deckOrderVisible;
-      }
-      state = next;
+      const candidate = prepareImportedBattle(JSON.parse(await file.text()));
+      const previous = state;
+      const previousDeckOrder = deckOrderVisible;
+      state = candidate;
       deckOrderVisible = state.battle.deckOrderVisible !== false;
-      localStorage.setItem(DECK_ORDER_VIEW_KEY, deckOrderVisible ? "1" : "0");
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      try {
+        renderApp();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        state = previous;
+        deckOrderVisible = previousDeckOrder;
+        renderApp();
+        throw error;
+      }
+      clearTimeout(saveTimer);
+      $("#saveStatus").textContent = "已保存";
       toast("存档导入成功");
-      renderApp();
     } catch (error) {
       toast(`导入失败：${error.message}`);
     }
@@ -6576,31 +6604,50 @@
     });
   }
 
-  window.addEventListener?.("kf:aibp-handoff", event => {
-    state.battle.postgame = event.detail?.postgame === true || event.detail?.stage === "withergraal";
-    state.battle.rogueStage = event.detail?.stage || "";
-    const location = String(event.detail?.mapWheel?.conflictLocation || "");
-    const currentMonster = monsterById(state.battle.monsterId);
-    const bellyLocation = location === "巨兽之腹" && currentMonster?.id !== "M_YoungDevour";
-    state.battle.conflictLocation = location;
-    state.battle.conflictType = bellyLocation ? "belly_of_beast" : "normal";
-    if (bellyLocation) {
-      // 杂兵轨也按巨兽之腹布局的附着怪物位数量重建，实际杂兵超过布局位数时封顶。
-      if (isMob(currentMonster) && !isWingedNightmare(currentMonster)) {
-        const bellySetup = mobSetupResult(currentMonster);
-        if (!bellySetup.error) {
-          const bellyMobSlots = bellyLayout(currentMonster).placements.filter(placement =>
+  window.KF_AIBP_HANDOFF = handoff => {
+    const monster = DATA.monsters.find(item => item.id === handoff.monsterId)
+      || DATA.monsters.find(item => item.name === handoff.monster);
+    if (!monster) return false;
+    if (handoff.roguePath && (!handoff.id || !Array.isArray(handoff.rogueRoster))) return false;
+    const slotId = handoff.slotId || "";
+    const saved = state.encounters[monster.id]?.battle;
+    if (handoff.roguePath && saved?.rogueBattle?.id === handoff.id && saved.rogueBattle.slotId === slotId) {
+      if (state.battle.monsterId !== monster.id) selectMonster(monster);
+      return true;
+    }
+
+    syncCurrentEncounter();
+    state.battle = emptyBattle(monster);
+    state.history = [];
+    const battle = state.battle;
+    battle.level = normalizeMonsterLevel(monster, handoff.level);
+    battle.deckOrderVisible = deckOrderVisible;
+    if (handoff.roguePath) {
+      battle.rogueBattle = { id: handoff.id, slotId, kingdom: handoff.kingdom, roster: handoff.rogueRoster };
+      battle.rogueStage = handoff.stage || "";
+      battle.postgame = handoff.postgame === true || handoff.stage === "withergraal";
+    }
+    battle.conflictLocation = monster.id === "M_YoungDevour" ? "" : String(handoff.mapWheel?.conflictLocation || "");
+    battle.conflictType = battle.conflictLocation === "巨兽之腹" ? "belly_of_beast" : "normal";
+    mobMarkerAssetId = DEFAULT_MOB_MARKER_ASSET_IDS[monster.id] || "token-01";
+    initializeBattle(monster);
+    if (isBellyConflict(battle)) {
+      if (isMob(monster) && !isWingedNightmare(monster)) {
+        const setup = mobSetupResult(monster);
+        if (!setup.error) {
+          const slots = bellyLayout(monster).placements.filter(placement =>
             placement.kind === "monster" || ["RedSapling", "LictorDecoy"].includes(placement.asset)
           ).length;
-          state.battle.bpTrack = buildInitialMobTrack(currentMonster, bellySetup, bellyMobSlots);
-          state.battle.mobCount = state.battle.bpTrack.filter(slot => slot.id).length;
+          battle.bpTrack = buildInitialMobTrack(monster, setup, slots);
+          battle.mobCount = battle.bpTrack.filter(slot => slot.id).length;
+          battle.conflictBoard = buildConflictBoard(monster, battle.level, battle);
         }
       }
-      state.battle.conflictBoard = buildConflictBoard(currentMonster, state.battle.level, state.battle);
-      log(`特殊冲突地点：${location}（贪食巨龙来了！）`);
+      log(`特殊冲突地点：${battle.conflictLocation}（贪食巨龙来了！）`);
     }
-    save();
-  });
+    save(true, true);
+    return true;
+  };
 
   if (!state.battle.aiDeck.length && !state.battle.bpDeck.length && !state.battle.bpTrack.length) {
     initializeBattle(monsterById(state.battle.monsterId));
@@ -6610,6 +6657,7 @@
   if (window.KF_AIBP_TESTING) {
     window.KF_AIBP_TEST_API = {
       state: () => state,
+      importSave,
       selectMonster: id => selectMonster(monsterById(id)),
       rebuild: preserveHistory => initializeBattle(
         monsterById(state.battle.monsterId), { preserveHistory: Boolean(preserveHistory) }

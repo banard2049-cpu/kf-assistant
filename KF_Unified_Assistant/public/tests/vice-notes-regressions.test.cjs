@@ -120,7 +120,11 @@ function live(state) {
     $: selector => selector === '#sheetForm' ? form : null,
     $$: selector => selector === '[data-path]' ? [notes, mark] : [],
     compatibleUuid: () => `operation_${++serial}`,
-    persistPending() { persisted++; }, cacheSheet() { stored.set('sheet-A', JSON.parse(JSON.stringify(context.state))); },
+    enqueueLocalOperation(queue, fields) {
+      context.pending.push({id:context.compatibleUuid(),userId:context.user.id,...fields});
+      persisted++;
+    },
+    cacheSheet() { stored.set('sheet-A', JSON.parse(JSON.stringify(context.state))); },
     setSave() {}, clearTimeout() {}, setTimeout(callback) { timers.push(callback); return timers.length; }, sync() {},
   });
   vm.runInContext(helpers + section('const pathGet=', 'const cacheSheet=') + section('function renderValues(){', 'function esc(')
